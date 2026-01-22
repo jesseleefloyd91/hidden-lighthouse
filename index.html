@@ -5,205 +5,204 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bill Donahue | Official Archive</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;800&family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;800&family=Manrope:wght@200;400;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --accent: #D8B4FE; /* Light Cosmic Purple */
-            --accent-dim: #9333ea;
-            --bg: #050505;
-            --glass: rgba(20, 20, 20, 0.6);
+            --purple: #D8B4FE;
+            --purple-dim: #7e22ce;
+            --black: #050505;
+            --glass: rgba(10, 10, 10, 0.85);
         }
         
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: #e5e5e5; overflow-x: hidden; }
+        body { font-family: 'Manrope', sans-serif; background-color: var(--black); color: #e5e5e5; overflow-x: hidden; }
         .cinzel { font-family: 'Cinzel', serif; }
-        .mono { font-family: 'Space Grotesk', monospace; }
+        .text-purple { color: var(--purple); }
+        .bg-purple { background-color: var(--purple); }
+        .border-purple { border-color: var(--purple); }
         
-        .text-accent { color: var(--accent); }
-        .bg-accent { background-color: var(--accent); }
-        .border-accent { border-color: var(--accent); }
-        
-        /* Grainy Texture for "Film" Look */
-        .noise-bg {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none; z-index: 50; opacity: 0.03;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        /* Starry Background */
+        .stars-bg {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: -1;
+            background-color: var(--black);
+            background-image: 
+                radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 3px),
+                radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 2px),
+                radial-gradient(white, rgba(255,255,255,.1) 2px, transparent 3px);
+            background-size: 550px 550px, 350px 350px, 250px 250px;
+            background-position: 0 0, 40px 60px, 130px 270px;
+            opacity: 0.6;
         }
 
         /* Glass Panel */
         .glass-panel {
-            background: rgba(255, 255, 255, 0.03);
+            background: linear-gradient(180deg, rgba(20,20,20,0.7) 0%, rgba(10,10,10,0.9) 100%);
             backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(216, 180, 254, 0.1); /* Purple tint border */
             box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
         }
 
-        /* Hover Effects */
-        .topic-card { transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); position: relative; overflow: hidden; }
-        .topic-card:hover { transform: translateY(-4px); border-color: rgba(216, 180, 254, 0.4); box-shadow: 0 20px 40px -10px rgba(0,0,0,0.8); }
-
-        /* Floating Animation */
-        @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-10px); } 100% { transform: translateY(0px); } }
-        .floating { animation: float 6s ease-in-out infinite; }
-
-        /* Anatomy Dots */
-        .anatomy-dot { 
-            width: 20px; height: 20px; border-radius: 50%; position: absolute; left: 50%; transform: translateX(-50%);
-            cursor: pointer; transition: all 0.3s ease; box-shadow: 0 0 15px rgba(216, 180, 254, 0.2); border: 1px solid rgba(255,255,255,0.8); z-index: 20;
+        /* Interactive Cards */
+        .topic-card {
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(180deg, rgba(30,30,30,0.4) 0%, rgba(20,20,20,0.8) 100%);
         }
-        .anatomy-dot:hover { transform: translateX(-50%) scale(1.5); box-shadow: 0 0 30px var(--accent); background: var(--accent); border-color: #fff; }
-
-        .search-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 20px rgba(216, 180, 254, 0.15); }
+        .topic-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(216, 180, 254, 0.6);
+            box-shadow: 0 20px 40px -10px rgba(126, 34, 206, 0.2);
+        }
         
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: var(--bg); }
-        ::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+        /* Anatomy Dots */
+        .anatomy-dot {
+            width: 20px; height: 20px; border-radius: 50%; position: absolute; left: 50%; transform: translateX(-50%);
+            cursor: pointer; transition: all 0.3s ease; box-shadow: 0 0 15px rgba(216, 180, 254, 0.3); border: 2px solid #fff; z-index: 20;
+        }
+        .anatomy-dot:hover { transform: translateX(-50%) scale(1.5); box-shadow: 0 0 30px var(--purple); background: var(--purple); border-color: var(--black); }
+
+        /* Search Input Focus */
+        .search-input:focus { outline: none; border-color: var(--purple); box-shadow: 0 0 20px rgba(216, 180, 254, 0.15); }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--black); }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--purple); }
 
         .hidden { display: none !important; }
         .fade-in { animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Profile Glow */
+        .profile-glow { box-shadow: 0 0 40px rgba(216, 180, 254, 0.15); transition: 0.5s; }
+        .profile-glow:hover { box-shadow: 0 0 60px rgba(216, 180, 254, 0.3); transform: scale(1.02); }
     </style>
 </head>
 <body class="flex flex-col min-h-screen">
     
-    <div class="noise-bg"></div>
+    <div class="stars-bg"></div>
 
     <!-- NAVIGATION -->
-    <nav class="fixed top-0 w-full z-50 glass-panel border-b-0 h-20 transition-all duration-300">
+    <nav class="sticky top-0 z-50 glass-panel border-b border-white/5 h-20">
         <div class="max-w-[1800px] mx-auto px-6 h-full flex justify-between items-center">
             <div class="flex items-center gap-4 cursor-pointer group" onclick="app.showView('home')">
-                <div class="w-10 h-10 border border-white/20 flex items-center justify-center rotate-45 transition-all duration-500 group-hover:rotate-0 group-hover:border-accent group-hover:bg-accent/10">
-                    <span class="cinzel font-bold text-lg text-white -rotate-45 group-hover:rotate-0 transition-transform duration-500">H</span>
+                <div class="w-10 h-10 border-2 border-purple-400/50 flex items-center justify-center rotate-45 transition-transform duration-500 group-hover:rotate-0 group-hover:border-purple-400 group-hover:bg-purple-900/20">
+                    <span class="cinzel font-bold text-lg text-purple-300 -rotate-45 group-hover:rotate-0 transition-transform duration-500">HL</span>
                 </div>
-                <div class="hidden sm:block">
-                    <h1 class="font-mono text-xs font-bold tracking-[0.2em] text-white uppercase">Hidden Lighthouse</h1>
+                <div>
+                    <h1 class="cinzel text-sm font-bold tracking-[0.2em] text-white uppercase group-hover:text-purple-300 transition-colors">The Hidden Lighthouse</h1>
+                    <p class="text-[9px] text-purple-400 tracking-widest uppercase font-bold mt-1">Official Archive</p>
                 </div>
             </div>
 
-            <!-- Center Menu (Desktop) -->
-            <div class="hidden md:flex items-center gap-8 bg-black/40 px-6 py-2 rounded-full border border-white/5 backdrop-blur-md">
-                <button onclick="app.showView('library')" class="text-[10px] font-bold uppercase tracking-widest text-gray-400 hover:text-accent transition-colors">Catalog</button>
-                <div class="w-px h-3 bg-white/10"></div>
-                <button onclick="app.showView('anatomy')" class="text-[10px] font-bold uppercase tracking-widest text-gray-400 hover:text-accent transition-colors">Temple</button>
-                <div class="w-px h-3 bg-white/10"></div>
-                <button onclick="app.showView('resources')" class="text-[10px] font-bold uppercase tracking-widest text-gray-400 hover:text-accent transition-colors">Resources</button>
-            </div>
+            <div class="hidden lg:flex items-center gap-8">
+                <div class="flex gap-6 text-[10px] font-bold uppercase tracking-widest text-stone-500">
+                    <a href="https://www.hiddenmeanings.com/" target="_blank" class="hover:text-purple-300 transition-colors">HiddenMeanings</a>
+                    <a href="https://lifestyleluminaries.blogspot.com/p/bill-donahue.html" target="_blank" class="hover:text-purple-300 transition-colors">Lifestyle Luminaries</a>
+                    <a href="https://archive.org/details/1-revised-bill-donahue-speaks-book-of-secret-doctrines/page/18/mode/1up" target="_blank" class="hover:text-purple-300 transition-colors">Secret Doctrines</a>
+                </div>
+                
+                <div class="h-8 w-px bg-white/10"></div>
 
-            <!-- Search -->
-            <div class="relative group w-10 transition-all duration-300 focus-within:w-64">
-                <input type="text" id="global-search" oninput="app.search(this.value)" placeholder="Search..." 
-                       class="bg-transparent border-b border-white/20 w-full py-2 text-xs text-white search-input transition-all placeholder-transparent focus:placeholder-gray-500 cursor-pointer focus:cursor-text text-right focus:text-left pl-0 focus:pl-2">
-                <div class="absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none text-white">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                <div class="flex items-center gap-4">
+                    <button onclick="app.showView('library')" class="text-xs font-bold uppercase tracking-widest hover:text-purple-300 transition-colors">Catalog</button>
+                    <button onclick="app.showView('anatomy')" class="text-xs font-bold uppercase tracking-widest hover:text-purple-300 transition-colors">The Temple</button>
+                    <button onclick="app.showView('resources')" class="text-xs font-bold uppercase tracking-widest hover:text-purple-300 transition-colors">Resources</button>
+                    
+                    <div class="relative group ml-4">
+                        <input type="text" id="global-search" oninput="app.search(this.value)" placeholder="Search Archive..." 
+                               class="bg-white/5 border border-white/10 rounded-full px-5 py-2 text-xs w-64 text-white search-input transition-all placeholder-stone-500 font-medium tracking-wide">
+                    </div>
                 </div>
             </div>
         </div>
     </nav>
 
     <!-- LOADING SCREEN -->
-    <div id="app-loader" class="fixed inset-0 bg-[#050505] z-[100] flex flex-col items-center justify-center transition-opacity duration-700">
-        <div class="font-mono text-xs text-accent uppercase tracking-widest mb-4">Initializing Archive</div>
-        <div class="w-32 h-0.5 bg-white/10 overflow-hidden">
-            <div class="h-full bg-accent w-full animate-[shimmer_1.5s_infinite]"></div>
-        </div>
+    <div id="app-loader" class="fixed inset-0 bg-[#050505] z-[100] flex flex-col items-center justify-center transition-opacity duration-500">
+        <div class="w-16 h-16 border-4 border-purple-500/30 border-t-purple-400 rounded-full animate-spin mb-4"></div>
+        <p class="text-purple-300 text-xs uppercase tracking-[0.3em] font-bold animate-pulse">Loading Consciousness...</p>
     </div>
 
     <!-- MAIN CONTENT -->
-    <main class="flex-grow relative pt-20">
+    <main class="flex-grow relative">
         
-        <!-- HOME VIEW (Updated Design) -->
-        <section id="view-home" class="min-h-[90vh] flex flex-col justify-center px-6 relative overflow-hidden">
-            <!-- Background Aura -->
-            <div class="absolute top-1/4 right-0 w-[800px] h-[800px] bg-purple-900/10 rounded-full blur-[120px] pointer-events-none"></div>
+        <!-- HOME VIEW -->
+        <section id="view-home" class="min-h-[85vh] flex flex-col items-center justify-center text-center px-6 relative overflow-hidden">
             
-            <div class="max-w-[1600px] mx-auto w-full grid lg:grid-cols-12 gap-12 items-center relative z-10">
-                
-                <!-- Text Content -->
-                <div class="lg:col-span-7 order-2 lg:order-1 fade-in">
-                    <div class="flex items-center gap-4 mb-8">
-                        <span class="w-12 h-[1px] bg-accent"></span>
-                        <span class="font-mono text-[10px] text-accent uppercase tracking-[0.2em]" id="status-bar">Archive Online</span>
-                    </div>
-
-                    <h1 class="cinzel text-6xl md:text-8xl xl:text-9xl font-bold leading-[0.9] text-white tracking-tight mb-8">
-                        The Cosmic <br>
-                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-accent to-white italic font-normal">Mind</span>
-                    </h1>
-
-                    <p class="text-stone-400 text-lg md:text-xl font-light leading-relaxed max-w-2xl mb-12 border-l border-white/10 pl-6">
-                        "The Bible is not a history of the past, but a biological blueprint of the present. You are the temple."
-                    </p>
-
-                    <!-- Main Search -->
-                    <div class="relative max-w-md group mb-12">
-                        <input type="text" id="ai-input" placeholder="Ask the Teacher (e.g. 'Pineal')..." 
-                               class="w-full bg-white/5 border border-white/10 rounded-none px-6 py-4 text-sm text-white placeholder-stone-500 focus:outline-none focus:border-accent transition-all font-mono">
-                        <button onclick="app.performAISearch()" class="absolute right-2 top-2 bottom-2 bg-accent text-black px-4 flex items-center justify-center hover:bg-white transition-colors">
-                            <span class="text-xs font-bold uppercase tracking-widest">ASK</span>
-                        </button>
-                    </div>
-
-                    <div class="flex items-center gap-6">
-                        <button onclick="app.showView('library')" class="text-white text-xs font-bold uppercase tracking-[0.2em] border-b border-white hover:border-accent hover:text-accent transition-all pb-1">
-                            Browse Catalog
-                        </button>
-                        <button onclick="app.showView('anatomy')" class="text-stone-500 text-xs font-bold uppercase tracking-[0.2em] hover:text-white transition-all pb-1">
-                            View Temple
-                        </button>
+            <div class="relative z-10 max-w-4xl fade-in" style="animation-delay: 0.1s;">
+                <!-- Profile Image -->
+                <div class="mb-10 flex justify-center">
+                    <div class="w-40 h-40 rounded-full p-1 border-2 border-purple-500/40 bg-[#111] profile-glow relative z-10">
+                        <img src="bill_profile.jpg" alt="Bill Donahue" class="w-full h-full object-cover rounded-full opacity-90 hover:opacity-100 transition-opacity" onerror="this.src='https://ui-avatars.com/api/?name=Bill+Donahue&background=000&color=d8b4fe&size=160'">
                     </div>
                 </div>
 
-                <!-- Floating Card Image -->
-                <div class="lg:col-span-5 order-1 lg:order-2 flex justify-center lg:justify-end fade-in" style="animation-delay: 0.2s;">
-                    <div class="relative w-[320px] h-[480px] md:w-[400px] md:h-[600px] floating">
-                        <div class="absolute inset-0 border border-accent/30 translate-x-4 translate-y-4"></div>
-                        <div class="absolute inset-0 bg-[#111] overflow-hidden border border-white/10 grayscale hover:grayscale-0 transition-all duration-700 group cursor-pointer">
-                            <img src="bill_profile.jpg" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" 
-                                 onerror="this.src='https://ui-avatars.com/api/?name=Bill+Donahue&background=000&color=d8b4fe&size=400&font-size=0.3'">
-                            
-                            <div class="absolute bottom-0 left-0 w-full p-6 bg-gradient-to-t from-black to-transparent">
-                                <p class="font-mono text-accent text-[10px] uppercase tracking-widest mb-1">Teacher</p>
-                                <h3 class="cinzel text-2xl text-white">Bill Donahue</h3>
-                            </div>
-                        </div>
-                    </div>
+                <div class="mb-8 inline-flex items-center gap-3 border border-purple-500/30 px-5 py-2 rounded-full bg-black/40 backdrop-blur-md">
+                    <span class="w-1.5 h-1.5 rounded-full bg-green-400 shadow-[0_0_10px_#4ade80]"></span>
+                    <span class="text-[10px] text-purple-200 uppercase tracking-[0.2em] font-bold" id="status-bar">Connecting...</span>
+                </div>
+                
+                <h1 class="cinzel text-5xl md:text-8xl font-black mb-8 leading-none tracking-tighter text-white drop-shadow-2xl">
+                    THE COSMIC<br><span class="text-purple-400">MIND</span>
+                </h1>
+                
+                <p class="text-stone-400 text-lg md:text-xl leading-relaxed mb-12 font-light max-w-2xl mx-auto italic">
+                    "The universe is a giant thought, and you are the thinker of the thought." — Bill Donahue
+                </p>
+
+                <!-- AI Search Input -->
+                <div class="max-w-xl mx-auto relative group mb-12 w-full">
+                    <input type="text" id="ai-input" placeholder="Ask the Teacher (e.g. 'Pineal')..." 
+                           class="w-full bg-white/5 border border-white/10 rounded-full py-4 pl-8 pr-16 text-white placeholder-stone-500 focus:outline-none focus:border-purple-400 focus:ring-1 focus:ring-purple-400 transition-all backdrop-blur-md text-lg font-light tracking-wide">
+                    <button onclick="app.performAISearch()" class="absolute right-2 top-2 bottom-2 bg-purple-600 text-white w-10 rounded-full flex items-center justify-center hover:bg-white hover:text-black transition-colors shadow-lg">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    </button>
+                </div>
+                
+                <div class="flex flex-wrap justify-center gap-6">
+                    <button onclick="app.showView('library')" class="text-stone-400 hover:text-purple-300 text-xs uppercase tracking-[0.3em] font-bold transition-all border-b border-transparent hover:border-purple-400 pb-1">
+                        Enter Library
+                    </button>
+                    <button onclick="app.showView('anatomy')" class="text-stone-400 hover:text-purple-300 text-xs uppercase tracking-[0.3em] font-bold transition-all border-b border-transparent hover:border-purple-400 pb-1">
+                        View Temple
+                    </button>
                 </div>
             </div>
         </section>
 
         <!-- LIBRARY VIEW -->
-        <section id="view-library" class="hidden py-24 px-6 md:px-12 bg-[#080808]">
+        <section id="view-library" class="hidden py-24 px-6 md:px-12">
             <div class="max-w-[1800px] mx-auto">
-                <div class="flex flex-col md:flex-row justify-between items-end mb-20 border-b border-white/5 pb-8">
+                <div class="flex flex-col md:flex-row justify-between items-end mb-16 pb-8 border-b border-white/5">
                     <div>
-                        <h2 class="cinzel text-5xl font-bold text-white mb-2">The Catalog</h2>
-                        <p class="font-mono text-stone-500 text-xs uppercase tracking-[0.2em]">Comprehensive Subject Index</p>
+                        <h2 class="cinzel text-4xl font-bold text-white mb-2 uppercase tracking-wide">Catalog Index</h2>
+                        <p class="text-stone-500 text-xs tracking-[0.3em] uppercase font-bold">Comprehensive Subject Listing</p>
                     </div>
-                    <div class="text-right mt-8 md:mt-0">
-                        <p class="text-accent font-mono text-xs" id="total-topics-display">Loading...</p>
+                    <div class="text-right mt-6">
+                        <p class="text-purple-400 font-mono text-xs" id="total-topics-display">Loading Topics...</p>
                     </div>
                 </div>
                 
-                <div id="category-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                <div id="category-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6">
                     <!-- Javascript populates this -->
                 </div>
             </div>
         </section>
 
         <!-- LECTURES VIEW -->
-        <section id="view-lectures" class="hidden py-24 px-6 md:px-12">
+        <section id="view-lectures" class="hidden py-24 px-6 md:px-12 bg-stone-900/10">
             <div class="max-w-6xl mx-auto">
-                <button onclick="app.showView('library')" class="text-stone-500 hover:text-white flex items-center gap-3 text-[10px] font-bold uppercase tracking-[0.25em] mb-16 transition-colors group">
-                    <span class="group-hover:-translate-x-1 transition-transform">←</span> Back to Index
+                <button onclick="app.showView('library')" class="text-stone-500 hover:text-purple-300 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] mb-12 transition-colors">
+                    ← Back to Topics
                 </button>
-                
-                <div class="mb-20">
-                    <span class="text-accent font-mono text-[10px] uppercase tracking-widest mb-2 block">Category</span>
-                    <h2 id="active-category-title" class="cinzel text-4xl md:text-6xl font-bold text-white leading-none uppercase"></h2>
-                    <p id="active-category-count" class="text-stone-500 text-xs tracking-[0.2em] font-bold uppercase mt-6 pt-6 border-t border-white/5 inline-block"></p>
+                <div class="mb-12 border-l-2 border-purple-500 pl-6">
+                    <span class="text-purple-400 text-[10px] font-bold uppercase tracking-widest mb-2 block">Category</span>
+                    <h2 id="active-category-title" class="cinzel text-3xl md:text-5xl font-bold text-white uppercase leading-tight"></h2>
+                    <p id="active-category-count" class="text-stone-500 text-xs tracking-[0.2em] font-bold uppercase mt-4 pt-4 border-t border-white/5 inline-block"></p>
                 </div>
-
-                <div id="lecture-list" class="grid grid-cols-1 gap-1">
+                <div id="lecture-list" class="grid grid-cols-1 gap-3">
                     <!-- Javascript populates this -->
                 </div>
             </div>
@@ -211,27 +210,26 @@
 
         <!-- ANATOMY VIEW -->
         <section id="view-anatomy" class="hidden py-24 px-6 md:px-12">
-            <div class="max-w-[1600px] mx-auto grid lg:grid-cols-12 gap-20 items-center">
+            <div class="max-w-7xl mx-auto grid lg:grid-cols-12 gap-20 items-center">
+                <!-- Text Column -->
                 <div class="lg:col-span-5 fade-in">
-                    <span class="text-accent font-mono text-xs uppercase tracking-[0.2em] mb-6 block">Interactive Map</span>
-                    <h2 class="cinzel text-6xl md:text-7xl font-bold text-white mb-8 leading-none">The Temple<br>Within</h2>
+                    <span class="text-purple-400 text-xs font-bold uppercase tracking-[0.3em] mb-4 block">Interactive Map</span>
+                    <h2 class="cinzel text-6xl font-bold text-white mb-8 leading-none">The Temple<br>Of God</h2>
                     
-                    <div id="anatomy-info" class="bg-white/5 p-10 border border-white/10 backdrop-blur-md">
-                        <h3 id="anatomy-title" class="cinzel text-2xl text-white mb-4">Select Center</h3>
-                        <div class="w-12 h-px bg-accent mb-6"></div>
-                        <p id="anatomy-desc" class="text-stone-400 text-lg leading-relaxed font-light font-sans">
-                            "Know ye not that ye are the temple of God?" <br><br>
-                            Click the points on the diagram to reveal the biological decoding of scripture.
-                        </p>
+                    <div id="anatomy-info" class="glass-panel p-10 rounded-xl border-l-2 border-purple-500 min-h-[250px] flex flex-col justify-center">
+                        <h3 id="anatomy-title" class="cinzel text-2xl text-purple-200 mb-6 uppercase tracking-widest font-bold">Select a Center</h3>
+                        <div class="w-12 h-px bg-purple-500 mb-6"></div>
+                        <p id="anatomy-desc" class="text-stone-300 text-lg leading-relaxed font-light italic">"Know ye not that ye are the temple of God, and that the Spirit of God dwelleth in you?" <br><br>Click the points on the diagram to reveal the biological decoding of scripture.</p>
                     </div>
                 </div>
 
+                <!-- Diagram Column -->
                 <div class="lg:col-span-7 flex justify-center fade-in" style="animation-delay: 0.2s">
-                    <div class="relative w-[300px] h-[650px] border border-white/10 rounded-full bg-black shadow-[0_0_80px_-20px_rgba(216,180,254,0.1)] flex items-center justify-center">
-                        <div class="absolute w-px h-[80%] bg-gradient-to-b from-transparent via-white/20 to-transparent"></div>
+                    <div class="relative w-[300px] h-[650px] border border-white/10 rounded-full bg-black shadow-[0_0_80px_-20px_rgba(168,85,247,0.15)] flex items-center justify-center">
+                        <div class="absolute w-px h-[80%] bg-gradient-to-b from-transparent via-purple-500/30 to-transparent"></div>
                         
-                        <!-- Nodes -->
-                        <div class="anatomy-dot bg-purple-500" style="top: 10%;" onclick="app.showAnatomy('Crown / Pineal', 'The Single Eye. Peniel. The light receptor where Jacob saw God face to face. The 7th Seal.')"></div>
+                        <!-- 7 Chakras/Seals Points -->
+                        <div class="anatomy-dot bg-violet-500" style="top: 10%;" onclick="app.showAnatomy('Crown / Pineal', 'The Single Eye. Peniel. The light receptor where Jacob saw God face to face. The 7th Seal.')"></div>
                         <div class="anatomy-dot bg-indigo-500" style="top: 22%;" onclick="app.showAnatomy('Brow / Pituitary', 'The Third Eye. The center of command. Associated with the 6th Seal.')"></div>
                         <div class="anatomy-dot bg-blue-500" style="top: 34%;" onclick="app.showAnatomy('Thyroid / Throat', 'The Word (Logos). The center of vibration and frequency. The 5th Seal.')"></div>
                         <div class="anatomy-dot bg-green-500" style="top: 46%;" onclick="app.showAnatomy('Thymus / Heart', 'The Green Ray. The balance point between the lower physical nature and the higher spiritual nature. The 4th Seal.')"></div>
@@ -244,32 +242,32 @@
         </section>
 
         <!-- RESOURCES VIEW -->
-        <section id="view-resources" class="hidden py-24 px-6 md:px-12 bg-stone-900/30">
-            <div class="max-w-7xl mx-auto">
-                <div class="mb-20 text-center">
-                    <h2 class="cinzel text-5xl font-bold text-white mb-4">Official Sources</h2>
-                    <p class="font-mono text-accent text-xs tracking-[0.3em] uppercase">Primary Literature & Archives</p>
+        <section id="view-resources" class="hidden py-24 px-6 md:px-12 bg-stone-900/20">
+            <div class="max-w-6xl mx-auto">
+                <div class="text-center mb-20">
+                    <h2 class="cinzel text-5xl font-bold text-white mb-6">Official Sources</h2>
+                    <p class="text-stone-500 text-sm tracking-[0.3em] uppercase font-bold">Primary Literature & Archives</p>
                 </div>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-px bg-white/10 border border-white/10 overflow-hidden">
                     <a href="https://www.hiddenmeanings.com/" target="_blank" class="bg-[#0a0a0a] p-16 group hover:bg-[#111] transition-colors relative block">
-                        <h3 class="cinzel text-2xl text-white mb-2 group-hover:text-accent transition-colors">HiddenMeanings.com</h3>
-                        <p class="font-mono text-stone-600 text-[10px] uppercase tracking-widest">Main Portal</p>
+                        <h3 class="cinzel text-2xl text-white mb-2 group-hover:text-purple-300 transition-colors">HiddenMeanings.com</h3>
+                        <p class="text-stone-600 text-xs uppercase tracking-widest relative z-10">The Main Portal</p>
                         <span class="absolute top-8 right-8 text-stone-800 text-3xl opacity-0 group-hover:opacity-100 transition-opacity font-light">↗</span>
                     </a>
                     <a href="https://lifestyleluminaries.blogspot.com/p/bill-donahue.html" target="_blank" class="bg-[#0a0a0a] p-16 group hover:bg-[#111] transition-colors relative block">
-                        <h3 class="cinzel text-2xl text-white mb-2 group-hover:text-accent transition-colors">Lifestyle Luminaries</h3>
-                        <p class="font-mono text-stone-600 text-[10px] uppercase tracking-widest">Video Archive</p>
+                        <h3 class="cinzel text-2xl text-white mb-2 group-hover:text-purple-300 transition-colors">Lifestyle Luminaries</h3>
+                        <p class="text-stone-600 text-xs uppercase tracking-widest relative z-10">Video Archive</p>
                         <span class="absolute top-8 right-8 text-stone-800 text-3xl opacity-0 group-hover:opacity-100 transition-opacity font-light">↗</span>
                     </a>
                     <a href="https://thehiddenlighthouse.blogspot.com/2012/09/the-hidden-lighthouse.html?m=1" target="_blank" class="bg-[#0a0a0a] p-16 group hover:bg-[#111] transition-colors relative block">
-                        <h3 class="cinzel text-2xl text-white mb-2 group-hover:text-accent transition-colors">Lighthouse Blog</h3>
-                        <p class="font-mono text-stone-600 text-[10px] uppercase tracking-widest">2012 Writings</p>
+                        <h3 class="cinzel text-2xl text-white mb-2 group-hover:text-purple-300 transition-colors">Lighthouse Blog</h3>
+                        <p class="text-stone-600 text-xs uppercase tracking-widest relative z-10">2012 Writings</p>
                         <span class="absolute top-8 right-8 text-stone-800 text-3xl opacity-0 group-hover:opacity-100 transition-opacity font-light">↗</span>
                     </a>
                     <a href="https://archive.org/details/1-revised-bill-donahue-speaks-book-of-secret-doctrines/page/18/mode/1up?ui=embed&wrapper=false" target="_blank" class="bg-[#0a0a0a] p-16 group hover:bg-[#111] transition-colors relative block">
-                        <h3 class="cinzel text-2xl text-white mb-2 group-hover:text-accent transition-colors">Secret Doctrines</h3>
-                        <p class="font-mono text-stone-600 text-[10px] uppercase tracking-widest">Full Text PDF</p>
+                        <h3 class="cinzel text-2xl text-white mb-2 group-hover:text-purple-300 transition-colors">Secret Doctrines</h3>
+                        <p class="text-stone-600 text-xs uppercase tracking-widest relative z-10">Full Text PDF</p>
                         <span class="absolute top-8 right-8 text-stone-800 text-3xl opacity-0 group-hover:opacity-100 transition-opacity font-light">↗</span>
                     </a>
                 </div>
@@ -277,24 +275,25 @@
         </section>
 
         <!-- AI SEARCH VIEW -->
-        <section id="view-search" class="hidden py-24 px-6 md:px-12">
+        <section id="view-search" class="hidden py-24 px-6 md:px-12 bg-[#050505]">
             <div class="max-w-5xl mx-auto">
-                <div id="ai-response-box" class="mb-20 glass-panel p-10 border-l-4 border-accent hidden fade-in">
+                <div id="ai-response-box" class="mb-20 bg-white/5 p-10 border border-white/10 hidden fade-in rounded-xl">
                     <div class="flex items-start gap-8">
-                        <div class="w-16 h-16 bg-accent flex items-center justify-center rounded-none shrink-0 text-black font-bold text-2xl font-serif">B</div>
+                        <div class="w-16 h-16 bg-purple-600 flex items-center justify-center rounded-none shrink-0 text-white font-bold text-2xl font-serif">B</div>
                         <div class="flex-1">
-                            <span class="text-accent font-mono text-[10px] uppercase tracking-widest mb-3 block">Teacher's Insight</span>
-                            <div id="ai-text-output" class="text-stone-200 text-xl leading-relaxed font-light mb-8 font-serif italic"></div>
+                            <span class="text-purple-300 font-mono text-[10px] uppercase tracking-widest mb-3 block">Teacher's Insight</span>
+                            <div id="ai-text-output" class="text-stone-200 text-xl leading-relaxed italic font-light mb-8 font-serif"></div>
                             
-                            <div class="bg-white/5 p-4 border border-white/5 flex items-center gap-6 w-fit pr-8">
-                                <button id="play-btn" onclick="app.toggleAudio()" class="w-12 h-12 bg-white rounded-full flex items-center justify-center text-black hover:bg-accent transition-colors">
-                                    <svg id="play-icon" class="w-4 h-4 ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-                                    <svg id="pause-icon" class="w-4 h-4 hidden" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+                            <!-- Audio Player -->
+                            <div class="bg-black/50 p-4 border border-white/5 flex items-center gap-6 w-fit pr-8 rounded-lg">
+                                <button id="play-btn" onclick="app.toggleAudio()" class="w-12 h-12 bg-white rounded-full flex items-center justify-center text-black hover:bg-purple-300 transition-colors">
+                                    <svg id="play-icon" class="w-5 h-5 ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                    <svg id="pause-icon" class="w-5 h-5 hidden" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
                                 </button>
                                 <div>
                                     <div class="text-[9px] text-stone-500 uppercase tracking-widest mb-1 font-mono">Voice Synthesis (Kore)</div>
                                     <div class="h-1 w-32 bg-white/10 rounded-full overflow-hidden">
-                                        <div id="audio-bar" class="h-full bg-accent w-0 transition-all duration-100"></div>
+                                        <div id="audio-bar" class="h-full bg-purple-500 w-0 transition-all duration-100"></div>
                                     </div>
                                 </div>
                             </div>
@@ -314,8 +313,8 @@
 
     <footer class="py-16 border-t border-white/5 bg-[#030303] text-center mt-auto">
         <input type="file" id="csv-upload" class="hidden" accept=".csv" onchange="app.handleFileUpload(this)">
-        <button onclick="document.getElementById('csv-upload').click()" class="text-[10px] text-stone-700 uppercase tracking-[0.3em] font-bold hover:text-accent transition-colors mb-4 block mx-auto">
-            [ Upload Catalog CSV ]
+        <button onclick="document.getElementById('csv-upload').click()" class="text-[10px] text-stone-600 uppercase tracking-[0.3em] font-bold hover:text-purple-300 transition-colors mb-4 block mx-auto hover:underline">
+            [ Update Archive Data ]
         </button>
         <p class="text-[10px] text-stone-800 uppercase tracking-[0.3em] font-bold">The Hidden Lighthouse &copy; 2026</p>
     </footer>
@@ -398,38 +397,75 @@ BHAGAVAD GITA IN POSITION,,THESE ARE VIDEOS THAT HAVE NOT BEEN UPLOADED TO YOU T
 
             init: function() {
                 try {
-                    this.processData(this.rawCSV);
-                    setTimeout(() => {
-                        document.getElementById('app-loader').classList.add('hidden');
-                        document.getElementById('status-bar').innerText = `${this.database.length} Records Online`;
-                    }, 500);
+                    // Try auto-loading file, fallback to raw string immediately
+                    fetch('catalog.csv')
+                        .then(r => r.ok ? r.text() : Promise.reject())
+                        .then(text => { 
+                            this.processData(text); 
+                            this.finishLoading(); 
+                        })
+                        .catch(() => { 
+                            // console.log("Loading built-in dataset...");
+                            this.processData(this.rawCSV); 
+                            this.finishLoading(); 
+                        });
                 } catch (e) {
                     console.error("Init Error", e);
-                    document.getElementById('app-loader').innerHTML = `<p class="text-red-500">Error Loading Archive</p>`;
+                    // Force load if critical error
+                    this.finishLoading();
                 }
+            },
+
+            finishLoading: function() {
+                setTimeout(() => {
+                    document.getElementById('app-loader').classList.add('hidden');
+                    document.getElementById('status-bar').innerText = `${this.database.length} Records Online`;
+                }, 500);
             },
 
             // --- ROBUST CSV PARSER ---
             processData: function(csvText) {
-                const lines = csvText.trim().split('\n');
-                this.database = [];
-                const startIndex = lines[0].startsWith("TITLE") ? 1 : 0;
+                // Uses PapaParse if available for best results, otherwise fallback to custom regex
+                if (typeof Papa !== 'undefined') {
+                    Papa.parse(csvText, {
+                        header: true,
+                        skipEmptyLines: true,
+                        complete: (results) => {
+                            // Map logic based on your sheet headers: TITLE OF VIDEO, URL, TOPIC
+                            this.database = results.data.map(row => {
+                                // Handle case sensitivity or slight header variations
+                                const titleKey = Object.keys(row).find(k => k.toUpperCase().includes('TITLE'));
+                                const urlKey = Object.keys(row).find(k => k.toUpperCase().includes('URL'));
+                                const topicKey = Object.keys(row).find(k => k.toUpperCase().includes('TOPIC'));
+                                
+                                return {
+                                    title: row[titleKey] || "",
+                                    url: row[urlKey] || "",
+                                    topic: row[topicKey] || "Uncategorized"
+                                };
+                            }).filter(row => row.title); // Filter out empty rows
+                            this.renderCategories();
+                        }
+                    });
+                } else {
+                    // Fallback regex parser if CDN fails
+                    const lines = csvText.trim().split('\n');
+                    this.database = [];
+                    const start = lines[0].startsWith("TITLE") ? 1 : 0;
 
-                for (let i = startIndex; i < lines.length; i++) {
-                    const line = lines[i];
-                    if (!line.trim()) continue;
-                    
-                    // Regex handles quoted strings with commas inside (standard CSV)
-                    const parts = line.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g);
-                    
-                    if (parts && parts.length >= 3) {
-                        let topic = parts[parts.length-1].trim().replace(/^"|"$/g, '');
-                        let url = parts[parts.length-2].trim();
-                        let title = parts.slice(0, parts.length-2).join(',').trim().replace(/^"|"$/g, '');
-                        this.database.push({ title, url, topic });
+                    for (let i = start; i < lines.length; i++) {
+                        const line = lines[i];
+                        if (!line.trim()) continue;
+                        const parts = line.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g);
+                        if (parts && parts.length >= 3) {
+                            let topic = parts[parts.length - 1].trim().replace(/^"|"$/g, '');
+                            let url = parts[parts.length - 2].trim();
+                            let title = parts.slice(0, parts.length - 2).join(',').trim().replace(/^"|"$/g, '');
+                            this.database.push({ title, url, topic });
+                        }
                     }
+                    this.renderCategories();
                 }
-                this.renderCategories();
             },
 
             handleFileUpload: function(input) {
@@ -462,14 +498,14 @@ BHAGAVAD GITA IN POSITION,,THESE ARE VIDEOS THAT HAVE NOT BEEN UPLOADED TO YOU T
                 grid.innerHTML = topics.map((topic, i) => {
                     const count = this.database.filter(d => d.topic === topic).length;
                     return `
-                        <div onclick="app.openCategory('${topic.replace(/'/g, "\\'")}')" class="topic-card glass-panel p-8 rounded-lg cursor-pointer hover:border-purple-400/50 transition-all flex flex-col justify-between min-h-[220px]">
+                        <div onclick="app.openCategory('${topic.replace(/'/g, "\\'")}')" class="topic-card glass-panel p-8 rounded-lg cursor-pointer hover-card group flex flex-col justify-between min-h-[220px]">
                             <div>
                                 <span class="text-stone-600 text-[9px] font-bold uppercase tracking-widest mb-3 block">Section ${(i+1).toString().padStart(2,'0')}</span>
-                                <h3 class="cinzel text-xs font-bold text-stone-300 group-hover:text-accent uppercase tracking-widest leading-relaxed line-clamp-3">${topic}</h3>
+                                <h3 class="cinzel text-xs font-bold text-stone-300 group-hover:text-gold uppercase tracking-widest leading-relaxed line-clamp-3">${topic}</h3>
                             </div>
                             <div class="flex justify-between items-end border-t border-white/5 pt-4 mt-4">
                                 <span class="text-[9px] text-stone-500 font-bold uppercase tracking-widest">${count} Items</span>
-                                <span class="text-accent text-xl opacity-50 group-hover:opacity-100">→</span>
+                                <span class="text-gold text-xl opacity-50 group-hover:opacity-100">→</span>
                             </div>
                         </div>
                     `;
@@ -502,7 +538,7 @@ BHAGAVAD GITA IN POSITION,,THESE ARE VIDEOS THAT HAVE NOT BEEN UPLOADED TO YOU T
                         </div>
                         <div class="w-full md:w-auto flex justify-center md:justify-end">
                             ${hasUrl ? 
-                                `<a href="${l.url}" target="_blank" class="block w-full md:w-auto text-center bg-accent text-black text-[10px] font-black px-8 py-3 uppercase tracking-[0.2em] hover:bg-white transition-all shadow-lg rounded-sm">
+                                `<a href="${l.url}" target="_blank" class="block w-full md:w-auto text-center bg-gold text-black text-[10px] font-black px-8 py-3 uppercase tracking-[0.2em] hover:bg-white transition-all shadow-lg rounded-sm">
                                     WATCH
                                 </a>` : 
                                 `<button disabled class="block w-full md:w-auto text-center border border-white/10 text-stone-600 text-[9px] font-bold px-8 py-3 uppercase tracking-[0.2em] cursor-not-allowed">
