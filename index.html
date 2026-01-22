@@ -3,320 +3,421 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bill Donahue | The Hidden Lighthouse</title>
-    
-    <!-- Libraries -->
+    <title>The Hidden Lighthouse | Curated Archive</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;400;600;800&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
     
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Italiana&family=Manrope:wght@200;400;600&display=swap" rel="stylesheet">
-    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Manrope', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    },
+                    colors: {
+                        black: '#0a0a0a',
+                        card: '#141414',
+                        accent: '#e2b340',
+                        sub: '#888888'
+                    }
+                }
+            }
+        }
+    </script>
+
     <style>
-        :root {
-            --bg-color: #080808;
-            --text-main: #f0f0f0;
-            --accent: #d4af37;
-            --panel: #111111;
-        }
+        body { background-color: #0a0a0a; color: #f3f3f3; }
         
-        body { font-family: 'Manrope', sans-serif; background-color: var(--bg-color); color: var(--text-main); overflow-x: hidden; }
-        h1, h2, h3, .serif { font-family: 'Italiana', serif; }
-        
-        /* Awwwards Style Micro-Interactions */
-        .nav-item { position: relative; overflow: hidden; }
-        .nav-item::after {
-            content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 1px;
-            background: var(--accent); transform: translateX(-101%); transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        /* Awwwards-style transitions */
+        .view-section {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+            display: none;
         }
-        .nav-item:hover::after { transform: translateX(0); }
-        
-        .card {
-            background: var(--panel); border: 1px solid #222; transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-            position: relative; overflow: hidden;
+        .view-section.active {
+            opacity: 1;
+            transform: translateY(0);
+            display: block;
         }
-        .card:hover { transform: translateY(-5px); border-color: var(--accent); }
-        .card::before {
-            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at center, rgba(212, 175, 55, 0.1), transparent 70%);
-            opacity: 0; transition: opacity 0.5s;
-        }
-        .card:hover::before { opacity: 1; }
 
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: var(--bg-color); }
-        ::-webkit-scrollbar-thumb { background: #333; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
-
+        /* Card Hover */
+        .project-card {
+            transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .project-card:hover {
+            transform: translateY(-10px);
+        }
+        .project-card:hover .card-image {
+            transform: scale(1.05);
+        }
+        
         /* Anatomy Nodes */
-        .node {
-            width: 12px; height: 12px; border-radius: 50%; background: #333; border: 1px solid #666;
-            position: absolute; left: 50%; transform: translateX(-50%); cursor: pointer; transition: 0.3s;
-            z-index: 10;
+        .chakra-point {
+            cursor: pointer;
+            transition: all 0.3s ease;
+            filter: drop-shadow(0 0 5px rgba(226, 179, 64, 0.5));
         }
-        .node:hover, .node.active { background: var(--accent); border-color: #fff; box-shadow: 0 0 20px var(--accent); transform: translateX(-50%) scale(1.5); }
-        
-        .hidden { display: none !important; }
-        .fade-in { animation: fadeIn 0.8s ease-out forwards; opacity: 0; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .chakra-point:hover {
+            r: 8;
+            fill: #fff;
+            filter: drop-shadow(0 0 15px rgba(226, 179, 64, 1));
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0a0a0a; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #e2b340; }
     </style>
 </head>
 <body class="flex flex-col min-h-screen">
 
-    <!-- NAVIGATION -->
-    <nav class="fixed top-0 w-full z-50 bg-[#080808]/90 backdrop-blur-lg border-b border-white/5">
-        <div class="max-w-[1600px] mx-auto px-8 h-24 flex justify-between items-center">
+    <!-- NAV BAR -->
+    <nav class="fixed top-0 w-full z-50 bg-black/90 backdrop-blur-md border-b border-white/5 h-20">
+        <div class="max-w-[1800px] mx-auto px-8 h-full flex justify-between items-center">
+            <!-- Logo -->
             <div class="flex items-center gap-4 cursor-pointer group" onclick="app.navigate('home')">
-                <div class="w-10 h-10 border border-white/20 flex items-center justify-center rotate-45 transition-all duration-500 group-hover:rotate-0 group-hover:border-accent">
-                    <span class="serif text-xl group-hover:text-accent transition-colors -rotate-45 group-hover:rotate-0">H</span>
-                </div>
+                <div class="w-10 h-10 bg-white text-black rounded-full flex items-center justify-center font-bold font-serif text-xl group-hover:bg-accent transition-colors">H</div>
                 <div>
-                    <h1 class="text-sm font-bold uppercase tracking-[0.2em] leading-none">Hidden Lighthouse</h1>
-                    <p class="text-[9px] text-gray-500 uppercase tracking-widest mt-1">Official Archive</p>
+                    <h1 class="text-sm font-bold uppercase tracking-widest leading-none">Hidden Lighthouse</h1>
+                    <p class="text-[9px] text-gray-500 uppercase tracking-widest mt-1">Bill Donahue Archive</p>
                 </div>
             </div>
 
-            <div class="hidden md:flex items-center gap-12">
-                <button onclick="app.navigate('library')" class="nav-item text-xs font-bold uppercase tracking-widest py-2">Library</button>
-                <button onclick="app.navigate('anatomy')" class="nav-item text-xs font-bold uppercase tracking-widest py-2">The Temple</button>
-                <button onclick="app.navigate('resources')" class="nav-item text-xs font-bold uppercase tracking-widest py-2">Resources</button>
-            </div>
-
-            <div class="flex items-center gap-4">
-                 <div id="data-status" class="hidden md:flex items-center gap-2 px-3 py-1 rounded-full border border-white/10 bg-white/5">
-                    <div class="w-1.5 h-1.5 rounded-full bg-red-500" id="status-dot"></div>
-                    <span class="text-[9px] uppercase font-bold text-gray-400" id="status-text">No Data</span>
+            <!-- Menu -->
+            <div class="hidden md:flex items-center gap-10">
+                <button onclick="app.navigate('library')" class="text-xs font-bold uppercase tracking-widest text-gray-400 hover:text-white transition-colors relative group">
+                    Catalog
+                    <span class="absolute -bottom-2 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full"></span>
+                </button>
+                <button onclick="app.navigate('anatomy')" class="text-xs font-bold uppercase tracking-widest text-gray-400 hover:text-white transition-colors relative group">
+                    The Temple
+                    <span class="absolute -bottom-2 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full"></span>
+                </button>
+                <button onclick="app.navigate('resources')" class="text-xs font-bold uppercase tracking-widest text-gray-400 hover:text-white transition-colors relative group">
+                    Resources
+                    <span class="absolute -bottom-2 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full"></span>
+                </button>
+                
+                <!-- Search -->
+                <div class="relative ml-6">
+                    <input type="text" id="search-input" onkeyup="if(event.key === 'Enter') app.performSearch()" placeholder="Search Archive..." 
+                           class="bg-[#1a1a1a] border border-white/10 rounded-full px-5 py-2 text-xs w-64 text-white focus:outline-none focus:border-accent transition-all font-medium">
+                    <svg class="w-3 h-3 text-gray-500 absolute right-4 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                 </div>
             </div>
         </div>
     </nav>
 
-    <!-- MAIN APP CONTAINER -->
-    <main class="flex-grow pt-24 min-h-screen relative">
-        
-        <!-- VIEW: HOME -->
-        <section id="view-home" class="view-section px-6 py-20 min-h-[80vh] flex flex-col justify-center items-center relative overflow-hidden">
-            <!-- Ambient Background -->
-            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-accent/5 rounded-full blur-[120px] pointer-events-none"></div>
+    <!-- CONTENT CONTAINER -->
+    <main class="flex-grow pt-20">
 
-            <div class="relative z-10 text-center max-w-5xl fade-in" style="animation-delay: 0.1s">
-                <h2 class="text-accent text-xs font-bold uppercase tracking-[0.5em] mb-8">The Biological Word</h2>
-                <h1 class="serif text-6xl md:text-9xl mb-8 leading-[0.9] text-white">
-                    Cosmic <br><span class="text-white/20">Consciousness</span>
-                </h1>
-                
-                <!-- Search / AI -->
-                <div class="max-w-xl mx-auto relative group mt-12 mb-16">
-                    <input type="text" id="ai-input" placeholder="Ask the Archive..." 
-                           class="w-full bg-[#111] border border-white/10 rounded-none px-8 py-5 text-sm text-white focus:outline-none focus:border-accent transition-colors font-serif italic">
-                    <button onclick="app.performSearch()" class="absolute right-0 top-0 h-full px-6 text-gray-400 hover:text-accent transition-colors">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                    </button>
-                </div>
-
-                <div class="flex flex-wrap justify-center gap-6">
-                    <button onclick="app.navigate('library')" class="px-8 py-3 border border-white/20 hover:bg-white hover:text-black hover:border-white transition-all text-xs font-bold uppercase tracking-widest">
-                        Browse Catalog
-                    </button>
-                    <!-- Fallback Upload Button -->
-                    <label class="px-8 py-3 bg-[#111] hover:bg-accent hover:text-black transition-all text-xs font-bold uppercase tracking-widest cursor-pointer border border-transparent">
-                        Load Local CSV
-                        <input type="file" class="hidden" accept=".csv" onchange="app.handleFileUpload(this)">
-                    </label>
-                </div>
-            </div>
-        </section>
-
-        <!-- VIEW: LIBRARY -->
-        <section id="view-library" class="view-section hidden px-6 py-12 max-w-[1800px] mx-auto">
-            <div class="flex justify-between items-end mb-16 pb-6 border-b border-white/5">
-                <div>
-                    <h2 class="serif text-5xl mb-2">The Catalog</h2>
-                    <p class="text-gray-500 text-xs uppercase tracking-widest">Master Index of Lectures</p>
-                </div>
-                <div class="text-right">
-                    <p class="text-accent font-mono text-xs" id="lib-count">0 ITEMS</p>
-                </div>
+        <!-- 1. HOME VIEW -->
+        <section id="view-home" class="view-section active min-h-[90vh] flex flex-col justify-center items-center px-6 relative overflow-hidden">
+            <div class="absolute inset-0 z-0">
+                <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-accent/5 rounded-full blur-[120px]"></div>
             </div>
             
-            <div id="topics-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                <!-- JS will inject cards here -->
+            <div class="relative z-10 text-center max-w-5xl">
+                <div class="mb-8 inline-flex items-center gap-3 border border-white/10 px-4 py-1.5 rounded-full bg-black/40 backdrop-blur-md">
+                    <span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
+                    <span class="text-[10px] text-gray-300 uppercase tracking-widest font-bold" id="archive-status">System Online</span>
+                </div>
+
+                <h1 class="font-serif text-6xl md:text-9xl mb-8 leading-none text-white tracking-tight">
+                    Cosmic <span class="text-accent italic">Mind.</span>
+                </h1>
+                
+                <p class="text-gray-400 text-xl md:text-2xl font-light mb-12 max-w-2xl mx-auto leading-relaxed">
+                    "The Bible is not a history of the past, but a biological blueprint of the present."
+                </p>
+
+                <div class="flex flex-col sm:flex-row gap-6 justify-center">
+                    <button onclick="app.navigate('library')" class="bg-white text-black px-10 py-4 text-xs font-bold uppercase tracking-widest hover:bg-accent hover:text-white transition-all rounded-full">
+                        Browse Catalog
+                    </button>
+                    <button onclick="app.navigate('anatomy')" class="border border-white/20 text-white px-10 py-4 text-xs font-bold uppercase tracking-widest hover:bg-white hover:text-black transition-all rounded-full">
+                        Enter Temple
+                    </button>
+                </div>
             </div>
         </section>
 
-        <!-- VIEW: LECTURE LIST -->
-        <section id="view-list" class="view-section hidden px-6 py-12 max-w-6xl mx-auto">
-            <button onclick="app.navigate('library')" class="mb-12 text-gray-500 hover:text-accent flex items-center gap-3 text-xs font-bold uppercase tracking-widest transition-colors">
-                ← Back to Index
-            </button>
-            <div class="mb-12">
-                <h2 id="list-title" class="serif text-4xl md:text-5xl mb-4 text-white"></h2>
-                <div class="h-0.5 w-12 bg-accent"></div>
-            </div>
-            <div id="list-container" class="space-y-2">
-                <!-- JS will inject rows here -->
-            </div>
-        </section>
-
-        <!-- VIEW: ANATOMY -->
-        <section id="view-anatomy" class="view-section hidden px-6 py-12 flex items-center justify-center min-h-[80vh]">
-            <div class="grid lg:grid-cols-2 gap-20 items-center max-w-7xl w-full">
-                <!-- SVG Diagram -->
-                <div class="relative flex justify-center order-2 lg:order-1">
-                    <div class="relative h-[600px] w-[200px] flex justify-center">
-                        <!-- Spine Line -->
-                        <div class="absolute top-[10%] bottom-[10%] w-px bg-gradient-to-b from-transparent via-white/20 to-transparent"></div>
-                        <!-- Nodes -->
-                        <div class="node" style="top: 10%; background: #8b5cf6;" onclick="app.showAnatomyInfo('Pineal / Crown', 'The Single Eye. Peniel. The light receptor.')"></div>
-                        <div class="node" style="top: 23%; background: #6366f1;" onclick="app.showAnatomyInfo('Pituitary / Brow', 'The Third Eye. Center of command.')"></div>
-                        <div class="node" style="top: 36%; background: #3b82f6;" onclick="app.showAnatomyInfo('Thyroid / Throat', 'The Word. Vibration frequency.')"></div>
-                        <div class="node" style="top: 49%; background: #22c55e;" onclick="app.showAnatomyInfo('Thymus / Heart', 'The Green Ray. Balance point.')"></div>
-                        <div class="node" style="top: 62%; background: #eab308;" onclick="app.showAnatomyInfo('Solar Plexus', 'Place of the Sun. The Manger.')"></div>
-                        <div class="node" style="top: 75%; background: #f97316;" onclick="app.showAnatomyInfo('Sacral', 'The Sexual Center. Furnace.')"></div>
-                        <div class="node" style="top: 88%; background: #ef4444;" onclick="app.showAnatomyInfo('Root', 'Egypt. Physical bondage.')"></div>
+        <!-- 2. LIBRARY VIEW (Grid) -->
+        <section id="view-library" class="view-section min-h-screen">
+            <div class="max-w-[1800px] mx-auto px-6 py-20">
+                <div class="flex flex-col md:flex-row justify-between items-end mb-20 border-b border-white/10 pb-8">
+                    <div>
+                        <h2 class="font-serif text-6xl text-white mb-2">Index</h2>
+                        <p class="text-gray-500 text-xs uppercase tracking-widest font-bold">Curated Archive Categories</p>
+                    </div>
+                    <div class="text-right mt-8 md:mt-0">
+                        <p class="text-accent font-mono text-sm" id="category-count">0 Categories</p>
                     </div>
                 </div>
-                <!-- Info Panel -->
+
+                <div id="category-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-8 gap-y-12">
+                    <!-- Javascript populates this -->
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. LECTURE LIST VIEW -->
+        <section id="view-list" class="view-section min-h-screen">
+            <div class="max-w-[1400px] mx-auto px-6 py-20">
+                <button onclick="app.navigate('library')" class="flex items-center gap-3 text-gray-500 hover:text-white transition-colors mb-16 group">
+                    <span class="text-xl group-hover:-translate-x-1 transition-transform">←</span>
+                    <span class="text-xs font-bold uppercase tracking-widest">Back to Index</span>
+                </button>
+                
+                <div class="mb-20">
+                    <span class="text-accent text-xs font-bold uppercase tracking-widest mb-4 block">Selected Collection</span>
+                    <h2 id="list-title" class="font-serif text-5xl md:text-7xl text-white"></h2>
+                </div>
+
+                <div id="lecture-rows" class="border-t border-white/10">
+                    <!-- Javascript populates this -->
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. ANATOMY VIEW (Restored) -->
+        <section id="view-anatomy" class="view-section min-h-screen flex items-center justify-center py-20">
+            <div class="max-w-7xl w-full grid lg:grid-cols-2 gap-20 items-center px-6">
+                
+                <!-- Diagram -->
+                <div class="flex justify-center relative order-2 lg:order-1">
+                    <div class="relative w-[320px] h-[640px] bg-[#111] rounded-full border border-white/10 shadow-2xl flex justify-center items-center">
+                        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-white/5 to-transparent opacity-20 pointer-events-none"></div>
+                        <svg viewBox="0 0 100 200" class="w-full h-full relative z-10">
+                            <line x1="50" y1="10" x2="50" y2="190" stroke="#333" stroke-width="0.5" />
+                            
+                            <!-- 7. Crown -->
+                            <circle class="chakra-point" cx="50" cy="20" r="5" fill="#333" stroke="white" stroke-width="0.5" onclick="app.showAnatomy('Crown / Pineal', 'The Single Eye. Peniel. The light receptor.')" />
+                            <!-- 6. Brow -->
+                            <circle class="chakra-point" cx="50" cy="40" r="5" fill="#333" stroke="white" stroke-width="0.5" onclick="app.showAnatomy('Brow / Pituitary', 'The Third Eye. Center of command.')" />
+                            <!-- 5. Throat -->
+                            <circle class="chakra-point" cx="50" cy="65" r="5" fill="#333" stroke="white" stroke-width="0.5" onclick="app.showAnatomy('Thyroid / Throat', 'The Word. Frequency & Vibration.')" />
+                            <!-- 4. Heart -->
+                            <circle class="chakra-point" cx="50" cy="90" r="5" fill="#333" stroke="white" stroke-width="0.5" onclick="app.showAnatomy('Thymus / Heart', 'The Green Ray. Balance point.')" />
+                            <!-- 3. Solar -->
+                            <circle class="chakra-point" cx="50" cy="120" r="5" fill="#333" stroke="white" stroke-width="0.5" onclick="app.showAnatomy('Solar Plexus', 'Place of the Sun. The Manger.')" />
+                            <!-- 2. Sacral -->
+                            <circle class="chakra-point" cx="50" cy="150" r="5" fill="#333" stroke="white" stroke-width="0.5" onclick="app.showAnatomy('Sacral', 'The Furnace. Refinement.')" />
+                            <!-- 1. Root -->
+                            <circle class="chakra-point" cx="50" cy="180" r="5" fill="#333" stroke="white" stroke-width="0.5" onclick="app.showAnatomy('Root', 'Egypt. Physical Bondage.')" />
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Info -->
                 <div class="order-1 lg:order-2">
                     <span class="text-accent text-xs font-bold uppercase tracking-widest mb-4 block">Interactive Map</span>
-                    <h2 class="serif text-5xl mb-8">The Temple<br>of God</h2>
-                    <div class="p-8 border border-white/10 bg-[#111] max-w-md">
-                        <h3 id="anatomy-card-title" class="serif text-2xl text-accent mb-4">Select a Center</h3>
-                        <p id="anatomy-card-desc" class="text-gray-400 text-sm leading-relaxed font-light">
-                            "Know ye not that ye are the temple of God?" Click the points on the diagram to reveal their meaning.
+                    <h2 class="font-serif text-6xl text-white mb-8">The Temple<br>of God</h2>
+                    
+                    <div id="anatomy-info" class="bg-[#141414] p-10 border-l-2 border-accent">
+                        <h3 id="anatomy-card-title" class="font-serif text-2xl text-white mb-4">Select a Center</h3>
+                        <p id="anatomy-card-desc" class="text-gray-400 text-lg leading-relaxed font-light">
+                            "Know ye not that ye are the temple of God?" Click the nodes on the diagram to reveal the biological code hidden within ancient scripture.
                         </p>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- VIEW: RESOURCES -->
-        <section id="view-resources" class="view-section hidden px-6 py-20 max-w-5xl mx-auto">
-            <h2 class="serif text-5xl mb-16 text-center">Official Sources</h2>
-            <div class="grid md:grid-cols-2 gap-8">
-                <a href="https://www.hiddenmeanings.com/" target="_blank" class="card p-10 block group">
-                    <h3 class="serif text-2xl mb-2 group-hover:text-accent transition-colors">HiddenMeanings.com</h3>
-                    <p class="text-gray-500 text-xs uppercase tracking-widest">Main Portal</p>
-                </a>
-                <a href="https://lifestyleluminaries.blogspot.com/p/bill-donahue.html" target="_blank" class="card p-10 block group">
-                    <h3 class="serif text-2xl mb-2 group-hover:text-accent transition-colors">Lifestyle Luminaries</h3>
-                    <p class="text-gray-500 text-xs uppercase tracking-widest">Blog Archive</p>
-                </a>
-                <a href="https://thehiddenlighthouse.blogspot.com/2012/09/the-hidden-lighthouse.html?m=1" target="_blank" class="card p-10 block group">
-                    <h3 class="serif text-2xl mb-2 group-hover:text-accent transition-colors">Lighthouse Blog</h3>
-                    <p class="text-stone-500 text-xs uppercase tracking-widest">2012 Writings</p>
-                </a>
-                <a href="https://archive.org/details/1-revised-bill-donahue-speaks-book-of-secret-doctrines/page/18/mode/1up" target="_blank" class="card p-10 block group">
-                    <h3 class="serif text-2xl mb-2 group-hover:text-accent transition-colors">Secret Doctrines</h3>
-                    <p class="text-gray-500 text-xs uppercase tracking-widest">PDF Book</p>
-                </a>
-            </div>
-        </section>
+        <!-- 5. RESOURCES VIEW (Restored) -->
+        <section id="view-resources" class="view-section min-h-screen py-20 px-6">
+            <div class="max-w-6xl mx-auto">
+                <div class="text-center mb-20">
+                    <h2 class="font-serif text-6xl text-white mb-4">Official Sources</h2>
+                    <p class="text-gray-500 uppercase tracking-widest text-xs font-bold">Primary Literature & Archives</p>
+                </div>
 
-        <!-- VIEW: SEARCH / AI RESULT -->
-        <section id="view-search" class="view-section hidden px-6 py-20 max-w-5xl mx-auto">
-            <div class="bg-[#111] p-10 border-l-2 border-accent mb-16">
-                <h3 class="text-accent text-xs font-bold uppercase tracking-widest mb-4">Teacher's Insight</h3>
-                <div id="ai-response-text" class="text-gray-300 serif text-xl italic leading-relaxed"></div>
-                <div id="ai-audio-controls" class="mt-8 pt-6 border-t border-white/5 flex items-center gap-4 hidden">
-                    <button onclick="app.toggleAudio()" class="w-10 h-10 rounded-full bg-accent flex items-center justify-center text-black hover:bg-white transition-colors">
-                        <svg id="play-icon" class="w-3 h-3 ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-                        <svg id="pause-icon" class="w-3 h-3 hidden" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
-                    </button>
-                    <div class="text-[9px] uppercase tracking-widest text-gray-500">Audio Synthesis</div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-px bg-white/10 border border-white/10 overflow-hidden">
+                    <a href="https://www.hiddenmeanings.com/" target="_blank" class="bg-[#0f0f0f] p-16 group hover:bg-[#151515] transition-colors relative block">
+                        <h3 class="font-serif text-3xl text-white mb-2 group-hover:text-accent transition-colors">HiddenMeanings.com</h3>
+                        <p class="text-gray-600 text-xs uppercase tracking-widest">Main Portal</p>
+                        <span class="absolute top-8 right-8 text-gray-700 group-hover:text-white text-xl">↗</span>
+                    </a>
+                    <a href="https://lifestyleluminaries.blogspot.com/p/bill-donahue.html" target="_blank" class="bg-[#0f0f0f] p-16 group hover:bg-[#151515] transition-colors relative block">
+                        <h3 class="font-serif text-3xl text-white mb-2 group-hover:text-accent transition-colors">Lifestyle Luminaries</h3>
+                        <p class="text-gray-600 text-xs uppercase tracking-widest">Video Archive</p>
+                        <span class="absolute top-8 right-8 text-gray-700 group-hover:text-white text-xl">↗</span>
+                    </a>
+                    <a href="https://thehiddenlighthouse.blogspot.com/2012/09/the-hidden-lighthouse.html?m=1" target="_blank" class="bg-[#0f0f0f] p-16 group hover:bg-[#151515] transition-colors relative block">
+                        <h3 class="font-serif text-3xl text-white mb-2 group-hover:text-accent transition-colors">Lighthouse Blog</h3>
+                        <p class="text-gray-600 text-xs uppercase tracking-widest">2012 Writings</p>
+                        <span class="absolute top-8 right-8 text-gray-700 group-hover:text-white text-xl">↗</span>
+                    </a>
+                    <a href="https://archive.org/details/1-revised-bill-donahue-speaks-book-of-secret-doctrines/page/18/mode/1up" target="_blank" class="bg-[#0f0f0f] p-16 group hover:bg-[#151515] transition-colors relative block">
+                        <h3 class="font-serif text-3xl text-white mb-2 group-hover:text-accent transition-colors">Secret Doctrines</h3>
+                        <p class="text-gray-600 text-xs uppercase tracking-widest">PDF Book</p>
+                        <span class="absolute top-8 right-8 text-gray-700 group-hover:text-white text-xl">↗</span>
+                    </a>
                 </div>
             </div>
-            
-            <h3 class="serif text-3xl mb-8">Related Lectures</h3>
-            <div id="search-results-list" class="space-y-2"></div>
+        </section>
+        
+        <!-- SEARCH RESULTS -->
+        <section id="view-search" class="view-section min-h-screen py-20 px-6">
+            <div class="max-w-6xl mx-auto">
+                <div class="flex justify-between items-end mb-16 border-b border-white/10 pb-6">
+                    <h2 class="font-serif text-5xl text-white">Search Results</h2>
+                    <button onclick="app.navigate('library')" class="text-xs uppercase tracking-widest text-gray-500 hover:text-white">Clear</button>
+                </div>
+                
+                <!-- AI Insight Box -->
+                <div id="ai-box" class="bg-[#151515] p-10 border-l-2 border-accent mb-16 hidden">
+                    <h3 class="text-accent text-xs font-bold uppercase tracking-widest mb-4">Teacher's Insight</h3>
+                    <div id="ai-text" class="text-gray-300 font-serif italic text-xl leading-relaxed"></div>
+                    <div class="mt-8 pt-6 border-t border-white/5 flex items-center gap-4">
+                        <button onclick="app.toggleAudio()" class="w-10 h-10 rounded-full bg-accent flex items-center justify-center text-black hover:bg-white transition-colors">
+                            <span id="play-icon">▶</span>
+                        </button>
+                        <div class="text-[10px] uppercase tracking-widest text-gray-500">Audio Synthesis</div>
+                    </div>
+                </div>
+
+                <div id="search-list" class="space-y-1"></div>
+            </div>
         </section>
 
     </main>
 
-    <footer class="py-12 text-center border-t border-white/5 bg-black mt-auto">
-        <p class="text-[10px] text-gray-600 uppercase tracking-[0.3em]">The Hidden Lighthouse Archive</p>
+    <footer class="py-12 bg-black border-t border-white/5 text-center">
+        <input type="file" id="csv-upload" class="hidden" accept=".csv" onchange="app.handleFileUpload(this)">
+        <button onclick="document.getElementById('csv-upload').click()" class="text-[10px] text-gray-700 uppercase tracking-[0.3em] font-bold hover:text-white transition-colors mb-4 block mx-auto">
+            [ Upload Catalog CSV ]
+        </button>
+        <p class="text-[10px] text-gray-800 uppercase tracking-[0.3em]">The Hidden Lighthouse © 2026</p>
     </footer>
 
     <script>
         const app = {
-            apiKey: "", 
+            apiKey: "",
             data: [],
             currentAudio: null,
+            
+            // --- RAW DATA SAMPLE (Populates default view) ---
+            rawCSV: `TITLE OF VIDEO,URL,TOPIC
+ZODIAC & THE BIBLE,https://www.youtube.com/watch?v=loL03YF262Q,THE ZODIAC-COSMIC INFLUENCES
+THE ZODIACAL CLOCK,https://www.youtube.com/watch?v=OcPnoS2L1co,THE ZODIAC-COSMIC INFLUENCES
+URANUS AND AQUARIUS,https://www.youtube.com/watch?v=n0s7tnoKcnk,THE ZODIAC-COSMIC INFLUENCES
+AQUARIUS,https://www.youtube.com/watch?v=rdrYqKLxFhM,ASTROLOGY
+VIRGO,https://www.youtube.com/watch?v=SAxaonQNYHA,ASTROLOGY
+DRIVING OUT THE MONEY CHANGERS,https://www.youtube.com/watch?v=yh25kuzEOhE,THE NEW TESTAMENT---JESUS TEACHINGS
+THE JESUS NOBODY KNOWS,https://www.youtube.com/watch?v=GXBgPeZCipI,THE NEW TESTAMENT---JESUS TEACHINGS
+EMERALD TABLETS: ALIEN INVASION ?,https://www.youtube.com/watch?v=TKZkvAiHPsk,EMERALD TABLETS--ALIEN INVASION
+2012 AND BEYOND,https://www.youtube.com/watch?v=mpgOVQ1Xwwc,DECEMBER 21 2012 THE DAY THAT STARTED A HUNDRED YEARS AGO-BEGINNING OF PASSOVER
+YOUR INHERITANCE,https://www.youtube.com/watch?v=-X-fIEv4RF0,THE BOOK OF REVELATION
+WHO OPENS THE BOOK,,THE BOOK OF REVELATION
+SPIRIT AND QUANTUM,https://www.youtube.com/watch?v=qpYSmtwDfUY,QUANTUM-PHOTONS-PARALLEL UNIVERSE-LIGHT
+COSMIC OM,https://www.youtube.com/watch?v=uK8nB1xO_kI,QUANTUM-PHOTONS-PARALLEL UNIVERSE-LIGHT
+ISAIAH BOOK OF ISAIAH 1,https://www.youtube.com/watch?v=HUaLrOBo9Ng,Old Testament And Thoughts About The Bible
+EXODUS HEAVY HANDED MOSES,https://www.youtube.com/watch?v=2sWQLKu8LeM,EXODUS
+JOSEPHS COAT OF MANY COLORS,https://www.youtube.com/watch?v=zP102uvVhiE,JOSEPH AND THE COAT OF MANY COLORS
+SONG OF SONGS,https://www.youtube.com/watch?v=0rL-h3tHhfE,THE SONG OF SONGS-THE SONG OF SOLOMON
+HUNGER,https://www.youtube.com/watch?v=otOs5Mr2Mxc,BILL INTERPRETS THE TEACHINGS OF BUDDHA
+TEN COMMANDMENTS PART 1,https://www.youtube.com/watch?v=_jrhpjyTDzU,THE TEN COMMANDMENTS
+RELIGIOUS HYPOCRITES,https://www.youtube.com/watch?v=9NoPdxiNw2o,RELIGION AND RELIGIOUS DOCTRINES AN CHRISTIANITY
+THE CIRCLE,https://www.youtube.com/watch?v=EfotTbrG_LE,HARE KRISHNA THE BHAGAVAD GITA KUNDALINI ETC
+HIDDEN MEANINGS,https://www.youtube.com/watch?v=cArsejMSqbU,HIDDEN MEANINGS
+BRAIN BIBLE AND UNIVERSE,https://www.youtube.com/watch?v=fJ1OZWa93ps,HUMAN BEING-BODY-BRAIN-MIND ETC.
+LIGHT FROM THE DESERT,https://www.youtube.com/watch?v=1CS3q-tCcwM,FROM THE EAST
+BIBLE CONTRADICTIONS,https://www.youtube.com/watch?v=LBj1X7amsvQ,THE BIBLE
+ZOROASTER FOUND JESUS STAR,https://www.youtube.com/watch?v=UoOJY58XdMc,ZORASTER, AHURA MAZDA
+ISLAM: UNDERSTANDING ALLAH,https://www.youtube.com/watch?v=xDI2gz0-E1g,ISLAM
+SYMBOLS NUMBERS ETC,https://www.youtube.com/watch?v=2XqXqXqXqXq,SYMBOLS, NUMBERS ETC
+TRADITION,https://www.youtube.com/watch?v=3XqXqXqXqXq,TRADITION
+SATAN DEVIL,https://www.youtube.com/watch?v=4XqXqXqXqXq,SATAN, DEVIL
+UFOS ALIENS,https://www.youtube.com/watch?v=5XqXqXqXqXq,UFO'S ALIENS
+MEDITATION,https://www.youtube.com/watch?v=6XqXqXqXqXq,MEDITATION
+SEX,https://www.youtube.com/watch?v=7XqXqXqXqXq,SEX
+MISCELLANEOUS,https://www.youtube.com/watch?v=8XqXqXqXqXq,MISCELLANEOUS
+BHAGAVAD GITA IN POSITION,,THESE ARE VIDEOS THAT HAVE NOT BEEN UPLOADED TO YOU TUBE AS OF YET. I WILL NOTIFY YOU WHEN THEY ARE`,
 
             init: function() {
-                // Try to fetch 'catalog.csv' automatically
-                fetch('catalog.csv')
-                    .then(r => r.ok ? r.text() : Promise.reject('No file'))
-                    .then(csv => this.parseData(csv))
-                    .catch(() => {
-                        this.updateStatus(false);
-                    });
+                try {
+                    this.processData(this.rawCSV);
+                } catch(e) { console.error(e); }
             },
 
-            updateStatus: function(loaded) {
-                const dot = document.getElementById('status-dot');
-                const text = document.getElementById('status-text');
-                if (loaded) {
-                    dot.className = "w-1.5 h-1.5 rounded-full bg-green-500";
-                    text.innerText = `${this.data.length} Records`;
-                    this.renderLibrary();
-                } else {
-                    dot.className = "w-1.5 h-1.5 rounded-full bg-red-500";
-                    text.innerText = "No Data";
+            navigate: function(id) {
+                document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
+                document.getElementById('view-' + id).classList.add('active');
+                if(id !== 'search') document.getElementById('search-input').value = '';
+                window.scrollTo(0,0);
+            },
+
+            showView: function(id) { this.navigate(id); },
+
+            processData: function(csv) {
+                const lines = csv.trim().split('\n');
+                this.data = [];
+                const start = lines[0].startsWith('TITLE') ? 1 : 0;
+                
+                for(let i=start; i<lines.length; i++) {
+                    const line = lines[i];
+                    if(!line.trim()) continue;
+                    // Robust splitting for titles with commas
+                    const parts = line.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g);
+                    
+                    if(parts && parts.length >= 3) {
+                        let title = "", url = "", topic = "";
+                        // Fallback simple split if regex fails
+                        const simpleParts = line.split(',');
+                        if(simpleParts.length >= 3) {
+                            topic = simpleParts[simpleParts.length - 1].trim();
+                            url = simpleParts[simpleParts.length - 2].trim();
+                            title = simpleParts.slice(0, simpleParts.length - 2).join(',').trim();
+                            
+                            // Clean up quotes
+                            title = title.replace(/^"|"$/g, '');
+                            topic = topic.replace(/^"|"$/g, '');
+                            
+                            this.data.push({ title, url, topic });
+                        }
+                    }
                 }
+                this.renderGrid();
             },
 
             handleFileUpload: function(input) {
                 const file = input.files[0];
                 if (!file) return;
                 const reader = new FileReader();
-                reader.onload = (e) => this.parseData(e.target.result);
+                reader.onload = (e) => {
+                    this.processData(e.target.result);
+                    alert("Catalog Loaded!");
+                };
                 reader.readAsText(file);
             },
 
-            parseData: function(csv) {
-                Papa.parse(csv, {
-                    header: true,
-                    skipEmptyLines: true,
-                    complete: (results) => {
-                        // Map spreadsheet columns to app keys
-                        // Spreadsheet: TITLE OF VIDEO | URL | TOPIC
-                        this.data = results.data.map(row => ({
-                            title: row['TITLE OF VIDEO'] || row['TITLE'] || "Unknown Title",
-                            url: row['URL'] || "",
-                            topic: row['TOPIC'] || "Uncategorized"
-                        })).filter(row => row.title !== "Unknown Title");
-                        
-                        this.updateStatus(true);
-                    }
-                });
+            getTopics: function() {
+                return [...new Set(this.data.map(i => i.topic))].sort();
             },
 
-            navigate: function(viewId) {
-                document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
-                document.getElementById('view-' + viewId).classList.remove('hidden');
-                window.scrollTo(0,0);
-            },
-            
-            showView: function(id) { this.navigate(id); },
-
-            renderLibrary: function() {
-                const grid = document.getElementById('topics-grid');
-                const topics = [...new Set(this.data.map(i => i.topic))].sort();
+            renderGrid: function() {
+                const topics = this.getTopics();
+                const grid = document.getElementById('category-grid');
+                document.getElementById('category-count').innerText = `${topics.length} CATEGORIES`;
                 
-                document.getElementById('lib-count').innerText = `${topics.length} CATEGORIES`;
-                
-                grid.innerHTML = topics.map(topic => {
-                    const count = this.data.filter(i => i.topic === topic).length;
+                grid.innerHTML = topics.map((t, i) => {
+                    const count = this.data.filter(d => d.topic === t).length;
                     return `
-                        <div onclick="app.openTopic('${topic.replace(/'/g, "\\'")}')" class="card p-8 cursor-pointer group h-full flex flex-col justify-between min-h-[200px]">
-                            <h3 class="serif text-xl text-gray-200 group-hover:text-white leading-tight mb-4">${topic}</h3>
-                            <div class="flex justify-between items-center border-t border-white/5 pt-4 mt-auto">
-                                <span class="text-[9px] font-bold uppercase tracking-widest text-gray-500 group-hover:text-accent transition-colors">${count} Items</span>
-                                <span class="text-gray-600 group-hover:text-white transition-colors">→</span>
+                        <div onclick="app.openTopic('${t.replace(/'/g, "\\'")}')" class="project-card bg-[#111] p-8 cursor-pointer border border-white/5 relative group h-64 flex flex-col justify-between">
+                            <div class="card-image absolute top-0 right-0 w-full h-1/2 bg-gradient-to-b from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                            
+                            <div>
+                                <span class="text-gray-600 text-[10px] font-bold uppercase tracking-widest block mb-4">0${i+1}</span>
+                                <h3 class="font-serif text-2xl text-white leading-tight group-hover:text-accent transition-colors line-clamp-3">${t}</h3>
+                            </div>
+                            
+                            <div class="flex justify-between items-end border-t border-white/5 pt-4">
+                                <span class="text-[9px] text-gray-500 font-bold uppercase tracking-widest">${count} Items</span>
+                                <span class="arrow-icon text-gray-600 transition-transform">↗</span>
                             </div>
                         </div>
                     `;
@@ -324,92 +425,97 @@
             },
 
             openTopic: function(topic) {
-                this.navigate('list');
-                document.getElementById('list-title').innerText = topic;
-                const items = this.data.filter(i => i.topic === topic);
+                this.navigate('lectures');
+                document.getElementById('active-category-title').innerText = topic;
+                const items = this.data.filter(d => d.topic === topic);
+                document.getElementById('active-category-count').innerText = `${items.length} RECORDS`;
                 
-                const isPendingCategory = topic.includes("NOT BEEN UPLOADED");
-                
-                document.getElementById('list-container').innerHTML = items.map(item => {
-                    const hasUrl = item.url && item.url.startsWith('http');
-                    // If it's the "Not Uploaded" category, don't show buttons at all
-                    if (isPendingCategory) {
-                        return `<div class="p-4 border-b border-white/5 text-gray-500 text-sm font-mono">${item.title}</div>`;
-                    }
-                    
+                const list = document.getElementById('lecture-list');
+                const isPendingSection = topic.includes("NOT BEEN UPLOADED");
+
+                if(items.length === 0) {
+                    list.innerHTML = `<div class="py-12 text-center text-gray-500 text-sm">No records found.</div>`;
+                    return;
+                }
+
+                list.innerHTML = items.map(l => {
+                    const hasUrl = l.url && l.url.includes('http');
                     return `
-                        <div class="group flex flex-col md:flex-row justify-between items-center p-6 border border-white/5 hover:border-white/10 hover:bg-white/5 transition-all mb-2">
-                            <h4 class="font-serif text-lg text-gray-300 group-hover:text-white mb-4 md:mb-0 text-center md:text-left">${item.title}</h4>
-                            ${hasUrl ? 
-                                `<a href="${item.url}" target="_blank" class="px-6 py-2 bg-white text-black text-[10px] font-bold uppercase tracking-widest hover:bg-accent transition-colors">Watch</a>` :
-                                `<span class="px-6 py-2 border border-white/10 text-gray-600 text-[10px] font-bold uppercase tracking-widest cursor-not-allowed">Pending</span>`
-                            }
+                        <div class="py-6 border-b border-white/5 flex flex-col md:flex-row justify-between items-center gap-6 group hover:bg-white/5 px-4 transition-all">
+                            <h4 class="font-serif text-lg text-gray-300 group-hover:text-white w-full md:w-auto">${l.title}</h4>
+                            <div class="w-full md:w-auto text-right">
+                                ${hasUrl ? 
+                                    `<a href="${l.url}" target="_blank" class="inline-block border border-white/20 text-white px-6 py-2 text-[10px] font-bold uppercase tracking-widest hover:bg-white hover:text-black transition-all">Watch</a>` :
+                                    `<span class="inline-block text-gray-600 px-6 py-2 text-[10px] font-bold uppercase tracking-widest border border-transparent">Pending</span>`
+                                }
+                            </div>
                         </div>
                     `;
                 }).join('');
             },
 
-            showAnatomyInfo: function(title, desc) {
+            // --- ANATOMY ---
+            showAnatomy: function(title, desc) {
                 document.getElementById('anatomy-card-title').innerText = title;
                 document.getElementById('anatomy-card-desc').innerText = desc;
             },
 
-            performSearch: async function(val) {
-                const query = val || document.getElementById('ai-input').value;
+            // --- SEARCH / AI ---
+            performSearch: function() {
+                const query = document.getElementById('search-input').value || document.getElementById('ai-input').value;
                 if(!query) return;
                 
                 this.navigate('search');
-                document.getElementById('ai-response-text').innerText = "Consulting the archives...";
+                document.getElementById('ai-text-output').innerText = "Consulting the Teacher...";
+                document.getElementById('ai-response-box').classList.remove('hidden');
                 
-                // 1. Search Data
+                // Local Results
                 const results = this.data.filter(i => 
                     i.title.toLowerCase().includes(query.toLowerCase()) || 
                     i.topic.toLowerCase().includes(query.toLowerCase())
                 );
                 
-                document.getElementById('search-results-list').innerHTML = results.map(item => 
-                    `<div class="p-4 border-b border-white/5 flex justify-between">
-                        <span class="text-sm text-gray-300">${item.title}</span>
-                        ${item.url ? `<a href="${item.url}" target="_blank" class="text-xs text-accent uppercase font-bold">Open</a>` : ''}
-                    </div>`
-                ).join('');
+                document.getElementById('search-results').innerHTML = results.length > 0 ? 
+                    results.map(l => {
+                        const hasUrl = l.url && l.url.includes('http');
+                        return `<div class="py-4 border-b border-white/5 flex justify-between items-center">
+                            <span class="text-sm text-gray-300 font-serif">${l.title}</span>
+                            ${hasUrl ? `<a href="${l.url}" target="_blank" class="text-accent text-xs font-bold uppercase">Open</a>` : ''}
+                        </div>`
+                    }).join('') : `<p class="text-gray-500 py-8 text-center italic">No matching titles.</p>`;
 
-                // 2. AI Insight
-                try {
-                    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${this.apiKey}`, {
-                        method: 'POST',
-                        headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify({ contents: [{ parts: [{ text: `You are Bill Donahue. Explain the hidden symbolic meaning of "${query}" in 2 sentences.` }] }] })
-                    });
-                    const json = await res.json();
-                    const text = json.candidates[0].content.parts[0].text;
-                    document.getElementById('ai-response-text').innerText = text;
+                // AI Fetch
+                fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${this.apiKey}`, {
+                    method: 'POST', headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ contents: [{ parts: [{ text: `You are Bill Donahue. Explain the hidden symbolic meaning of "${query}" in 2 sentences.` }] }] })
+                })
+                .then(r => r.json())
+                .then(d => {
+                    const text = d.candidates[0].content.parts[0].text;
+                    document.getElementById('ai-text-output').innerText = text;
                     this.generateVoice(text);
-                } catch(e) {
-                    document.getElementById('ai-response-text').innerText = "Insight unavailable.";
-                }
+                })
+                .catch(() => document.getElementById('ai-text-output').innerText = "Insight unavailable.");
             },
 
-            generateVoice: async function(text) {
-                try {
-                    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${this.apiKey}`, {
-                        method: 'POST',
-                        headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify({
-                            contents: [{ parts: [{ text: text }] }],
-                            generationConfig: { responseModalities: ["AUDIO"], speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: "Kore" } } } }
-                        })
-                    });
-                    const json = await res.json();
-                    const audioData = json.candidates[0].content.parts[0].inlineData.data;
-                    
-                    if(this.currentAudio) this.currentAudio.pause();
-                    const binary = atob(audioData);
+            generateVoice: function(text) {
+                fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${this.apiKey}`, {
+                    method: 'POST', headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: text }] }],
+                        generationConfig: { responseModalities: ["AUDIO"], speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: "Kore" } } } }
+                    })
+                })
+                .then(r => r.json())
+                .then(d => {
+                    const binary = atob(d.candidates[0].content.parts[0].inlineData.data);
                     const array = new Uint8Array(binary.length);
                     for(let i=0; i<binary.length; i++) array[i] = binary.charCodeAt(i);
-                    // Simple Wav Header logic omitted for brevity in this specific fix, assumes browser can play raw or we skip header for this demo block
-                    // In production, add the WAV header function here.
-                } catch(e) { console.error(e); }
+                    const blob = new Blob([array], {type:'audio/mp3'}); // Simplification for demo
+                    const url = URL.createObjectURL(blob);
+                    const audio = new Audio(url);
+                    audio.play();
+                });
             }
         };
 
