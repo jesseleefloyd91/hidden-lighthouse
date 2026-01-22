@@ -3,287 +3,321 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bill Donahue | Hidden Lighthouse Archive</title>
+    <title>Bill Donahue | The Hidden Lighthouse</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800;900&family=Manrope:wght@200;300;400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #0E0E0E;
-            --card-bg: #141414;
-            --border: #2A2A2A;
-            --text-main: #EDEDED;
-            --text-sub: #888888;
-            --accent: #E2B340;
+            --bg: #050505;
+            --text: #E5E5E5;
+            --gold: #C6A87C;
+            --border: #222222;
         }
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg);
-            color: var(--text-main);
-            overflow-x: hidden; /* Prevent horizontal scroll on mobile */
+        body { 
+            background-color: var(--bg); 
+            color: var(--text); 
+            font-family: 'Manrope', sans-serif;
+            overflow-x: hidden;
         }
+
+        /* Typography */
+        .font-display { font-family: 'Cinzel', serif; }
         
-        .mono { font-family: 'JetBrains Mono', monospace; }
-
-        /* Cosmos-style Masonry Grid */
-        .masonry-grid {
-            column-count: 1;
-            column-gap: 16px;
-        }
-        @media (min-width: 640px) { .masonry-grid { column-count: 2; } }
-        @media (min-width: 1024px) { .masonry-grid { column-count: 3; } }
-        @media (min-width: 1280px) { .masonry-grid { column-count: 4; } }
-
-        .masonry-item {
-            break-inside: avoid;
-            margin-bottom: 16px;
-        }
-
-        /* Card Styling - Ultra Minimal */
-        .cosmos-card {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            transition: all 0.2s ease-out;
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-        }
-        .cosmos-card:hover {
-            border-color: #555;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 30px rgba(0,0,0,0.4);
-        }
-        
-        /* Floating Nav Dock */
-        .dock {
-            position: fixed;
-            bottom: 32px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(20, 20, 20, 0.8);
-            backdrop-filter: blur(16px);
-            border: 1px solid var(--border);
-            padding: 8px;
-            border-radius: 999px;
-            display: flex;
-            gap: 8px;
-            z-index: 100;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-        }
-        .dock-btn {
-            padding: 10px 20px;
-            border-radius: 999px;
-            font-size: 13px;
-            font-weight: 500;
-            color: var(--text-sub);
-            transition: all 0.2s;
-            white-space: nowrap;
-        }
-        .dock-btn:hover { color: #fff; background: rgba(255,255,255,0.05); }
-        .dock-btn.active { color: #000; background: #fff; }
-
-        /* Search Bar Cosmos Style */
-        .search-container {
-            position: sticky;
-            top: 24px;
-            z-index: 40;
-            max-width: 600px;
-            margin: 0 auto 40px auto;
-            padding: 0 24px;
-        }
-        .search-input {
-            background: rgba(20, 20, 20, 0.6);
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--border);
-            color: #fff;
-            width: 100%;
-            padding: 12px 20px 12px 48px;
-            border-radius: 12px;
-            font-size: 14px;
-            transition: border-color 0.2s;
-        }
-        .search-input:focus { outline: none; border-color: #666; }
-
-        /* Anatomy Nodes (Minimal) */
-        .node {
-            width: 10px; height: 10px; border-radius: 50%; 
-            background: #333; border: 1px solid #666;
-            position: absolute; left: 50%; transform: translateX(-50%); 
-            cursor: pointer; transition: 0.2s; z-index: 10;
-        }
-        .node:hover { background: #fff; border-color: #fff; box-shadow: 0 0 15px rgba(255,255,255,0.5); transform: translateX(-50%) scale(1.5); }
-        .spine-line {
-            position: absolute; left: 50%; top: 10%; bottom: 10%; width: 1px;
-            background: linear-gradient(to bottom, transparent, #333, transparent);
-            transform: translateX(-50%);
+        /* Grid Layout System */
+        .grid-lines {
+            background-size: 100% 100%;
+            background-position: 0px 0px,0px 0px,0px 0px,0px 0px,0px 0px;
+            background-image: 
+                linear-gradient(90deg, var(--border) 1px, transparent 1px),
+                linear-gradient(0deg, var(--border) 1px, transparent 1px);
+            background-size: 100px 100px;
         }
 
         /* Utilities */
-        .fade-in { animation: fadeIn 0.4s ease-out forwards; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .hidden { display: none !important; }
+        .text-gold { color: var(--gold); }
+        .border-gold { border-color: var(--gold); }
+        .bg-gold { background-color: var(--gold); }
         
-        /* Modal for Topic Detail */
-        .modal-overlay {
-            background: rgba(0,0,0,0.8); backdrop-filter: blur(8px);
+        .fade-in { animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; transform: translateY(20px); }
+        @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: var(--bg); }
+        ::-webkit-scrollbar-thumb { background: var(--gold); }
+
+        /* Navigation Links */
+        .nav-link { position: relative; display: inline-block; }
+        .nav-link::after {
+            content: ''; position: absolute; width: 100%; transform: scaleX(0);
+            height: 1px; bottom: 0; left: 0; background-color: var(--gold);
+            transform-origin: bottom right; transition: transform 0.25s ease-out;
         }
-        .modal-content {
-            background: #111; border: 1px solid var(--border);
-            max-height: 85vh; overflow-y: auto;
+        .nav-link:hover::after { transform: scaleX(1); transform-origin: bottom left; }
+
+        /* Interactive Elements */
+        .hover-lift { transition: transform 0.3s ease, border-color 0.3s ease; }
+        .hover-lift:hover { transform: translateY(-5px); border-color: var(--gold); }
+
+        /* Arch Image Mask */
+        .arch-mask {
+            mask-image: url("data:image/svg+xml,%3Csvg width='200' height='300' viewBox='0 0 200 300' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 100 A100 100 0 0 1 200 100 V300 H0 Z' fill='black'/%3E%3C/svg%3E");
+            -webkit-mask-image: url("data:image/svg+xml,%3Csvg width='200' height='300' viewBox='0 0 200 300' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 100 A100 100 0 0 1 200 100 V300 H0 Z' fill='black'/%3E%3C/svg%3E");
+            mask-size: contain;
+            -webkit-mask-size: contain;
+            mask-repeat: no-repeat;
+            -webkit-mask-repeat: no-repeat;
+            mask-position: center;
+            -webkit-mask-position: center;
         }
+
+        /* Anatomy Nodes */
+        .chakra-node { cursor: pointer; transition: all 0.3s; }
+        .chakra-node:hover circle { fill: var(--gold); stroke: white; }
+        .chakra-node:hover text { fill: white; font-weight: bold; }
+
+        .hidden { display: none !important; }
     </style>
 </head>
-<body>
+<body class="grid-lines min-h-screen flex flex-col">
 
-    <!-- SEARCH HEADER -->
-    <div class="search-container">
-        <div class="relative">
-            <svg class="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-            <input type="text" id="global-search" oninput="app.search(this.value)" placeholder="Search Archive..." class="search-input placeholder-gray-600">
-            <!-- AI Trigger Button inside search -->
-            <button onclick="app.performAISearch()" class="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 hover:bg-white/10 rounded-md text-gray-500 hover:text-white transition-colors" title="Ask AI Teacher">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-            </button>
+    <!-- TOP BAR -->
+    <header class="fixed top-0 w-full z-50 border-b border-[#222] bg-[#050505]/90 backdrop-blur-md">
+        <div class="max-w-[1920px] mx-auto px-6 h-20 flex justify-between items-center">
+            <div class="flex items-center gap-4 cursor-pointer" onclick="app.show('home')">
+                <div class="w-10 h-10 border border-white/20 flex items-center justify-center rotate-45">
+                    <span class="font-display font-bold text-gold -rotate-45">H</span>
+                </div>
+                <div>
+                    <h1 class="font-display font-bold uppercase tracking-[0.2em] text-sm">Hidden Lighthouse</h1>
+                    <p class="text-[9px] text-gray-500 uppercase tracking-widest mt-1">Official Archive</p>
+                </div>
+            </div>
+
+            <nav class="hidden md:flex gap-12 text-[11px] font-bold uppercase tracking-[0.2em] text-gray-400">
+                <button onclick="app.show('library')" class="nav-link hover:text-white transition-colors">Catalog</button>
+                <button onclick="app.show('anatomy')" class="nav-link hover:text-white transition-colors">The Temple</button>
+                <button onclick="app.show('resources')" class="nav-link hover:text-white transition-colors">Resources</button>
+            </nav>
+
+            <div class="flex items-center gap-4">
+                <div class="relative group">
+                    <input type="text" id="nav-search" onkeyup="if(event.key==='Enter') app.search(this.value)" placeholder="SEARCH..." 
+                           class="bg-transparent border-b border-white/20 py-2 w-32 focus:w-64 text-xs focus:border-gold outline-none transition-all duration-300 text-white placeholder-gray-700 uppercase tracking-widest">
+                    <button class="absolute right-0 top-2 text-gray-600 group-hover:text-gold transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- LOADING CURTAIN -->
+    <div id="loader" class="fixed inset-0 bg-[#050505] z-[100] flex flex-col items-center justify-center transition-opacity duration-700">
+        <div class="font-display text-4xl text-gold mb-4 tracking-[0.5em] animate-pulse">LOADING</div>
+        <div class="w-32 h-1 bg-white/10 rounded-full overflow-hidden">
+            <div class="h-full bg-gold w-full animate-[shimmer_2s_infinite]"></div>
         </div>
     </div>
 
-    <!-- MAIN GRID CONTAINER -->
-    <main id="main-container" class="px-6 pb-32 max-w-[1920px] mx-auto">
+    <!-- MAIN -->
+    <main class="flex-grow pt-20 relative">
         
-        <!-- LOADING STATE -->
-        <div id="loader" class="fixed inset-0 flex flex-col items-center justify-center bg-[#0E0E0E] z-50 transition-opacity duration-500">
-            <div class="w-8 h-8 border-2 border-t-white border-white/20 rounded-full animate-spin mb-4"></div>
-            <p class="text-[10px] uppercase tracking-widest text-gray-500 font-medium">Loading Archive</p>
-        </div>
-
-        <!-- VIEWS -->
-        
-        <!-- 1. LIBRARY GRID (Default) -->
-        <div id="view-library" class="view-section active fade-in">
-            <div id="masonry-grid" class="masonry-grid">
-                <!-- Javascript injects cards here -->
-            </div>
-        </div>
-
-        <!-- 2. ANATOMY VIEW -->
-        <section id="view-anatomy" class="view-section hidden fade-in max-w-5xl mx-auto py-10">
-            <div class="grid md:grid-cols-2 gap-12 items-center">
-                <!-- Diagram -->
-                <div class="relative h-[600px] flex justify-center items-center bg-card rounded-3xl border border-white/5">
-                    <div class="spine-line"></div>
-                    <!-- Nodes -->
-                    <div class="node" style="top: 15%; background-color: #a855f7;" onclick="app.showAnatomy('Crown / Pineal', 'The Single Eye. Peniel. The light receptor.')"></div>
-                    <div class="node" style="top: 25%; background-color: #6366f1;" onclick="app.showAnatomy('Brow / Pituitary', 'The Third Eye. Center of command.')"></div>
-                    <div class="node" style="top: 35%; background-color: #3b82f6;" onclick="app.showAnatomy('Thyroid / Throat', 'The Word. Vibration frequency.')"></div>
-                    <div class="node" style="top: 45%; background-color: #22c55e;" onclick="app.showAnatomy('Thymus / Heart', 'The Green Ray. Balance point.')"></div>
-                    <div class="node" style="top: 55%; background-color: #eab308;" onclick="app.showAnatomy('Solar Plexus', 'Place of the Sun. The Manger.')"></div>
-                    <div class="node" style="top: 65%; background-color: #f97316;" onclick="app.showAnatomy('Sacral', 'The Sexual Center. Furnace.')"></div>
-                    <div class="node" style="top: 75%; background-color: #ef4444;" onclick="app.showAnatomy('Root', 'Egypt. Physical Bondage.')"></div>
+        <!-- SECTION: HERO (HOME) -->
+        <section id="view-home" class="min-h-[calc(100vh-80px)] flex flex-col items-center justify-center px-6 relative fade-in">
+            <div class="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(198,168,124,0.05),transparent_60%)] pointer-events-none"></div>
+            
+            <div class="max-w-[1400px] w-full grid lg:grid-cols-12 gap-12 items-center">
+                
+                <!-- Left Text -->
+                <div class="lg:col-span-7 text-center lg:text-left z-10 order-2 lg:order-1">
+                    <div class="inline-block border border-white/10 px-4 py-2 rounded-full mb-8">
+                        <span class="w-2 h-2 bg-green-500 rounded-full inline-block mr-2 animate-pulse"></span>
+                        <span class="text-[10px] uppercase tracking-[0.2em] text-gray-400 font-bold" id="archive-status">Archive Online</span>
+                    </div>
+                    <h1 class="font-display text-6xl md:text-8xl xl:text-9xl font-black text-white leading-[0.9] tracking-tighter mb-8">
+                        COSMIC <br><span class="text-gold italic font-normal">MIND</span>
+                    </h1>
+                    <p class="text-gray-400 text-lg md:text-xl font-light leading-relaxed max-w-2xl mb-12 lg:ml-2 border-l-2 border-gold pl-6">
+                        "The Bible is not a history of the past, but a biological blueprint of the present. You are the temple." — Bill Donahue
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-6 lg:ml-2">
+                        <button onclick="app.show('library')" class="bg-white text-black px-10 py-5 font-bold uppercase tracking-[0.2em] text-xs hover:bg-gold transition-colors">
+                            Enter Library
+                        </button>
+                        <button onclick="app.show('anatomy')" class="border border-white/20 text-white px-10 py-5 font-bold uppercase tracking-[0.2em] text-xs hover:border-gold hover:text-gold transition-colors">
+                            The Temple
+                        </button>
+                    </div>
                 </div>
-                <!-- Info -->
-                <div>
-                    <h2 class="text-3xl font-medium mb-6 tracking-tight">The Temple</h2>
-                    <div class="p-8 border border-white/10 rounded-2xl bg-card">
-                        <h3 id="anatomy-title" class="text-xl text-white mb-4 font-medium">Select a Center</h3>
-                        <p id="anatomy-desc" class="text-gray-400 text-sm leading-relaxed">
-                            "Know ye not that ye are the temple of God?" Click the points on the diagram to reveal the biological code hidden within ancient scripture.
+
+                <!-- Right Image (Arch) -->
+                <div class="lg:col-span-5 flex justify-center order-1 lg:order-2">
+                    <div class="relative w-[300px] h-[450px] md:w-[400px] md:h-[600px]">
+                        <div class="absolute inset-0 border border-gold/30 rounded-t-full transform translate-x-4 translate-y-4"></div>
+                        <div class="absolute inset-0 bg-[#111] rounded-t-full overflow-hidden border border-white/10">
+                            <!-- Image with Fallback -->
+                            <img src="bill_profile.jpg" class="w-full h-full object-cover opacity-80 hover:scale-105 transition-transform duration-1000 grayscale hover:grayscale-0" 
+                                 onerror="this.src='https://ui-avatars.com/api/?name=Bill+Donahue&background=000&color=C6A87C&size=400&font-size=0.3'">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION: LIBRARY (GRID) -->
+        <section id="view-library" class="hidden min-h-screen px-6 py-20 bg-[#050505]">
+            <div class="max-w-[1600px] mx-auto">
+                <div class="flex justify-between items-end mb-20 border-b border-white/10 pb-8">
+                    <div>
+                        <h2 class="font-display text-6xl text-white mb-2">Index</h2>
+                        <p class="text-gray-500 text-xs uppercase tracking-[0.3em]">Full Subject Catalog</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-gold font-mono text-xs" id="lib-count">00 CATEGORIES</p>
+                    </div>
+                </div>
+
+                <div id="category-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-px bg-white/10 border border-white/10">
+                    <!-- JS Injected -->
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION: LECTURES (LIST) -->
+        <section id="view-lectures" class="hidden min-h-screen px-6 py-20">
+            <div class="max-w-7xl mx-auto">
+                <button onclick="app.show('library')" class="text-gray-500 hover:text-gold flex items-center gap-3 text-xs font-bold uppercase tracking-[0.25em] mb-16 transition-colors">
+                    <span>←</span> Back to Index
+                </button>
+                
+                <div class="mb-20">
+                    <span class="text-gold text-xs font-bold uppercase tracking-[0.4em] mb-4 block">Selected Topic</span>
+                    <h2 id="lecture-title" class="font-display text-4xl md:text-6xl text-white uppercase leading-tight"></h2>
+                </div>
+
+                <div id="lecture-list" class="grid grid-cols-1 border-t border-white/10">
+                    <!-- JS Injected -->
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION: ANATOMY (TEMPLE) -->
+        <section id="view-anatomy" class="hidden min-h-screen flex items-center justify-center px-6 py-20">
+            <div class="max-w-7xl w-full grid lg:grid-cols-2 gap-24 items-center">
+                <div class="flex justify-center relative">
+                    <!-- SVG Diagram -->
+                    <div class="w-[300px] h-[700px] relative">
+                        <div class="absolute inset-0 border-l border-r border-white/5 rounded-[100px]"></div>
+                        <svg viewBox="0 0 100 200" class="w-full h-full drop-shadow-2xl">
+                            <line x1="50" y1="10" x2="50" y2="190" stroke="#333" stroke-width="0.5" />
+                            
+                            <!-- 7 Chakras -->
+                            <g class="chakra-node" onclick="app.showAnatomy('Crown / Pineal', 'The Single Eye. Peniel. The light receptor.')">
+                                <circle cx="50" cy="20" r="4" fill="#111" stroke="#8b5cf6" stroke-width="0.5" />
+                                <text x="65" y="22" fill="#444" font-size="5" font-family="sans-serif" style="text-transform:uppercase; letter-spacing:1px;">Crown</text>
+                            </g>
+                            <g class="chakra-node" onclick="app.showAnatomy('Brow / Pituitary', 'The Third Eye. Center of command.')">
+                                <circle cx="50" cy="45" r="4" fill="#111" stroke="#6366f1" stroke-width="0.5" />
+                                <text x="65" y="47" fill="#444" font-size="5" font-family="sans-serif" style="text-transform:uppercase; letter-spacing:1px;">Brow</text>
+                            </g>
+                            <g class="chakra-node" onclick="app.showAnatomy('Thyroid / Throat', 'The Word. Vibration frequency.')">
+                                <circle cx="50" cy="70" r="4" fill="#111" stroke="#3b82f6" stroke-width="0.5" />
+                                <text x="65" y="72" fill="#444" font-size="5" font-family="sans-serif" style="text-transform:uppercase; letter-spacing:1px;">Throat</text>
+                            </g>
+                            <g class="chakra-node" onclick="app.showAnatomy('Thymus / Heart', 'The Green Ray. Balance point.')">
+                                <circle cx="50" cy="95" r="4" fill="#111" stroke="#22c55e" stroke-width="0.5" />
+                                <text x="65" y="97" fill="#444" font-size="5" font-family="sans-serif" style="text-transform:uppercase; letter-spacing:1px;">Heart</text>
+                            </g>
+                            <g class="chakra-node" onclick="app.showAnatomy('Solar Plexus', 'Place of the Sun. The Manger.')">
+                                <circle cx="50" cy="120" r="4" fill="#111" stroke="#eab308" stroke-width="0.5" />
+                                <text x="65" y="122" fill="#444" font-size="5" font-family="sans-serif" style="text-transform:uppercase; letter-spacing:1px;">Solar</text>
+                            </g>
+                            <g class="chakra-node" onclick="app.showAnatomy('Sacral', 'The Furnace. Refinement.')">
+                                <circle cx="50" cy="145" r="4" fill="#111" stroke="#f97316" stroke-width="0.5" />
+                                <text x="65" y="147" fill="#444" font-size="5" font-family="sans-serif" style="text-transform:uppercase; letter-spacing:1px;">Sacral</text>
+                            </g>
+                            <g class="chakra-node" onclick="app.showAnatomy('Root', 'Egypt. Physical Bondage.')">
+                                <circle cx="50" cy="170" r="4" fill="#111" stroke="#ef4444" stroke-width="0.5" />
+                                <text x="65" y="172" fill="#444" font-size="5" font-family="sans-serif" style="text-transform:uppercase; letter-spacing:1px;">Root</text>
+                            </g>
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="text-left">
+                    <span class="text-gold text-xs font-bold uppercase tracking-[0.3em] mb-6 block">Interactive Map</span>
+                    <h2 class="font-display text-5xl md:text-7xl font-bold text-white mb-10 leading-none">The Temple<br>Within</h2>
+                    
+                    <div class="p-10 border border-white/10 bg-[#111]">
+                        <h3 id="anatomy-title" class="font-display text-2xl text-white mb-4">Select a Center</h3>
+                        <div class="w-12 h-px bg-gold mb-6"></div>
+                        <p id="anatomy-desc" class="text-gray-400 text-base leading-relaxed">
+                            "Know ye not that ye are the temple of God?" <br><br>
+                            Click the nodes on the diagram to reveal the biological code hidden within ancient scripture.
                         </p>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- 3. RESOURCES VIEW -->
-        <section id="view-resources" class="view-section hidden fade-in max-w-4xl mx-auto py-10">
-            <h2 class="text-2xl font-medium mb-8">Primary Sources</h2>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <a href="https://www.hiddenmeanings.com/" target="_blank" class="cosmos-card p-6 flex items-start justify-between group">
-                    <div>
-                        <h3 class="font-medium text-white mb-1">HiddenMeanings.com</h3>
-                        <p class="text-xs text-gray-500">Official Website</p>
-                    </div>
-                    <span class="text-gray-600 group-hover:text-white transition-colors">↗</span>
-                </a>
-                <a href="https://lifestyleluminaries.blogspot.com/p/bill-donahue.html" target="_blank" class="cosmos-card p-6 flex items-start justify-between group">
-                    <div>
-                        <h3 class="font-medium text-white mb-1">Lifestyle Luminaries</h3>
-                        <p class="text-xs text-gray-500">Blog Archive</p>
-                    </div>
-                    <span class="text-gray-600 group-hover:text-white transition-colors">↗</span>
-                </a>
-                <a href="https://thehiddenlighthouse.blogspot.com/2012/09/the-hidden-lighthouse.html?m=1" target="_blank" class="cosmos-card p-6 flex items-start justify-between group">
-                    <div>
-                        <h3 class="font-medium text-white mb-1">Lighthouse Blog</h3>
-                        <p class="text-xs text-gray-500">2012 Writings</p>
-                    </div>
-                    <span class="text-gray-600 group-hover:text-white transition-colors">↗</span>
-                </a>
-                <a href="https://archive.org/details/1-revised-bill-donahue-speaks-book-of-secret-doctrines/page/18/mode/1up?ui=embed&wrapper=false" target="_blank" class="cosmos-card p-6 flex items-start justify-between group">
-                    <div>
-                        <h3 class="font-medium text-white mb-1">Secret Doctrines</h3>
-                        <p class="text-xs text-gray-500">PDF Book</p>
-                    </div>
-                    <span class="text-gray-600 group-hover:text-white transition-colors">↗</span>
-                </a>
+        <!-- SECTION: RESOURCES -->
+        <section id="view-resources" class="hidden min-h-screen px-6 py-20">
+            <div class="max-w-7xl mx-auto">
+                <h2 class="font-display text-5xl text-center text-white mb-20">Official Sources</h2>
+                <div class="grid md:grid-cols-2 border-t border-l border-white/10">
+                    <a href="https://www.hiddenmeanings.com/" target="_blank" class="p-16 border-r border-b border-white/10 hover:bg-[#111] group transition-colors relative block">
+                        <h3 class="font-display text-3xl text-white mb-2 group-hover:text-gold transition-colors">HiddenMeanings.com</h3>
+                        <p class="text-gray-500 text-xs uppercase tracking-widest">Main Portal</p>
+                        <span class="absolute top-6 right-6 text-gray-700 group-hover:text-white text-xl">↗</span>
+                    </a>
+                    <a href="https://lifestyleluminaries.blogspot.com/p/bill-donahue.html" target="_blank" class="p-16 border-r border-b border-white/10 hover:bg-[#111] group transition-colors relative block">
+                        <h3 class="font-display text-3xl text-white mb-2 group-hover:text-gold transition-colors">Lifestyle Luminaries</h3>
+                        <p class="text-gray-500 text-xs uppercase tracking-widest">Blog Archive</p>
+                        <span class="absolute top-6 right-6 text-gray-700 group-hover:text-white text-xl">↗</span>
+                    </a>
+                    <a href="https://thehiddenlighthouse.blogspot.com/2012/09/the-hidden-lighthouse.html?m=1" target="_blank" class="p-16 border-r border-b border-white/10 hover:bg-[#111] group transition-colors relative block">
+                        <h3 class="font-display text-3xl text-white mb-2 group-hover:text-gold transition-colors">Lighthouse Blog</h3>
+                        <p class="text-gray-500 text-xs uppercase tracking-widest">2012 Writings</p>
+                        <span class="absolute top-6 right-6 text-gray-700 group-hover:text-white text-xl">↗</span>
+                    </a>
+                    <a href="https://archive.org/details/1-revised-bill-donahue-speaks-book-of-secret-doctrines/page/18/mode/1up?ui=embed&wrapper=false" target="_blank" class="p-16 border-r border-b border-white/10 hover:bg-[#111] group transition-colors relative block">
+                        <h3 class="font-display text-3xl text-white mb-2 group-hover:text-gold transition-colors">Secret Doctrines</h3>
+                        <p class="text-gray-500 text-xs uppercase tracking-widest">Digital Book</p>
+                        <span class="absolute top-6 right-6 text-gray-700 group-hover:text-white text-xl">↗</span>
+                    </a>
+                </div>
             </div>
         </section>
 
-        <!-- 4. SEARCH / AI VIEW -->
-        <section id="view-search" class="view-section hidden fade-in max-w-4xl mx-auto py-10">
-            <!-- AI Box -->
-            <div id="ai-box" class="mb-12 hidden">
-                <div class="p-6 rounded-2xl bg-white/5 border border-white/10">
-                    <div class="flex items-center justify-between mb-4">
-                        <span class="text-xs font-mono text-gray-400 uppercase">Teacher's Insight</span>
-                        <div class="h-2 w-2 rounded-full bg-green-500 animate-pulse"></div>
-                    </div>
-                    <p id="ai-text" class="text-lg text-gray-200 leading-relaxed italic mb-6"></p>
-                    <div class="flex items-center gap-3">
-                        <button onclick="app.toggleAudio()" class="w-8 h-8 rounded-full bg-white text-black flex items-center justify-center hover:bg-gray-200">
-                            <svg id="play-icon" class="w-3 h-3 ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-                            <svg id="pause-icon" class="w-3 h-3 hidden" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
-                        </button>
-                        <div class="h-1 flex-1 bg-white/10 rounded-full overflow-hidden">
-                            <div id="audio-bar" class="h-full bg-white w-0 transition-all duration-300"></div>
-                        </div>
-                    </div>
+        <!-- SEARCH VIEW -->
+        <section id="view-search" class="hidden min-h-screen px-6 py-20">
+            <div class="max-w-5xl mx-auto">
+                <h2 class="font-display text-4xl text-white mb-10 pb-4 border-b border-white/10">Search Results</h2>
+                
+                <!-- AI Box -->
+                <div id="ai-box" class="bg-[#111] p-8 border border-white/10 mb-12 hidden fade-in">
+                    <h4 class="text-gold text-xs font-bold uppercase tracking-widest mb-4">Teacher's Insight</h4>
+                    <p id="ai-text" class="text-gray-300 font-serif italic text-lg leading-relaxed mb-6"></p>
+                    <button onclick="app.toggleAudio()" class="text-[10px] uppercase font-bold text-white border border-white/20 px-4 py-2 hover:bg-white hover:text-black transition-colors" id="audio-btn">
+                        Play Audio
+                    </button>
                 </div>
-            </div>
 
-            <h2 class="text-sm font-medium text-gray-500 mb-6 uppercase tracking-wider">Results</h2>
-            <div id="search-list" class="flex flex-col gap-2"></div>
+                <div id="search-results" class="grid gap-2"></div>
+            </div>
         </section>
 
     </main>
 
-    <!-- FLOATING DOCK (Navigation) -->
-    <div class="dock">
-        <button onclick="app.showView('library')" class="dock-btn active" id="nav-library">Library</button>
-        <button onclick="app.showView('anatomy')" class="dock-btn" id="nav-anatomy">Temple</button>
-        <button onclick="app.showView('resources')" class="dock-btn" id="nav-resources">Links</button>
-        <div class="w-px bg-white/20 mx-1"></div>
-        <button onclick="document.getElementById('csv-upload').click()" class="dock-btn" title="Upload CSV">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
-        </button>
+    <footer class="py-12 border-t border-white/5 bg-[#030303] text-center">
         <input type="file" id="csv-upload" class="hidden" accept=".csv" onchange="app.handleFileUpload(this)">
-    </div>
-
-    <!-- MODAL (For Topic Detail) -->
-    <div id="modal" class="fixed inset-0 modal-overlay hidden z-[200] flex items-center justify-center p-4">
-        <div class="modal-content w-full max-w-4xl rounded-2xl relative flex flex-col max-h-[85vh]">
-            <div class="p-6 border-b border-white/10 flex justify-between items-center sticky top-0 bg-[#111] z-10">
-                <div>
-                    <h2 id="modal-title" class="text-xl font-semibold text-white">Topic Title</h2>
-                    <p id="modal-count" class="text-xs text-gray-500 mt-1 font-mono">0 Items</p>
-                </div>
-                <button onclick="app.closeModal()" class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 text-gray-400 hover:text-white transition-colors">✕</button>
-            </div>
-            <div id="modal-body" class="p-6 overflow-y-auto grid grid-cols-1 gap-2">
-                <!-- Lectures injected here -->
-            </div>
-        </div>
-    </div>
+        <button onclick="document.getElementById('csv-upload').click()" class="text-[9px] text-stone-600 uppercase tracking-[0.3em] font-bold hover:text-gold transition-colors mb-4 block mx-auto hover:underline">
+            [ Upload Catalog CSV ]
+        </button>
+        <p class="text-[9px] text-stone-800 uppercase tracking-[0.3em] font-bold">The Hidden Lighthouse &copy; 2026</p>
+    </footer>
 
     <script>
         const app = {
@@ -292,8 +326,7 @@
             isPlaying: false,
             database: [],
             
-            // Raw CSV data to pre-populate (representative sample of the 1000+ rows)
-            // Format: TITLE, URL, TOPIC
+            // Raw Data Sample (Contains all 71+ topics implicitly via mapping)
             rawCSV: `TITLE OF VIDEO,URL,TOPIC
 ZODIAC & THE BIBLE,https://www.youtube.com/watch?v=loL03YF262Q,THE ZODIAC-COSMIC INFLUENCES
 THE ZODIACAL CLOCK,https://www.youtube.com/watch?v=OcPnoS2L1co,THE ZODIAC-COSMIC INFLUENCES
@@ -366,23 +399,26 @@ BHAGAVAD GITA IN POSITION,,THESE ARE VIDEOS THAT HAVE NOT BEEN UPLOADED TO YOU T
                     // Try fetch local file, fallback to raw string
                     fetch('catalog.csv')
                         .then(r => r.ok ? r.text() : Promise.reject())
-                        .then(text => this.processData(text))
-                        .catch(() => this.processData(this.rawCSV))
-                        .finally(() => {
-                            document.getElementById('loader').classList.add('opacity-0', 'pointer-events-none');
-                        });
+                        .then(text => { this.processData(text); this.finishLoading(); })
+                        .catch(() => { this.processData(this.rawCSV); this.finishLoading(); });
                 } catch(e) { console.error(e); }
+            },
+
+            finishLoading: function() {
+                setTimeout(() => document.getElementById('loader').classList.add('opacity-0', 'pointer-events-none'), 800);
             },
 
             processData: function(csv) {
                 const lines = csv.trim().split('\n');
                 this.database = [];
-                // Simple CSV logic (robust for this use case)
-                for(let i=1; i<lines.length; i++) {
+                const start = lines[0].startsWith('TITLE') ? 1 : 0;
+                
+                for(let i=start; i<lines.length; i++) {
                     const line = lines[i];
-                    if(!line) continue;
-                    // Regex handles commas in quotes
+                    if(!line.trim()) continue;
+                    // Robust regex split for CSV with quotes
                     const parts = line.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g);
+                    
                     if(parts && parts.length >= 3) {
                         let topic = parts[parts.length-1].trim().replace(/^"|"$/g, '');
                         let url = parts[parts.length-2].trim();
@@ -392,46 +428,45 @@ BHAGAVAD GITA IN POSITION,,THESE ARE VIDEOS THAT HAVE NOT BEEN UPLOADED TO YOU T
                 }
                 this.renderGrid();
             },
-            
+
+            handleFileUpload: function(input) {
+                const file = input.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    this.processData(e.target.result);
+                    alert("Catalog loaded successfully.");
+                };
+                reader.readAsText(file);
+            },
+
             getTopics: function() {
                 return [...new Set(this.database.map(i => i.topic))].sort();
             },
 
-            showView: function(id) {
-                document.querySelectorAll('.view-section').forEach(s => {
-                    s.classList.remove('active');
-                    s.style.display = 'none';
-                });
-                document.querySelectorAll('.dock-btn').forEach(b => b.classList.remove('active'));
-                
-                const view = document.getElementById('view-' + id);
-                view.style.display = 'block';
-                // Trigger reflow for transition
-                void view.offsetWidth;
-                view.classList.add('active');
-                
-                const navBtn = document.getElementById('nav-' + id);
-                if(navBtn) navBtn.classList.add('active');
-                
+            show: function(id) {
+                document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
+                document.getElementById('view-' + id).classList.add('active');
                 if(id !== 'search') document.getElementById('global-search').value = '';
                 window.scrollTo(0,0);
             },
 
             renderGrid: function() {
                 const topics = this.getTopics();
-                const grid = document.getElementById('masonry-grid');
+                const grid = document.getElementById('category-grid');
+                document.getElementById('lib-count').innerText = `${topics.length} CATEGORIES`;
+                
                 grid.innerHTML = topics.map((t, i) => {
                     const count = this.database.filter(d => d.topic === t).length;
                     return `
-                        <div onclick="app.openTopic('${t.replace(/'/g, "\\'")}')" class="masonry-item cosmos-card p-6 group">
-                            <div class="flex justify-between items-start mb-4">
-                                <span class="mono text-[10px] text-gray-500">0${i+1}</span>
-                                <div class="w-2 h-2 rounded-full bg-gray-800 group-hover:bg-[#E2B340] transition-colors"></div>
+                        <div onclick="app.openTopic('${t.replace(/'/g, "\\'")}')" class="bg-[#0f0f0f] p-12 border border-white/5 cursor-pointer hover:bg-[#141414] hover:border-gold transition-all group flex flex-col justify-between h-64">
+                            <div>
+                                <span class="text-gray-600 text-[10px] font-bold uppercase tracking-widest block mb-4">0${i+1}</span>
+                                <h3 class="font-display text-lg text-white leading-tight group-hover:text-gold transition-colors line-clamp-3">${t}</h3>
                             </div>
-                            <h3 class="text-lg font-medium text-gray-200 leading-tight mb-6 group-hover:text-white">${t}</h3>
-                            <div class="flex justify-between items-end border-t border-white/5 pt-4">
-                                <span class="text-[10px] text-gray-500 uppercase tracking-wider">${count} Entries</span>
-                                <svg class="w-4 h-4 text-gray-600 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+                            <div class="flex justify-between items-end pt-4 border-t border-white/5">
+                                <span class="text-[10px] text-gray-500 font-bold uppercase tracking-widest">${count} Items</span>
+                                <span class="text-white text-xl transition-transform group-hover:translate-x-1">→</span>
                             </div>
                         </div>
                     `;
@@ -439,38 +474,39 @@ BHAGAVAD GITA IN POSITION,,THESE ARE VIDEOS THAT HAVE NOT BEEN UPLOADED TO YOU T
             },
 
             openTopic: function(topic) {
-                const modal = document.getElementById('modal');
-                const list = document.getElementById('modal-body');
-                document.getElementById('modal-title').innerText = topic;
+                this.show('lectures');
+                document.getElementById('active-category-title').innerText = topic;
+                const items = this.database.filter(i => i.topic === topic);
+                document.getElementById('active-category-count').innerText = `${items.length} ITEMS`;
                 
-                const items = this.database.filter(d => d.topic === topic);
-                document.getElementById('modal-count').innerText = `${items.length} Files`;
-
-                // Check special category
+                const list = document.getElementById('lecture-list');
                 const isPending = topic.includes("NOT BEEN UPLOADED");
+
+                if(items.length === 0) {
+                    list.innerHTML = `<div class="py-12 text-center text-gray-500 text-xs uppercase tracking-widest">No records found.</div>`;
+                    return;
+                }
 
                 list.innerHTML = items.map(l => {
                     const hasUrl = l.url && l.url.includes('http');
-                    if (isPending) return `<div class="p-3 border-b border-white/5 text-gray-500 text-xs mono">${l.title}</div>`;
+                    if (isPending) return `
+                        <div class="py-4 border-b border-white/5 flex justify-between items-center text-gray-500 text-sm">
+                            <span>${l.title}</span>
+                            <span class="text-[10px] border border-white/10 px-2 py-1 uppercase">Pending</span>
+                        </div>`;
                     
                     return `
-                        <div class="p-4 border border-white/5 rounded-lg flex justify-between items-center hover:bg-white/5 transition-colors group">
-                            <h4 class="text-sm text-gray-300 font-medium group-hover:text-white pr-4">${l.title}</h4>
-                            <div class="shrink-0">
+                        <div class="py-6 border-b border-white/5 flex flex-col md:flex-row justify-between items-center gap-6 group hover:bg-white/5 px-4 transition-all">
+                            <h4 class="font-display font-medium text-lg text-gray-300 group-hover:text-white w-full md:w-auto">${l.title}</h4>
+                            <div class="w-full md:w-auto text-right">
                                 ${hasUrl ? 
-                                    `<a href="${l.url}" target="_blank" class="px-4 py-1.5 bg-white text-black text-[10px] font-bold rounded-full hover:bg-[#E2B340] transition-colors uppercase tracking-widest">Watch</a>` :
-                                    `<span class="text-[10px] text-gray-600 uppercase tracking-widest font-mono">Pending</span>`
+                                    `<a href="${l.url}" target="_blank" class="inline-block bg-white text-black px-6 py-2 text-[10px] font-bold uppercase tracking-widest hover:bg-gold transition-all rounded-sm">Watch</a>` :
+                                    `<span class="inline-block text-gray-600 px-6 py-2 text-[10px] font-bold uppercase tracking-widest border border-white/10">Pending</span>`
                                 }
                             </div>
                         </div>
                     `;
                 }).join('');
-                
-                modal.classList.remove('hidden');
-            },
-
-            closeModal: function() {
-                document.getElementById('modal').classList.add('hidden');
             },
 
             showAnatomy: function(title, desc) {
@@ -479,15 +515,15 @@ BHAGAVAD GITA IN POSITION,,THESE ARE VIDEOS THAT HAVE NOT BEEN UPLOADED TO YOU T
             },
 
             search: function(q) {
-                if(!q) { if(document.getElementById('view-search').style.display === 'block') this.showView('library'); return; }
-                this.showView('search');
-                document.getElementById('ai-box').classList.add('hidden'); // Hide AI box for typing search
+                if(!q) { if(document.getElementById('view-search').classList.contains('active')) this.show('library'); return; }
+                this.show('search');
+                document.getElementById('ai-box').classList.add('hidden');
                 
                 const results = this.database.filter(i => 
                     i.title.toLowerCase().includes(q.toLowerCase()) || i.topic.toLowerCase().includes(q.toLowerCase())
                 );
                 
-                document.getElementById('search-list').innerHTML = results.map(l => {
+                document.getElementById('search-results').innerHTML = results.map(l => {
                     const hasUrl = l.url && l.url.includes('http');
                     return `
                     <div class="p-4 border-b border-white/5 flex justify-between items-center group hover:bg-white/5">
@@ -495,24 +531,24 @@ BHAGAVAD GITA IN POSITION,,THESE ARE VIDEOS THAT HAVE NOT BEEN UPLOADED TO YOU T
                             <div class="text-[9px] text-gray-500 uppercase tracking-widest mb-1">${l.topic}</div>
                             <h4 class="text-sm text-white font-medium">${l.title}</h4>
                         </div>
-                        ${hasUrl ? `<a href="${l.url}" target="_blank" class="text-xs text-[#E2B340] hover:text-white">OPEN ↗</a>` : ''}
+                        ${hasUrl ? `<a href="${l.url}" target="_blank" class="text-gold text-xs font-bold uppercase tracking-widest hover:text-white">Open ↗</a>` : ''}
                     </div>`;
                 }).join('');
             },
 
             performAISearch: async function() {
-                const query = document.getElementById('global-search').value;
+                const query = document.getElementById('ai-input') ? document.getElementById('ai-input').value : document.getElementById('global-search').value;
                 if(!query) return;
                 
-                this.showView('search');
+                this.show('search');
                 document.getElementById('ai-box').classList.remove('hidden');
                 document.getElementById('ai-text').innerText = "Analyzing archive patterns...";
-                this.search(query); // Also show text matches
+                this.search(query); 
 
                 try {
                     const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${this.apiKey}`, {
                         method: 'POST', headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify({ contents: [{ parts: [{ text: `You are Bill Donahue. Explain the hidden symbolic meaning of "${query}" in 2 sentences.` }] }] })
+                        body: JSON.stringify({ contents: [{ parts: [{ text: `You are Bill Donahue. Explain the hidden symbolic meaning of "${query}" in 2 sentences. Focus on anatomy.` }] }] })
                     });
                     const json = await res.json();
                     const text = json.candidates[0].content.parts[0].text;
@@ -541,8 +577,6 @@ BHAGAVAD GITA IN POSITION,,THESE ARE VIDEOS THAT HAVE NOT BEEN UPLOADED TO YOU T
                 const bin = atob(b64);
                 const arr = new Uint8Array(bin.length);
                 for(let i=0; i<bin.length; i++) arr[i] = bin.charCodeAt(i);
-                // Header gen omitted for brevity, raw playback usually works in modern browsers or needs simple wrapper
-                // For this demo, assuming valid audio blob
                 const blob = new Blob([arr], {type:'audio/mp3'}); 
                 this.currentAudio = new Audio(URL.createObjectURL(blob));
                 this.currentAudio.play();
