@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bill Donahue | Hidden Lighthouse Archive</title>
+    <title>Bill Donahue | Official Archive</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;800&family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet">
@@ -12,118 +12,128 @@
     <style>
         :root {
             --bg: #050505;
-            --card-bg: #0A0A0A;
-            --border: #222;
             --purple: #D8B4FE;
-            --purple-glow: rgba(216, 180, 254, 0.2);
-            --text-main: #EAEAEA;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg);
-            color: var(--text-main);
-            overflow-x: hidden;
-            height: 100vh;
+            --gold: #D4AF37;
+            --glass: rgba(10, 10, 10, 0.9);
+            --border: rgba(255, 255, 255, 0.08);
         }
         
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: #EAEAEA; overflow-x: hidden; height: 100vh; position: relative; }
         .cinzel { font-family: 'Cinzel', serif; }
-        .mono { font-family: 'Space Grotesk', monospace; }
-
-        /* --- STARRY BACKGROUND --- */
-        .stars {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            background: #000 url(https://www.transparenttextures.com/patterns/stardust.png);
-            opacity: 0.8;
-            pointer-events: none;
-        }
         
-        .star-layer-1 {
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
+        /* STARRY BACKGROUND */
+        .stars {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: -1;
             background-image: 
-                radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 3px),
-                radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 2px),
-                radial-gradient(white, rgba(255,255,255,.1) 2px, transparent 3px);
+                radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 2.5px),
+                radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 1.5px),
+                radial-gradient(white, rgba(255,255,255,.1) 2px, transparent 2.5px);
             background-size: 550px 550px, 350px 350px, 250px 250px;
             background-position: 0 0, 40px 60px, 130px 270px;
             opacity: 0.6;
-            animation: twinkle 120s linear infinite;
         }
 
-        @keyframes twinkle {
-            from { transform: translateY(0); }
-            to { transform: translateY(-1000px); }
-        }
-
-        /* --- CARDS & PANELS --- */
+        /* Glass Panel */
         .glass-panel {
-            background: rgba(15, 15, 15, 0.85);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: linear-gradient(180deg, rgba(20,20,20,0.85) 0%, rgba(10,10,10,0.98) 100%);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
             box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
         }
 
+        /* Views */
+        .view-section { 
+            display: none; 
+            min-height: 100vh;
+            padding-top: 100px; /* Space for nav */
+            padding-bottom: 120px; /* Space for dock */
+            animation: fadeIn 0.6s ease-out forwards;
+        }
+        .view-section.active { display: block; }
+        
+        /* Centered Home View Override */
+        #view-home.active {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding-top: 0; 
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Card Hover */
         .cosmos-card {
-            background-color: var(--card-bg);
+            background: rgba(255, 255, 255, 0.02);
             border: 1px solid var(--border);
             border-radius: 12px;
             transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             cursor: pointer;
             position: relative;
             overflow: hidden;
-            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 180px;
         }
         .cosmos-card:hover {
-            border-color: var(--purple);
             transform: translateY(-5px);
-            box-shadow: 0 10px 40px -10px var(--purple-glow);
+            border-color: rgba(216, 180, 254, 0.5);
+            background: rgba(255, 255, 255, 0.04);
+            box-shadow: 0 10px 30px -10px rgba(126, 34, 206, 0.2);
         }
-        .cosmos-card::after {
-            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 2px;
-            background: var(--purple); transform: scaleX(0); transform-origin: left; transition: transform 0.4s ease;
-        }
-        .cosmos-card:hover::after { transform: scaleX(1); }
+        .cosmos-card i { transition: transform 0.3s ease; }
+        .cosmos-card:hover i { transform: scale(1.2) rotate(10deg); color: var(--purple); }
 
-        /* --- FLOATING DOCK --- */
+        /* Anatomy Interaction */
+        .anatomy-dot {
+            width: 24px; height: 24px; border-radius: 50%; 
+            position: absolute; left: 50%; transform: translateX(-50%);
+            cursor: pointer; transition: all 0.3s ease; 
+            border: 2px solid rgba(255,255,255,0.8);
+            box-shadow: 0 0 15px rgba(216, 180, 254, 0.4); 
+            z-index: 20;
+        }
+        .anatomy-dot:hover { 
+            transform: translateX(-50%) scale(1.4); 
+            background-color: #fff !important; 
+            box-shadow: 0 0 40px var(--purple); 
+        }
+
+        /* Floating Dock */
         .dock-container {
-            position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%);
-            z-index: 100; display: flex; justify-content: center;
+            position: fixed; bottom: 32px; left: 0; width: 100%;
+            display: flex; justify-content: center; z-index: 50; pointer-events: none;
         }
         .dock {
             background: rgba(20, 20, 20, 0.95); backdrop-filter: blur(16px);
-            border: 1px solid rgba(255,255,255,0.15); padding: 8px; border-radius: 9999px;
-            display: flex; gap: 8px; box-shadow: 0 20px 40px -10px rgba(0,0,0,0.9);
+            border: 1px solid rgba(255, 255, 255, 0.15); padding: 8px; border-radius: 99px;
+            display: flex; gap: 8px; box-shadow: 0 20px 40px -10px rgba(0,0,0,0.8);
             pointer-events: auto;
         }
         .dock-btn {
-            padding: 10px 24px; border-radius: 9999px; font-size: 11px; font-weight: 700;
-            text-transform: uppercase; letter-spacing: 0.1em; color: #888;
-            transition: all 0.2s; cursor: pointer; border: 1px solid transparent;
+            padding: 10px 24px; border-radius: 99px; font-size: 11px;
+            font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;
+            color: #888; transition: all 0.2s; cursor: pointer; border: 1px solid transparent;
         }
         .dock-btn:hover { color: white; background: rgba(255,255,255,0.05); }
-        .dock-btn.active { background: white; color: black; box-shadow: 0 0 15px rgba(255,255,255,0.2); }
+        .dock-btn.active { background: white; color: black; box-shadow: 0 0 20px rgba(255,255,255,0.2); }
 
-        /* --- ANATOMY --- */
-        .anatomy-dot {
-            width: 20px; height: 20px; border-radius: 50%; position: absolute; left: 50%; transform: translateX(-50%);
-            cursor: pointer; transition: all 0.3s ease; box-shadow: 0 0 15px var(--purple-glow); border: 2px solid #fff; z-index: 50;
-        }
-        .anatomy-dot:hover { transform: translateX(-50%) scale(1.5); box-shadow: 0 0 30px var(--purple); background: var(--purple); border-color: var(--bg); }
-
-        /* --- UTILS --- */
-        .search-input:focus { outline: none; border-color: var(--purple); box-shadow: 0 0 20px var(--purple-glow); }
-        .hidden { display: none !important; }
-        .fade-in { animation: fadeIn 0.6s ease-out forwards; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        /* Profile Glow */
+        .profile-glow { box-shadow: 0 0 50px rgba(216, 180, 254, 0.2); transition: 0.5s; }
+        .profile-glow:hover { box-shadow: 0 0 80px rgba(216, 180, 254, 0.4); transform: scale(1.02); }
         
-        .pulse-purple { animation: pulsePurple 2s infinite; border-color: var(--purple); }
-        @keyframes pulsePurple { 0% { box-shadow: 0 0 0 0 var(--purple-glow); } 70% { box-shadow: 0 0 0 10px rgba(216, 180, 254, 0); } 100% { box-shadow: 0 0 0 0 rgba(216, 180, 254, 0); } }
+        .search-input:focus { outline: none; border-color: var(--purple); box-shadow: 0 0 20px rgba(216, 180, 254, 0.2); }
+        
+        /* Diamond Box */
+        .diamond-box {
+            border: 1px solid rgba(216, 180, 254, 0.3);
+            padding: 10px 30px;
+            transform: skew(-15deg);
+            display: inline-block;
+            background: rgba(216, 180, 254, 0.05);
+        }
+        .diamond-text { transform: skew(15deg); color: var(--purple); text-shadow: 0 0 15px rgba(216, 180, 254, 0.5); }
 
         /* Scrollbar */
         ::-webkit-scrollbar { width: 6px; }
@@ -131,66 +141,74 @@
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
         ::-webkit-scrollbar-thumb:hover { background: var(--purple); }
         
-        .profile-img { box-shadow: 0 0 50px var(--purple-glow); transition: 0.5s; }
-        .profile-img:hover { box-shadow: 0 0 80px rgba(216, 180, 254, 0.4); transform: scale(1.02); }
+        /* AI Pulse */
+        .ai-active { animation: pulsePurple 2s infinite; border-color: var(--purple); }
+        @keyframes pulsePurple { 0% { box-shadow: 0 0 0 0 rgba(216, 180, 254, 0.4); } 50% { box-shadow: 0 0 0 15px rgba(216, 180, 254, 0); } 100% { box-shadow: 0 0 0 0 rgba(216, 180, 254, 0); } }
     </style>
 </head>
-<body>
+<body class="flex flex-col min-h-screen">
 
     <!-- STARRY BACKGROUND -->
-    <div class="stars">
-        <div class="star-layer-1"></div>
-    </div>
+    <div class="stars"></div>
 
-    <!-- HEADER (SEARCH) -->
+    <!-- TOP HEADER -->
     <div class="fixed top-0 left-0 w-full p-6 z-40 flex justify-between items-start pointer-events-none">
-        <div class="pointer-events-auto flex items-center gap-3 cursor-pointer" onclick="window.app.nav('home')">
-            <div class="w-10 h-10 border border-purple-400/30 flex items-center justify-center rotate-45 bg-black/50 backdrop-blur-md">
-                <span class="cinzel font-bold text-lg text-purple-300 -rotate-45">HL</span>
+        <div class="pointer-events-auto flex items-center gap-3 cursor-pointer group" onclick="window.app.nav('home')">
+            <div class="w-12 h-12 border border-purple-400/30 flex items-center justify-center rotate-45 bg-black/50 backdrop-blur-md transition-all group-hover:rotate-0">
+                <span class="cinzel font-bold text-lg text-purple-300 -rotate-45 group-hover:rotate-0">HM</span>
             </div>
             <div>
-                <h1 class="cinzel font-bold text-white text-xs tracking-widest uppercase">Hidden Lighthouse</h1>
+                <h1 class="cinzel font-bold text-white text-xs tracking-widest uppercase">Hidden Meanings</h1>
                 <p class="text-[9px] text-purple-400 font-bold uppercase tracking-wider">Official Archive</p>
             </div>
         </div>
         
         <div class="pointer-events-auto relative group">
             <input type="text" id="global-search" oninput="window.app.search(this.value)" placeholder="SEARCH ARCHIVE..." 
-                   class="bg-black/80 border border-white/10 rounded-full px-6 py-2 text-xs w-48 focus:w-72 transition-all text-white focus:border-purple-400 outline-none backdrop-blur-md font-mono uppercase tracking-wider">
+                   class="bg-black/80 border border-white/10 rounded-full px-6 py-2.5 text-xs w-48 focus:w-72 transition-all text-white focus:border-purple-400 outline-none backdrop-blur-md font-mono uppercase tracking-wider">
         </div>
+    </div>
+
+    <!-- LOADING OVERLAY -->
+    <div id="app-loader" class="fixed inset-0 bg-[#050505] z-[100] flex flex-col items-center justify-center transition-opacity duration-500">
+        <div class="w-12 h-12 border-2 border-purple-500/30 border-t-purple-400 rounded-full animate-spin mb-4"></div>
+        <p class="text-purple-300 text-xs uppercase tracking-[0.3em] font-bold animate-pulse">Initializing Library...</p>
     </div>
 
     <!-- MAIN SCROLL CONTAINER -->
     <div class="h-screen overflow-y-auto custom-scrollbar pb-32" id="scroll-wrapper">
         
         <!-- 1. HOME VIEW -->
-        <section id="view-home" class="view-section active flex flex-col items-center justify-center min-h-[90vh] text-center" style="padding-top: 0;">
+        <section id="view-home" class="view-section active">
+            <!-- Background Aura -->
+            <div class="absolute inset-0 z-0 opacity-20 pointer-events-none" style="background: radial-gradient(circle at center, #2e1065 0%, #000000 70%);"></div>
+
             <div class="relative z-10 max-w-5xl fade-in pt-20">
                 <!-- Profile Image -->
                 <div class="mb-10 flex justify-center">
-                    <div class="relative w-40 h-40 rounded-full p-1 border-2 border-purple-500/40 bg-[#111] profile-img">
-                        <img src="bill_profile.jpg" class="w-full h-full object-cover rounded-full opacity-90 transition-opacity grayscale hover:grayscale-0" 
+                    <div class="relative w-40 h-40 rounded-full p-1 border-2 border-purple-500/40 bg-[#111] profile-glow">
+                        <img src="bill_profile.jpg" alt="Bill Donahue" class="w-full h-full object-cover rounded-full opacity-90 transition-opacity" 
                              onerror="this.src='https://ui-avatars.com/api/?name=Bill+Donahue&background=000&color=d8b4fe&size=160'">
                     </div>
                 </div>
 
                 <div class="mb-8 inline-flex items-center gap-3 border border-purple-500/30 px-5 py-2 rounded-full bg-black/40 backdrop-blur-md">
-                    <span class="w-1.5 h-1.5 rounded-full bg-green-400 pulse-purple"></span>
+                    <span class="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></span>
                     <span class="text-[10px] text-purple-200 uppercase tracking-[0.2em] font-bold" id="status-bar">Connecting...</span>
                 </div>
 
                 <h1 class="cinzel text-5xl md:text-8xl font-black mb-8 leading-none tracking-tight text-white drop-shadow-2xl">
-                    HIDDEN<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-white italic">MEANINGS</span>
+                    HIDDEN<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-300 to-white italic">MEANINGS</span>
                 </h1>
                 
-                <div class="mb-10">
-                     <span class="cinzel text-xs font-bold text-purple-300 tracking-[0.3em] uppercase border border-purple-500/30 px-6 py-2 inline-block transform -skew-x-12">
-                        <span class="inline-block transform skew-x-12">Inspired by Bill Donahue</span>
-                    </span>
+                <div class="mb-12">
+                     <div class="diamond-box">
+                        <span class="diamond-text cinzel text-xs font-bold tracking-[0.3em] uppercase block">Inspired by Bill Donahue</span>
+                    </div>
                 </div>
 
                 <!-- AI Search Bar -->
-                <div class="max-w-lg mx-auto relative group w-full mb-12">
+                <div class="max-w-lg mx-auto relative group w-full mb-8">
                     <input type="text" id="ai-input" placeholder="Ask the Teacher (e.g. 'Pineal')..." 
                            class="w-full bg-white/5 border border-white/10 rounded-full py-4 pl-8 pr-16 text-sm text-white placeholder-stone-500 focus:outline-none focus:border-purple-400 focus:ring-1 focus:ring-purple-400 transition-all backdrop-blur-md font-mono">
                     <button onclick="window.app.performAISearch()" class="absolute right-2 top-2 bottom-2 bg-purple-600 text-white w-10 rounded-full flex items-center justify-center hover:bg-white hover:text-black transition-colors shadow-lg">
@@ -201,8 +219,8 @@
         </section>
 
         <!-- 2. LIBRARY VIEW -->
-        <section id="view-library" class="hidden min-h-screen px-6 py-32">
-            <div class="max-w-[1800px] mx-auto">
+        <section id="view-library" class="view-section">
+            <div class="max-w-[1800px] mx-auto px-6">
                 <div class="flex flex-col md:flex-row justify-between items-end mb-16 pb-8 border-b border-white/10">
                     <div>
                         <h2 class="cinzel text-5xl font-bold text-white mb-2 tracking-tight">The Catalog</h2>
@@ -212,33 +230,30 @@
                         <p class="text-stone-500 font-mono text-xs" id="total-topics-display">Loading...</p>
                     </div>
                 </div>
-                
-                <div id="category-grid" class="masonry-grid">
-                    <!-- Javascript populates this -->
-                </div>
+                <div id="category-grid" class="masonry-grid"></div>
             </div>
         </section>
 
         <!-- 3. LECTURES VIEW -->
-        <section id="view-list" class="hidden min-h-screen px-6 py-32 bg-stone-900/10">
-            <div class="max-w-6xl mx-auto">
+        <section id="view-list" class="view-section bg-stone-900/10">
+            <div class="max-w-6xl mx-auto px-6">
                 <button onclick="window.app.nav('library')" class="mb-10 text-stone-500 hover:text-purple-300 text-xs font-bold uppercase tracking-widest flex items-center gap-2 transition-colors">
                     <span>←</span> Back to Index
                 </button>
                 <h2 id="list-title" class="cinzel text-4xl md:text-6xl text-white mb-4 leading-tight"></h2>
                 <div class="w-20 h-1 bg-purple-500 mb-12"></div>
-                <div id="list-container" class="grid grid-cols-1 gap-2"></div>
+                <div id="list-container" class="grid grid-cols-1 lg:grid-cols-2 gap-4"></div>
             </div>
         </section>
 
-        <!-- 4. TEMPLE VIEW (ANATOMY) -->
-        <section id="view-anatomy" class="hidden min-h-screen py-32 px-6">
+        <!-- 4. ANATOMY VIEW -->
+        <section id="view-anatomy" class="view-section px-6">
             <div class="max-w-7xl mx-auto grid lg:grid-cols-2 gap-20 items-center min-h-[70vh]">
                 <div class="relative flex justify-center order-2 lg:order-1">
-                    <div class="relative w-[300px] h-[650px] border border-white/10 rounded-full bg-[#080808] flex justify-center items-center shadow-[0_0_80px_-20px_rgba(168,85,247,0.15)] z-10">
+                    <div class="relative w-[300px] h-[650px] border border-white/10 rounded-full bg-[#080808] flex justify-center items-center shadow-[0_0_80px_-20px_rgba(168,85,247,0.15)]">
+                        <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.03),transparent_70%)] rounded-full"></div>
                         <div class="absolute top-[10%] bottom-[10%] w-px bg-gradient-to-b from-transparent via-purple-500/30 to-transparent"></div>
-                        
-                        <!-- 7 Chakras/Seals Points -->
+                        <!-- Nodes -->
                         <div class="anatomy-dot bg-violet-500" style="top: 10%;" onclick="window.app.showAnatomy('Crown / Pineal', 'The Single Eye. Peniel. The light receptor where Jacob saw God face to face. The 7th Seal.')"></div>
                         <div class="anatomy-dot bg-indigo-500" style="top: 22%;" onclick="window.app.showAnatomy('Brow / Pituitary', 'The Third Eye. The center of command. Associated with the 6th Seal. Joseph\'s Mother.')"></div>
                         <div class="anatomy-dot bg-blue-500" style="top: 34%;" onclick="window.app.showAnatomy('Thyroid / Throat', 'The Word (Logos). The center of vibration and frequency. The 5th Seal.')"></div>
@@ -252,7 +267,7 @@
                 <div class="order-1 lg:order-2">
                     <span class="text-purple-400 font-mono text-xs uppercase tracking-[0.2em] mb-4 block">Interactive Map</span>
                     <h2 class="cinzel text-5xl md:text-7xl font-bold text-white mb-8 leading-none">The Temple<br>Of God</h2>
-                    <div id="anatomy-info" class="p-10 border border-white/10 bg-[#111] backdrop-blur-md rounded-xl border-l-2 border-purple-500 z-20 relative">
+                    <div id="anatomy-info" class="p-10 border border-white/10 bg-[#111] backdrop-blur-md rounded-xl border-l-2 border-purple-500">
                         <h3 id="anatomy-title" class="cinzel text-2xl text-purple-200 mb-4 uppercase tracking-widest font-bold">Select a Center</h3>
                         <p id="anatomy-desc" class="text-stone-400 text-lg leading-relaxed font-light italic">
                             "Know ye not that ye are the temple of God?" Click the points on the diagram to reveal the biological decoding of scripture.
@@ -263,7 +278,7 @@
         </section>
 
         <!-- 5. RESOURCES VIEW -->
-        <section id="view-resources" class="hidden min-h-screen py-32 px-6 max-w-5xl mx-auto">
+        <section id="view-resources" class="view-section px-6 max-w-5xl mx-auto">
             <h2 class="cinzel text-4xl font-bold text-white mb-16 text-center uppercase tracking-widest">Primary Sources</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <a href="https://www.hiddenmeanings.com/" target="_blank" class="cosmos-card p-10 group bg-[#0A0A0A] hover:bg-[#111] relative block">
@@ -302,8 +317,8 @@
         </section>
 
         <!-- 6. SEARCH / AI VIEW -->
-        <section id="view-search" class="hidden min-h-screen py-32 px-6 max-w-5xl mx-auto bg-[#050505]">
-            <div id="ai-response-box" class="mb-20 bg-white/5 p-10 border-l-4 border-purple-500 hidden rounded-xl fade-in">
+        <section id="view-search" class="view-section px-6 max-w-5xl mx-auto bg-[#050505]">
+            <div id="ai-response-box" class="mb-20 bg-white/5 p-10 border-l-4 border-purple-500 hidden fade-in rounded-xl">
                 <div class="flex items-start gap-8">
                     <div class="w-16 h-16 bg-purple-600 flex items-center justify-center rounded-none shrink-0 text-white font-bold text-2xl font-serif">B</div>
                     <div class="flex-1">
@@ -317,7 +332,7 @@
                 <h2 class="cinzel text-3xl font-bold text-white uppercase">Archive Matches</h2>
                 <button onclick="document.getElementById('global-search').value=''; window.app.showView('library')" class="text-[10px] text-stone-500 uppercase font-bold tracking-widest hover:text-white">Clear & Close</button>
             </div>
-            <div id="search-results" class="grid grid-cols-1 lg:grid-cols-2 gap-4"></div>
+            <div id="search-results" class="grid grid-cols-1 lg:grid-cols-2 gap-4 pb-20"></div>
         </section>
 
     </main>
@@ -340,7 +355,7 @@
 
     <script>
         window.app = {
-            apiKey: "", 
+            apiKey: "",
             currentAudio: null,
             isPlaying: false,
             
@@ -428,10 +443,8 @@ BHAGAVAD GITA IN POSITION,,THESE ARE VIDEOS THAT HAVE NOT BEEN UPLOADED TO YOU T
 
             finishLoading: function() {
                 setTimeout(() => {
-                    const loader = document.getElementById('app-loader');
-                    if(loader) loader.classList.add('hidden');
-                    const status = document.getElementById('status-bar');
-                    if(status) status.innerText = `${this.database.length} Records Online`;
+                    document.getElementById('app-loader').classList.add('hidden');
+                    document.getElementById('status-bar').innerText = `${this.database.length} Records Online`;
                 }, 500);
             },
 
@@ -480,7 +493,7 @@ BHAGAVAD GITA IN POSITION,,THESE ARE VIDEOS THAT HAVE NOT BEEN UPLOADED TO YOU T
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     this.processData(e.target.result);
-                    alert("Catalog loaded!");
+                    alert(`Loaded ${this.database.length} videos from file!`);
                 };
                 reader.readAsText(file);
             },
@@ -505,7 +518,7 @@ BHAGAVAD GITA IN POSITION,,THESE ARE VIDEOS THAT HAVE NOT BEEN UPLOADED TO YOU T
                 if(id !== 'search') document.getElementById('global-search').value = '';
             },
 
-            show: function(id) { this.nav(id); },
+            showView: function(id) { this.nav(id); },
 
             renderCategories: function() {
                 const topics = this.getUniqueTopics();
@@ -526,7 +539,7 @@ BHAGAVAD GITA IN POSITION,,THESE ARE VIDEOS THAT HAVE NOT BEEN UPLOADED TO YOU T
                     else if(t_lower.includes("alien") || t_lower.includes("ufo")) icon = "fa-shuttle-space";
                     
                     return `
-                        <div onclick="window.app.openTopic('${t.replace(/'/g, "\\'")}')" class="cosmos-card p-6 group">
+                        <div onclick="window.app.openTopic('${t.replace(/'/g, "\\'")}')" class="cosmos-card p-6 group topic-card">
                             <div class="flex justify-between items-start mb-4">
                                 <span class="text-xs font-mono text-gray-500">0${i+1}</span>
                                 <i class="fa-solid ${icon} text-gray-600 group-hover:text-[#D8B4FE] transition-colors"></i>
@@ -534,7 +547,7 @@ BHAGAVAD GITA IN POSITION,,THESE ARE VIDEOS THAT HAVE NOT BEEN UPLOADED TO YOU T
                             <h3 class="text-sm font-medium text-gray-200 leading-snug mb-8 group-hover:text-white line-clamp-3">${t}</h3>
                             <div class="flex justify-between items-end border-t border-white/5 pt-3 mt-auto">
                                 <span class="text-[9px] text-gray-500 font-bold uppercase tracking-widest">${count} Items</span>
-                                <span class="arrow-icon text-gray-600 group-hover:text-white transition-transform duration-300">↗</span>
+                                <span class="text-purple-400 opacity-50 group-hover:opacity-100 transition-opacity">→</span>
                             </div>
                         </div>
                     `;
@@ -576,6 +589,7 @@ BHAGAVAD GITA IN POSITION,,THESE ARE VIDEOS THAT HAVE NOT BEEN UPLOADED TO YOU T
                 document.getElementById('anatomy-title').innerText = t;
                 document.getElementById('anatomy-desc').innerText = d;
             },
+            info: function(t,d) { this.showAnatomy(t,d); },
 
             search: function(val) {
                 if(!val) { 
@@ -613,34 +627,26 @@ BHAGAVAD GITA IN POSITION,,THESE ARE VIDEOS THAT HAVE NOT BEEN UPLOADED TO YOU T
                 const resultsContainer = document.getElementById('search-results');
                 
                 aiBox.style.display = 'block';
+                aiBox.classList.remove('hidden'); 
                 aiText.innerText = "Consulting the archives...";
                 
-                const results = this.data.filter(item => 
-                    item.title.toLowerCase().includes(query.toLowerCase())
-                );
-                
-                resultsContainer.innerHTML = results.length > 0 ? 
-                    results.map(l => this.renderLectureRow(l)).join('') : 
-                    `<p class="text-stone-500 italic text-center py-8">No direct matches. Analyzing concept...</p>`;
+                this.search(query); 
 
                 try {
-                    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${this.apiKey}`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
+                    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${this.apiKey}`, {
+                        method: 'POST', headers: {'Content-Type': 'application/json'},
                         body: JSON.stringify({ contents: [{ parts: [{ text: `You are Bill Donahue. Explain the hidden symbolic meaning of "${query}" in 2 sentences. Focus on anatomy.` }] }] })
                     });
                     const data = await response.json();
                     const text = data.candidates[0].content.parts[0].text;
-                    aiText.innerText = text;
-                    this.generateVoice(text);
-                } catch(e) { aiText.innerText = "Insight unavailable."; }
+                    document.getElementById('ai-text-output').innerText = text;
+                } catch(e) { document.getElementById('ai-text-output').innerText = "Insight unavailable."; }
             },
 
             generateVoice: async function(text) {
                 try {
                     const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${this.apiKey}`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
+                        method: 'POST', headers: {'Content-Type': 'application/json'},
                         body: JSON.stringify({
                             contents: [{ parts: [{ text: text }] }],
                             generationConfig: { responseModalities: ["AUDIO"], speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: "Kore" } } } }
@@ -673,9 +679,9 @@ BHAGAVAD GITA IN POSITION,,THESE ARE VIDEOS THAT HAVE NOT BEEN UPLOADED TO YOU T
             },
 
             updatePlayBtn: function() {
-                document.getElementById('play-btn').innerHTML = this.isPlaying ? 
-                    `<svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>` : 
-                    `<svg class="w-3 h-3 ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>`;
+                const btn = document.getElementById('play-btn');
+                if(this.isPlaying) btn.innerHTML = '<svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
+                else btn.innerHTML = '<svg class="w-3 h-3 ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
             },
 
             createWavHeader: function(buffer, sampleRate) {
@@ -721,7 +727,7 @@ BHAGAVAD GITA IN POSITION,,THESE ARE VIDEOS THAT HAVE NOT BEEN UPLOADED TO YOU T
             showView: function(id) { this.nav(id); }
         };
 
-        window.onload = () => window.app.init();
+        window.onload = () => app.init();
     </script>
 </body>
 </html>
