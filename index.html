@@ -4,36 +4,48 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bill Donahue | Official Archive</title>
+    
+    <!-- LIBRARIES -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;800&family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet">
+    <!-- FONTS & ICONS -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;800&family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@300;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         :root {
             --bg: #050505;
             --purple: #D8B4FE;
+            --purple-dim: #7e22ce;
             --gold: #D4AF37;
             --glass: rgba(10, 10, 10, 0.9);
             --border: rgba(255, 255, 255, 0.08);
         }
         
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: #EAEAEA; overflow-x: hidden; height: 100vh; position: relative; }
-        .cinzel { font-family: 'Cinzel', serif; }
-        
-        /* STARRY BACKGROUND */
-        .stars {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: -1;
-            background-image: 
-                radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 2.5px),
-                radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 1.5px),
-                radial-gradient(white, rgba(255,255,255,.1) 2px, transparent 2.5px);
-            background-size: 550px 550px, 350px 350px, 250px 250px;
-            background-position: 0 0, 40px 60px, 130px 270px;
-            opacity: 0.6;
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: var(--bg); 
+            color: #EAEAEA; 
+            overflow-x: hidden; 
+            height: 100vh;
         }
+        
+        .cinzel { font-family: 'Cinzel', serif; }
+        .mono { font-family: 'Space Grotesk', monospace; }
 
-        /* Glass Panel */
+        /* --- STARRY BACKGROUND --- */
+        .stars-container {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1; pointer-events: none;
+            background: radial-gradient(circle at center, #1a103c 0%, #000000 70%);
+        }
+        .star {
+            position: absolute; background: white; border-radius: 50%;
+            opacity: 0.5; animation: twinkle var(--duration) ease-in-out infinite;
+        }
+        @keyframes twinkle { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.8; } }
+
+        /* --- UI COMPONENTS --- */
         .glass-panel {
             background: linear-gradient(180deg, rgba(20,20,20,0.85) 0%, rgba(10,10,10,0.98) 100%);
             backdrop-filter: blur(20px);
@@ -41,174 +53,149 @@
             box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
         }
 
-        /* Views */
-        .view-section { 
-            display: none; 
-            min-height: 100vh;
-            padding-top: 100px; /* Space for nav */
-            padding-bottom: 120px; /* Space for dock */
-            animation: fadeIn 0.6s ease-out forwards;
-        }
-        .view-section.active { display: block; }
-        
-        /* Centered Home View Override */
-        #view-home.active {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding-top: 0; 
-        }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* Card Hover */
-        .cosmos-card {
-            background: rgba(255, 255, 255, 0.02);
+        /* CARD STYLE */
+        .topic-card {
+            background: rgba(255, 255, 255, 0.03);
             border: 1px solid var(--border);
-            border-radius: 12px;
+            border-radius: 8px;
             transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            cursor: pointer;
             position: relative;
             overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            min-height: 180px;
         }
-        .cosmos-card:hover {
-            transform: translateY(-5px);
+        .topic-card:hover {
+            transform: translateY(-4px);
             border-color: rgba(216, 180, 254, 0.5);
-            background: rgba(255, 255, 255, 0.04);
-            box-shadow: 0 10px 30px -10px rgba(126, 34, 206, 0.2);
+            background: rgba(255, 255, 255, 0.06);
+            box-shadow: 0 10px 40px -10px rgba(126, 34, 206, 0.2);
         }
-        .cosmos-card i { transition: transform 0.3s ease; }
-        .cosmos-card:hover i { transform: scale(1.2) rotate(10deg); color: var(--purple); }
+        /* Icon styling in upper right */
+        .topic-icon {
+            position: absolute; top: 12px; right: 12px;
+            font-size: 18px; color: #444; transition: 0.3s ease;
+        }
+        .topic-card:hover .topic-icon {
+            color: var(--purple);
+            transform: scale(1.1) rotate(5deg);
+        }
 
-        /* Anatomy Interaction */
+        /* ANATOMY DOTS */
         .anatomy-dot {
-            width: 24px; height: 24px; border-radius: 50%; 
+            width: 20px; height: 20px; border-radius: 50%; 
             position: absolute; left: 50%; transform: translateX(-50%);
             cursor: pointer; transition: all 0.3s ease; 
-            border: 2px solid rgba(255,255,255,0.8);
-            box-shadow: 0 0 15px rgba(216, 180, 254, 0.4); 
-            z-index: 20;
+            box-shadow: 0 0 15px rgba(216, 180, 254, 0.3); 
+            border: 2px solid #fff; z-index: 20;
         }
         .anatomy-dot:hover { 
-            transform: translateX(-50%) scale(1.4); 
+            transform: translateX(-50%) scale(1.5); 
             background-color: #fff !important; 
             box-shadow: 0 0 40px var(--purple); 
         }
 
-        /* Floating Dock */
+        /* FLOATING DOCK */
         .dock-container {
-            position: fixed; bottom: 32px; left: 0; width: 100%;
-            display: flex; justify-content: center; z-index: 50; pointer-events: none;
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+            z-index: 100; display: flex; justify-content: center;
         }
         .dock {
-            background: rgba(20, 20, 20, 0.95); backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.15); padding: 8px; border-radius: 99px;
-            display: flex; gap: 8px; box-shadow: 0 20px 40px -10px rgba(0,0,0,0.8);
-            pointer-events: auto;
+            background: rgba(15, 15, 15, 0.95); backdrop-filter: blur(16px);
+            border: 1px solid rgba(255,255,255,0.15); padding: 6px; border-radius: 99px;
+            display: flex; gap: 8px; pointer-events: auto;
+            box-shadow: 0 20px 50px -10px rgba(0,0,0,0.9);
         }
         .dock-btn {
-            padding: 10px 24px; border-radius: 99px; font-size: 11px;
+            padding: 8px 24px; border-radius: 99px; font-size: 11px;
             font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;
             color: #888; transition: all 0.2s; cursor: pointer; border: 1px solid transparent;
         }
         .dock-btn:hover { color: white; background: rgba(255,255,255,0.05); }
         .dock-btn.active { background: white; color: black; box-shadow: 0 0 20px rgba(255,255,255,0.2); }
 
-        /* Profile Glow */
-        .profile-glow { box-shadow: 0 0 50px rgba(216, 180, 254, 0.2); transition: 0.5s; }
-        .profile-glow:hover { box-shadow: 0 0 80px rgba(216, 180, 254, 0.4); transform: scale(1.02); }
-        
-        .search-input:focus { outline: none; border-color: var(--purple); box-shadow: 0 0 20px rgba(216, 180, 254, 0.2); }
-        
-        /* Diamond Box */
-        .diamond-box {
-            border: 1px solid rgba(216, 180, 254, 0.3);
-            padding: 10px 30px;
-            transform: skew(-15deg);
-            display: inline-block;
-            background: rgba(216, 180, 254, 0.05);
+        /* VIEWS */
+        .view-section { 
+            display: none; padding-top: 100px; padding-bottom: 140px; 
+            width: 100%; min-height: 100vh;
+            animation: fadeIn 0.5s ease-out forwards;
         }
-        .diamond-text { transform: skew(15deg); color: var(--purple); text-shadow: 0 0 15px rgba(216, 180, 254, 0.5); }
+        .view-section.active { display: block; }
+        
+        #view-home.active {
+            display: flex; flex-direction: column; 
+            align-items: center; justify-content: center; padding-top: 0;
+        }
 
-        /* Scrollbar */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* SCROLLBAR & UTILS */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: var(--bg); }
-        ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: var(--purple); }
         
-        /* AI Pulse */
-        .ai-active { animation: pulsePurple 2s infinite; border-color: var(--purple); }
-        @keyframes pulsePurple { 0% { box-shadow: 0 0 0 0 rgba(216, 180, 254, 0.4); } 50% { box-shadow: 0 0 0 15px rgba(216, 180, 254, 0); } 100% { box-shadow: 0 0 0 0 rgba(216, 180, 254, 0); } }
+        .search-input:focus { outline: none; border-color: var(--purple); box-shadow: 0 0 20px rgba(216, 180, 254, 0.2); }
+        .hidden { display: none !important; }
+        .profile-img { box-shadow: 0 0 50px rgba(216, 180, 254, 0.15); transition: 0.5s; }
+        .profile-img:hover { box-shadow: 0 0 80px rgba(216, 180, 254, 0.4); transform: scale(1.02); }
     </style>
 </head>
 <body class="flex flex-col min-h-screen">
 
-    <!-- STARRY BACKGROUND -->
-    <div class="stars"></div>
+    <!-- DYNAMIC STARS -->
+    <div id="stars" class="stars-container"></div>
 
     <!-- TOP HEADER -->
-    <div class="fixed top-0 left-0 w-full p-6 z-40 flex justify-between items-start pointer-events-none">
+    <div class="fixed top-0 left-0 w-full p-6 z-50 flex justify-between items-start pointer-events-none">
         <div class="pointer-events-auto flex items-center gap-3 cursor-pointer group" onclick="window.app.nav('home')">
-            <div class="w-12 h-12 border border-purple-400/30 flex items-center justify-center rotate-45 bg-black/50 backdrop-blur-md transition-all group-hover:rotate-0">
+            <div class="w-10 h-10 border border-purple-400/30 flex items-center justify-center rotate-45 bg-black/50 backdrop-blur-md transition-all group-hover:rotate-0 group-hover:border-purple-400">
                 <span class="cinzel font-bold text-lg text-purple-300 -rotate-45 group-hover:rotate-0">HM</span>
             </div>
             <div>
                 <h1 class="cinzel font-bold text-white text-xs tracking-widest uppercase">Hidden Meanings</h1>
-                <p class="text-[9px] text-purple-400 font-bold uppercase tracking-wider">Official Archive</p>
+                <p class="text-[9px] text-purple-400 font-bold uppercase tracking-wider">Archive</p>
             </div>
         </div>
         
         <div class="pointer-events-auto relative group">
-            <input type="text" id="global-search" oninput="window.app.search(this.value)" placeholder="SEARCH ARCHIVE..." 
-                   class="bg-black/80 border border-white/10 rounded-full px-6 py-2.5 text-xs w-48 focus:w-72 transition-all text-white focus:border-purple-400 outline-none backdrop-blur-md font-mono uppercase tracking-wider">
+            <input type="text" id="global-search" oninput="window.app.search(this.value)" placeholder="SEARCH..." 
+                   class="bg-black/80 border border-white/10 rounded-full px-6 py-2 text-xs w-48 focus:w-72 transition-all text-white focus:border-purple-400 outline-none backdrop-blur-md font-mono uppercase tracking-wider">
         </div>
     </div>
 
     <!-- LOADING OVERLAY -->
     <div id="app-loader" class="fixed inset-0 bg-[#050505] z-[100] flex flex-col items-center justify-center transition-opacity duration-500">
         <div class="w-12 h-12 border-2 border-purple-500/30 border-t-purple-400 rounded-full animate-spin mb-4"></div>
-        <p class="text-purple-300 text-xs uppercase tracking-[0.3em] font-bold animate-pulse">Initializing Library...</p>
+        <p class="text-purple-300 text-xs uppercase tracking-[0.3em] font-bold animate-pulse">Loading Catalog...</p>
     </div>
 
     <!-- MAIN SCROLL CONTAINER -->
-    <div class="h-screen overflow-y-auto custom-scrollbar pb-32" id="scroll-wrapper">
+    <div class="h-screen overflow-y-auto custom-scrollbar" id="scroll-wrapper">
         
         <!-- 1. HOME VIEW -->
         <section id="view-home" class="view-section active">
-            <!-- Background Aura -->
-            <div class="absolute inset-0 z-0 opacity-20 pointer-events-none" style="background: radial-gradient(circle at center, #2e1065 0%, #000000 70%);"></div>
-
-            <div class="relative z-10 max-w-5xl fade-in pt-20">
+            <div class="relative z-10 max-w-4xl text-center">
                 <!-- Profile Image -->
                 <div class="mb-10 flex justify-center">
-                    <div class="relative w-40 h-40 rounded-full p-1 border-2 border-purple-500/40 bg-[#111] profile-glow">
-                        <img src="bill_profile.jpg" alt="Bill Donahue" class="w-full h-full object-cover rounded-full opacity-90 transition-opacity" 
+                    <div class="relative w-40 h-40 rounded-full p-1 border-2 border-purple-500/40 bg-[#111] profile-img">
+                        <img src="bill_profile.jpg" alt="Bill Donahue" class="w-full h-full object-cover rounded-full opacity-90 transition-opacity grayscale hover:grayscale-0" 
                              onerror="this.src='https://ui-avatars.com/api/?name=Bill+Donahue&background=000&color=d8b4fe&size=160'">
                     </div>
                 </div>
 
                 <div class="mb-8 inline-flex items-center gap-3 border border-purple-500/30 px-5 py-2 rounded-full bg-black/40 backdrop-blur-md">
-                    <span class="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></span>
+                    <span class="w-1.5 h-1.5 rounded-full bg-green-400 shadow-[0_0_10px_#4ade80]"></span>
                     <span class="text-[10px] text-purple-200 uppercase tracking-[0.2em] font-bold" id="status-bar">Connecting...</span>
                 </div>
 
                 <h1 class="cinzel text-5xl md:text-8xl font-black mb-8 leading-none tracking-tight text-white drop-shadow-2xl">
-                    HIDDEN<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-300 to-white italic">MEANINGS</span>
+                    THE HIDDEN<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-white italic">LIGHTHOUSE</span>
                 </h1>
                 
-                <div class="mb-12">
-                     <div class="diamond-box">
-                        <span class="diamond-text cinzel text-xs font-bold tracking-[0.3em] uppercase block">Inspired by Bill Donahue</span>
-                    </div>
-                </div>
+                <p class="text-stone-400 text-lg md:text-xl leading-relaxed mb-16 font-light max-w-2xl mx-auto italic pl-6 border-l-2 border-purple-500/30">
+                    "The universe is a giant thought, and you are the thinker of the thought."
+                </p>
 
                 <!-- AI Search Bar -->
-                <div class="max-w-lg mx-auto relative group w-full mb-8">
+                <div class="max-w-lg mx-auto relative group w-full">
                     <input type="text" id="ai-input" placeholder="Ask the Teacher (e.g. 'Pineal')..." 
                            class="w-full bg-white/5 border border-white/10 rounded-full py-4 pl-8 pr-16 text-sm text-white placeholder-stone-500 focus:outline-none focus:border-purple-400 focus:ring-1 focus:ring-purple-400 transition-all backdrop-blur-md font-mono">
                     <button onclick="window.app.performAISearch()" class="absolute right-2 top-2 bottom-2 bg-purple-600 text-white w-10 rounded-full flex items-center justify-center hover:bg-white hover:text-black transition-colors shadow-lg">
@@ -220,7 +207,7 @@
 
         <!-- 2. LIBRARY VIEW -->
         <section id="view-library" class="view-section">
-            <div class="max-w-[1800px] mx-auto px-6">
+            <div class="max-w-[1600px] mx-auto px-6">
                 <div class="flex flex-col md:flex-row justify-between items-end mb-16 pb-8 border-b border-white/10">
                     <div>
                         <h2 class="cinzel text-5xl font-bold text-white mb-2 tracking-tight">The Catalog</h2>
@@ -230,30 +217,35 @@
                         <p class="text-stone-500 font-mono text-xs" id="total-topics-display">Loading...</p>
                     </div>
                 </div>
-                <div id="category-grid" class="masonry-grid"></div>
+                <!-- GRID -->
+                <div id="category-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
             </div>
         </section>
 
         <!-- 3. LECTURES VIEW -->
         <section id="view-list" class="view-section bg-stone-900/10">
             <div class="max-w-6xl mx-auto px-6">
-                <button onclick="window.app.nav('library')" class="mb-10 text-stone-500 hover:text-purple-300 text-xs font-bold uppercase tracking-widest flex items-center gap-2 transition-colors">
+                <button onclick="window.app.nav('library')" class="mb-10 text-stone-500 hover:text-white flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] transition-colors">
                     <span>←</span> Back to Index
                 </button>
-                <h2 id="list-title" class="cinzel text-4xl md:text-6xl text-white mb-4 leading-tight"></h2>
-                <div class="w-20 h-1 bg-purple-500 mb-12"></div>
+                <div class="mb-12 pl-6 border-l-2 border-purple-500">
+                    <span class="text-purple-400 text-[10px] font-bold uppercase tracking-[0.3em] mb-3 block">Selected Concept</span>
+                    <h2 id="active-category-title" class="cinzel text-4xl md:text-6xl font-bold text-white leading-tight"></h2>
+                    <p id="active-category-count" class="text-stone-500 text-xs tracking-[0.2em] font-bold uppercase mt-6 pt-6 border-t border-white/5 inline-block"></p>
+                </div>
                 <div id="list-container" class="grid grid-cols-1 lg:grid-cols-2 gap-4"></div>
             </div>
         </section>
 
         <!-- 4. ANATOMY VIEW -->
-        <section id="view-anatomy" class="view-section px-6">
-            <div class="max-w-7xl mx-auto grid lg:grid-cols-2 gap-20 items-center min-h-[70vh]">
+        <section id="view-anatomy" class="view-section">
+            <div class="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-20 items-center min-h-[70vh]">
                 <div class="relative flex justify-center order-2 lg:order-1">
-                    <div class="relative w-[300px] h-[650px] border border-white/10 rounded-full bg-[#080808] flex justify-center items-center shadow-[0_0_80px_-20px_rgba(168,85,247,0.15)]">
+                    <div class="relative w-[300px] h-[600px] border border-white/10 rounded-full bg-[#080808] flex justify-center items-center shadow-[0_0_80px_-20px_rgba(168,85,247,0.15)]">
                         <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.03),transparent_70%)] rounded-full"></div>
                         <div class="absolute top-[10%] bottom-[10%] w-px bg-gradient-to-b from-transparent via-purple-500/30 to-transparent"></div>
-                        <!-- Nodes -->
+                        
+                        <!-- 7 Chakras -->
                         <div class="anatomy-dot bg-violet-500" style="top: 10%;" onclick="window.app.showAnatomy('Crown / Pineal', 'The Single Eye. Peniel. The light receptor where Jacob saw God face to face. The 7th Seal.')"></div>
                         <div class="anatomy-dot bg-indigo-500" style="top: 22%;" onclick="window.app.showAnatomy('Brow / Pituitary', 'The Third Eye. The center of command. Associated with the 6th Seal. Joseph\'s Mother.')"></div>
                         <div class="anatomy-dot bg-blue-500" style="top: 34%;" onclick="window.app.showAnatomy('Thyroid / Throat', 'The Word (Logos). The center of vibration and frequency. The 5th Seal.')"></div>
@@ -278,61 +270,65 @@
         </section>
 
         <!-- 5. RESOURCES VIEW -->
-        <section id="view-resources" class="view-section px-6 max-w-5xl mx-auto">
-            <h2 class="cinzel text-4xl font-bold text-white mb-16 text-center uppercase tracking-widest">Primary Sources</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <a href="https://www.hiddenmeanings.com/" target="_blank" class="cosmos-card p-10 group bg-[#0A0A0A] hover:bg-[#111] relative block">
-                    <div class="flex justify-between items-start mb-6">
-                        <div class="w-10 h-10 rounded-full bg-[#222] flex items-center justify-center text-white font-serif">H</div>
-                        <span class="text-gray-600 group-hover:text-white transition-colors">↗</span>
-                    </div>
-                    <h3 class="cinzel text-2xl text-white mb-2 group-hover:text-purple-300 transition-colors">HiddenMeanings.com</h3>
-                    <p class="font-mono text-stone-500 text-xs uppercase tracking-widest">Main Portal</p>
-                </a>
-                <a href="https://lifestyleluminaries.blogspot.com/p/bill-donahue.html" target="_blank" class="cosmos-card p-10 group bg-[#0A0A0A] hover:bg-[#111] relative block">
-                    <div class="flex justify-between items-start mb-6">
-                        <div class="w-10 h-10 rounded-full bg-[#222] flex items-center justify-center text-white font-serif">L</div>
-                        <span class="text-gray-600 group-hover:text-white transition-colors">↗</span>
-                    </div>
-                    <h3 class="cinzel text-2xl text-white mb-2 group-hover:text-purple-300 transition-colors">Lifestyle Luminaries</h3>
-                    <p class="font-mono text-stone-500 text-xs uppercase tracking-widest">Video Archive</p>
-                </a>
-                <a href="https://thehiddenlighthouse.blogspot.com/2012/09/the-hidden-lighthouse.html?m=1" target="_blank" class="cosmos-card p-10 group bg-[#0A0A0A] hover:bg-[#111] relative block">
-                    <div class="flex justify-between items-start mb-6">
-                        <div class="w-10 h-10 rounded-full bg-[#222] flex items-center justify-center text-white font-serif">B</div>
-                        <span class="text-gray-600 group-hover:text-white transition-colors">↗</span>
-                    </div>
-                    <h3 class="cinzel text-2xl text-white mb-2 group-hover:text-purple-300 transition-colors">Lighthouse Blog</h3>
-                    <p class="font-mono text-stone-500 text-xs uppercase tracking-widest">2012 Writings</p>
-                </a>
-                <a href="https://archive.org/details/1-revised-bill-donahue-speaks-book-of-secret-doctrines/page/18/mode/1up?ui=embed&wrapper=false" target="_blank" class="cosmos-card p-10 group bg-[#0A0A0A] hover:bg-[#111] relative block">
-                    <div class="flex justify-between items-start mb-6">
-                        <div class="w-10 h-10 rounded-full bg-[#222] flex items-center justify-center text-white font-serif">S</div>
-                        <span class="text-gray-600 group-hover:text-white transition-colors">↗</span>
-                    </div>
-                    <h3 class="cinzel text-2xl text-white mb-2 group-hover:text-purple-300 transition-colors">Secret Doctrines</h3>
-                    <p class="font-mono text-stone-500 text-xs uppercase tracking-widest">PDF Book</p>
-                </a>
+        <section id="view-resources" class="view-section">
+            <div class="max-w-5xl mx-auto px-6">
+                <h2 class="cinzel text-4xl font-bold text-white mb-16 text-center uppercase tracking-widest">Primary Sources</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <a href="https://www.hiddenmeanings.com/" target="_blank" class="cosmos-card p-10 group bg-[#0A0A0A] hover:bg-[#111]">
+                        <div class="flex justify-between items-start mb-6">
+                            <div class="w-10 h-10 rounded-full bg-[#222] flex items-center justify-center text-white font-serif">H</div>
+                            <span class="text-gray-600 group-hover:text-white transition-colors">↗</span>
+                        </div>
+                        <h3 class="cinzel text-2xl text-white mb-2 group-hover:text-purple-300 transition-colors">HiddenMeanings.com</h3>
+                        <p class="font-mono text-stone-500 text-xs uppercase tracking-widest">Main Portal</p>
+                    </a>
+                    <a href="https://lifestyleluminaries.blogspot.com/p/bill-donahue.html" target="_blank" class="cosmos-card p-10 group bg-[#0A0A0A] hover:bg-[#111]">
+                        <div class="flex justify-between items-start mb-6">
+                            <div class="w-10 h-10 rounded-full bg-[#222] flex items-center justify-center text-white font-serif">L</div>
+                            <span class="text-gray-600 group-hover:text-white transition-colors">↗</span>
+                        </div>
+                        <h3 class="cinzel text-2xl text-white mb-2 group-hover:text-purple-300 transition-colors">Lifestyle Luminaries</h3>
+                        <p class="font-mono text-stone-500 text-xs uppercase tracking-widest">Video Archive</p>
+                    </a>
+                    <a href="https://thehiddenlighthouse.blogspot.com/2012/09/the-hidden-lighthouse.html?m=1" target="_blank" class="cosmos-card p-10 group bg-[#0A0A0A] hover:bg-[#111]">
+                        <div class="flex justify-between items-start mb-6">
+                            <div class="w-10 h-10 rounded-full bg-[#222] flex items-center justify-center text-white font-serif">B</div>
+                            <span class="text-gray-600 group-hover:text-white transition-colors">↗</span>
+                        </div>
+                        <h3 class="cinzel text-2xl text-white mb-2 group-hover:text-purple-300 transition-colors">Lighthouse Blog</h3>
+                        <p class="font-mono text-stone-500 text-xs uppercase tracking-widest">2012 Writings</p>
+                    </a>
+                    <a href="https://archive.org/details/1-revised-bill-donahue-speaks-book-of-secret-doctrines/page/18/mode/1up?ui=embed&wrapper=false" target="_blank" class="cosmos-card p-10 group bg-[#0A0A0A] hover:bg-[#111]">
+                        <div class="flex justify-between items-start mb-6">
+                            <div class="w-10 h-10 rounded-full bg-[#222] flex items-center justify-center text-white font-serif">S</div>
+                            <span class="text-gray-600 group-hover:text-white transition-colors">↗</span>
+                        </div>
+                        <h3 class="cinzel text-2xl text-white mb-2 group-hover:text-purple-300 transition-colors">Secret Doctrines</h3>
+                        <p class="font-mono text-stone-500 text-xs uppercase tracking-widest">PDF Book</p>
+                    </a>
+                </div>
             </div>
         </section>
 
         <!-- 6. SEARCH / AI VIEW -->
-        <section id="view-search" class="view-section px-6 max-w-5xl mx-auto bg-[#050505]">
-            <div id="ai-response-box" class="mb-20 bg-white/5 p-10 border-l-4 border-purple-500 hidden fade-in rounded-xl">
-                <div class="flex items-start gap-8">
-                    <div class="w-16 h-16 bg-purple-600 flex items-center justify-center rounded-none shrink-0 text-white font-bold text-2xl font-serif">B</div>
-                    <div class="flex-1">
-                        <span class="text-purple-400 font-mono text-[10px] uppercase tracking-widest mb-3 block">Teacher's Insight</span>
-                        <div id="ai-text-output" class="text-stone-200 text-xl leading-relaxed italic font-light mb-8 font-serif"></div>
+        <section id="view-search" class="view-section px-6">
+            <div class="max-w-5xl mx-auto">
+                <div id="ai-response-box" class="mb-20 bg-white/5 p-10 border-l-4 border-purple-500 hidden rounded-xl fade-in">
+                    <div class="flex items-start gap-8">
+                        <div class="w-16 h-16 bg-purple-600 flex items-center justify-center rounded-none shrink-0 text-white font-bold text-2xl font-serif">B</div>
+                        <div class="flex-1">
+                            <span class="text-purple-400 font-mono text-[10px] uppercase tracking-widest mb-3 block">Teacher's Insight</span>
+                            <div id="ai-text-output" class="text-stone-200 text-xl leading-relaxed italic font-light mb-8 font-serif"></div>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="flex justify-between items-end mb-10 border-b border-white/10 pb-6">
-                <h2 class="cinzel text-3xl font-bold text-white uppercase">Archive Matches</h2>
-                <button onclick="document.getElementById('global-search').value=''; window.app.showView('library')" class="text-[10px] text-stone-500 uppercase font-bold tracking-widest hover:text-white">Clear & Close</button>
+                <div class="flex justify-between items-end mb-10 border-b border-white/10 pb-6">
+                    <h2 class="cinzel text-3xl font-bold text-white uppercase">Archive Matches</h2>
+                    <button onclick="document.getElementById('global-search').value=''; window.app.showView('library')" class="text-[10px] text-stone-500 uppercase font-bold tracking-widest hover:text-white">Clear & Close</button>
+                </div>
+                <div id="search-results" class="grid grid-cols-1 lg:grid-cols-2 gap-4 pb-20"></div>
             </div>
-            <div id="search-results" class="grid grid-cols-1 lg:grid-cols-2 gap-4 pb-20"></div>
         </section>
 
     </main>
@@ -354,12 +350,32 @@
     <input type="file" id="csv-upload" class="hidden" accept=".csv" onchange="window.app.handleFileUpload(this)">
 
     <script>
+        // BACKGROUND STAR GENERATOR
+        function createStars() {
+            const container = document.createElement('div');
+            container.className = 'stars';
+            document.body.prepend(container);
+            
+            for(let i=0; i<100; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.width = Math.random() * 2 + 'px';
+                star.style.height = star.style.width;
+                star.style.top = Math.random() * 100 + '%';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.animationDuration = Math.random() * 3 + 2 + 's';
+                star.style.position = 'absolute';
+                star.style.background = 'white';
+                star.style.borderRadius = '50%';
+                star.style.opacity = Math.random();
+                container.appendChild(star);
+            }
+        }
+        createStars();
+
         window.app = {
             apiKey: "",
-            currentAudio: null,
-            isPlaying: false,
-            
-            // --- FULL RAW DATA ---
+            // PRE-LOADED DATA
             rawCSV: `TITLE OF VIDEO,URL,TOPIC
 ZODIAC & THE BIBLE,https://www.youtube.com/watch?v=loL03YF262Q,THE ZODIAC-COSMIC INFLUENCES
 THE ZODIACAL CLOCK,https://www.youtube.com/watch?v=OcPnoS2L1co,THE ZODIAC-COSMIC INFLUENCES
@@ -431,7 +447,7 @@ BHAGAVAD GITA IN POSITION,,THESE ARE VIDEOS THAT HAVE NOT BEEN UPLOADED TO YOU T
 
             init: function() {
                 try {
-                    // Hybrid Loading: Try fetch, fallback to raw immediately
+                    // Try fetch local file, fallback to raw string immediately
                     fetch('catalog.csv')
                         .then(r => r.ok ? r.text() : Promise.reject())
                         .then(text => { this.processData(text); this.finishLoading(); })
@@ -448,43 +464,25 @@ BHAGAVAD GITA IN POSITION,,THESE ARE VIDEOS THAT HAVE NOT BEEN UPLOADED TO YOU T
                 }, 500);
             },
 
-            // --- ROBUST CSV PARSER ---
             processData: function(csvText) {
-                if (typeof Papa !== 'undefined') {
-                    Papa.parse(csvText, {
-                        header: true,
-                        skipEmptyLines: true,
-                        complete: (results) => {
-                            this.database = results.data.map(row => {
-                                const titleKey = Object.keys(row).find(k => k.toUpperCase().includes('TITLE'));
-                                const urlKey = Object.keys(row).find(k => k.toUpperCase().includes('URL'));
-                                const topicKey = Object.keys(row).find(k => k.toUpperCase().includes('TOPIC'));
-                                return {
-                                    title: row[titleKey] || "",
-                                    url: row[urlKey] || "",
-                                    topic: row[topicKey] || "Uncategorized"
-                                };
-                            }).filter(row => row.title && row.title !== "TITLE OF VIDEO");
-                            this.renderCategories();
-                        }
-                    });
-                } else {
-                    const lines = csvText.trim().split('\n');
-                    this.database = [];
-                    const start = lines[0].startsWith("TITLE") ? 1 : 0;
-                    for (let i = start; i < lines.length; i++) {
-                        const line = lines[i];
-                        if (!line.trim()) continue;
-                        const parts = line.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g);
-                        if (parts && parts.length >= 3) {
-                            let topic = parts[parts.length - 1].trim().replace(/^"|"$/g, '');
-                            let url = parts[parts.length - 2].trim();
-                            let title = parts.slice(0, parts.length - 2).join(',').trim().replace(/^"|"$/g, '');
-                            this.database.push({ title, url, topic });
-                        }
+                // Robust manual CSV parser
+                const lines = csvText.trim().split('\n');
+                this.database = [];
+                const start = lines[0].startsWith("TITLE") ? 1 : 0;
+                
+                for(let i=start; i<lines.length; i++) {
+                    const line = lines[i];
+                    if(!line.trim()) continue;
+                    
+                    const parts = line.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g);
+                    if(parts && parts.length >= 3) {
+                        let topic = parts[parts.length-1].trim().replace(/^"|"$/g, '');
+                        let url = parts[parts.length-2].trim();
+                        let title = parts.slice(0, parts.length-2).join(',').trim().replace(/^"|"$/g, '');
+                        this.database.push({ title, url, topic });
                     }
-                    this.renderCategories();
                 }
+                this.renderCategories();
             },
             
             handleFileUpload: function(input) {
@@ -539,10 +537,10 @@ BHAGAVAD GITA IN POSITION,,THESE ARE VIDEOS THAT HAVE NOT BEEN UPLOADED TO YOU T
                     else if(t_lower.includes("alien") || t_lower.includes("ufo")) icon = "fa-shuttle-space";
                     
                     return `
-                        <div onclick="window.app.openTopic('${t.replace(/'/g, "\\'")}')" class="cosmos-card p-6 group topic-card">
+                        <div onclick="window.app.openTopic('${t.replace(/'/g, "\\'")}')" class="topic-card glass-panel p-6 group cursor-pointer flex flex-col justify-between min-h-[220px]">
                             <div class="flex justify-between items-start mb-4">
                                 <span class="text-xs font-mono text-gray-500">0${i+1}</span>
-                                <i class="fa-solid ${icon} text-gray-600 group-hover:text-[#D8B4FE] transition-colors"></i>
+                                <i class="fa-solid ${icon} text-gray-600 group-hover:text-purple-400 transition-colors text-xl"></i>
                             </div>
                             <h3 class="text-sm font-medium text-gray-200 leading-snug mb-8 group-hover:text-white line-clamp-3">${t}</h3>
                             <div class="flex justify-between items-end border-t border-white/5 pt-3 mt-auto">
@@ -575,7 +573,7 @@ BHAGAVAD GITA IN POSITION,,THESE ARE VIDEOS THAT HAVE NOT BEEN UPLOADED TO YOU T
                                 <h4 class="text-sm font-medium text-gray-300 group-hover:text-white pr-4">${l.title}</h4>
                                 <div class="shrink-0">
                                     ${hasUrl ? 
-                                        `<a href="${l.url}" target="_blank" class="px-5 py-2 bg-white text-black text-[10px] font-bold rounded-full hover:bg-[#D8B4FE] transition-colors uppercase tracking-widest">Watch</a>` :
+                                        `<a href="${l.url}" target="_blank" class="px-5 py-2 bg-white text-black text-[10px] font-bold rounded-full hover:bg-purple-300 transition-colors uppercase tracking-widest">Watch</a>` :
                                         `<span class="text-[10px] text-gray-600 font-bold uppercase tracking-widest border border-white/10 px-3 py-1 rounded-full">Pending</span>`
                                     }
                                 </div>
@@ -612,7 +610,7 @@ BHAGAVAD GITA IN POSITION,,THESE ARE VIDEOS THAT HAVE NOT BEEN UPLOADED TO YOU T
                             <div class="text-[9px] text-gray-500 uppercase tracking-widest mb-1">${l.topic}</div>
                             <h4 class="text-sm text-white font-medium">${l.title}</h4>
                         </div>
-                        ${hasUrl ? `<a href="${l.url}" target="_blank" class="text-[#D8B4FE] text-xs font-bold uppercase tracking-widest hover:text-white">OPEN ↗</a>` : ''}
+                        ${hasUrl ? `<a href="${l.url}" target="_blank" class="text-purple-400 text-xs font-bold uppercase tracking-widest hover:text-white">OPEN ↗</a>` : ''}
                     </div>`;
                 }).join('');
             },
@@ -624,10 +622,9 @@ BHAGAVAD GITA IN POSITION,,THESE ARE VIDEOS THAT HAVE NOT BEEN UPLOADED TO YOU T
                 this.nav('search');
                 const aiBox = document.getElementById('ai-box');
                 const aiText = document.getElementById('ai-text-output');
-                const resultsContainer = document.getElementById('search-results');
                 
                 aiBox.style.display = 'block';
-                aiBox.classList.remove('hidden'); 
+                aiBox.classList.remove('hidden');
                 aiText.innerText = "Consulting the archives...";
                 
                 this.search(query); 
@@ -640,6 +637,7 @@ BHAGAVAD GITA IN POSITION,,THESE ARE VIDEOS THAT HAVE NOT BEEN UPLOADED TO YOU T
                     const data = await response.json();
                     const text = data.candidates[0].content.parts[0].text;
                     document.getElementById('ai-text-output').innerText = text;
+                    this.generateVoice(text);
                 } catch(e) { document.getElementById('ai-text-output').innerText = "Insight unavailable."; }
             },
 
@@ -700,31 +698,8 @@ BHAGAVAD GITA IN POSITION,,THESE ARE VIDEOS THAT HAVE NOT BEEN UPLOADED TO YOU T
                 return combined;
             },
             
-            handleFileUpload: function(input) {
-                const file = input.files[0];
-                if (!file) return;
-                const r = new FileReader();
-                r.onload = (e) => { this.processData(e.target.result); alert("Data Updated!"); };
-                r.readAsText(file);
-            },
-
-            nav: function(id) {
-                document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
-                document.querySelectorAll('.dock-btn').forEach(b => b.classList.remove('active'));
-                
-                const target = document.getElementById('view-' + id);
-                if(target) {
-                    target.classList.add('active');
-                    window.scrollTo(0,0);
-                }
-                
-                const btn = document.getElementById('btn-' + id);
-                if(btn) btn.classList.add('active');
-
-                if(id !== 'search') document.getElementById('global-search').value = '';
-            },
-
-            showView: function(id) { this.nav(id); }
+            nav: function(id) { this.showView(id); },
+            show: function(id) { this.showView(id); }
         };
 
         window.onload = () => app.init();
