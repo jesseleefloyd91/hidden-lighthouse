@@ -122,16 +122,26 @@ window.app = {
     init() {
         createStars();
 
-        Papa.parse('catalog.csv', {
-            download: true,
-            header: true,
-            complete: r => {
-                this.data = r.data.filter(x => x['TITLE OF VIDEO']);
-                this.renderCategories();
-                document.getElementById('status-bar').innerText =
-                    `${this.data.length} Records Online`;
-            }
-        });
+Papa.parse('catalog.csv', {
+    download: true,
+    header: true,
+    skipEmptyLines: true,
+    dynamicTyping: false,
+    complete: (results) => {
+        this.data = results.data
+            .filter(r => r['TITLE OF VIDEO'] && r.URL && r.TOPIC)
+            .map(r => ({
+                "TITLE OF VIDEO": r['TITLE OF VIDEO'].trim(),
+                "URL": r.URL.trim(),
+                "TOPIC": r.TOPIC.trim()
+            }));
+
+        this.renderCategories();
+        document.getElementById('status-bar').innerText =
+            `${this.data.length} Records Online`;
+    },
+    error: () => this.processRawCSV()
+});
 
         this.nav('home');
         setTimeout(() => document.getElementById('app-loader').classList.add('hidden'), 300);
@@ -142,48 +152,94 @@ window.app = {
     /* ==========================================================
        ADVANCED AI RESPONSE (REPLACEMENT)
     ========================================================== */
-    performAISearch() {
-        const q = document.getElementById('ai-input')?.value ||
-                  document.getElementById('global-search')?.value;
-        if (!q) return;
+    performAISearch: function() {
+    const q =
+        document.getElementById('ai-input')?.value ||
+        document.getElementById('global-search')?.value;
 
-        this.nav('search');
-        this.search(q);
+    if (!q) return;
 
-        const box = document.getElementById('ai-box');
-        const out = document.getElementById('ai-text-output');
-        box.style.display = 'block';
-        out.innerText = "…";
+    this.nav('search');
+    this.search(q);
 
-        setTimeout(() => {
-            const lq = q.toLowerCase();
-            let bank = [];
+    const aiBox = document.getElementById('ai-box');
+    const aiText = document.getElementById('ai-text-output');
 
-            Object.keys(BILL_ENGINE.topics).forEach(k => {
-                if (lq.includes(k)) bank = BILL_ENGINE.topics[k];
-            });
+    aiBox.style.display = 'block';
+    aiText.innerText = "…";
 
-            if (bank.length === 0) {
-                const inferred = inferTopicFromQuery(q, this.data);
-                if (inferred && BILL_ENGINE.topics[inferred.split(' ')[0]]) {
-                    bank = BILL_ENGINE.topics[inferred.split(' ')[0]];
-                }
+    setTimeout(() => {
+        const lq = q.toLowerCase();
+        let resp = "";
+
+        const patterns = [
+            {
+                keys: ['pineal','eye'],
+                text: [
+                    "The Pineal is the Single Eye.",
+                    "This is the light receptor of the body.",
+                    "When thine eye be single, thy whole body shall be full of light.",
+                    "This is not religion.",
+                    "This is anatomy."
+                ]
+            },
+            {
+                keys: ['jesus','christ'],
+                text: [
+                    "Jesus is not a man.",
+                    "It is electrical energy.",
+                    "It rises up the spinal column.",
+                    "Born in the solar plexus.",
+                    "Resurrected in the brain."
+                ]
+            },
+            {
+                keys: ['egypt'],
+                text: [
+                    "Egypt is not a place.",
+                    "It is a state of mind.",
+                    "Lower consciousness.",
+                    "Bondage to the senses.",
+                    "The Exodus is neurological."
+                ]
+            },
+            {
+                keys: ['meditation','silence'],
+                text: [
+                    "Be still.",
+                    "Shut down the five senses.",
+                    "Take no thought.",
+                    "Silence changes the current."
+                ]
             }
+        ];
 
-            if (bank.length === 0) bank = BILL_ENGINE.core;
+        let matched = false;
+        for (const p of patterns) {
+            if (p.keys.some(k => lq.includes(k))) {
+                resp = p.text.join(" ");
+                matched = true;
+                break;
+            }
+        }
 
-            const response = [
-                ...shuffle(bank).slice(0, 4),
-                ...shuffle(BILL_ENGINE.core).slice(0, 2)
+        if (!matched) {
+            resp = [
+                "Everything in scripture is the body.",
+                "Everything in religion is biology.",
+                "Everything in mythology is the mind.",
+                "Nothing is external.",
+                "It is all happening within you."
             ].join(" ");
+        }
 
-            out.innerText = response;
-        }, 1100);
-    }
-};
+        aiText.innerText = resp;
+    }, 1200);
+},
 
 window.onload = () => app.init();
 </script>
 
 </body>
 </html>
+
