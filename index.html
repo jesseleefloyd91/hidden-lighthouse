@@ -4,25 +4,46 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Bill Donahue | Official Archive</title>
-
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
-
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;800&family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
 <style>
 /* --- styles unchanged --- */
+/* Added fixes for stars background */
+body {
+    background-color: black;
+    color: white; /* Ensures text is visible on dark bg */
+}
+.stars-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: black; /* Dark space background */
+    overflow: hidden;
+    z-index: -1; /* Behind all content */
+}
+.star {
+    position: absolute;
+    border-radius: 50%;
+    animation: twinkle var(--duration) infinite alternate ease-in-out;
+}
+@keyframes twinkle {
+    0% {
+        opacity: 0.5;
+    }
+    100% {
+        opacity: var(--opacity);
+    }
+}
 </style>
 </head>
-
 <body class="flex flex-col min-h-screen">
-
 <div id="stars-container" class="stars-container"></div>
-
 <!-- ALL HTML CONTENT UNCHANGED -->
 <!-- (home, library, anatomy, resources, search, dock, etc.) -->
-
 <script>
 /* ==========================================================
    STAR FIELD
@@ -44,7 +65,6 @@ function createStars() {
         c.appendChild(s);
     }
 }
-
 /* ==========================================================
    BILL DONAHUE LANGUAGE ENGINE
 ========================================================== */
@@ -102,26 +122,21 @@ const BILL_ENGINE = {
         ]
     }
 };
-
 function shuffle(arr) {
     return arr.sort(() => Math.random() - 0.5);
 }
-
 function inferTopicFromQuery(q, data) {
     const lq = q.toLowerCase();
     const hit = data.find(d => lq.includes(d.TOPIC.toLowerCase().split(' ')[0]));
     return hit ? hit.TOPIC.toLowerCase() : null;
 }
-
 /* ==========================================================
    APP
 ========================================================== */
 window.app = {
     data: [],
-
     init() {
         createStars();
-
 Papa.parse('catalog.csv', {
     download: true,
     header: true,
@@ -135,20 +150,16 @@ Papa.parse('catalog.csv', {
                 "URL": r.URL.trim(),
                 "TOPIC": r.TOPIC.trim()
             }));
-
         this.renderCategories();
         document.getElementById('status-bar').innerText =
             `${this.data.length} Records Online`;
     },
     error: () => this.processRawCSV()
 });
-
         this.nav('home');
         setTimeout(() => document.getElementById('app-loader').classList.add('hidden'), 300);
     },
-
     /* --- ALL EXISTING METHODS KEPT (renderCategories, openTopic, search, nav, anatomy, etc.) --- */
-
     /* ==========================================================
        ADVANCED AI RESPONSE (REPLACEMENT)
     ========================================================== */
@@ -156,22 +167,16 @@ Papa.parse('catalog.csv', {
     const q =
         document.getElementById('ai-input')?.value ||
         document.getElementById('global-search')?.value;
-
     if (!q) return;
-
     this.nav('search');
     this.search(q);
-
     const aiBox = document.getElementById('ai-box');
     const aiText = document.getElementById('ai-text-output');
-
     aiBox.style.display = 'block';
     aiText.innerText = "…";
-
     setTimeout(() => {
         const lq = q.toLowerCase();
         let resp = "";
-
         const patterns = [
             {
                 keys: ['pineal','eye'],
@@ -213,7 +218,6 @@ Papa.parse('catalog.csv', {
                 ]
             }
         ];
-
         let matched = false;
         for (const p of patterns) {
             if (p.keys.some(k => lq.includes(k))) {
@@ -222,7 +226,6 @@ Papa.parse('catalog.csv', {
                 break;
             }
         }
-
         if (!matched) {
             resp = [
                 "Everything in scripture is the body.",
@@ -232,14 +235,11 @@ Papa.parse('catalog.csv', {
                 "It is all happening within you."
             ].join(" ");
         }
-
         aiText.innerText = resp;
     }, 1200);
 },
-
+};
 window.onload = () => app.init();
 </script>
-
 </body>
 </html>
-
