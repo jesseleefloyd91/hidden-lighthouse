@@ -1,17 +1,17 @@
-<!DOCTYPE html>
+HTML<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bill Donahue | Official Archive</title>
-    
+   
     <!-- CSS (Tailwind via CDN) -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
+   
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@300;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+   
     <style>
         :root {
             --bg: #050505;
@@ -20,7 +20,6 @@
             --card-bg: #0A0A0A;
             --border: rgba(255,255,255,0.1);
         }
-
         /* FORCE DARK THEME */
         html, body {
             background-color: var(--bg);
@@ -30,17 +29,18 @@
             height: 100vh;
             margin: 0; padding: 0;
         }
-
         .cinzel { font-family: 'Cinzel', serif; }
         .mono { font-family: 'Space Grotesk', monospace; }
-
         /* Starry Background */
         .stars {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: -1;
             background: radial-gradient(circle at bottom center, #1a103c 0%, #000000 80%);
             opacity: 0.8;
         }
-
+        @keyframes twinkle {
+            from { opacity: 0.5; }
+            to { opacity: 1; }
+        }
         /* Masonry Grid */
         .masonry-grid {
             display: grid;
@@ -48,7 +48,6 @@
             gap: 16px;
             padding-bottom: 140px;
         }
-
         /* Card */
         .cosmos-card {
             background: var(--card-bg);
@@ -69,7 +68,6 @@
             background: #111;
             box-shadow: 0 10px 40px -10px rgba(216, 180, 254, 0.15);
         }
-
         /* Floating Dock */
         .dock-container {
             position: fixed; bottom: 32px; left: 0; width: 100%;
@@ -88,7 +86,6 @@
         }
         .dock-btn:hover { color: white; background: rgba(255,255,255,0.05); }
         .dock-btn.active { background: white; color: black; box-shadow: 0 0 15px rgba(255,255,255,0.3); border-color: white; }
-
         /* Anatomy */
         .anatomy-dot {
             width: 20px; height: 20px; border-radius: 50%; position: absolute; left: 50%; transform: translateX(-50%);
@@ -96,26 +93,23 @@
             box-shadow: 0 0 15px rgba(216, 180, 254, 0.4); z-index: 20;
         }
         .anatomy-dot:hover { transform: translateX(-50%) scale(1.5); background-color: #fff !important; box-shadow: 0 0 30px var(--purple); }
-
         /* Search */
-        .search-input { 
+        .search-input {
             background: rgba(20, 20, 20, 0.8); backdrop-filter: blur(10px);
             border: 1px solid var(--border); color: white;
             padding: 10px 20px 10px 40px; border-radius: 99px; font-size: 12px;
             width: 260px; transition: all 0.3s ease; outline: none;
         }
         .search-input:focus { border-color: var(--purple); width: 320px; box-shadow: 0 0 20px rgba(216, 180, 254, 0.2); }
-
         /* View Management */
         .view-section { display: none; padding-top: 100px; padding-bottom: 150px; width: 100%; min-height: 100vh; animation: fadeIn 0.4s ease; }
         .view-section.active { display: block; }
-        
+       
         #view-home.active {
             display: flex; flex-direction: column; justify-content: center; align-items: center; padding-top: 0;
         }
-        
+       
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
         /* Utils */
         .hidden { display: none !important; }
         .profile-img { box-shadow: 0 0 40px rgba(216, 180, 254, 0.15); transition: 0.5s; }
@@ -125,7 +119,7 @@
             display: inline-block; background: rgba(216, 180, 254, 0.05);
         }
         .diamond-text { transform: skew(15deg); color: var(--purple); text-shadow: 0 0 15px rgba(216, 180, 254, 0.5); }
-        
+       
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: var(--bg); }
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
@@ -133,10 +127,8 @@
     </style>
 </head>
 <body class="flex flex-col min-h-screen">
-
     <!-- STARS -->
     <div class="stars"></div>
-
     <!-- HEADER -->
     <div class="fixed top-0 left-0 w-full p-6 z-40 flex justify-between items-start pointer-events-none">
         <div class="pointer-events-auto flex items-center gap-3 cursor-pointer group" onclick="app.nav('home')">
@@ -148,42 +140,38 @@
                 <p class="text-[9px] text-purple-400 font-bold uppercase tracking-wider">Official Archive</p>
             </div>
         </div>
-        
+       
         <div class="pointer-events-auto relative group">
             <input type="text" id="global-search" oninput="app.search(this.value)" placeholder="SEARCH ARCHIVE..." class="search-input placeholder-gray-500 font-mono uppercase">
         </div>
     </div>
-
     <!-- MAIN -->
     <main id="main-content">
-        
+       
         <!-- 1. HOME VIEW -->
         <section id="view-home" class="view-section active">
             <div class="relative z-10 max-w-4xl text-center">
                 <div class="mb-10 flex justify-center">
                     <div class="relative w-40 h-40 rounded-full p-1 border-2 border-purple-500/40 bg-[#111] profile-img">
-                        <img src="bill_profile.jpg" class="w-full h-full object-cover rounded-full opacity-90 transition-opacity grayscale hover:grayscale-0" 
+                        <img src="bill_profile.jpg" class="w-full h-full object-cover rounded-full opacity-90 transition-opacity grayscale hover:grayscale-0"
                              onerror="this.src='https://ui-avatars.com/api/?name=Bill+Donahue&background=000&color=d8b4fe&size=160'">
                     </div>
                 </div>
-
                 <div class="mb-8 inline-flex items-center gap-3 border border-purple-500/30 px-5 py-2 rounded-full bg-black/40 backdrop-blur-md">
                     <span class="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></span>
                     <span class="text-[10px] text-purple-200 uppercase tracking-[0.2em] font-bold" id="status-bar">System Online</span>
                 </div>
-
                 <h1 class="cinzel text-5xl md:text-8xl font-black mb-8 leading-none tracking-tight text-white drop-shadow-2xl">
                     HIDDEN<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-300 to-white italic">MEANINGS</span>
                 </h1>
-                
+               
                 <div class="mb-12">
                      <div class="diamond-box">
                         <span class="diamond-text cinzel text-xs font-bold tracking-[0.3em] uppercase block">Inspired by Bill Donahue</span>
                     </div>
                 </div>
-
                 <div class="max-w-lg mx-auto relative group w-full">
-                    <input type="text" id="ai-input" placeholder="Ask the Teacher..." 
+                    <input type="text" id="ai-input" placeholder="Ask the Teacher..."
                            class="w-full bg-white/5 border border-white/10 rounded-full py-4 pl-8 pr-16 text-sm text-white focus:outline-none focus:border-purple-400 font-mono transition-all">
                     <button onclick="app.performAISearch()" class="absolute right-2 top-2 bottom-2 bg-purple-600 text-white w-10 rounded-full flex items-center justify-center hover:bg-white hover:text-black transition-colors shadow-lg">
                         <i class="fa-solid fa-arrow-right"></i>
@@ -191,7 +179,6 @@
                 </div>
             </div>
         </section>
-
         <!-- 2. LIBRARY VIEW -->
         <section id="view-library" class="view-section">
             <div class="max-w-[1800px] mx-auto px-6">
@@ -207,7 +194,6 @@
                 <div id="category-grid" class="masonry-grid"></div>
             </div>
         </section>
-
         <!-- 3. LECTURES VIEW -->
         <section id="view-list" class="view-section bg-stone-900/10">
             <div class="max-w-6xl mx-auto px-6">
@@ -222,7 +208,6 @@
                 <div id="list-container" class="grid grid-cols-1 lg:grid-cols-2 gap-4"></div>
             </div>
         </section>
-
         <!-- 4. ANATOMY VIEW -->
         <section id="view-anatomy" class="view-section px-6">
             <div class="max-w-7xl mx-auto grid lg:grid-cols-2 gap-20 items-center min-h-[70vh]">
@@ -252,7 +237,6 @@
                 </div>
             </div>
         </section>
-
         <!-- 5. RESOURCES VIEW -->
         <section id="view-resources" class="view-section px-6 max-w-5xl mx-auto">
             <h2 class="cinzel text-4xl font-bold text-white mb-16 text-center uppercase tracking-widest">Primary Sources</h2>
@@ -291,20 +275,17 @@
                 </a>
             </div>
         </section>
-
         <!-- 6. SEARCH VIEW -->
         <section id="view-search" class="view-section px-6 max-w-5xl mx-auto bg-[#050505]">
             <div id="ai-box" class="mb-12 bg-white/5 p-8 border-l-4 border-purple-500 hidden rounded-xl fade-in">
                 <span class="text-purple-400 font-mono text-[10px] uppercase tracking-widest mb-3 block">Teacher's Insight</span>
                 <div id="ai-text-output" class="text-stone-200 text-xl leading-relaxed italic font-light mb-4 font-serif"></div>
             </div>
-            
+           
             <h2 class="cinzel text-2xl font-bold text-white mb-8 border-b border-white/10 pb-4">Archive Matches</h2>
             <div id="search-list" class="grid grid-cols-1 lg:grid-cols-2 gap-4 pb-20"></div>
         </section>
-
     </main>
-
     <!-- FLOATING DOCK -->
     <div class="dock-container">
         <div class="dock">
@@ -318,14 +299,13 @@
             </button>
         </div>
     </div>
-    
+   
     <input type="file" id="csv-upload" class="hidden" accept=".csv" onchange="app.handleFileUpload(this)">
-
     <script>
         window.app = {
             apiKey: "",
             data: [],
-            
+           
             // --- FULL RAW DATA ---
             rawCSV: `TITLE OF VIDEO,URL,TOPIC
 ZODIAC & THE BIBLE,https://www.youtube.com/watch?v=loL03YF262Q,THE ZODIAC-COSMIC INFLUENCES
@@ -354,10 +334,10 @@ CAPRICORN,https://www.youtube.com/watch?v=j35Xprj7-Pc,ASTROLOGY
 PISCES THE FISH,https://www.youtube.com/watch?v=ErkqFriw3Qc,ASTROLOGY
 ARIES,https://www.youtube.com/watch?v=j-WzX4tH6Ps,ASTROLOGY
 TAURUS,https://www.youtube.com/watch?v=EWRl1Oh4Roo,ASTROLOGY
-GEMINI,https://www.youtube.com/watch?v=z-R-p7_z_A,ASTROLOGY
-CANCER,https://www.youtube.com/watch?v=z-R-p7_z_A,ASTROLOGY
+GEMINI,https://www.youtube.com/watch?v=e8ynE0CCVmI,ASTROLOGY
+CANCER,https://www.youtube.com/watch?v=7oq2LIfwH_c,ASTROLOGY
 LEO,https://www.youtube.com/watch?v=K_v7Oq4i8zQ,ASTROLOGY
-SAGITTARIUS,https://www.youtube.com/watch?v=z-R-p7_z_A,ASTROLOGY
+SAGITTARIUS,https://www.youtube.com/watch?v=2wY3J1w7xu0,ASTROLOGY
 DRIVING OUT THE MONEY CHANGERS,https://www.youtube.com/watch?v=yh25kuzEOhE,THE NEW TESTAMENT---JESUS TEACHINGS
 THE JESUS NOBODY KNOWS,https://www.youtube.com/watch?v=GXBgPeZCipI,THE NEW TESTAMENT---JESUS TEACHINGS
 JESUS AND THE FIG TREE,https://www.youtube.com/watch?v=VOgOXtV70Iw,THE NEW TESTAMENT---JESUS TEACHINGS
@@ -385,38 +365,54 @@ LIGHT FROM THE DESERT,https://www.youtube.com/watch?v=1CS3q-tCcwM,FROM THE EAST
 BIBLE CONTRADICTIONS,https://www.youtube.com/watch?v=LBj1X7amsvQ,THE BIBLE
 ZOROASTER FOUND JESUS STAR,https://www.youtube.com/watch?v=UoOJY58XdMc,ZORASTER, AHURA MAZDA
 ISLAM: UNDERSTANDING ALLAH,https://www.youtube.com/watch?v=xDI2gz0-E1g,ISLAM
-SYMBOLS NUMBERS ETC,https://www.youtube.com/watch?v=2XqXqXqXqXq,SYMBOLS, NUMBERS ETC
-TRADITION,https://www.youtube.com/watch?v=3XqXqXqXqXq,TRADITION
-SATAN DEVIL,https://www.youtube.com/watch?v=4XqXqXqXqXq,SATAN, DEVIL
-UFOS ALIENS,https://www.youtube.com/watch?v=5XqXqXqXqXq,UFO'S ALIENS
-MEDITATION,https://www.youtube.com/watch?v=6XqXqXqXqXq,MEDITATION
-SEX,https://www.youtube.com/watch?v=7XqXqXqXqXq,SEX
+NUMEROLOGY & THE BIBLE,https://www.youtube.com/watch?v=XoA4Wlqd29E,SYMBOLS, NUMBERS ETC
+RELIGION IS A CULT,https://www.youtube.com/watch?v=bbYNc2YrYHM,TRADITION
+CREATION OF THE DEVIL,https://www.youtube.com/watch?v=UGg2P0vo6A0,SATAN, DEVIL
+ALIENS AND RELIGION,https://www.youtube.com/watch?v=k0E00kagGOs,UFO'S ALIENS
+MEDITATION AND WATCHERS OF LIGHT,https://www.youtube.com/watch?v=S9IybP6FYE0,MEDITATION
+COSMIC SEX PART 1,https://www.youtube.com/watch?v=Z5gK1sD3-do,SEX
 MISCELLANEOUS,https://www.youtube.com/watch?v=8XqXqXqXqXq,MISCELLANEOUS
-BHAGAVAD GITA IN POSITION,,THESE ARE VIDEOS THAT HAVE NOT BEEN UPLOADED TO YOU TUBE AS OF YET. I WILL NOTIFY YOU WHEN THEY ARE`,
-
+KRISHNA BHAGAVAD GITA BEGINNING,https://www.youtube.com/watch?v=PXf2Hv-dgX4,HARE KRISHNA THE BHAGAVAD GITA KUNDALINI ETC`,
             init: function() {
                 // INSTANT LOAD - Parse raw data immediately
                 this.processData(this.rawCSV);
                 document.getElementById('status-bar').innerText = `${this.data.length} Records Online`;
+                this.createStars();
                 this.nav('home');
-                
+               
                 // Attempt fetch in background
                 fetch('catalog.csv').then(r=>r.text()).then(t=>this.processData(t)).catch(e=>{});
             },
-
+            createStars: function() {
+                const stars = document.querySelector('.stars');
+                for (let i = 0; i < 200; i++) {
+                    const star = document.createElement('div');
+                    star.style.position = 'absolute';
+                    const size = Math.random() * 2 + 1;
+                    star.style.width = `${size}px`;
+                    star.style.height = `${size}px`;
+                    star.style.backgroundColor = 'white';
+                    star.style.borderRadius = '50%';
+                    star.style.left = `${Math.random() * 100}%`;
+                    star.style.top = `${Math.random() * 100}%`;
+                    star.style.opacity = Math.random() * 0.5 + 0.3;
+                    star.style.animation = `twinkle ${Math.random() * 2 + 2}s ease-in-out infinite alternate`;
+                    stars.appendChild(star);
+                }
+            },
             processData: function(csvText) {
                 // Manual parser handles title commas by using the last two commas as anchors
                 const lines = csvText.trim().split('\n');
                 this.data = [];
                 const start = lines[0].startsWith("TITLE") ? 1 : 0;
-                
+               
                 for(let i=start; i<lines.length; i++) {
                     const line = lines[i];
                     if(!line.trim()) continue;
-                    
+                   
                     const lastComma = line.lastIndexOf(',');
                     const secondLastComma = line.lastIndexOf(',', lastComma - 1);
-                    
+                   
                     if (lastComma > -1 && secondLastComma > -1) {
                         const topic = line.substring(lastComma + 1).trim().replace(/^"|"$/g, '');
                         const url = line.substring(secondLastComma + 1, lastComma).trim();
@@ -426,55 +422,72 @@ BHAGAVAD GITA IN POSITION,,THESE ARE VIDEOS THAT HAVE NOT BEEN UPLOADED TO YOU T
                 }
                 this.renderCategories();
             },
-            
+           
             handleFileUpload: function(input) {
                 const file = input.files[0];
                 if (!file) return;
-                const r = new FileReader();
-                r.onload = (e) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
                     this.processData(e.target.result);
                     alert("Catalog updated from file!");
                 };
                 reader.readAsText(file);
             },
-
             getUniqueTopics: function() {
                 return [...new Set(this.data.map(item => item.topic))].sort();
             },
-
             nav: function(id) {
                 document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
                 document.querySelectorAll('.dock-btn').forEach(b => b.classList.remove('active'));
-                
+               
                 const target = document.getElementById('view-' + id);
                 if(target) target.classList.add('active');
-                
+               
                 const btn = document.getElementById('btn-' + id);
                 if(btn) btn.classList.add('active');
-
                 if(id !== 'search') document.getElementById('global-search').value = '';
                 window.scrollTo(0,0);
             },
-            
+           
             showView: function(id) { this.nav(id); },
-
             getIcon: function(t) {
-                const tl = t.toLowerCase();
-                if(tl.includes("zodiac")) return "fa-meteor";
-                if(tl.includes("bible")) return "fa-book-bible";
-                if(tl.includes("brain")) return "fa-brain";
-                if(tl.includes("alien")) return "fa-user-astronaut";
-                if(tl.includes("meditation")) return "fa-om";
-                if(tl.includes("jesus")) return "fa-cross";
-                if(tl.includes("sex")) return "fa-dna";
-                return "fa-star";
+                const iconMap = {
+                    'THE ZODIAC-COSMIC INFLUENCES': 'fa-meteor',
+                    'ASTROLOGY': 'fa-stars',
+                    'THE NEW TESTAMENT---JESUS TEACHINGS': 'fa-cross',
+                    'EMERALD TABLETS--ALIEN INVASION---WAS THE COMMANDER THE ONE WE KNOW AS JESUS ?': 'fa-user-astronaut',
+                    'DECEMBER 21 2012 THE DAY THAT STARTED A HUNDRED YEARS AGO-BEGINNING OF PASSOVER': 'fa-calendar-days',
+                    'THE BOOK OF REVELATION': 'fa-book-open',
+                    'QUANTUM-PHOTONS-PARALLEL UNIVERSE-LIGHT': 'fa-atom',
+                    'Old Testament And Thoughts About The Bible': 'fa-book-tanakh',
+                    'EXODUS': 'fa-door-open',
+                    'JOSEPH AND THE COAT OF MANY COLORS': 'fa-palette',
+                    'THE SONG OF SONGS-THE SONG OF SOLOMON': 'fa-music',
+                    'BILL INTERPRETS THE TEACHINGS OF BUDDHA': 'fa-praying-hands',
+                    'THE TEN COMMANDMENTS': 'fa-tablets',
+                    'RELIGION AND RELIGIOUS DOCTRINES AN CHRISTIANITY': 'fa-church',
+                    'HARE KRISHNA THE BHAGAVAD GITA KUNDALINI ETC': 'fa-om',
+                    'HIDDEN MEANINGS': 'fa-key-skeleton',
+                    'HUMAN BEING-BODY-BRAIN-MIND ETC.': 'fa-brain',
+                    'FROM THE EAST': 'fa-sun',
+                    'THE BIBLE': 'fa-book-bible',
+                    'ZORASTER, AHURA MAZDA': 'fa-fire',
+                    'ISLAM': 'fa-mosque',
+                    'SYMBOLS, NUMBERS ETC': 'fa-hashtag',
+                    'TRADITION': 'fa-scroll',
+                    'SATAN, DEVIL': 'fa-skull',
+                    "UFO'S ALIENS": 'fa-rocket',
+                    'MEDITATION': 'fa-yin-yang',
+                    'SEX': 'fa-venus-mars',
+                    'MISCELLANEOUS': 'fa-question-circle'
+                };
+                return iconMap[t] || 'fa-star';
             },
-
             renderCategories: function() {
                 const topics = this.getUniqueTopics();
                 const grid = document.getElementById('category-grid');
                 document.getElementById('total-topics-display').innerText = `${topics.length} Categories`;
-                
+               
                 grid.innerHTML = topics.map((t, i) => {
                     const count = this.data.filter(d => d.topic === t).length;
                     const icon = this.getIcon(t);
@@ -493,18 +506,16 @@ BHAGAVAD GITA IN POSITION,,THESE ARE VIDEOS THAT HAVE NOT BEEN UPLOADED TO YOU T
                     `;
                 }).join('');
             },
-
             openTopic: function(topic) {
                 this.nav('list');
-                document.getElementById('list-title').innerText = topic;
+                document.getElementById('active-category-title').innerText = topic;
                 const items = this.data.filter(i => i.topic === topic);
                 const isPending = topic.includes("NOT BEEN UPLOADED");
-                
+               
                 document.getElementById('active-category-count').innerText = isPending ? "ARCHIVE OFFLINE" : `${items.length} LECTURES`;
-
                 const container = document.getElementById('list-container');
                 if(isPending) {
-                    container.innerHTML = items.map(l => 
+                    container.innerHTML = items.map(l =>
                         `<div class="p-4 border-b border-white/10 text-gray-500 text-xs font-mono uppercase tracking-widest">${l.title}</div>`
                     ).join('');
                 } else {
@@ -514,7 +525,7 @@ BHAGAVAD GITA IN POSITION,,THESE ARE VIDEOS THAT HAVE NOT BEEN UPLOADED TO YOU T
                             <div class="p-5 border border-white/5 rounded-lg flex justify-between items-center hover:bg-white/5 transition-all group mb-2 bg-[#0A0A0A]">
                                 <h4 class="text-sm font-medium text-gray-300 group-hover:text-white pr-4">${l.title}</h4>
                                 <div class="shrink-0">
-                                    ${hasUrl ? 
+                                    ${hasUrl ?
                                         `<a href="${l.url}" target="_blank" class="px-5 py-2 bg-white text-black text-[10px] font-bold rounded-full hover:bg-[#D8B4FE] transition-colors uppercase tracking-widest">Watch</a>` :
                                         `<span class="text-[10px] text-gray-600 font-bold uppercase tracking-widest border border-white/10 px-3 py-1 rounded-full">Pending</span>`
                                     }
@@ -524,26 +535,24 @@ BHAGAVAD GITA IN POSITION,,THESE ARE VIDEOS THAT HAVE NOT BEEN UPLOADED TO YOU T
                     }).join('');
                 }
             },
-
             showAnatomy: function(t, d) {
                 document.getElementById('anatomy-title').innerText = t;
                 document.getElementById('anatomy-desc').innerText = d;
             },
             info: function(t,d) { this.showAnatomy(t,d); },
-
             search: function(val) {
-                if(!val) { 
+                if(!val) {
                     if(document.getElementById('view-search').classList.contains('active')) this.nav('library');
-                    return; 
+                    return;
                 }
                 this.nav('search');
                 document.getElementById('ai-box').style.display = 'none';
-                
-                const results = this.data.filter(i => 
-                    i.title.toLowerCase().includes(val.toLowerCase()) || 
+               
+                const results = this.data.filter(i =>
+                    i.title.toLowerCase().includes(val.toLowerCase()) ||
                     i.topic.toLowerCase().includes(val.toLowerCase())
                 );
-                
+               
                 document.getElementById('search-list').innerHTML = results.map(l => {
                     const hasUrl = l.url && l.url.includes('http');
                     return `
@@ -556,34 +565,61 @@ BHAGAVAD GITA IN POSITION,,THESE ARE VIDEOS THAT HAVE NOT BEEN UPLOADED TO YOU T
                     </div>`;
                 }).join('');
             },
-
-            performAISearch: async function(val) {
-                const query = val || document.getElementById('ai-input').value || document.getElementById('global-search').value;
+            performAISearch: async function() {
+                const query = document.getElementById('ai-input').value || document.getElementById('global-search').value;
                 if (!query) return;
-                
+               
                 this.nav('search');
                 const aiBox = document.getElementById('ai-box');
                 const aiText = document.getElementById('ai-text-output');
-                
+               
                 aiBox.style.display = 'block';
-                aiBox.classList.remove('hidden'); 
+                aiBox.classList.remove('hidden');
                 aiText.innerText = "Consulting the archives...";
-                
-                this.search(query); 
+               
+                this.search(query);
 
-                // Simulator for instant response
-                setTimeout(() => {
-                    const q = query.toLowerCase();
-                    let response = `The hidden meaning of "${query}" is found in the biological function of the human mind.`;
-                    
-                    if(q.includes('pineal') || q.includes('eye')) response = "The Single Eye is the Pineal Gland. It is the light receptor of the body where Jacob saw God face to face. When your eye is single, your whole body is full of light.";
-                    else if(q.includes('egypt')) response = "Egypt represents the lower mind, the physical bondage. We must cross the Red Sea of emotion to reach the Promised Land.";
-                    else if(q.includes('jesus')) response = "Jesus is the Greek word for Joshua. It represents the electrical energy rising up the spine to the brain.";
-                    
-                    aiText.innerText = response;
-                }, 1000);
+                if (!this.apiKey) {
+                    this.apiKey = prompt('Enter your OpenAI API Key to enable AI responses:');
+                    if (!this.apiKey) {
+                        aiText.innerText = "AI query cancelled. Provide API key to proceed.";
+                        return;
+                    }
+                }
+
+                try {
+                    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${this.apiKey}`
+                        },
+                        body: JSON.stringify({
+                            model: 'gpt-3.5-turbo',
+                            messages: [
+                                {
+                                    role: 'system',
+                                    content: 'You are Bill Donahue, teaching the hidden meanings in the Bible, astrology, quantum physics, and esoteric knowledge. Respond in first person as if you are Bill Donahue.'
+                                },
+                                {
+                                    role: 'user',
+                                    content: query
+                                }
+                            ]
+                        })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('API request failed');
+                    }
+
+                    const data = await response.json();
+                    aiText.innerText = data.choices[0].message.content;
+                } catch (e) {
+                    aiText.innerText = "Error consulting the teacher. Check API key or try again.";
+                }
             },
-            
+           
             nav: function(id) {
                 document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
                 document.querySelectorAll('.dock-btn').forEach(b => b.classList.remove('active'));
@@ -594,10 +630,9 @@ BHAGAVAD GITA IN POSITION,,THESE ARE VIDEOS THAT HAVE NOT BEEN UPLOADED TO YOU T
                 if(id !== 'search') document.getElementById('global-search').value = '';
                 window.scrollTo(0,0);
             },
-            
+           
             show: function(id) { this.nav(id); }
         };
-
         window.onload = () => app.init();
     </script>
 </body>
