@@ -226,7 +226,7 @@
                     <p id="active-category-count" class="text-stone-500 text-xs tracking-[0.2em] font-bold uppercase mt-6 pt-6 border-t border-white/5 inline-block"></p>
                 </div>
                 <div id="list-container" class="grid grid-cols-1 lg:grid-cols-2 gap-4"></div>
-            </div>
+                </div>
         </section>
         <!-- 4. ANATOMY -->
         <section id="view-anatomy" class="view-section px-6">
@@ -343,72 +343,7 @@
         window.app = {
             data: [],
             // FULL EMBEDDED DATA
-            rawCSV: `TITLE OF VIDEO,URL,TOPIC
-ZODIAC & THE BIBLE,https://www.youtube.com/watch?v=loL03YF262Q,THE ZODIAC-COSMIC INFLUENCES
-THE ZODIACAL CLOCK,https://www.youtube.com/watch?v=OcPnoS2L1co,THE ZODIAC-COSMIC INFLUENCES
-URANUS AND AQUARIUS,https://www.youtube.com/watch?v=n0s7tnoKcnk,THE ZODIAC-COSMIC INFLUENCES
-URANUS AND THE CHAKRAS,https://www.youtube.com/watch?v=QPAVO2iPMUA,THE ZODIAC-COSMIC INFLUENCES
-SYMBOLS IN THE SKY,https://www.youtube.com/watch?v=fgFjHW6syas,THE ZODIAC-COSMIC INFLUENCES
-ASTROLOGY IN CHRISTIANITY,https://www.youtube.com/watch?v=RUqTrnfdM-Y,THE ZODIAC-COSMIC INFLUENCES
-AQUARIUS: WHAT AQUARIUS MEANS TO YOU,https://www.youtube.com/watch?v=-wObnbky9pE,THE ZODIAC-COSMIC INFLUENCES
-AQUARIUS: WHAT AQUARIUS MEANS TO YOU PART 2,https://www.youtube.com/watch?v=4M6j6DwBWBg,THE ZODIAC-COSMIC INFLUENCES
-ASTROLOGY IN THE NEW TESTAMENT,https://www.youtube.com/watch?v=wotYlL6kPgE,THE ZODIAC-COSMIC INFLUENCES
-PLUTO IS READY,https://www.youtube.com/watch?v=5YKp_o7GpIA,THE ZODIAC-COSMIC INFLUENCES
-AQUARIUS CANT STOP BAD GUYS,https://www.youtube.com/watch?v=Em6gk9Al2vc,THE ZODIAC-COSMIC INFLUENCES
-PLUTONIC VIOLENCE,https://www.youtube.com/watch?v=CBz6GmHxsM8,THE ZODIAC-COSMIC INFLUENCES
-URANUS: ALL ABOUT IT,https://www.youtube.com/watch?v=Qow8LTn10TI,THE ZODIAC-COSMIC INFLUENCES
-AQUARIUS: DOORWAY TO AQUARIUS,https://www.youtube.com/watch?v=wCCqJNIbXoA,THE ZODIAC-COSMIC INFLUENCES
-URANUS AND YOUR BODY,https://www.youtube.com/watch?v=_KWDcV_D-po,THE ZODIAC-COSMIC INFLUENCES
-STARS ARE SPEAKING,https://www.youtube.com/watch?v=kMy2yHBPr_U,THE ZODIAC-COSMIC INFLUENCES
-LET THEM BE FOR SIGNS,https://www.youtube.com/watch?v=sSjGBBuNh14,THE ZODIAC-COSMIC INFLUENCES
-ROASTED LAMB,https://www.youtube.com/watch?v=sSjGBBuNh14,THE ZODIAC-COSMIC INFLUENCES
-AQUARIUS,https://www.youtube.com/watch?v=rdrYqKLxFhM,ASTROLOGY
-VIRGO,https://www.youtube.com/watch?v=SAxaonQNYHA,ASTROLOGY
-LIBRA,https://www.youtube.com/watch?v=E0Jl3Y3tAGc,ASTROLOGY
-SCORPIO,https://www.youtube.com/watch?v=uj1eVn-3pDs,ASTROLOGY
-CAPRICORN,https://www.youtube.com/watch?v=j35Xprj7-Pc,ASTROLOGY
-PISCES THE FISH,https://www.youtube.com/watch?v=ErkqFriw3Qc,ASTROLOGY
-ARIES,https://www.youtube.com/watch?v=j-WzX4tH6Ps,ASTROLOGY
-TAURUS,https://www.youtube.com/watch?v=EWRl1Oh4Roo,ASTROLOGY
-GEMINI,https://www.youtube.com/watch?v=z-R-p7_z_A,ASTROLOGY
-CANCER,https://www.youtube.com/watch?v=z-R-p7_z_A,ASTROLOGY
-LEO,https://www.youtube.com/watch?v=K_v7Oq4i8zQ,ASTROLOGY
-SAGITTARIUS,https://www.youtube.com/watch?v=z-R-p7_z_A,ASTROLOGY
-DRIVING OUT THE MONEY CHANGERS,https://www.youtube.com/watch?v=yh25kuzEOhE,THE NEW TESTAMENT---JESUS TEACHINGS
-THE JESUS NOBODY KNOWS,https://www.youtube.com/watch?v=GXBgPeZCipI,THE NEW TESTAMENT---JESUS TEACHINGS
-JESUS AND THE FIG TREE,https://www.youtube.com/watch?v=VOgOXtV70Iw,THE NEW TESTAMENT---JESUS TEACHINGS
-EMERALD TABLETS: ALIEN INVASION ?,https://www.youtube.com/watch?v=TKZkvAiHPsk,EMERALD TABLETS--ALIEN INVASION---WAS THE COMMANDER THE ONE WE KNOW AS JESUS ?
-EMERALD TABLETS UFO COMMANDER AND CHRIST,https://www.youtube.com/watch?v=LM9yezr4rBM,EMERALD TABLETS--ALIEN INVASION---WAS THE COMMANDER THE ONE WE KNOW AS JESUS ?
-2012 AND BEYOND A WHOLE LOT OF SHAKING GOING ON,https://www.youtube.com/watch?v=mpgOVQ1Xwwc,DECEMBER 21 2012 THE DAY THAT STARTED A HUNDRED YEARS AGO-BEGINNING OF PASSOVER
-YOUR INHERITANCE,https://www.youtube.com/watch?v=-X-fIEv4RF0,THE BOOK OF REVELATION
-LAMBS WIFE,https://www.youtube.com/watch?v=OJcgH9I3kb8,THE BOOK OF REVELATION
-WHO OPENS THE BOOK,,THE BOOK OF REVELATION
-SPIRIT AND QUANTUM,https://www.youtube.com/watch?v=qpYSmtwDfUY,QUANTUM-PHOTONS-PARALLEL UNIVERSE-LIGHT
-PROVING GOD BY PROVING LIGHT,https://www.youtube.com/watch?v=2jkM_a2o4GE,QUANTUM-PHOTONS-PARALLEL UNIVERSE-LIGHT
-COSMIC OM,https://www.youtube.com/watch?v=uK8nB1xO_kI,QUANTUM-PHOTONS-PARALLEL UNIVERSE-LIGHT
-PHOTONS ARE COMING,https://www.youtube.com/watch?v=u9x6mYF2qJc,QUANTUM-PHOTONS-PARALLEL UNIVERSE-LIGHT
-ISAIAH BOOK OF ISAIAH 1,https://www.youtube.com/watch?v=HUaLrOBo9Ng,Old Testament And Thoughts About The Bible
-EXODUS HEAVY HANDED MOSES,https://www.youtube.com/watch?v=2sWQLKu8LeM,EXODUS
-JOSEPHS COAT OF MANY COLORS,https://www.youtube.com/watch?v=zP102uvVhiE,JOSEPH AND THE COAT OF MANY COLORS
-SONG OF SONGS,https://www.youtube.com/watch?v=0rL-h3tHhfE,THE SONG OF SONGS-THE SONG OF SOLOMON
-HUNGER,https://www.youtube.com/watch?v=otOs5Mr2Mxc,BILL INTERPRETS THE TEACHINGS OF BUDDHA
-TEN COMMANDMENTS PART 1,https://www.youtube.com/watch?v=_jrhpjyTDzU,THE TEN COMMANDMENTS
-RELIGIOUS HYPOCRITES,https://www.youtube.com/watch?v=9NoPdxiNw2o,RELIGION AND RELIGIOUS DOCTRINES AN CHRISTIANITY
-THE CIRCLE,https://www.youtube.com/watch?v=EfotTbrG_LE,HARE KRISHNA THE BHAGAVAD GITA KUNDALINI ETC
-HIDDEN MEANINGS,https://www.youtube.com/watch?v=cArsejMSqbU,HIDDEN MEANINGS
-BRAIN BIBLE AND UNIVERSE,https://www.youtube.com/watch?v=fJ1OZWa93ps,HUMAN BEING-BODY-BRAIN-MIND ETC.
-LIGHT FROM THE DESERT,https://www.youtube.com/watch?v=1CS3q-tCcwM,FROM THE EAST
-BIBLE CONTRADICTIONS,https://www.youtube.com/watch?v=LBj1X7amsvQ,THE BIBLE
-ZOROASTER FOUND JESUS STAR,https://www.youtube.com/watch?v=UoOJY58XdMc,ZORASTER, AHURA MAZDA
-ISLAM: UNDERSTANDING ALLAH,https://www.youtube.com/watch?v=xDI2gz0-E1g,ISLAM
-SYMBOLS NUMBERS ETC,https://www.youtube.com/watch?v=2XqXqXqXqXq,SYMBOLS, NUMBERS ETC
-TRADITION,https://www.youtube.com/watch?v=3XqXqXqXqXq,TRADITION
-SATAN DEVIL,https://www.youtube.com/watch?v=4XqXqXqXqXq,SATAN, DEVIL
-UFOS ALIENS,https://www.youtube.com/watch?v=5XqXqXqXqXq,UFO'S ALIENS
-MEDITATION,https://www.youtube.com/watch?v=6XqXqXqXqXq,MEDITATION
-SEX,https://www.youtube.com/watch?v=7XqXqXqXqXq,SEX
-MISCELLANEOUS,https://www.youtube.com/watch?v=8XqXqXqXqXq,MISCELLANEOUS
-BHAGAVAD GITA IN POSITION,,THESE ARE VIDEOS THAT HAVE NOT BEEN UPLOADED TO YOU TUBE AS OF YET. I WILL NOTIFY YOU WHEN THEY ARE`,
+            rawCSV: `TITLE OF VIDEO,URL,TOPIC 911 UNANSWERED PRAYER ON 911,https://www.youtube.com/watch?v=-N_e18xe9sE,911 2012 AND BEYOND A WHOLE LOT OF SHAKING GOING ON,https://www.youtube.com/watch?v=mpgOVQ1Xwwc,2012 & BEYOND 2012 AND BEYOND WINDS OF CHANGE,https://www.youtube.com/watch?v=H0XgxrzMEWc,2012 & BEYOND 2012 AND BEYOND JESUS FACTOR,https://www.youtube.com/watch?v=A8_54M09jr4,2012 & BEYOND 2012 AND BEYOND WHAT'S IT ALL ABOUT,https://www.youtube.com/watch?v=G_mM85yC9yA,2012 & BEYOND 2012 AND BEYOND DISEMBODIED MIND,https://www.youtube.com/watch?v=ecG9hktt7dc,2012 & BEYOND 2012 AND BEYOND SOCIETY WILL CHANGE,https://www.youtube.com/watch?v=3U5giKtF7QM,2012 & BEYOND 2012 AND BEYOND COSMIC PASSOVER,https://www.youtube.com/watch?v=hLDV2q3k_l0,2012 & BEYOND 2012 AND BEYOND EIGHT SPOKED WHEEL,https://www.youtube.com/watch?v=7gY6YT3JXm4,2012 & BEYOND 2012 AND BEYOND GATHERING STORM,https://www.youtube.com/watch?v=5U2WdqKgugs,2012 & BEYOND 2012 AND BEYOND HELL AND BAPTISM,https://www.youtube.com/watch?v=qmO2tWkMbIs,2012 & BEYOND 2012 AND BEYOND THE GREAT CHANGE RIGHT HERE RIGHT NOW,https://www.youtube.com/watch?v=Ohbd6PKngxk,2012 & BEYOND 2012 AND BEYOND HERE COMES THE SUN,https://www.youtube.com/watch?v=h3tScNpvl_E,2012 & BEYOND 2012 AND BEYOND COUNTDOWN,https://www.youtube.com/watch?v=tYU66ak1G5g,2012 & BEYOND 2012 AND BEYOND ALPHA & OMEGA,https://www.youtube.com/watch?v=lfhe9Etv1sQ,2012 & BEYOND 2012 AND BEYOND ARE WE RESPONSIBLE ?,https://www.youtube.com/watch?v=SSaAbFMrOVg,2012 & BEYOND 2012 AND BEYOND OMEGA POINT,https://www.youtube.com/watch?v=DflegKlT8H4,2012 & BEYOND 2012 AND BEYOND OUR SECRET LIVES,https://www.youtube.com/watch?v=tiOnidpHQpU,2012 & BEYOND 2012 AND BEYOND OUR WORLD TODAY, THE OMEGA POINT,https://www.youtube.com/watch?v=rBxx7waLWYA,2012 & BEYOND AHURA MAZDA,https://www.youtube.com/watch?v=Dec-7IP3Oiw,AHURA MAZDA ANGLES, ANGELS, AND CHANGE,https://www.youtube.com/watch?v=IVAezL3juB8,ANGELS ANGELIC PETS,https://www.youtube.com/watch?v=fCTr6mfRj_M,ANIMALS AQUARIUS,https://www.youtube.com/watch?v=rdrYqKLxFhM,ASTROLOGY & CONSTELLATIONS VIRGO,https://www.youtube.com/watch?v=SAxaonQNYHA,ASTROLOGY & CONSTELLATIONS LIBRA,https://www.youtube.com/watch?v=E0Jl3Y3tAGc,ASTROLOGY & CONSTELLATIONS SCORPIO,https://www.youtube.com/watch?v=uj1eVn-3pDs,ASTROLOGY & CONSTELLATIONS CAPRICORN,https://www.youtube.com/watch?v=j35Xprj7-Pc,ASTROLOGY & CONSTELLATIONS PISCES THE FISH,https://www.youtube.com/watch?v=ErkqFriw3Qc,ASTROLOGY & CONSTELLATIONS ARIES,https://www.youtube.com/watch?v=j-WzX4tH6Ps,ASTROLOGY & CONSTELLATIONS TAURUS,https://www.youtube.com/watch?v=EWRl1Oh4Roo,ASTROLOGY & CONSTELLATIONS SAGITTARIUS 1,https://www.youtube.com/watch?v=2wY3J1w7xu0,ASTROLOGY & CONSTELLATIONS SAGITTARIUS 2,https://www.youtube.com/watch?v=YfDytFVlfg0,ASTROLOGY & CONSTELLATIONS GEMINI,https://www.youtube.com/watch?v=e8ynE0CCVmI,ASTROLOGY & CONSTELLATIONS LEO,https://www.youtube.com/watch?v=jc-SQX32kI0,ASTROLOGY & CONSTELLATIONS CANCER,https://www.youtube.com/watch?v=7oq2LIfwH_c,ASTROLOGY & CONSTELLATIONS ATOM AND EVE,https://www.youtube.com/watch?v=FJPgXl3DKuk,ATOM THE CIRCLE,https://www.youtube.com/watch?v=EfotTbrG_LE,BHAGAVAD GITA NATURE WILL NOURISH YOU,https://www.youtube.com/watch?v=wLRVyRQEu5s,BHAGAVAD GITA RESULTS OF WHAT YOU DID,https://www.youtube.com/watch?v=Z7Cyxsawbp8,BHAGAVAD GITA ETERNAL SELF,https://www.youtube.com/watch?v=bWcQPg7sGlY,BHAGAVAD GITA BEGINNING,https://www.youtube.com/watch?v=olfRJyaEOJE,BHAGAVAD GITA BLUE BLACK BOY,https://www.youtube.com/watch?v=mwLRBvuRyd4,BHAGAVAD GITA MEDITATE ON ME,https://www.youtube.com/watch?v=XoaL12Qp998,BHAGAVAD GITA NATURE COMPELS YOU TO ACT,https://www.youtube.com/watch?v=HECL-7iQ08E,BHAGAVAD GITA THEY ACT TO BE SEEN,https://www.youtube.com/watch?v=vI8PttT7oGk,BHAGAVAD GITA ABSENT FROM THE BODY IN OM,https://www.youtube.com/watch?v=kMTiyQ6KpiA,BHAGAVAD GITA WATER LILY IS DRY,https://www.youtube.com/watch?v=F8EWssRNSf4,BHAGAVAD GITA DON'T DO ANOTHERS DUTY,https://www.youtube.com/watch?v=Fw36Jx_mANg,BHAGAVAD GITA MY FRIEND, MY ENEMY, MYSELF,https://www.youtube.com/watch?v=CE9uPRboDkQ,BHAGAVAD GITA UNITY OF LIFE,https://www.youtube.com/watch?v=OK_7ormF6Y4,BHAGAVAD GITA THIS IS NO TIME TO QUIT,https://www.youtube.com/watch?v=JoalgWySYOU,BHAGAVAD GITA SELF CONTROL,https://www.youtube.com/watch?v=qQuTsQH2hRI,BHAGAVAD GITA MEDITATION OF DEATH,https://www.youtube.com/watch?v=99mOkQ7C_EM,BHAGAVAD GITA ETERNAL SECRET,https://www.youtube.com/watch?v=kknrb5bhjbI,BHAGAVAD GITA CUP OF SOMA,https://www.youtube.com/watch?v=IpYWoCo95ag,BHAGAVAD GITA ME PLUS ME EQUALS YOU,https://www.youtube.com/watch?v=zBQmIrBTu7k,BHAGAVAD GITA BHAGAVAD GITA REVIEW,https://www.youtube.com/watch?v=Oitzm_KzIgs,BHAGAVAD GITA BHAGWAN WAR,N/A,BHAGWAN RAJNEESH BIBLE CONTRADICTIONS,https://www.youtube.com/watch?v=LBj1X7amsvQ,BIBLE NUMEROLOGY AND THE BIBLE,https://www.youtube.com/watch?v=CWEaT3-bXFE,BIBLE BIBLE MYTHS AND SYMBOLS,https://www.youtube.com/watch?v=26h63cYkFZI,BIBLE BIBLICAL SYMBOLS,https://www.youtube.com/watch?v=26h63cYkFZI,BIBLE BILL'S BIBLE HITS,https://www.youtube.com/watch?v=7d49OYUAxbY,BIBLE WHO WROTE THIS STUFF,https://www.youtube.com/watch?v=M4ILUMxr7ys,BIBLE BIBLE: THE WORD OF WHO ?,https://www.youtube.com/watch?v=s4lEuuJTKy0,BIBLE UFO'S IN THE BIBLE,https://www.youtube.com/watch?v=Z3XqdYbHutg,BIBLE BIBLE IS ALL ABOUT THE MIND,https://www.youtube.com/watch?v=fSRv7qFfZjs,BIBLE BIBLE IS NOT A LITERAL BOOK,https://www.youtube.com/watch?v=tgLWIq8FygQ,BIBLE IS THE BIBLE LOGICAL?,https://www.youtube.com/watch?v=xLbNojqyp5U,BIBLE WHOSE FOOLING WHO,https://www.youtube.com/watch?v=Hl-4RN2YG30,BIBLE MISUNDERSTOOD BIBLE,https://www.youtube.com/watch?v=ZQ_hUVjUEqo,BIBLE WHAT THE BIBLE STORIES REALLY MEAN,https://www.youtube.com/watch?v=nHZiKqcIy4c,BIBLE BIBLE AND THE BODY,https://www.youtube.com/watch?v=gFCKIjzN1ek,BIBLE BIBLE AND COMMON SENSE,https://www.youtube.com/watch?v=-wnKtmahVGw,BIBLE BIBLE WORD MEANINGS,https://www.youtube.com/watch?v=TEM-rXBh5_8,BIBLE BIBLE: SHOULD YOU BOTHER WITH IT ?,https://www.youtube.com/watch?v=bHdCpZCTcps,BIBLE A MATTER OF LOGIC,https://www.youtube.com/watch?v=zyscxkQbBlY,BIBLE BIBLE IS GREEK TO ME,https://www.youtube.com/watch?v=3oJ9KrcLJP8,BIBLE GROIN TO THE SKULL,https://www.youtube.com/watch?v=GmvUsITNYL0,BODY PEGASUS IN THE HUMAN BODY,https://www.youtube.com/watch?v=KesaHtBO0j4,BODY ELECTRO PERSON,https://www.youtube.com/watch?v=Cj0kOA7zkns,BODY ELECTRIC BRAIN BIBLE AND UNIVERSE,https://www.youtube.com/watch?v=fJ1OZWa93ps,BRAIN UNIVERSE WEB, WORLD WEB, BRAIN WEB,https://www.youtube.com/watch?v=vd14aqNt2jI,BRAIN THIRD FLOOR TEMPLE BRAIN,https://www.youtube.com/watch?v=z8MfBcwS0a0,BRAIN BIBLICAL TEMPLE IS THE BRAIN,https://www.youtube.com/watch?v=4Q2kzrozn-g,BRAIN OUR PYRAMID CHAMBER,https://www.youtube.com/watch?v=vJGjco2XfGk,BRAIN COMPUTER RAM IN THE BRAIN,https://www.youtube.com/watch?v=EZCR4wEbkeI,BRAIN WORDS, BIBLE, AND BRAINS,https://www.youtube.com/watch?v=XmFYMlM-iUo,BRAIN PRAISE THE LORD WITH BRAIN MUSIC,https://www.youtube.com/watch?v=7A9qVqyvgAo,BRAIN BRAIN AND TWELVE,https://www.youtube.com/watch?v=7q3WfXn4mjs,BRAIN DRUGS IN THE BIBLE & IN THE BRAIN,https://www.youtube.com/watch?v=Y-x2xW9UgKU,BRAIN UNIVERSE BRAIN CONNECTION,https://www.youtube.com/watch?v=4U5iH06kHsk,BRAIN REBUILDING OUR TEMPLE BRAIN,https://www.youtube.com/watch?v=J2NzZemg7AU,BRAIN BRAIN: PEGASUS, MUSES, AND YOUR BRAIN,https://www.youtube.com/watch?v=RFJgZWBFk_A,BRAIN UPSTAIRS IN THE BACK ROOM,https://www.youtube.com/watch?v=hHZfDeIhI84,BRAIN HUNGER,https://www.youtube.com/watch?v=otOs5Mr2Mxc,BUDDHA ANIMAL IN US,https://www.youtube.com/watch?v=J4vL05BKZvA,BUDDHA WORLD OF TRANQUILITY,https://www.youtube.com/watch?v=YHydg3MdYFw,BUDDHA WORLD OF HELL,https://www.youtube.com/watch?v=cZO8uVXoUXM,BUDDHA RAPTURE MANY HAVE MISSED,https://www.youtube.com/watch?v=AQ_qEgI0XD0,BUDDHA VOICE OF PEACE,https://www.youtube.com/watch?v=5Q2eA0Z4Awc,BUDDHA TEN WORLDS OF THE MIND,https://www.youtube.com/watch?v=3k3CsY9Nk6g,BUDDHA SUFFERING,https://www.youtube.com/watch?v=jCw8gkqJ_Uw,BUDDHA HAPPINESS,https://www.youtube.com/watch?v=XbBwbWbHlYI,BUDDHA ONENESS,https://www.youtube.com/watch?v=NpMdk9EwhBk,BUDDHA PHILOSOPHY,https://www.youtube.com/watch?v=5RvYk2IzqV0,BUDDHA OH MY MIND,https://www.youtube.com/watch?v=0hi65h37yz8,BUDDHA WHICH ONE ARE YOU,https://www.youtube.com/watch?v=ErgVuFb2kZY,BUDDHA WHEN DEC`,
             init: function() {
                 createStars();
                 this.setupStarInteractions();
