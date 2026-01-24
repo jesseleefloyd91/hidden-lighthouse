@@ -135,6 +135,16 @@ function inferTopicFromQuery(q, data) {
 ========================================================== */
 window.app = {
     data: [],
+    processRawCSV: function() {
+        // Fallback if catalog.csv fails to load (e.g., file not found or local security issues)
+        console.warn('CSV load failed; using empty data as fallback.');
+        this.data = []; // Or add sample data here if needed
+        this.renderCategories();
+        const statusBar = document.getElementById('status-bar');
+        if (statusBar) {
+            statusBar.innerText = '0 Records Online (CSV load failed)';
+        }
+    },
     init() {
         createStars();
 Papa.parse('catalog.csv', {
@@ -151,13 +161,21 @@ Papa.parse('catalog.csv', {
                 "TOPIC": r.TOPIC.trim()
             }));
         this.renderCategories();
-        document.getElementById('status-bar').innerText =
-            `${this.data.length} Records Online`;
+        const statusBar = document.getElementById('status-bar');
+        if (statusBar) {
+            statusBar.innerText = `${this.data.length} Records Online`;
+        }
     },
-    error: () => this.processRawCSV()
+    error: (err) => {
+        console.error('Papa.parse error:', err);
+        this.processRawCSV();
+    }
 });
         this.nav('home');
-        setTimeout(() => document.getElementById('app-loader').classList.add('hidden'), 300);
+        const loader = document.getElementById('app-loader');
+        if (loader) {
+            setTimeout(() => loader.classList.add('hidden'), 300);
+        }
     },
     /* --- ALL EXISTING METHODS KEPT (renderCategories, openTopic, search, nav, anatomy, etc.) --- */
     /* ==========================================================
@@ -172,8 +190,8 @@ Papa.parse('catalog.csv', {
     this.search(q);
     const aiBox = document.getElementById('ai-box');
     const aiText = document.getElementById('ai-text-output');
-    aiBox.style.display = 'block';
-    aiText.innerText = "…";
+    if (aiBox) aiBox.style.display = 'block';
+    if (aiText) aiText.innerText = "…";
     setTimeout(() => {
         const lq = q.toLowerCase();
         let resp = "";
@@ -235,7 +253,7 @@ Papa.parse('catalog.csv', {
                 "It is all happening within you."
             ].join(" ");
         }
-        aiText.innerText = resp;
+        if (aiText) aiText.innerText = resp;
     }, 1200);
 },
 };
