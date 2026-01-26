@@ -21,6 +21,8 @@
             --purple-glow: rgba(216, 180, 254, 0.2);
             --gold: #D4AF37;
             --text-main: #EAEAEA;
+            --orange: #FFCC80;
+            --orange-glow: rgba(255, 204, 128, 0.25);
         }
         body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text-main); overflow-x: hidden; height: 100vh; }
         .cinzel { font-family: 'Cinzel', serif; }
@@ -67,17 +69,17 @@
             z-index: 10;
         }
         .cosmos-card:hover {
-            border-color: var(--purple);
+            border-color: var(--orange);
             transform: translateY(-4px);
             background: #111;
-            box-shadow: 0 10px 40px -10px rgba(126, 34, 206, 0.25);
+            box-shadow: 0 10px 40px -10px var(--orange-glow);
         }
         .cosmos-card:active {
-            border-color: #FF4500;
-            box-shadow: 0 10px 40px -10px rgba(255, 69, 0, 0.25);
+            border-color: #FFFFFF;
+            box-shadow: 0 10px 40px -10px rgba(255, 255, 255, 0.25);
         }
         .cosmos-card i { transition: transform 0.3s ease; }
-        .cosmos-card:hover i { transform: scale(1.2) rotate(10deg); color: var(--purple); }
+        .cosmos-card:hover i { transform: scale(1.2) rotate(10deg); color: var(--orange); }
         /* DOCK */
         .dock-container {
             position: fixed; bottom: 32px; left: 0; width: 100%;
@@ -311,6 +313,28 @@
             <h2 class="cinzel text-2xl font-bold text-white mb-8 border-b border-white/10 pb-4">Archive Matches</h2>
             <div id="search-list" class="grid grid-cols-1 lg:grid-cols-2 gap-4 pb-20"></div>
         </section>
+        <!-- 7. SOCIAL -->
+        <section id="view-social" class="view-section px-6 max-w-5xl mx-auto">
+            <h2 class="cinzel text-4xl font-bold text-white mb-16 text-center uppercase tracking-widest">Social Media</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <a href="https://www.facebook.com/groups/356472414984195" target="_blank" class="cosmos-card p-10 group bg-[#0A0A0A] hover:bg-[#111] block">
+                    <div class="flex justify-between items-start mb-6">
+                        <div class="w-10 h-10 rounded-full bg-[#222] flex items-center justify-center text-white font-serif">F</div>
+                        <span class="text-gray-600 group-hover:text-white transition-colors">↗</span>
+                    </div>
+                    <h3 class="cinzel text-2xl text-white mb-2 group-hover:text-purple-300 transition-colors">Facebook Group</h3>
+                    <p class="font-mono text-stone-500 text-xs uppercase tracking-widest">Hidden Meanings Community</p>
+                </a>
+                <a href="https://www.facebook.com/groups/356472414984195/media" target="_blank" class="cosmos-card p-10 group bg-[#0A0A0A] hover:bg-[#111] block">
+                    <div class="flex justify-between items-start mb-6">
+                        <div class="w-10 h-10 rounded-full bg-[#222] flex items-center justify-center text-white font-serif">M</div>
+                        <span class="text-gray-600 group-hover:text-white transition-colors">↗</span>
+                    </div>
+                    <h3 class="cinzel text-2xl text-white mb-2 group-hover:text-purple-300 transition-colors">Group Media</h3>
+                    <p class="font-mono text-stone-500 text-xs uppercase tracking-widest">Photos & Videos</p>
+                </a>
+            </div>
+        </section>
     </div>
     <!-- DOCK -->
     <div class="dock-container">
@@ -319,6 +343,7 @@
             <button class="dock-btn" id="btn-library" onclick="window.app.nav('library')">Library</button>
             <button class="dock-btn" id="btn-anatomy" onclick="window.app.nav('anatomy')">Temple</button>
             <button class="dock-btn" id="btn-resources" onclick="window.app.nav('resources')">Links</button>
+            <button class="dock-btn" id="btn-social" onclick="window.app.nav('social')">Social</button>
             <div class="w-px bg-white/20 mx-1"></div>
             <button class="dock-btn" onclick="document.getElementById('csv-upload').click()" title="Update">
                 <i class="fa-solid fa-cloud-arrow-up"></i>
@@ -425,7 +450,7 @@ BHAGAVAD GITA IN POSITION,,THESE ARE VIDEOS THAT HAVE NOT BEEN UPLOADED TO YOU T
                     download: true,
                     header: true,
                     complete: (results) => {
-                        this.data = results.data.filter(row => row['TITLE OF VIDEO']);
+                        this.data = results.data.filter(row => row['TITLE OF VIDEO'] && row['TITLE OF VIDEO'].trim() && row.TOPIC && row.TOPIC.trim());
                         this.renderCategories();
                         document.getElementById('status-bar').innerText = `${this.data.length} Records Online`;
                     },
@@ -440,7 +465,7 @@ BHAGAVAD GITA IN POSITION,,THESE ARE VIDEOS THAT HAVE NOT BEEN UPLOADED TO YOU T
                 Papa.parse(this.rawCSV, {
                     header: true,
                     complete: (results) => {
-                        this.data = results.data.filter(row => row['TITLE OF VIDEO']);
+                        this.data = results.data.filter(row => row['TITLE OF VIDEO'] && row['TITLE OF VIDEO'].trim() && row.TOPIC && row.TOPIC.trim());
                         this.renderCategories();
                         document.getElementById('status-bar').innerText = `${this.data.length} Records Online`;
                     }
@@ -625,7 +650,7 @@ BHAGAVAD GITA IN POSITION,,THESE ARE VIDEOS THAT HAVE NOT BEEN UPLOADED TO YOU T
                     } else {
                         this.currentUtterance = new SpeechSynthesisUtterance(text);
                         const voices = speechSynthesis.getVoices();
-                        const maleVoice = voices.find(v => v.gender === 'male' || v.name.toLowerCase().includes('male'));
+                        const maleVoice = voices.find(v => v.name.includes('Daniel') || v.name.includes('Male') || v.gender === 'male');
                         if (maleVoice) this.currentUtterance.voice = maleVoice;
                         this.currentUtterance.rate = 0.8;
                         this.currentUtterance.pitch = 0.6;
@@ -672,7 +697,7 @@ BHAGAVAD GITA IN POSITION,,THESE ARE VIDEOS THAT HAVE NOT BEEN UPLOADED TO YOU T
                 Papa.parse(f, {
                     header: true,
                     complete: (results) => {
-                        this.data = results.data.filter(row => row['TITLE OF VIDEO']);
+                        this.data = results.data.filter(row => row['TITLE OF VIDEO'] && row['TITLE OF VIDEO'].trim() && row.TOPIC && row.TOPIC.trim());
                         this.renderCategories();
                         alert("Updated!");
                     }
