@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Bill Donahue | Official Archive</title>
    
     <script src="https://cdn.tailwindcss.com"></script>
@@ -25,6 +25,7 @@
         body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text-main); overflow-x: hidden; height: 100vh; }
         .cinzel { font-family: 'Cinzel', serif; }
         .mono { font-family: 'Space Grotesk', monospace; }
+        
         /* STARRY BACKGROUND */
         .stars-container {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -38,6 +39,7 @@
             box-shadow: 0 0 4px rgba(255, 215, 0, 0.3);
         }
         @keyframes twinkle { 0%, 100% { opacity: 0; } 50% { opacity: var(--opacity); } }
+
         /* UI ELEMENTS */
         .glass-panel {
             background: linear-gradient(180deg, rgba(20,20,20,0.85) 0%, rgba(10,10,10,0.98) 100%);
@@ -45,13 +47,20 @@
             border: 1px solid rgba(216, 180, 254, 0.1);
             box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
         }
+
         /* CARDS */
         .masonry-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 16px;
             padding-bottom: 140px;
         }
+        @media (max-width: 640px) {
+            .masonry-grid {
+                grid-template-columns: 1fr; /* Single column on mobile */
+            }
+        }
+
         .cosmos-card {
             background-color: var(--card-bg);
             border: 1px solid var(--border);
@@ -63,7 +72,7 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            min-height: 180px;
+            min-height: 200px;
             z-index: 10;
         }
         .cosmos-card:hover {
@@ -72,30 +81,46 @@
             background: #111;
             box-shadow: 0 10px 40px -10px var(--orange-glow);
         }
-        .cosmos-card:active {
-            border-color: #FFFFFF;
-            box-shadow: 0 10px 40px -10px rgba(255, 255, 255, 0.25);
-        }
         .cosmos-card i { transition: transform 0.3s ease; }
         .cosmos-card:hover i { transform: scale(1.2) rotate(10deg); color: var(--orange); }
+
         /* DOCK */
         .dock-container {
-            position: fixed; bottom: 32px; left: 0; width: 100%;
+            position: fixed; bottom: 20px; left: 0; width: 100%;
             display: flex; justify-content: center; z-index: 50;
+            padding: 0 20px;
         }
         .dock {
-            background: rgba(20, 20, 20, 0.9); backdrop-filter: blur(16px);
-            border: 1px solid rgba(255,255,255,0.15); padding: 8px; border-radius: 99px;
-            display: flex; gap: 8px; box-shadow: 0 20px 40px -10px rgba(0,0,0,0.8); pointer-events: auto;
+            background: rgba(10, 10, 10, 0.95); backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.15); padding: 8px; border-radius: 20px;
+            display: flex; gap: 4px; box-shadow: 0 20px 40px -10px rgba(0,0,0,0.9); pointer-events: auto;
+            max-width: 100%; overflow-x: auto; /* Scrollable on mobile */
+            scrollbar-width: none; /* Hide scrollbar */
         }
+        .dock::-webkit-scrollbar { display: none; }
+        
         .dock-btn {
-            padding: 10px 24px; border-radius: 99px; font-size: 11px; font-weight: 700;
+            padding: 10px 16px; border-radius: 12px; font-size: 10px; font-weight: 700;
             text-transform: uppercase; letter-spacing: 0.1em; color: #888;
             transition: all 0.2s; cursor: pointer; border: 1px solid transparent;
+            white-space: nowrap; flex-shrink: 0;
         }
-        .dock-btn:hover { color: white; background: rgba(255,255,255,0.05); }
+        .dock-btn:hover { color: white; background: rgba(255,255,255,0.1); }
         .dock-btn.active { background: white; color: black; box-shadow: 0 0 15px rgba(255,255,255,0.2); }
+
         /* ANATOMY */
+        .anatomy-wrapper {
+            position: relative; width: 300px; height: 650px;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 999px;
+            background: #080808;
+            box-shadow: 0 0 80px -20px rgba(168,85,247,0.15);
+        }
+        /* Mobile Scaling for Anatomy */
+        @media (max-width: 768px) {
+            .anatomy-scale-container { transform: scale(0.75); transform-origin: top center; height: 500px; }
+        }
+
         .anatomy-dot {
             width: 20px; height: 20px; border-radius: 50%;
             position: absolute; left: 50%; transform: translateX(-50%);
@@ -108,17 +133,19 @@
             background-color: #fff !important;
             box-shadow: 0 0 40px var(--purple);
         }
+
         /* SEARCH */
         .search-input {
             background: rgba(20, 20, 20, 0.8); backdrop-filter: blur(10px);
             border: 1px solid var(--border); color: white;
             padding: 10px 20px 10px 40px; border-radius: 99px; font-size: 12px;
-            width: 260px; transition: all 0.3s ease; outline: none;
+            width: 100%; max-width: 300px; transition: all 0.3s ease; outline: none;
         }
-        .search-input:focus { border-color: var(--purple); width: 320px; box-shadow: 0 0 20px rgba(216, 180, 254, 0.2); }
+        .search-input:focus { border-color: var(--purple); box-shadow: 0 0 20px rgba(216, 180, 254, 0.2); }
+
         /* VIEWS */
         .view-section {
-            display: none; padding-top: 100px; padding-bottom: 150px;
+            display: none; padding-top: 140px; padding-bottom: 150px;
             width: 100%; min-height: 100vh; animation: fadeIn 0.4s ease;
         }
         .view-section.active { display: block; }
@@ -127,6 +154,7 @@
             display: flex; flex-direction: column; justify-content: center; align-items: center; padding-top: 0;
         }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
         /* UTILS */
         .hidden { display: none !important; }
         .profile-img { box-shadow: 0 0 50px rgba(216, 180, 254, 0.15); transition: 0.5s; }
@@ -137,6 +165,7 @@
         }
         .diamond-text { transform: skew(15deg); color: var(--purple); text-shadow: 0 0 15px rgba(216, 180, 254, 0.5); }
        
+        /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: var(--bg); }
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
@@ -145,72 +174,76 @@
 </head>
 <body class="flex flex-col min-h-screen">
     <div id="stars-container" class="stars-container"></div>
-    <div class="fixed top-0 left-0 w-full p-6 z-40 flex justify-between items-start pointer-events-none">
-        <div class="pointer-events-auto flex items-center gap-3 cursor-pointer group" onclick="window.app.nav('home')">
-            <div class="w-10 h-10 border border-purple-400/30 flex items-center justify-center rotate-45 bg-black/50 backdrop-blur-md transition-all group-hover:rotate-0 group-hover:border-purple-400">
+
+    <div class="fixed top-0 left-0 w-full p-4 z-40 flex justify-between items-center bg-black/80 backdrop-blur-xl border-b border-white/5 shadow-2xl">
+        <div class="flex items-center gap-3 cursor-pointer group" onclick="window.app.nav('home')">
+            <div class="w-10 h-10 border border-purple-400/30 flex items-center justify-center rotate-45 bg-black/50 backdrop-blur-md transition-all group-hover:rotate-0 group-hover:border-purple-400 shrink-0">
                 <span class="cinzel font-bold text-lg text-purple-300 -rotate-45 group-hover:rotate-0">HM</span>
             </div>
             <div>
-                <h1 class="cinzel font-bold text-white text-xs tracking-widest uppercase">Hidden Meanings</h1>
-                <p class="text-[9px] text-purple-400 font-bold uppercase tracking-wider">Official Archive</p>
+                <h1 class="cinzel font-bold text-white text-xs md:text-sm tracking-widest uppercase leading-tight">Hidden<br>Meanings</h1>
             </div>
         </div>
        
-        <div class="pointer-events-auto relative group">
+        <div class="relative group w-1/2 max-w-[240px]">
             <svg class="w-3.5 h-3.5 absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-            <input type="text" id="global-search" oninput="window.app.search(this.value)" placeholder="SEARCH ARCHIVE..." class="search-input placeholder-gray-500 font-mono uppercase">
+            <input type="text" id="global-search" oninput="window.app.search(this.value)" placeholder="SEARCH..." class="search-input placeholder-gray-500 font-mono uppercase">
         </div>
     </div>
+
     <div id="app-loader" class="fixed inset-0 bg-[#050505] z-[100] flex flex-col items-center justify-center transition-opacity duration-500">
         <div class="w-12 h-12 border-2 border-purple-500/30 border-t-purple-400 rounded-full animate-spin mb-4"></div>
-        <p class="text-purple-300 text-xs uppercase tracking-[0.3em] font-bold animate-pulse">Initializing Library...</p>
+        <p class="text-purple-300 text-xs uppercase tracking-[0.3em] font-bold animate-pulse">Initializing...</p>
     </div>
+
     <div class="h-screen overflow-y-auto custom-scrollbar" id="scroll-wrapper">
        
         <section id="view-home" class="view-section active">
-            <div class="relative z-10 max-w-5xl text-center fade-in pt-20">
-                <div class="mb-10 flex justify-center">
-                    <div class="relative w-40 h-40 rounded-full p-1 border-2 border-purple-500/40 bg-[#111] profile-img">
+            <div class="relative z-10 max-w-5xl text-center fade-in pt-10 px-4">
+                <div class="mb-8 flex justify-center">
+                    <div class="relative w-32 h-32 md:w-40 md:h-40 rounded-full p-1 border-2 border-purple-500/40 bg-[#111] profile-img">
                         <img src="bill_profile.jpg" class="w-full h-full object-cover rounded-full opacity-90 transition-opacity grayscale hover:grayscale-0"
                              onerror="this.src='https://ui-avatars.com/api/?name=Bill+Donahue&background=000&color=d8b4fe&size=160'">
                     </div>
                 </div>
-                <div class="mb-8 inline-flex items-center gap-3 border border-purple-500/30 px-5 py-2 rounded-full bg-black/40 backdrop-blur-md">
+                <div class="mb-6 inline-flex items-center gap-3 border border-purple-500/30 px-4 py-2 rounded-full bg-black/40 backdrop-blur-md">
                     <span class="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></span>
                     <span class="text-[10px] text-purple-200 uppercase tracking-[0.2em] font-bold" id="status-bar">System Online</span>
                 </div>
-                <h1 class="cinzel text-5xl md:text-8xl font-black mb-8 leading-none tracking-tight text-white drop-shadow-2xl">
+                <h1 class="cinzel text-4xl md:text-8xl font-black mb-6 leading-none tracking-tight text-white drop-shadow-2xl">
                     HIDDEN<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-300 to-white italic">MEANINGS</span>
                 </h1>
-                <div class="mb-12">
+                <div class="mb-10">
                      <div class="diamond-box">
-                        <span class="diamond-text cinzel text-xs font-bold tracking-[0.3em] uppercase block">Inspired by Bill Donahue</span>
+                        <span class="diamond-text cinzel text-[10px] md:text-xs font-bold tracking-[0.3em] uppercase block">Inspired by Bill Donahue</span>
                     </div>
                 </div>
-                <div class="max-w-lg mx-auto relative group w-full mb-8">
-                    <input type="text" id="ai-input" placeholder="Ask the Teacher (e.g. 'Pineal')..."
+                <div class="max-w-lg mx-auto relative group w-full mb-8 px-4">
+                    <input type="text" id="ai-input" placeholder="Ask (e.g. 'Pineal')..."
                            class="w-full bg-white/5 border border-white/10 rounded-full py-4 pl-8 pr-16 text-sm text-white placeholder-stone-500 focus:outline-none focus:border-purple-400 font-mono transition-all backdrop-blur-md"
                            onkeydown="if(event.key === 'Enter') window.app.performAISearch()">
-                    <button onclick="window.app.performAISearch()" class="absolute right-2 top-2 bottom-2 bg-purple-600 text-white w-10 rounded-full flex items-center justify-center hover:bg-white hover:text-black transition-colors shadow-lg">
+                    <button onclick="window.app.performAISearch()" class="absolute right-6 top-2 bottom-2 bg-purple-600 text-white w-10 rounded-full flex items-center justify-center hover:bg-white hover:text-black transition-colors shadow-lg">
                         <i class="fa-solid fa-arrow-right"></i>
                     </button>
                 </div>
             </div>
         </section>
+
         <section id="view-library" class="view-section px-6">
             <div class="max-w-[1800px] mx-auto w-full">
                 <div class="flex flex-col md:flex-row justify-between items-end mb-16 pb-8 border-b border-white/10">
                     <div>
-                        <h2 class="cinzel text-5xl font-bold text-white mb-2 tracking-tight">The Catalog</h2>
-                        <p class="font-mono text-purple-400 text-xs uppercase tracking-[0.2em]">Comprehensive Subject Index</p>
+                        <h2 class="cinzel text-3xl md:text-5xl font-bold text-white mb-2 tracking-tight">The Catalog</h2>
+                        <p class="font-mono text-purple-400 text-[10px] md:text-xs uppercase tracking-[0.2em]">Comprehensive Subject Index</p>
                     </div>
-                    <div class="text-right mt-8 md:mt-0">
+                    <div class="text-right mt-4 md:mt-0">
                         <p class="text-stone-500 font-mono text-xs" id="total-topics-display">Loading...</p>
                     </div>
                 </div>
                 <div id="category-grid" class="masonry-grid"></div>
             </div>
         </section>
+
         <section id="view-list" class="view-section bg-stone-900/10 px-6">
             <div class="max-w-6xl mx-auto w-full">
                 <button onclick="window.app.nav('library')" class="mb-10 text-stone-500 hover:text-purple-300 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] transition-colors">
@@ -218,16 +251,17 @@
                 </button>
                 <div class="mb-12 pl-6 border-l-2 border-purple-500">
                     <span class="text-purple-400 text-[10px] font-bold uppercase tracking-[0.3em] mb-3 block">Selected Topic</span>
-                    <h2 id="active-category-title" class="cinzel text-4xl md:text-6xl font-bold text-white leading-tight"></h2>
+                    <h2 id="active-category-title" class="cinzel text-3xl md:text-6xl font-bold text-white leading-tight"></h2>
                     <p id="active-category-count" class="text-stone-500 text-xs tracking-[0.2em] font-bold uppercase mt-6 pt-6 border-t border-white/5 inline-block"></p>
                 </div>
                 <div id="list-container" class="grid grid-cols-1 lg:grid-cols-2 gap-4"></div>
             </div>
         </section>
+
         <section id="view-anatomy" class="view-section px-6">
-            <div class="max-w-7xl mx-auto grid lg:grid-cols-2 gap-20 items-center min-h-[70vh] w-full">
-                <div class="relative flex justify-center order-2 lg:order-1">
-                    <div class="relative w-[300px] h-[650px] border border-white/10 rounded-full bg-[#080808] flex justify-center items-center shadow-[0_0_80px_-20px_rgba(168,85,247,0.15)]">
+            <div class="max-w-7xl mx-auto grid lg:grid-cols-2 gap-10 items-center min-h-[70vh] w-full">
+                <div class="relative flex justify-center order-2 lg:order-1 anatomy-scale-container">
+                    <div class="anatomy-wrapper flex justify-center items-center">
                         <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.03),transparent_70%)] rounded-full"></div>
                         <div class="absolute top-[10%] bottom-[10%] w-px bg-gradient-to-b from-transparent via-purple-500/30 to-transparent"></div>
                         <div class="anatomy-dot bg-violet-500" style="top: 10%;" onclick="window.app.showAnatomy('Crown / Pineal', 'The Single Eye. Peniel. The light receptor.')"></div>
@@ -239,22 +273,23 @@
                         <div class="anatomy-dot bg-red-500" style="top: 82%;" onclick="window.app.showAnatomy('Root', 'Egypt. Physical Bondage.')"></div>
                     </div>
                 </div>
-                <div class="order-1 lg:order-2">
+                <div class="order-1 lg:order-2 text-center lg:text-left">
                     <span class="text-purple-400 font-mono text-xs uppercase tracking-[0.2em] mb-4 block">Interactive Map</span>
-                    <h2 class="cinzel text-5xl md:text-7xl font-bold text-white mb-8 leading-none">The Temple<br>Of God</h2>
-                    <div id="anatomy-info" class="p-10 border border-white/10 bg-[#111] backdrop-blur-md rounded-xl border-l-2 border-purple-500 relative z-20">
-                        <h3 id="anatomy-title" class="cinzel text-2xl text-purple-200 mb-4 uppercase tracking-widest font-bold">Select a Center</h3>
-                        <p id="anatomy-desc" class="text-stone-400 text-lg leading-relaxed font-light italic">
+                    <h2 class="cinzel text-4xl md:text-7xl font-bold text-white mb-8 leading-none">The Temple<br>Of God</h2>
+                    <div id="anatomy-info" class="p-8 border border-white/10 bg-[#111] backdrop-blur-md rounded-xl border-l-2 border-purple-500 relative z-20">
+                        <h3 id="anatomy-title" class="cinzel text-xl md:text-2xl text-purple-200 mb-4 uppercase tracking-widest font-bold">Select a Center</h3>
+                        <p id="anatomy-desc" class="text-stone-400 text-sm md:text-lg leading-relaxed font-light italic">
                             "Know ye not that ye are the temple of God?" Click the points on the diagram to reveal the biological decoding of scripture.
                         </p>
                     </div>
                 </div>
             </div>
         </section>
+
         <section id="view-resources" class="view-section px-6 max-w-5xl mx-auto">
-            <h2 class="cinzel text-4xl font-bold text-white mb-16 text-center uppercase tracking-widest">Primary Sources</h2>
+            <h2 class="cinzel text-3xl md:text-4xl font-bold text-white mb-16 text-center uppercase tracking-widest">Primary Sources</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <a href="https://www.hiddenmeanings.com/" target="_blank" class="cosmos-card p-10 group bg-[#0A0A0A] hover:bg-[#111] block">
+                <a href="https://www.hiddenmeanings.com/" target="_blank" class="cosmos-card p-8 group bg-[#0A0A0A] hover:bg-[#111] block">
                     <div class="flex justify-between items-start mb-6">
                         <div class="w-10 h-10 rounded-full bg-[#222] flex items-center justify-center text-white font-serif">H</div>
                         <span class="text-gray-600 group-hover:text-white transition-colors">↗</span>
@@ -262,7 +297,7 @@
                     <h3 class="cinzel text-2xl text-white mb-2 group-hover:text-purple-300 transition-colors">HiddenMeanings.com</h3>
                     <p class="font-mono text-stone-500 text-xs uppercase tracking-widest">Main Portal</p>
                 </a>
-                <a href="https://lifestyleluminaries.blogspot.com/p/bill-donahue.html" target="_blank" class="cosmos-card p-10 group bg-[#0A0A0A] hover:bg-[#111] block">
+                <a href="https://lifestyleluminaries.blogspot.com/p/bill-donahue.html" target="_blank" class="cosmos-card p-8 group bg-[#0A0A0A] hover:bg-[#111] block">
                     <div class="flex justify-between items-start mb-6">
                         <div class="w-10 h-10 rounded-full bg-[#222] flex items-center justify-center text-white font-serif">L</div>
                         <span class="text-gray-600 group-hover:text-white transition-colors">↗</span>
@@ -270,7 +305,7 @@
                     <h3 class="cinzel text-2xl text-white mb-2 group-hover:text-purple-300 transition-colors">Lifestyle Luminaries</h3>
                     <p class="font-mono text-stone-500 text-xs uppercase tracking-widest">Video Archive</p>
                 </a>
-                <a href="https://thehiddenlighthouse.blogspot.com/2012/09/the-hidden-lighthouse.html?m=1" target="_blank" class="cosmos-card p-10 group bg-[#0A0A0A] hover:bg-[#111] block">
+                <a href="https://thehiddenlighthouse.blogspot.com/2012/09/the-hidden-lighthouse.html?m=1" target="_blank" class="cosmos-card p-8 group bg-[#0A0A0A] hover:bg-[#111] block">
                     <div class="flex justify-between items-start mb-6">
                         <div class="w-10 h-10 rounded-full bg-[#222] flex items-center justify-center text-white font-serif">B</div>
                         <span class="text-gray-600 group-hover:text-white transition-colors">↗</span>
@@ -278,7 +313,7 @@
                     <h3 class="cinzel text-2xl text-white mb-2 group-hover:text-purple-300 transition-colors">Lighthouse Blog</h3>
                     <p class="font-mono text-stone-500 text-xs uppercase tracking-widest">2012 Writings</p>
                 </a>
-                <a href="https://archive.org/details/1-revised-bill-donahue-speaks-book-of-secret-doctrines/page/18/mode/1up?ui=embed&wrapper=false" target="_blank" class="cosmos-card p-10 group bg-[#0A0A0A] hover:bg-[#111] block">
+                <a href="https://archive.org/details/1-revised-bill-donahue-speaks-book-of-secret-doctrines/page/18/mode/1up?ui=embed&wrapper=false" target="_blank" class="cosmos-card p-8 group bg-[#0A0A0A] hover:bg-[#111] block">
                     <div class="flex justify-between items-start mb-6">
                         <div class="w-10 h-10 rounded-full bg-[#222] flex items-center justify-center text-white font-serif">S</div>
                         <span class="text-gray-600 group-hover:text-white transition-colors">↗</span>
@@ -288,10 +323,11 @@
                 </a>
             </div>
         </section>
+
         <section id="view-search" class="view-section px-6 max-w-5xl mx-auto bg-[#050505]">
             <div id="ai-box" class="mb-12 bg-white/5 p-8 border-l-4 border-purple-500 hidden rounded-xl fade-in">
                 <span class="text-purple-400 font-mono text-[10px] uppercase tracking-widest mb-3 block">Teacher's Insight</span>
-                <div id="ai-text-output" class="text-stone-200 text-xl leading-relaxed italic font-light mb-4 font-serif"></div>
+                <div id="ai-text-output" class="text-stone-200 text-lg md:text-xl leading-relaxed italic font-light mb-4 font-serif"></div>
                 <div class="flex items-center gap-4">
                     <button id="play-pause-btn" onclick="window.app.togglePlayPause()" class="flex items-center gap-2 text-xs font-bold text-purple-300 uppercase tracking-widest hover:text-white"><i class="fa-solid fa-play"></i> Play</button>
                     <button id="stop-btn" onclick="window.app.stopAudio()" class="flex items-center gap-2 text-xs font-bold text-purple-300 uppercase tracking-widest hover:text-white hidden"><i class="fa-solid fa-stop"></i> Stop</button>
@@ -305,25 +341,26 @@
             
             <div id="search-list" class="grid grid-cols-1 lg:grid-cols-2 gap-4 pb-20"></div>
         </section>
+
         <section id="view-social" class="view-section px-6 max-w-[1800px] mx-auto">
-            <h2 class="cinzel text-4xl font-bold text-white mb-8 text-center uppercase tracking-widest">Community Hub</h2>
+            <h2 class="cinzel text-3xl md:text-4xl font-bold text-white mb-8 text-center uppercase tracking-widest">Community Hub</h2>
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-16 max-w-4xl mx-auto">
-                <a href="https://www.facebook.com/groups/356472414984195" target="_blank" class="p-8 border border-white/10 rounded-xl bg-gradient-to-br from-[#1877F2]/20 to-black hover:from-[#1877F2]/40 transition-all group flex items-center justify-between">
+                <a href="https://www.facebook.com/groups/356472414984195" target="_blank" class="p-6 md:p-8 border border-white/10 rounded-xl bg-gradient-to-br from-[#1877F2]/20 to-black hover:from-[#1877F2]/40 transition-all group flex items-center justify-between">
                     <div class="flex items-center gap-4">
-                        <i class="fa-brands fa-facebook text-4xl text-[#1877F2]"></i>
+                        <i class="fa-brands fa-facebook text-3xl md:text-4xl text-[#1877F2]"></i>
                         <div>
-                            <h3 class="font-bold text-white text-lg">Join the Group</h3>
+                            <h3 class="font-bold text-white text-base md:text-lg">Join the Group</h3>
                             <p class="text-stone-400 text-xs">Official Discussion</p>
                         </div>
                     </div>
                     <i class="fa-solid fa-arrow-up-right-from-square text-white/50 group-hover:text-white"></i>
                 </a>
-                <a href="https://www.facebook.com/groups/356472414984195/media" target="_blank" class="p-8 border border-white/10 rounded-xl bg-gradient-to-br from-purple-900/20 to-black hover:from-purple-900/40 transition-all group flex items-center justify-between">
+                <a href="https://www.facebook.com/groups/356472414984195/media" target="_blank" class="p-6 md:p-8 border border-white/10 rounded-xl bg-gradient-to-br from-purple-900/20 to-black hover:from-purple-900/40 transition-all group flex items-center justify-between">
                     <div class="flex items-center gap-4">
-                        <i class="fa-solid fa-photo-film text-4xl text-purple-400"></i>
+                        <i class="fa-solid fa-photo-film text-3xl md:text-4xl text-purple-400"></i>
                         <div>
-                            <h3 class="font-bold text-white text-lg">Media Gallery</h3>
+                            <h3 class="font-bold text-white text-base md:text-lg">Media Gallery</h3>
                             <p class="text-stone-400 text-xs">Photos & Videos</p>
                         </div>
                     </div>
@@ -332,31 +369,29 @@
             </div>
 
             <div class="mb-8 flex items-end justify-between border-b border-white/10 pb-4">
-                <h3 class="cinzel text-2xl text-white">Recent Media</h3>
+                <h3 class="cinzel text-xl md:text-2xl text-white">Recent Media</h3>
                 <p class="text-[10px] text-stone-500 uppercase tracking-widest">Live Gallery Link</p>
             </div>
             
-            <div class="masonry-grid" id="social-gallery-grid">
-                </div>
+            <div class="masonry-grid" id="social-gallery-grid"></div>
         </section>
+
         <section id="view-videos" class="view-section px-6">
               <div class="max-w-[1800px] mx-auto w-full">
-                <div class="mb-16 pb-8 border-b border-white/10">
-                  <h2 class="cinzel text-5xl font-bold text-white mb-2">Video Archive</h2>
-                  <p class="font-mono text-purple-400 text-xs uppercase tracking-[0.2em]">
-                    Official YouTube Collection
-                  </p>
+                <div class="mb-10 pb-8 border-b border-white/10">
+                  <h2 class="cinzel text-3xl md:text-5xl font-bold text-white mb-2">Video Archive</h2>
+                  <p class="font-mono text-purple-400 text-xs uppercase tracking-[0.2em]">Official YouTube Collection</p>
                 </div>
-
                 <div id="video-grid" class="masonry-grid"></div>
               </div>
-            </section>
+        </section>
     </div>
+
     <div class="dock-container">
         <div class="dock">
             <button class="dock-btn active" id="btn-home" onclick="window.app.nav('home')">Home</button>
             <button class="dock-btn" id="btn-library" onclick="window.app.nav('library')">Library</button>
-            <button class="dock-btn" id="btn-videos" onclick="window.app.nav('videos')">Youtube Videos</button>
+            <button class="dock-btn" id="btn-videos" onclick="window.app.nav('videos')">Videos</button>
             <button class="dock-btn" id="btn-anatomy" onclick="window.app.nav('anatomy')">Temple</button>
             <button class="dock-btn" id="btn-resources" onclick="window.app.nav('resources')">Links</button>
             <button class="dock-btn" id="btn-social" onclick="window.app.nav('social')">Social</button>
@@ -366,6 +401,7 @@
             </button>
         </div>
     </div>
+
     <script>
         // STARS
         function createStars() {
@@ -447,7 +483,6 @@
                     
                     grid.innerHTML = this.videos.map(v => {
                         const topic = window.app.getTopicByVideoID(v.id);
-                        // Escaping for onclick
                         const safeTopic = topic ? topic.replace(/'/g, "\\'").replace(/"/g, '&quot;') : '';
 
                         return `
@@ -460,12 +495,12 @@
                                 </div>
                             </div>
                             <div class="p-4 flex flex-col flex-1">
-                                <h3 class="text-sm text-gray-200 group-hover:text-white line-clamp-2 mb-2">${v.title}</h3>
-                                <div class="mt-auto">
+                                <h3 class="text-sm text-gray-200 group-hover:text-white line-clamp-2 mb-3">${v.title}</h3>
+                                <div class="mt-auto pt-2 border-t border-white/5">
                                     ${topic ? 
-                                        `<span class="text-[9px] font-bold uppercase tracking-widest text-purple-400 border border-purple-500/30 px-2 py-1 rounded hover:bg-purple-500 hover:text-white transition-colors inline-block cursor-pointer" 
-                                               onclick="window.app.openTopic('${safeTopic}')">
-                                            Topic: ${topic}
+                                        `<span class="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest text-purple-400 bg-purple-500/10 border border-purple-500/30 px-3 py-1.5 rounded-full hover:bg-purple-500 hover:text-white transition-all cursor-pointer" 
+                                               onclick="event.stopPropagation(); window.app.openTopic('${safeTopic}')">
+                                            <i class="fa-solid fa-tag text-[8px]"></i> ${topic}
                                          </span>` 
                                         : ''
                                     }
