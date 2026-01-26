@@ -485,15 +485,23 @@
             init: function() {
                 createStars();
                 this.setupStarInteractions();
+    
+                // 1. Initial Load
                 this.youtube.fetchVideos();
-                window.addEventListener("scroll", () => {
+
+                // 2. FIXED: Attach scroll listener to the wrapper, not window
+                const wrapper = document.getElementById('scroll-wrapper');
+    
+                wrapper.addEventListener("scroll", () => {
+                    // Use wrapper properties: scrollTop + clientHeight vs scrollHeight
                     if (
-                        window.innerHeight + window.scrollY >=
-                        document.body.offsetHeight - 800
+                        wrapper.scrollTop + wrapper.clientHeight >= 
+                        wrapper.scrollHeight - 800 // Trigger 800px before bottom
                     ) {
                         this.youtube.fetchVideos();
                     }
                 });
+
                 // Load data using PapaParse
                 Papa.parse('catalog.csv', {
                     download: true,
@@ -508,6 +516,7 @@
                         document.getElementById('status-bar').innerText = 'Error loading data';
                     }
                 });
+    
                 this.nav('home');
                 setTimeout(() => document.getElementById('app-loader').classList.add('hidden'), 300);
             },
@@ -748,5 +757,6 @@
     </script>
 </body>
 </html>
+
 
 
