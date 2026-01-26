@@ -573,31 +573,63 @@ BHAGAVAD GITA IN POSITION,,THESE ARE VIDEOS THAT HAVE NOT BEEN UPLOADED TO YOU T
                     </div>`;
                 }).join('');
             },
-            // --- AI SIMULATOR ---
-            performAISearch: function() {
-                const q = document.getElementById('ai-input').value || document.getElementById('global-search').value;
-                if(!q) return;
-                this.nav('search');
-                const aiBox = document.getElementById('ai-box');
-                const aiText = document.getElementById('ai-text-output');
-               
-                aiBox.style.display = 'block';
-                aiBox.classList.remove('hidden');
-                aiText.innerText = "Consulting the archives...";
-                this.search(q);
-               
-                // Simulation Logic
-                setTimeout(() => {
-                    let resp = `The hidden meaning of "${q}" is found within the biological processes of the human body.`;
-                    const lq = q.toLowerCase();
-                    if(lq.includes('pineal') || lq.includes('eye')) resp = "The Single Eye is the Pineal Gland. It is the light receptor of the body where Jacob saw God face to face. When your eye is single, your whole body is full of light.";
-                    else if(lq.includes('egypt')) resp = "Egypt represents the lower mind, the physical bondage of the senses. We must cross the Red Sea of emotion to reach the Promised Land of the higher mind.";
-                    else if(lq.includes('jesus')) resp = "Jesus is the Greek word for Joshua. It represents the electrical energy rising up the spine to the brain, waiting to be born in the manger of the solar plexus.";
-                    else if(lq.includes('east')) resp = "Look to the East. The right hemisphere of the brain. The place of the rising sun, where the spiritual intellect is born.";
-                    else if(lq.includes('meditation')) resp = "We must shut down the five senses. Take no thought. In the silence, the electrical energy moves to the Pineal Gland.";
-                    aiText.innerText = resp;
-                }, 1500);
-            },
+// --- AI SIMULATOR (improved) ---
+performAISearch: function() {
+    const input = document.getElementById('ai-input');
+    const q = (input ? input.value : '').trim();
+    if (!q) return;
+
+    // Clear input immediately
+    if (input) input.value = '';
+
+    this.nav('search');
+
+    const aiBox = document.getElementById('ai-box');
+    const aiText = document.getElementById('ai-text-output');
+
+    if (!aiBox || !aiText) return;
+
+    // Use class only (no inline style.display)
+    aiBox.classList.remove('hidden');
+
+    aiText.innerText = "Consulting the archives...";
+
+    // Run regular archive search
+    this.search(q);
+
+    // Simulate Bill Donahue-style response after short delay
+    setTimeout(() => {
+        const lq = q.toLowerCase();
+        let resp = `The hidden meaning of "${q}" is found within the biological processes of the human body. Scripture is not history — it is physiology.`;
+
+        if (lq.includes('pineal') || lq.includes('third eye') || lq.includes('single eye')) {
+            resp = "The Single Eye is the Pineal Gland. When your eye is single, your whole body is full of light. It is the light receptor where Jacob saw God face to face — Peniel. The electrum, the holy anointing oil, the manna — all point to this gland.";
+        }
+        else if (lq.includes('egypt')) {
+            resp = "Egypt represents the lower mind, the physical bondage of the senses. We must cross the Red Sea of emotion to reach the Promised Land of the higher mind. The Pharaoh is the ego that will not let the energy go.";
+        }
+        else if (lq.includes('jesus') || lq.includes('christ')) {
+            resp = "Jesus is the Greek word for Joshua — the electrical energy rising up the spine to the brain, waiting to be born in the manger of the solar plexus. The Christ is the oil, the chrism, the sacred secretion that must be raised.";
+        }
+        else if (lq.includes('east') || lq.includes('rising sun')) {
+            resp = "Look to the East — the right hemisphere of the brain. The place of the rising sun, where the spiritual intellect is born. The wise men come from the East bearing gifts.";
+        }
+        else if (lq.includes('meditation') || lq.includes('silence') || lq.includes('still')) {
+            resp = "We must shut down the five senses. Take no thought. In the silence, the electrical energy moves up the spine to the Pineal Gland. Be still and know that I am God — that is meditation.";
+        }
+        else if (lq.includes('kundalini') || lq.includes('serpent')) {
+            resp = "The serpent is the kundalini fire at the base of the spine — the root chakra. When it rises and reaches the brain, it opens the Single Eye. Moses' serpent staff, the brazen serpent — all symbols of this sacred energy.";
+        }
+        else if (lq.includes('chakra') || lq.includes('center') || lq.includes('gland')) {
+            resp = "The seven churches of Asia are the seven chakras, the seven seals, the seven candles. Each center has its own color, sound, and biblical correspondence. The temple of God is within you.";
+        }
+        else if (lq.includes('bible') || lq.includes('scripture')) {
+            resp = "The Bible is not a history book. It is a book of symbols describing the journey of the soul through the human body. Every character, every story, is inside you right now.";
+        }
+
+        aiText.innerText = resp;
+    }, 1400);
+},
            
             playMockAudio: function() { alert("Voice synthesis active."); },
             nav: function(id) {
