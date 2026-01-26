@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bill Donahue | Official Archive</title>
+    <title>Bill Donahue | WHO IS GOD? I AM!</title>
    
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
@@ -621,37 +621,77 @@
             }).join('');
         },
 
-        // --- NEW: SCAN FOR BAD LINKS ---
-        scanForBrokenLinks: function() {
+        // --- NEW: API-BASED SCAN FOR BROKEN LINKS ---
+        scanForBrokenLinks: async function() {
             this.nav('search');
-            document.getElementById('search-title').innerText = "Broken / Invalid Links";
+            document.getElementById('search-title').innerText = "Scanning YouTube Status...";
             document.getElementById('ai-box').classList.add('hidden');
+            const list = document.getElementById('search-list');
+            list.innerHTML = '<div class="text-center p-8"><i class="fa-solid fa-circle-notch fa-spin text-purple-500 text-2xl"></i><p class="mt-4 text-stone-400 text-xs font-mono uppercase tracking-widest">Verifying with YouTube API...</p></div>';
 
-            // Find items that HAVE a URL (http) but NO Valid ID (null)
-            const broken = this.data.filter(i => {
-                const hasLink = i.URL && i.URL.includes('http');
-                const validID = this.getVideoID(i.URL);
-                return hasLink && !validID;
+            // 1. Gather all IDs
+            const allItems = this.data.filter(i => i.URL && i.URL.includes('http'));
+            const idMap = {}; 
+            const idsToCheck = [];
+
+            allItems.forEach(item => {
+                const id = this.getVideoID(item.URL);
+                if (id) {
+                    if (!idMap[id]) {
+                        idMap[id] = [];
+                        idsToCheck.push(id);
+                    }
+                    idMap[id].push(item);
+                }
             });
 
-            if(broken.length === 0) {
-                document.getElementById('search-list').innerHTML = `<div class="p-8 text-center text-gray-500 mono">No broken links found.</div>`;
+            // 2. Batch Requests (50 at a time)
+            const batchSize = 50;
+            const validIds = new Set();
+
+            for (let i = 0; i < idsToCheck.length; i += batchSize) {
+                const batch = idsToCheck.slice(i, i + batchSize);
+                const url = `https://www.googleapis.com/youtube/v3/videos?key=${this.youtube.apiKey}&part=id&id=${batch.join(',')}`;
+                try {
+                    const res = await fetch(url);
+                    const json = await res.json();
+                    if (json.items) {
+                        json.items.forEach(item => validIds.add(item.id));
+                    }
+                } catch (e) {
+                    console.error("Scan error", e);
+                }
+            }
+
+            // 3. Determine Broken Links (IDs we sent but didn't get back)
+            const brokenItems = [];
+            idsToCheck.forEach(id => {
+                if (!validIds.has(id)) {
+                    brokenItems.push(...idMap[id]);
+                }
+            });
+
+            // 4. Render Results
+            document.getElementById('search-title').innerText = `Found ${brokenItems.length} Broken / Private Links`;
+            
+            if (brokenItems.length === 0) {
+                list.innerHTML = `<div class="p-8 text-center text-green-500 mono">All links are active and public!</div>`;
                 return;
             }
 
-            document.getElementById('search-list').innerHTML = broken.map(l => `
+            list.innerHTML = brokenItems.map(l => `
                 <div class="p-4 border-b border-red-900/30 flex justify-between items-center group hover:bg-red-900/10 transition-colors">
                     <div class="flex items-center gap-4">
                         <div class="w-12 h-9 bg-red-900/20 rounded flex items-center justify-center text-red-500">
-                            <i class="fa-solid fa-triangle-exclamation"></i>
+                            <i class="fa-solid fa-link-slash"></i>
                         </div>
                         <div>
-                            <div class="text-[9px] text-red-400 uppercase tracking-widest mb-1">Bad Link Format</div>
+                            <div class="text-[9px] text-red-400 uppercase tracking-widest mb-1">Video Deleted / Private</div>
                             <h4 class="text-sm text-white font-medium">${l['TITLE OF VIDEO']}</h4>
-                            <p class="text-[10px] text-gray-600 font-mono mt-1 break-all">${l.URL}</p>
+                            <p class="text-[10px] text-gray-600 font-mono mt-1">${l.TOPIC}</p>
                         </div>
                     </div>
-                    <a href="${l.URL}" target="_blank" class="text-gray-500 text-xs font-bold uppercase tracking-widest hover:text-white">TEST ↗</a>
+                    <a href="${l.URL}" target="_blank" class="text-gray-500 text-xs font-bold uppercase tracking-widest hover:text-white">CHECK ↗</a>
                 </div>`
             ).join('');
         },
@@ -760,4 +800,5 @@
     };
             window.onload = () => app.init();
         </script>
-</body></html>
+</body>
+</html>
