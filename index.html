@@ -72,6 +72,9 @@
             background: #111;
             box-shadow: 0 10px 40px -10px var(--orange-glow);
         }
+        .topic-pill {
+            cursor: pointer;
+        }
         .cosmos-card:active {
             border-color: #FFFFFF;
             box-shadow: 0 10px 40px -10px rgba(255, 255, 255, 0.25);
@@ -391,6 +394,7 @@
             currentUtterance: null,
             isSpeaking: false,
            
+            // --- HELPER: Extract ID from various Youtube URL formats ---
             getVideoID: function(url) {
                 if (!url) return null;
                 const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
@@ -398,12 +402,16 @@
                 return (match && match[2].length === 11) ? match[2] : null;
             },
 
+            // --- HELPER: Get Topic for a Video ID (From CSV Data) ---
             getTopicByVideoID: function(vidId) {
                 if (!this.data || this.data.length === 0) return null;
                 const found = this.data.find(row => this.getVideoID(row.URL) === vidId);
                 return found ? found.TOPIC : null;
             },
 
+            // ======================================
+            // YOUTUBE VIDEO ARCHIVE
+            // ======================================
             youtube: {
                 apiKey: "AIzaSyCZfKNXHgjZG1h13QhDH5-ubtVC0xDPfe4",
                 uploadsPlaylistId: "UUinvwSeMdmuuzyMWrS0tGTg",
@@ -415,7 +423,7 @@
                     if (this.loading) return;
                     this.loading = true;
 
-                    let url = `https://www.googleapis.com/youtube/v3/playlistItems?key=${this.apiKey}&playlistId=${this.uploadsPlaylistId}&part=snippet&maxResults=50`;
+                    let url = `https://www.googleapis.com/youtube/v3/playlistItems?key=${this.apiKey}&playlistId=${this.uploadsPlaylistId}&part=snippet&maxResults=24`;
                     if (this.nextPageToken) url += `&pageToken=${this.nextPageToken}`;
 
                     try {
@@ -431,7 +439,8 @@
                         }));
 
                         this.videos.push(...newVideos);
-                        this.renderVideos();
+                        this.youtube.videos = [...this.youtube.videos];
+                        this.youtube.renderVideos();
                     } catch (e) { console.error("YT Error", e); }
                     this.loading = false;
                 },
@@ -442,11 +451,12 @@
                     
                     grid.innerHTML = this.videos.map(v => {
                         const topic = window.app.getTopicByVideoID(v.id);
-                        const safeTopic = topic ? topic.replace(/'/g, "\\'").replace(/"/g, '\"') : '';
+                        // Escaping for onclick
+                        const safeTopic = topic ? topic.replace(/'/g, "\\'").replace(/"/g, '&quot;') : '';
 
                         return `
-                        <div class="cosmos-card group"> 
-                            <div class="relative aspect-video overflow-hidden cursor-pointer"      
+                        <div class="cosmos-card group">
+                            <div class="relative aspect-video overflow-hidden cursor-pointer" 
                                 onclick="window.open('https://www.youtube.com/watch?v=${v.id}', '_blank')">
                                 <img src="${v.thumbnail}" class="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
                                 <div class="absolute inset-0 flex items-center justify-center">
@@ -457,8 +467,8 @@
                                 <h3 class="text-sm text-gray-200 group-hover:text-white line-clamp-2 mb-2">${v.title}</h3>
                                 <div class="mt-auto">
                                     ${topic ? 
-                                        `<span class="text-[9px] font-bold uppercase tracking-widest text-purple-400 border border-purple-500/30 px-2 py-1 rounded hover:bg-purple-500 hover:text-white transition-colors inline-block" 
-                                               onclick="event.stopPropagation(); window.app.openTopic('${safeTopic}')">
+                                        `<span class="text-[9px] font-bold uppercase tracking-widest text-purple-400 border border-purple-500/30 px-2 py-1 rounded hover:bg-purple-500 hover:text-white transition-colors inline-block cursor-pointer" 
+                                               onclick="window.app.openTopic('${safeTopic}')">
                                             Topic: ${topic}
                                          </span>` 
                                         : ''
@@ -474,13 +484,9 @@
                 createStars();
                 this.setupStarInteractions();
                 this.renderSocialGallery();
-                (async () => {
-                    while (true) {
-                        await this.youtube.fetchVideos();
-                        if (!this.youtube.nextPageToken) break;
-                    }
-                })();
+                this.youtube.fetchVideos();
 
+                // SCROLL LISTENER
                 const wrapper = document.getElementById('scroll-wrapper');
                 wrapper.addEventListener("scroll", () => {
                     if (wrapper.scrollTop + wrapper.clientHeight >= wrapper.scrollHeight - 800) {
@@ -488,6 +494,7 @@
                     }
                 });
 
+                // CSV LOAD WITH REFINED PARSING
                 Papa.parse('catalog.csv', {
                     download: true,
                     header: true,
@@ -512,7 +519,7 @@
                         this.renderCategories();
                         document.getElementById('status-bar').innerText = `${this.data.length} Records Online`;
                         
-                        // Force re-render specifically to bind topics
+                        // RE-RENDER YOUTUBE VIDEOS NOW THAT WE HAVE DATA TO LINK TOPICS
                         this.youtube.renderVideos();
                     }
                 });
@@ -521,9 +528,12 @@
                 setTimeout(() => document.getElementById('app-loader').classList.add('hidden'), 300);
             },
 
+            // UTILS
             setupStarInteractions: function() { /* (Keep existing star code) */ },
            
+            // --- TOPIC SORTING & RENDERING ---
             getUniqueTopics: function() {
+                // A-Z Sort
                 return [...new Set(this.data.map(i => i.TOPIC))].sort((a, b) => a.localeCompare(b));
             },
 
@@ -547,7 +557,7 @@
                 grid.innerHTML = topics.map((t, i) => {
                     const count = this.data.filter(d => d.TOPIC === t).length;
                     const icon = this.getIcon(t);
-                    const safeTopic = t.replace(/'/g, "\\'").replace(/"/g, '\"');
+                    const safeTopic = t.replace(/'/g, "\\'").replace(/"/g, '&quot;');
                    
                     return `
                         <div onclick="window.app.openTopic('${safeTopic}')" class="cosmos-card topic-card p-6 group">
@@ -565,6 +575,7 @@
                 }).join('');
             },
 
+            // --- UPDATED LIST VIEW WITH THUMBNAILS ---
             openTopic: function(topic) {
                 this.nav('list');
                 document.getElementById('active-category-title').innerText = topic;
@@ -619,12 +630,18 @@
                
                 document.getElementById('search-list').innerHTML = results.map(l => {
                     const vidId = this.getVideoID(l.URL);
+                    // Safe topic for clicking
+                    const safeTopic = l.TOPIC.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                    
                     return `
                     <div class="p-4 border-b border-white/10 flex justify-between items-center group hover:bg-white/5 transition-colors">
                         <div class="flex items-center gap-4">
                             ${vidId ? `<img src="https://img.youtube.com/vi/${vidId}/default.jpg" class="w-12 h-9 rounded object-cover opacity-50">` : ''}
                             <div>
-                                <div class="text-[9px] text-gray-500 uppercase tracking-widest mb-1">${l.TOPIC}</div>
+                                <div class="text-[9px] text-purple-400 font-bold uppercase tracking-widest mb-1 cursor-pointer hover:text-white transition-colors"
+                                     onclick="window.app.openTopic('${safeTopic}')">
+                                     ${l.TOPIC}
+                                </div>
                                 <h4 class="text-sm text-white font-medium">${l['TITLE OF VIDEO']}</h4>
                             </div>
                         </div>
@@ -633,6 +650,7 @@
                 }).join('');
             },
 
+            // --- NEW: API-BASED SCAN FOR BROKEN LINKS ---
             scanForBrokenLinks: async function() {
                 this.nav('search');
                 document.getElementById('search-title').innerText = "Scanning YouTube Status...";
@@ -641,6 +659,7 @@
                 document.getElementById('download-area').innerHTML = ''; 
                 list.innerHTML = '<div class="text-center p-8"><i class="fa-solid fa-circle-notch fa-spin text-purple-500 text-2xl"></i><p class="mt-4 text-stone-400 text-xs font-mono uppercase tracking-widest">Verifying with YouTube API...</p></div>';
 
+                // 1. Gather all IDs
                 const allItems = this.data.filter(i => i.URL && i.URL.includes('http'));
                 const idMap = {}; 
                 const idsToCheck = [];
@@ -656,6 +675,7 @@
                     }
                 });
 
+                // 2. Batch Requests (50 at a time)
                 const batchSize = 50;
                 const validIds = new Set();
 
@@ -673,6 +693,7 @@
                     }
                 }
 
+                // 3. Determine Broken Links (IDs we sent but didn't get back)
                 const brokenItems = [];
                 idsToCheck.forEach(id => {
                     if (!validIds.has(id)) {
@@ -680,6 +701,7 @@
                     }
                 });
 
+                // 4. Render Results
                 document.getElementById('search-title').innerText = `Found ${brokenItems.length} Broken / Private Links`;
                 
                 if (brokenItems.length === 0) {
@@ -687,6 +709,8 @@
                     return;
                 }
 
+                // 5. ENABLE EXPORT
+                // Create CSV Content
                 let csvContent = "data:text/csv;charset=utf-8,TITLE,TOPIC,URL\n";
                 brokenItems.forEach(row => {
                     csvContent += `"${row['TITLE OF VIDEO']}","${row.TOPIC}","${row.URL}"\n`;
@@ -716,6 +740,7 @@
                 ).join('');
             },
 
+            // --- RENDER SOCIAL (SIMULATED GALLERY) ---
             renderSocialGallery: function() {
                 const grid = document.getElementById('social-gallery-grid');
                 if(!grid) return;
@@ -738,6 +763,7 @@
                 grid.innerHTML = html;
             },
 
+            // --- AI VOICE: AMERICAN PROFESSOR ---
             togglePlayPause: function() {
                 const text = document.getElementById('ai-text-output').innerText;
                 if (!('speechSynthesis' in window) || !text) return;
@@ -756,12 +782,17 @@
                         this.currentUtterance = new SpeechSynthesisUtterance(text);
                         const voices = speechSynthesis.getVoices();
                         
+                        // VOICE STRATEGY: AMERICAN MALE
                         let selectedVoice = voices.find(v => v.name.includes("David") && v.name.includes("Microsoft"));
                         if (!selectedVoice) selectedVoice = voices.find(v => v.name === "Alex");
                         if (!selectedVoice) selectedVoice = voices.find(v => v.lang === "en-US" && (v.name.includes("Male") || v.gender === 'male'));
+                        
+                        // Fallback to anything US
                         if (!selectedVoice) selectedVoice = voices.find(v => v.lang === "en-US");
 
                         if (selectedVoice) this.currentUtterance.voice = selectedVoice;
+                        
+                        // PROFESSOR SETTINGS: Steady, slightly deeper
                         this.currentUtterance.rate = 0.9; 
                         this.currentUtterance.pitch = 0.8; 
 
@@ -834,4 +865,3 @@
     </script>
 </body>
 </html>
-
