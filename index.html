@@ -415,7 +415,7 @@
                     if (this.loading) return;
                     this.loading = true;
 
-                    let url = `https://www.googleapis.com/youtube/v3/playlistItems?key=${this.apiKey}&playlistId=${this.uploadsPlaylistId}&part=snippet&maxResults=12`;
+                    let url = `https://www.googleapis.com/youtube/v3/playlistItems?key=${this.apiKey}&playlistId=${this.uploadsPlaylistId}&part=snippet&maxResults=50`;
                     if (this.nextPageToken) url += `&pageToken=${this.nextPageToken}`;
 
                     try {
@@ -442,11 +442,12 @@
                     
                     grid.innerHTML = this.videos.map(v => {
                         const topic = window.app.getTopicByVideoID(v.id);
-                        const safeTopic = topic ? topic.replace(/'/g, "\\'").replace(/"/g, '&quot;') : '';
+                        const safeTopic = topic ? topic.replace(/'/g, "\\'").replace(/"/g, '\"') : '';
 
                         return `
-                        <div class="cosmos-card group cursor-pointer" onclick="window.open('https://www.youtube.com/watch?v=${v.id}', '_blank')">
-                            <div class="relative aspect-video overflow-hidden">
+                        <div class="cosmos-card group"> 
+                            <div class="relative aspect-video overflow-hidden cursor-pointer"      
+                                onclick="window.open('https://www.youtube.com/watch?v=${v.id}', '_blank')">
                                 <img src="${v.thumbnail}" class="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
                                 <div class="absolute inset-0 flex items-center justify-center">
                                     <i class="fa-solid fa-play text-4xl text-white opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-lg"></i>
@@ -473,7 +474,12 @@
                 createStars();
                 this.setupStarInteractions();
                 this.renderSocialGallery();
-                this.youtube.fetchVideos();
+                (async () => {
+                    while (true) {
+                        await this.youtube.fetchVideos();
+                        if (!this.youtube.nextPageToken) break;
+                    }
+                })();
 
                 const wrapper = document.getElementById('scroll-wrapper');
                 wrapper.addEventListener("scroll", () => {
@@ -541,7 +547,7 @@
                 grid.innerHTML = topics.map((t, i) => {
                     const count = this.data.filter(d => d.TOPIC === t).length;
                     const icon = this.getIcon(t);
-                    const safeTopic = t.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                    const safeTopic = t.replace(/'/g, "\\'").replace(/"/g, '\"');
                    
                     return `
                         <div onclick="window.app.openTopic('${safeTopic}')" class="cosmos-card topic-card p-6 group">
@@ -828,3 +834,4 @@
     </script>
 </body>
 </html>
+
