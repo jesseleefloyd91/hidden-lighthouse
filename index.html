@@ -72,6 +72,10 @@
             background: #111;
             box-shadow: 0 10px 40px -10px rgba(126, 34, 206, 0.25);
         }
+        .cosmos-card:active {
+            border-color: #FF4500;
+            box-shadow: 0 10px 40px -10px rgba(255, 69, 0, 0.25);
+        }
         .cosmos-card i { transition: transform 0.3s ease; }
         .cosmos-card:hover i { transform: scale(1.2) rotate(10deg); color: var(--purple); }
         /* DOCK */
@@ -302,6 +306,7 @@
                     <button id="play-pause-btn" onclick="window.app.togglePlayPause()" class="flex items-center gap-2 text-xs font-bold text-purple-300 uppercase tracking-widest hover:text-white"><i class="fa-solid fa-play"></i> Play</button>
                     <button id="stop-btn" onclick="window.app.stopAudio()" class="flex items-center gap-2 text-xs font-bold text-purple-300 uppercase tracking-widest hover:text-white hidden"><i class="fa-solid fa-stop"></i> Stop</button>
                 </div>
+            </div>
           
             <h2 class="cinzel text-2xl font-bold text-white mb-8 border-b border-white/10 pb-4">Archive Matches</h2>
             <div id="search-list" class="grid grid-cols-1 lg:grid-cols-2 gap-4 pb-20"></div>
@@ -343,8 +348,8 @@
         }
         window.app = {
             data: [],
-        currentUtterance: null,
-        isSpeaking: false,
+            currentUtterance: null,
+            isSpeaking: false,
             // FULL EMBEDDED DATA
             rawCSV: `TITLE OF VIDEO,URL,TOPIC
 ZODIAC & THE BIBLE,https://www.youtube.com/watch?v=loL03YF262Q,THE ZODIAC-COSMIC INFLUENCES
@@ -580,21 +585,15 @@ BHAGAVAD GITA IN POSITION,,THESE ARE VIDEOS THAT HAVE NOT BEEN UPLOADED TO YOU T
                 const input = document.getElementById('ai-input');
                 const q = (input ? input.value : '').trim();
                 if (!q) return;
-
                 // Clear input immediately
                 if (input) input.value = '';
-
                 this.nav('search');
-
                 const aiBox = document.getElementById('ai-box');
                 const aiText = document.getElementById('ai-text-output');
-
                 if (!aiBox || !aiText) return;
-
                 aiBox.classList.remove('hidden');
                 aiText.innerText = "Consulting the archives...";
                 this.search(q);
-
                 // Simulation Logic
                 setTimeout(() => {
                     let resp = `The hidden meaning of "${q}" is found within the biological processes of the human body.`;
@@ -622,21 +621,21 @@ BHAGAVAD GITA IN POSITION,,THESE ARE VIDEOS THAT HAVE NOT BEEN UPLOADED TO YOU T
                     playPauseBtn.innerHTML = '<i class="fa-solid fa-play"></i> Play';
                 } else {
                     if (this.currentUtterance && speechSynthesis.paused) {
-                    speechSynthesis.resume();
+                        speechSynthesis.resume();
                     } else {
                         this.currentUtterance = new SpeechSynthesisUtterance(text);
                         const voices = speechSynthesis.getVoices();
                         const maleVoice = voices.find(v => v.gender === 'male' || v.name.toLowerCase().includes('male'));
                         if (maleVoice) this.currentUtterance.voice = maleVoice;
-                        this.currentUtterance.rate = 0.9;
-                        this.currentUtterance.pitch = 0.8;
+                        this.currentUtterance.rate = 0.8;
+                        this.currentUtterance.pitch = 0.6;
                         this.currentUtterance.onend = () => {
                             this.isSpeaking = false;
                             playPauseBtn.innerHTML = '<i class="fa-solid fa-play"></i> Play';
                             stopBtn.classList.add('hidden');
                         };
                         speechSynthesis.speak(this.currentUtterance);
-                     }
+                    }
                     this.isSpeaking = true;
                     playPauseBtn.innerHTML = '<i class="fa-solid fa-pause"></i> Pause';
                     stopBtn.classList.remove('hidden');
@@ -649,7 +648,7 @@ BHAGAVAD GITA IN POSITION,,THESE ARE VIDEOS THAT HAVE NOT BEEN UPLOADED TO YOU T
                     this.isSpeaking = false;
                     document.getElementById('play-pause-btn').innerHTML = '<i class="fa-solid fa-play"></i> Play';
                     document.getElementById('stop-btn').classList.add('hidden');
-                }    
+                }
             },
             nav: function(id) {
                 document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
@@ -684,4 +683,3 @@ BHAGAVAD GITA IN POSITION,,THESE ARE VIDEOS THAT HAVE NOT BEEN UPLOADED TO YOU T
     </script>
 </body>
 </html>
-
