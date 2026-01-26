@@ -298,8 +298,10 @@
             <div id="ai-box" class="mb-12 bg-white/5 p-8 border-l-4 border-purple-500 hidden rounded-xl fade-in">
                 <span class="text-purple-400 font-mono text-[10px] uppercase tracking-widest mb-3 block">Teacher's Insight</span>
                 <div id="ai-text-output" class="text-stone-200 text-xl leading-relaxed italic font-light mb-4 font-serif"></div>
-                <button onclick="app.playMockAudio()" class="flex items-center gap-2 text-xs font-bold text-purple-300 uppercase tracking-widest hover:text-white"><i class="fa-solid fa-play"></i> Play Response</button>
-            </div>
+                <div class="flex items-center gap-4">
+                    <button id="play-pause-btn" onclick="window.app.togglePlayPause()" class="flex items-center gap-2 text-xs font-bold text-purple-300 uppercase tracking-widest hover:text-white"><i class="fa-solid fa-play"></i> Play</button>
+                    <button id="stop-btn" onclick="window.app.stopAudio()" class="flex items-center gap-2 text-xs font-bold text-purple-300 uppercase tracking-widest hover:text-white hidden"><i class="fa-solid fa-stop"></i> Stop</button>
+                </div>
           
             <h2 class="cinzel text-2xl font-bold text-white mb-8 border-b border-white/10 pb-4">Archive Matches</h2>
             <div id="search-list" class="grid grid-cols-1 lg:grid-cols-2 gap-4 pb-20"></div>
@@ -341,6 +343,8 @@
         }
         window.app = {
             data: [],
+        currentUtterance: null,
+        isSpeaking: false,
             // FULL EMBEDDED DATA
             rawCSV: `TITLE OF VIDEO,URL,TOPIC
 ZODIAC & THE BIBLE,https://www.youtube.com/watch?v=loL03YF262Q,THE ZODIAC-COSMIC INFLUENCES
@@ -604,20 +608,48 @@ BHAGAVAD GITA IN POSITION,,THESE ARE VIDEOS THAT HAVE NOT BEEN UPLOADED TO YOU T
                 }, 1500);
             },
           
-            playMockAudio: function() {
+            togglePlayPause: function() {
                 const text = document.getElementById('ai-text-output').innerText;
-                if ('speechSynthesis' in window && text) {
-                    const utterance = new SpeechSynthesisUtterance(text);
-                    // Optional: Try to select a male voice to mimic Bill
-                    const voices = speechSynthesis.getVoices();
-                    const maleVoice = voices.find(v => v.gender === 'male' || v.name.toLowerCase().includes('male'));
-                    if (maleVoice) utterance.voice = maleVoice;
-                    utterance.rate = 0.9; // Slightly slower for emphasis
-                    utterance.pitch = 0.8; // Deeper tone
-                    speechSynthesis.speak(utterance);
-                } else {
-                    alert("Voice synthesis not supported in this browser or no text to speak.");
+                if (!('speechSynthesis' in window) || !text) {
+                    alert("Voice synthesis not supported or no text.");
+                    return;
                 }
+                const playPauseBtn = document.getElementById('play-pause-btn');
+                const stopBtn = document.getElementById('stop-btn');
+                if (this.isSpeaking) {
+                    speechSynthesis.pause();
+                    this.isSpeaking = false;
+                    playPauseBtn.innerHTML = '<i class="fa-solid fa-play"></i> Play';
+                } else {
+                    if (this.currentUtterance && speechSynthesis.paused) {
+                    speechSynthesis.resume();
+                    } else {
+                        this.currentUtterance = new SpeechSynthesisUtterance(text);
+                        const voices = speechSynthesis.getVoices();
+                        const maleVoice = voices.find(v => v.gender === 'male' || v.name.toLowerCase().includes('male'));
+                        if (maleVoice) this.currentUtterance.voice = maleVoice;
+                        this.currentUtterance.rate = 0.9;
+                        this.currentUtterance.pitch = 0.8;
+                        this.currentUtterance.onend = () => {
+                            this.isSpeaking = false;
+                            playPauseBtn.innerHTML = '<i class="fa-solid fa-play"></i> Play';
+                            stopBtn.classList.add('hidden');
+                        };
+                        speechSynthesis.speak(this.currentUtterance);
+                     }
+                    this.isSpeaking = true;
+                    playPauseBtn.innerHTML = '<i class="fa-solid fa-pause"></i> Pause';
+                    stopBtn.classList.remove('hidden');
+                }
+            },
+            stopAudio: function() {
+                if (this.currentUtterance) {
+                    speechSynthesis.cancel();
+                    this.currentUtterance = null;
+                    this.isSpeaking = false;
+                    document.getElementById('play-pause-btn').innerHTML = '<i class="fa-solid fa-play"></i> Play';
+                    document.getElementById('stop-btn').classList.add('hidden');
+                }    
             },
             nav: function(id) {
                 document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
@@ -652,3 +684,4 @@ BHAGAVAD GITA IN POSITION,,THESE ARE VIDEOS THAT HAVE NOT BEEN UPLOADED TO YOU T
     </script>
 </body>
 </html>
+
