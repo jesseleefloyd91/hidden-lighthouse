@@ -382,6 +382,13 @@
             return (match && match[2].length === 11) ? match[2] : null;
         },
 
+        // --- HELPER: Get Topic for a Video ID (From CSV Data) ---
+        getTopicByVideoID: function(vidId) {
+            if (!this.data || this.data.length === 0) return null;
+            const found = this.data.find(row => this.getVideoID(row.URL) === vidId);
+            return found ? found.TOPIC : null;
+        },
+
         // ======================================
         // YOUTUBE VIDEO ARCHIVE
         // ======================================
@@ -420,7 +427,13 @@
             renderVideos: function () {
                 const grid = document.getElementById("video-grid");
                 if (!grid) return;
-                grid.innerHTML = this.videos.map(v => `
+                
+                grid.innerHTML = this.videos.map(v => {
+                    const topic = window.app.getTopicByVideoID(v.id);
+                    // Escaping for onclick
+                    const safeTopic = topic ? topic.replace(/'/g, "\\'").replace(/"/g, '&quot;') : '';
+
+                    return `
                     <div class="cosmos-card group cursor-pointer" onclick="window.open('https://www.youtube.com/watch?v=${v.id}', '_blank')">
                         <div class="relative aspect-video overflow-hidden">
                             <img src="${v.thumbnail}" class="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
@@ -428,11 +441,20 @@
                                 <i class="fa-solid fa-play text-4xl text-white opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-lg"></i>
                             </div>
                         </div>
-                        <div class="p-4">
-                            <h3 class="text-sm text-gray-200 group-hover:text-white line-clamp-2">${v.title}</h3>
+                        <div class="p-4 flex flex-col h-full">
+                            <h3 class="text-sm text-gray-200 group-hover:text-white line-clamp-2 mb-2">${v.title}</h3>
+                            <div class="mt-auto">
+                                ${topic ? 
+                                    `<span class="text-[9px] font-bold uppercase tracking-widest text-purple-400 border border-purple-500/30 px-2 py-1 rounded hover:bg-purple-500 hover:text-white transition-colors inline-block" 
+                                           onclick="event.stopPropagation(); window.app.openTopic('${safeTopic}')">
+                                        Topic: ${topic}
+                                     </span>` 
+                                    : ''
+                                }
+                            </div>
                         </div>
                     </div>
-                `).join("");
+                `}).join("");
             }
         },
 
@@ -458,14 +480,12 @@
                         .filter(row => {
                             const t = row['TITLE OF VIDEO'];
                             const top = row.TOPIC;
-                            // Basic Validity Check
                             if (!t || !t.trim() || !top || !top.trim()) return false;
                             if (top.toLowerCase().startsWith('http')) return false;
                             if (!isNaN(top)) return false;
                             return true;
                         })
                         .map(row => {
-                            // CLEAN TOPICS: Remove leading "And " or "and "
                             let cleanTopic = row.TOPIC.trim();
                             cleanTopic = cleanTopic.replace(/^and\s+/i, ''); 
                             row.TOPIC = cleanTopic;
@@ -475,6 +495,9 @@
 
                     this.renderCategories();
                     document.getElementById('status-bar').innerText = `${this.data.length} Records Online`;
+                    
+                    // RE-RENDER YOUTUBE VIDEOS NOW THAT WE HAVE DATA TO LINK TOPICS
+                    this.youtube.renderVideos();
                 }
             });
            
