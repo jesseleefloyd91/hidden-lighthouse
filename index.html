@@ -347,12 +347,8 @@
             <button class="dock-btn text-red-400 hover:text-red-300" onclick="window.app.scanForBrokenLinks()" title="Scan for Bad Links">
                 <i class="fa-solid fa-stethoscope"></i>
             </button>
-            <button class="dock-btn" onclick="document.getElementById('csv-upload').click()" title="Update">
-                <i class="fa-solid fa-cloud-arrow-up"></i>
-            </button>
         </div>
     </div>
-    <input type="file" id="csv-upload" class="hidden" accept=".csv" onchange="window.app.handleFileUpload(this)">
     <script>
         // STARS
         function createStars() {
@@ -737,18 +733,6 @@
         showAnatomy: function(t,d) {
             document.getElementById('anatomy-title').innerText = t;
             document.getElementById('anatomy-desc').innerText = d;
-        },
-        handleFileUpload: function(i) {
-            const f = i.files[0];
-            if(!f) return;
-            Papa.parse(f, {
-                header: true,
-                complete: (results) => {
-                    this.data = results.data.filter(row => row['TITLE OF VIDEO'] && row['TITLE OF VIDEO'].trim() && row.TOPIC && row.TOPIC.trim());
-                    this.renderCategories();
-                    alert("Updated!");
-                }
-            });
         }
     };
             window.onload = () => app.init();
