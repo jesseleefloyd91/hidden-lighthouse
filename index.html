@@ -502,12 +502,30 @@
                     }
                 });
 
-                // Load data using PapaParse
+                // 3. CSV Load with STRICT FILTERING
                 Papa.parse('catalog.csv', {
                     download: true,
                     header: true,
                     complete: (results) => {
-                        this.data = results.data.filter(row => row['TITLE OF VIDEO'] && row['TITLE OF VIDEO'].trim() && row.TOPIC && row.TOPIC.trim());
+                        this.data = results.data.filter(row => {
+                        // Get fields
+                        const title = row['TITLE OF VIDEO'] && row['TITLE OF VIDEO'].trim();
+                        let topic = row.TOPIC && row.TOPIC.trim();
+                
+                        // VALIDATION LOGIC:
+                        // 1. Title must exist
+                        // 2. Topic must exist
+                        // 3. Topic must NOT start with 'http' (filters out links)
+                        // 4. Topic must NOT be a number (filters out accidental IDs)
+                        if (!title || !topic) return false;
+                
+                        topic = topic.toLowerCase();
+                        if (topic.startsWith('http') || topic.startsWith('www')) return false;
+                        if (!isNaN(topic)) return false; // Filter out rows where topic is just a number
+                
+                        return true;
+                    });
+            
                         this.renderCategories();
                         document.getElementById('status-bar').innerText = `${this.data.length} Records Online`;
                     },
@@ -515,7 +533,7 @@
                         console.error('Error fetching catalog.csv:', err);
                         document.getElementById('status-bar').innerText = 'Error loading data';
                     }
-                });
+                 });
     
                 this.nav('home');
                 setTimeout(() => document.getElementById('app-loader').classList.add('hidden'), 300);
@@ -757,6 +775,7 @@
     </script>
 </body>
 </html>
+
 
 
 
