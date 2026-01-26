@@ -1,4 +1,4 @@
-HTML<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -391,12 +391,13 @@ KRISHNA BHAGAVAD GITA BEGINNING,https://www.youtube.com/watch?v=PXf2Hv-dgX4,HARE
                     const size = Math.random() * 2 + 1;
                     star.style.width = `${size}px`;
                     star.style.height = `${size}px`;
-                    star.style.backgroundColor = 'white';
+                    star.style.backgroundColor = `hsl(${Math.random() * 20 + 10}, 60%, 90%)`; // Slight red/orange hue
                     star.style.borderRadius = '50%';
                     star.style.left = `${Math.random() * 100}%`;
                     star.style.top = `${Math.random() * 100}%`;
                     star.style.opacity = Math.random() * 0.5 + 0.3;
                     star.style.animation = `twinkle ${Math.random() * 2 + 2}s ease-in-out infinite alternate`;
+                    star.style.boxShadow = '0 0 3px rgba(255, 165, 0, 0.3)'; // Slight glow
                     stars.appendChild(star);
                 }
             },
@@ -486,7 +487,7 @@ KRISHNA BHAGAVAD GITA BEGINNING,https://www.youtube.com/watch?v=PXf2Hv-dgX4,HARE
             renderCategories: function() {
                 const topics = this.getUniqueTopics();
                 const grid = document.getElementById('category-grid');
-                document.getElementById('total-topics-display').innerText = `${topics.length} Categories`;
+                document.getElementById('total-topics-display').innerText = `${this.data.length} Records Online`;
                
                 grid.innerHTML = topics.map((t, i) => {
                     const count = this.data.filter(d => d.topic === t).length;
