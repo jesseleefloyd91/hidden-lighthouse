@@ -4,14 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bill Donahue | Official Archive</title>
-   
+  
     <!-- LIBRARIES -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     <!-- FONTS & ICONS -->
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;800&family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-   
+  
     <style>
         :root {
             --bg: #050505;
@@ -118,7 +118,7 @@
             width: 100%; min-height: 100vh; animation: fadeIn 0.4s ease;
         }
         .view-section.active { display: block; }
-       
+      
         #view-home.active {
             display: flex; flex-direction: column; justify-content: center; align-items: center; padding-top: 0;
         }
@@ -132,7 +132,7 @@
             display: inline-block; background: rgba(216, 180, 254, 0.05);
         }
         .diamond-text { transform: skew(15deg); color: var(--purple); text-shadow: 0 0 15px rgba(216, 180, 254, 0.5); }
-       
+      
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: var(--bg); }
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
@@ -153,7 +153,7 @@
                 <p class="text-[9px] text-purple-400 font-bold uppercase tracking-wider">Official Archive</p>
             </div>
         </div>
-       
+      
         <div class="pointer-events-auto relative group">
             <svg class="w-3.5 h-3.5 absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
             <input type="text" id="global-search" oninput="window.app.search(this.value)" placeholder="SEARCH ARCHIVE..." class="search-input placeholder-gray-500 font-mono uppercase">
@@ -166,7 +166,7 @@
     </div>
     <!-- MAIN -->
     <div class="h-screen overflow-y-auto custom-scrollbar" id="scroll-wrapper">
-       
+      
         <!-- 1. HOME -->
         <section id="view-home" class="view-section active">
             <div class="relative z-10 max-w-5xl text-center fade-in pt-20">
@@ -300,11 +300,11 @@
                 <div id="ai-text-output" class="text-stone-200 text-xl leading-relaxed italic font-light mb-4 font-serif"></div>
                 <button onclick="app.playMockAudio()" class="flex items-center gap-2 text-xs font-bold text-purple-300 uppercase tracking-widest hover:text-white"><i class="fa-solid fa-play"></i> Play Response</button>
             </div>
-           
+          
             <h2 class="cinzel text-2xl font-bold text-white mb-8 border-b border-white/10 pb-4">Archive Matches</h2>
             <div id="search-list" class="grid grid-cols-1 lg:grid-cols-2 gap-4 pb-20"></div>
         </section>
-    </main>
+    </div>
     <!-- DOCK -->
     <div class="dock-container">
         <div class="dock">
@@ -320,29 +320,29 @@
     </div>
     <input type="file" id="csv-upload" class="hidden" accept=".csv" onchange="window.app.handleFileUpload(this)">
     <script>
-    // STARS
-    function createStars() {
-        const container = document.getElementById('stars-container');
-        if(!container) return;
-        for(let i=0; i<150; i++) {
-            const star = document.createElement('div');
-            star.className = 'star';
-            star.style.left = `${Math.random() * 100}%`;
-            star.style.top = `${Math.random() * 100}%`;
-            const size = Math.random() * 2 + 0.5;
-            star.style.width = `${size}px`;
-            star.style.height = `${size}px`;
-            star.style.backgroundColor = `hsl(${Math.random() * 40}, ${Math.random() * 20 + 70}%, ${Math.random() * 20 + 70}%)`;
-            star.style.boxShadow = `0 0 ${size*2}px ${star.style.backgroundColor}`;
-            star.style.setProperty('--duration', `${Math.random() * 3 + 2}s`);
-            star.style.setProperty('--opacity', Math.random() * 0.5 + 0.5);
-            container.appendChild(star);
+        // STARS
+        function createStars() {
+            const container = document.getElementById('stars-container');
+            if(!container) return;
+            for(let i=0; i<150; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = `${Math.random() * 100}%`;
+                star.style.top = `${Math.random() * 100}%`;
+                const size = Math.random() * 2 + 0.5;
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                star.style.backgroundColor = `hsl(${Math.random() * 40}, ${Math.random() * 20 + 70}%, ${Math.random() * 20 + 70}%)`;
+                star.style.boxShadow = `0 0 ${size*2}px ${star.style.backgroundColor}`;
+                star.style.setProperty('--duration', `${Math.random() * 3 + 2}s`);
+                star.style.setProperty('--opacity', Math.random() * 0.5 + 0.5);
+                container.appendChild(star);
+            }
         }
-    }
-    window.app = {
-        data: [],
-        // FULL EMBEDDED DATA
-        rawCSV: `TITLE OF VIDEO,URL,TOPIC
+        window.app = {
+            data: [],
+            // FULL EMBEDDED DATA
+            rawCSV: `TITLE OF VIDEO,URL,TOPIC
 ZODIAC & THE BIBLE,https://www.youtube.com/watch?v=loL03YF262Q,THE ZODIAC-COSMIC INFLUENCES
 THE ZODIACAL CLOCK,https://www.youtube.com/watch?v=OcPnoS2L1co,THE ZODIAC-COSMIC INFLUENCES
 URANUS AND AQUARIUS,https://www.youtube.com/watch?v=n0s7tnoKcnk,THE ZODIAC-COSMIC INFLUENCES
@@ -408,263 +408,247 @@ MEDITATION,https://www.youtube.com/watch?v=6XqXqXqXqXq,MEDITATION
 SEX,https://www.youtube.com/watch?v=7XqXqXqXqXq,SEX
 MISCELLANEOUS,https://www.youtube.com/watch?v=8XqXqXqXqXq,MISCELLANEOUS
 BHAGAVAD GITA IN POSITION,,THESE ARE VIDEOS THAT HAVE NOT BEEN UPLOADED TO YOU TUBE AS OF YET. I WILL NOTIFY YOU WHEN THEY ARE`,
-        init: function() {
-            createStars();
-            this.setupStarInteractions();
-            // Load data using PapaParse
-            Papa.parse('catalog.csv', {
-                download: true,
-                header: true,
-                complete: (results) => {
-                    this.data = results.data.filter(row => row['TITLE OF VIDEO']);
-                    this.renderCategories();
-                    document.getElementById('status-bar').innerText = `${this.data.length} Records Online`;
-                },
-                error: (err) => {
-                    this.processRawCSV();
-                }
-            });
-            this.nav('home');
-            setTimeout(() => document.getElementById('app-loader').classList.add('hidden'), 300);
-        },
-        processRawCSV: function() {
-            Papa.parse(this.rawCSV, {
-                header: true,
-                complete: (results) => {
-                    this.data = results.data.filter(row => row['TITLE OF VIDEO']);
-                    this.renderCategories();
-                    document.getElementById('status-bar').innerText = `${this.data.length} Records Online`;
-                }
-            });
-        },
-        setupStarInteractions: function() {
-            let lastMove = 0;
-            document.addEventListener('mousemove', (e) => {
-                if (Date.now() - lastMove < 100) return;
-                lastMove = Date.now();
-                const trail = document.createElement('div');
-                trail.className = 'star';
-                trail.style.left = `${e.clientX}px`;
-                trail.style.top = `${e.clientY}px`;
-                trail.style.width = '2px';
-                trail.style.height = '2px';
-                trail.style.backgroundColor = `hsl(30, 80%, 70%)`;
-                trail.style.opacity = 0.8;
-                trail.style.transition = 'opacity 1s ease-out';
-                setTimeout(() => {
-                    trail.style.opacity = 0;
-                    setTimeout(() => trail.remove(), 1000);
-                }, 10);
-                document.getElementById('stars-container').appendChild(trail);
-            });
-            document.addEventListener('click', (e) => {
-                const burst = 15;
-                for (let i = 0; i < burst; i++) {
-                    const particle = document.createElement('div');
-                    particle.className = 'star';
-                    particle.style.left = `${e.clientX}px`;
-                    particle.style.top = `${e.clientY}px`;
-                    particle.style.width = `${Math.random() * 3 + 1}px`;
-                    particle.style.height = particle.style.width;
-                    particle.style.backgroundColor = `hsl(${Math.random() * 40}, 80%, 60%)`;
-                    particle.style.boxShadow = `0 0 5px ${particle.style.backgroundColor}`;
-                    const angle = Math.random() * Math.PI * 2;
-                    const dist = Math.random() * 50 + 20;
-                    particle.style.transform = `translate(${Math.cos(angle) * dist}px, ${Math.sin(angle) * dist}px)`;
-                    particle.style.opacity = 1;
-                    particle.style.transition = 'transform 0.5s ease-out, opacity 0.5s ease-out';
+            init: function() {
+                createStars();
+                this.setupStarInteractions();
+                // Load data using PapaParse
+                Papa.parse('catalog.csv', {
+                    download: true,
+                    header: true,
+                    complete: (results) => {
+                        this.data = results.data.filter(row => row['TITLE OF VIDEO']);
+                        this.renderCategories();
+                        document.getElementById('status-bar').innerText = `${this.data.length} Records Online`;
+                    },
+                    error: (err) => {
+                        this.processRawCSV();
+                    }
+                });
+                this.nav('home');
+                setTimeout(() => document.getElementById('app-loader').classList.add('hidden'), 300);
+            },
+            processRawCSV: function() {
+                Papa.parse(this.rawCSV, {
+                    header: true,
+                    complete: (results) => {
+                        this.data = results.data.filter(row => row['TITLE OF VIDEO']);
+                        this.renderCategories();
+                        document.getElementById('status-bar').innerText = `${this.data.length} Records Online`;
+                    }
+                });
+            },
+            setupStarInteractions: function() {
+                let lastMove = 0;
+                document.addEventListener('mousemove', (e) => {
+                    if (Date.now() - lastMove < 100) return;
+                    lastMove = Date.now();
+                    const trail = document.createElement('div');
+                    trail.className = 'star';
+                    trail.style.left = `${e.clientX}px`;
+                    trail.style.top = `${e.clientY}px`;
+                    trail.style.width = '2px';
+                    trail.style.height = '2px';
+                    trail.style.backgroundColor = `hsl(30, 80%, 70%)`;
+                    trail.style.opacity = 0.8;
+                    trail.style.transition = 'opacity 1s ease-out';
                     setTimeout(() => {
-                        particle.style.transform = `translate(${Math.cos(angle) * dist * 1.5}px, ${Math.sin(angle) * dist * 1.5}px) scale(0)`;
-                        particle.style.opacity = 0;
-                        setTimeout(() => particle.remove(), 500);
+                        trail.style.opacity = 0;
+                        setTimeout(() => trail.remove(), 1000);
                     }, 10);
-                    document.getElementById('stars-container').appendChild(particle);
-                }
-            });
-        },
-        getUniqueTopics: function() {
-            return [...new Set(this.data.map(i => i.TOPIC))].sort();
-        },
-        // --- SMART ICON MAPPER ---
-        getIcon: function(t) {
-            const tl = t.toLowerCase();
-            if(tl.includes("zodiac") || tl.includes("astro")) return "fa-meteor";
-            if(tl.includes("bible") || tl.includes("testament")) return "fa-book-bible";
-            if(tl.includes("brain") || tl.includes("mind") || tl.includes("human")) return "fa-brain";
-            if(tl.includes("meditation") || tl.includes("silence")) return "fa-om";
-            if(tl.includes("jesus") || tl.includes("christ")) return "fa-cross";
-            if(tl.includes("alien") || tl.includes("ufo")) return "fa-shuttle-space";
-            if(tl.includes("sex") || tl.includes("anatomy")) return "fa-dna";
-            return "fa-star";
-        },
-        renderCategories: function() {
-            const topics = this.getUniqueTopics();
-            const grid = document.getElementById('category-grid');
-            document.getElementById('total-topics-display').innerText = `${topics.length} Categories`;
-          
-            grid.innerHTML = topics.map((t, i) => {
-                const count = this.data.filter(d => d.TOPIC === t).length;
-                const icon = this.getIcon(t);
-                // Escaping for onclick
-                const safeTopic = t.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                    document.getElementById('stars-container').appendChild(trail);
+                });
+                document.addEventListener('click', (e) => {
+                    const burst = 15;
+                    for (let i = 0; i < burst; i++) {
+                        const particle = document.createElement('div');
+                        particle.className = 'star';
+                        particle.style.left = `${e.clientX}px`;
+                        particle.style.top = `${e.clientY}px`;
+                        particle.style.width = `${Math.random() * 3 + 1}px`;
+                        particle.style.height = particle.style.width;
+                        particle.style.backgroundColor = `hsl(${Math.random() * 40}, 80%, 60%)`;
+                        particle.style.boxShadow = `0 0 5px ${particle.style.backgroundColor}`;
+                        const angle = Math.random() * Math.PI * 2;
+                        const dist = Math.random() * 50 + 20;
+                        particle.style.transform = `translate(${Math.cos(angle) * dist}px, ${Math.sin(angle) * dist}px)`;
+                        particle.style.opacity = 1;
+                        particle.style.transition = 'transform 0.5s ease-out, opacity 0.5s ease-out';
+                        setTimeout(() => {
+                            particle.style.transform = `translate(${Math.cos(angle) * dist * 1.5}px, ${Math.sin(angle) * dist * 1.5}px) scale(0)`;
+                            particle.style.opacity = 0;
+                            setTimeout(() => particle.remove(), 500);
+                        }, 10);
+                        document.getElementById('stars-container').appendChild(particle);
+                    }
+                });
+            },
+            getUniqueTopics: function() {
+                return [...new Set(this.data.map(i => i.TOPIC))].sort();
+            },
+            // --- SMART ICON MAPPER ---
+            getIcon: function(t) {
+                const tl = t.toLowerCase();
+                if(tl.includes("zodiac") || tl.includes("astro")) return "fa-meteor";
+                if(tl.includes("bible") || tl.includes("testament")) return "fa-book-bible";
+                if(tl.includes("brain") || tl.includes("mind") || tl.includes("human")) return "fa-brain";
+                if(tl.includes("meditation") || tl.includes("silence")) return "fa-om";
+                if(tl.includes("jesus") || tl.includes("christ")) return "fa-cross";
+                if(tl.includes("alien") || tl.includes("ufo")) return "fa-shuttle-space";
+                if(tl.includes("sex") || tl.includes("anatomy")) return "fa-dna";
+                return "fa-star";
+            },
+            renderCategories: function() {
+                const topics = this.getUniqueTopics();
+                const grid = document.getElementById('category-grid');
+                document.getElementById('total-topics-display').innerText = `${topics.length} Categories`;
               
-                return `
-                    <div onclick="window.app.openTopic('${safeTopic}')" class="cosmos-card topic-card p-6 group">
-                        <div class="flex justify-between items-start mb-4">
-                            <span class="text-xs font-mono text-gray-500">0${i+1}</span>
-                            <i class="fa-solid ${icon} text-gray-600 group-hover:text-purple-400 transition-colors text-lg"></i>
-                        </div>
-                        <h3 class="text-sm font-medium text-gray-200 leading-snug mb-8 group-hover:text-white line-clamp-3">${t}</h3>
-                        <div class="flex justify-between items-end border-t border-white/10 pt-3 mt-auto">
-                            <span class="text-[9px] text-gray-500 font-bold uppercase tracking-widest">${count} Items</span>
-                            <span class="text-purple-400 opacity-50 group-hover:opacity-100 transition-opacity">→</span>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        },
-        openTopic: function(topic) {
-            this.nav('list');
-            document.getElementById('active-category-title').innerText = topic;
-            const items = this.data.filter(i => i.TOPIC === topic);
-            const isPending = topic.includes("NOT BEEN UPLOADED");
-          
-            document.getElementById('active-category-count').innerText = isPending ? "ARCHIVE OFFLINE" : `${items.length} LECTURES`;
-            const container = document.getElementById('list-container');
-          
-            if(isPending) {
-                container.innerHTML = items.map(l => `<div class="p-4 border-b border-white/10 text-gray-500 font-mono text-xs">${l['TITLE OF VIDEO']}</div>`).join('');
-            } else {
-                container.innerHTML = items.map(l => {
-                    const hasUrl = l.URL && l.URL.includes('http');
+                grid.innerHTML = topics.map((t, i) => {
+                    const count = this.data.filter(d => d.TOPIC === t).length;
+                    const icon = this.getIcon(t);
+                    // Escaping for onclick
+                    const safeTopic = t.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                  
                     return `
-                        <div class="p-5 border border-white/10 rounded-lg flex justify-between items-center hover:bg-white/5 transition-all group mb-2 bg-[#0A0A0A]">
-                            <h4 class="text-sm font-medium text-gray-300 group-hover:text-white pr-4">${l['TITLE OF VIDEO']}</h4>
-                            <div class="shrink-0">
-                                ${hasUrl ?
-                                    `<a href="${l.URL}" target="_blank" class="px-5 py-2 bg-white text-black text-[10px] font-bold rounded-full hover:bg-purple-300 transition-colors uppercase tracking-widest">Watch</a>` :
-                                    `<span class="text-[10px] text-gray-600 font-bold uppercase tracking-widest border border-white/10 px-3 py-1 rounded-full">Pending</span>`
-                                }
+                        <div onclick="window.app.openTopic('${safeTopic}')" class="cosmos-card topic-card p-6 group">
+                            <div class="flex justify-between items-start mb-4">
+                                <span class="text-xs font-mono text-gray-500">0${i+1}</span>
+                                <i class="fa-solid ${icon} text-gray-600 group-hover:text-purple-400 transition-colors text-lg"></i>
+                            </div>
+                            <h3 class="text-sm font-medium text-gray-200 leading-snug mb-8 group-hover:text-white line-clamp-3">${t}</h3>
+                            <div class="flex justify-between items-end border-t border-white/10 pt-3 mt-auto">
+                                <span class="text-[9px] text-gray-500 font-bold uppercase tracking-widest">${count} Items</span>
+                                <span class="text-purple-400 opacity-50 group-hover:opacity-100 transition-opacity">→</span>
                             </div>
                         </div>
                     `;
                 }).join('');
-            }
-        },
-        search: function(q) {
-            if(!q) {
-                if(document.getElementById('view-search').classList.contains('active')) this.nav('library');
-                return;
-            }
-            this.nav('search');
-            // Removed: document.getElementById('ai-box').style.display = 'none'; // This was hiding the AI box unnecessarily
+            },
+            openTopic: function(topic) {
+                this.nav('list');
+                document.getElementById('active-category-title').innerText = topic;
+                const items = this.data.filter(i => i.TOPIC === topic);
+                const isPending = topic.includes("NOT BEEN UPLOADED");
+              
+                document.getElementById('active-category-count').innerText = isPending ? "ARCHIVE OFFLINE" : `${items.length} LECTURES`;
+                const container = document.getElementById('list-container');
+              
+                if(isPending) {
+                    container.innerHTML = items.map(l => `<div class="p-4 border-b border-white/10 text-gray-500 font-mono text-xs">${l['TITLE OF VIDEO']}</div>`).join('');
+                } else {
+                    container.innerHTML = items.map(l => {
+                        const hasUrl = l.URL && l.URL.includes('http');
+                        return `
+                            <div class="p-5 border border-white/10 rounded-lg flex justify-between items-center hover:bg-white/5 transition-all group mb-2 bg-[#0A0A0A]">
+                                <h4 class="text-sm font-medium text-gray-300 group-hover:text-white pr-4">${l['TITLE OF VIDEO']}</h4>
+                                <div class="shrink-0">
+                                    ${hasUrl ?
+                                        `<a href="${l.URL}" target="_blank" class="px-5 py-2 bg-white text-black text-[10px] font-bold rounded-full hover:bg-purple-300 transition-colors uppercase tracking-widest">Watch</a>` :
+                                        `<span class="text-[10px] text-gray-600 font-bold uppercase tracking-widest border border-white/10 px-3 py-1 rounded-full">Pending</span>`
+                                    }
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                }
+            },
+            search: function(q) {
+                if(!q) {
+                    if(document.getElementById('view-search').classList.contains('active')) this.nav('library');
+                    return;
+                }
+                this.nav('search');
+              
+                const results = this.data.filter(i => i['TITLE OF VIDEO'].toLowerCase().includes(q.toLowerCase()) || i.TOPIC.toLowerCase().includes(q.toLowerCase()));
+                document.getElementById('search-list').innerHTML = results.map(l => {
+                    const hasUrl = l.URL && l.URL.includes('http');
+                    return `
+                    <div class="p-4 border-b border-white/10 flex justify-between items-center group hover:bg-white/5 transition-colors">
+                        <div>
+                            <div class="text-[9px] text-gray-500 uppercase tracking-widest mb-1">${l.TOPIC}</div>
+                            <h4 class="text-sm text-white font-medium">${l['TITLE OF VIDEO']}</h4>
+                        </div>
+                        ${hasUrl ? `<a href="${l.URL}" target="_blank" class="text-purple-400 text-xs font-bold uppercase tracking-widest hover:text-white">OPEN ↗</a>` : ''}
+                    </div>`;
+                }).join('');
+            },
+            // --- AI SIMULATOR ---
+            performAISearch: function() {
+                const input = document.getElementById('ai-input');
+                const q = (input ? input.value : '').trim();
+                if (!q) return;
+
+                // Clear input immediately
+                if (input) input.value = '';
+
+                this.nav('search');
+
+                const aiBox = document.getElementById('ai-box');
+                const aiText = document.getElementById('ai-text-output');
+
+                if (!aiBox || !aiText) return;
+
+                aiBox.classList.remove('hidden');
+                aiText.innerText = "Consulting the archives...";
+                this.search(q);
+
+                // Simulation Logic
+                setTimeout(() => {
+                    let resp = `The hidden meaning of "${q}" is found within the biological processes of the human body.`;
+                    const lq = q.toLowerCase();
+                    if(lq.includes('pineal') || lq.includes('eye')) resp = "The Single Eye is the Pineal Gland. It is the light receptor of the body where Jacob saw God face to face. When your eye is single, your whole body is full of light.";
+                    else if(lq.includes('egypt')) resp = "Egypt represents the lower mind, the physical bondage of the senses. We must cross the Red Sea of emotion to reach the Promised Land of the higher mind.";
+                    else if(lq.includes('jesus')) resp = "Jesus is the Greek word for Joshua. It represents the electrical energy rising up the spine to the brain, waiting to be born in the manger of the solar plexus.";
+                    else if(lq.includes('east')) resp = "Look to the East. The right hemisphere of the brain. The place of the rising sun, where the spiritual intellect is born.";
+                    else if(lq.includes('meditation')) resp = "We must shut down the five senses. Take no thought. In the silence, the electrical energy moves to the Pineal Gland.";
+                    aiText.innerText = resp;
+                }, 1500);
+            },
           
-            const results = this.data.filter(i => i['TITLE OF VIDEO'].toLowerCase().includes(q.toLowerCase()) || i.TOPIC.toLowerCase().includes(q.toLowerCase()));
-            document.getElementById('search-list').innerHTML = results.map(l => {
-                const hasUrl = l.URL && l.URL.includes('http');
-                return `
-                <div class="p-4 border-b border-white/10 flex justify-between items-center group hover:bg-white/5 transition-colors">
-                    <div>
-                        <div class="text-[9px] text-gray-500 uppercase tracking-widest mb-1">${l.TOPIC}</div>
-                        <h4 class="text-sm text-white font-medium">${l['TITLE OF VIDEO']}</h4>
-                    </div>
-                    ${hasUrl ? `<a href="${l.URL}" target="_blank" class="text-purple-400 text-xs font-bold uppercase tracking-widest hover:text-white">OPEN ↗</a>` : ''}
-                </div>`;
-            }).join('');
-        },
-        // --- AI SIMULATOR (improved) ---
-        performAISearch: function() {
-            const input = document.getElementById('ai-input');
-            const q = (input ? input.value : '').trim();
-            console.log('performAISearch called with:', q); // Moved here for debugging
-            if (!q) return;
-            // Clear input immediately
-            if (input) input.value = '';
-            this.nav('search');
-            const aiBox = document.getElementById('ai-box');
-            const aiText = document.getElementById('ai-text-output');
-            if (!aiBox || !aiText) return;
-            // Use class only (no inline style.display)
-            aiBox.classList.remove('hidden');
-            aiText.innerText = "Consulting the archives...";
-            // Run regular archive search
-            this.search(q);
-            // Simulate Bill Donahue-style response after short delay
-            setTimeout(() => {
-                const lq = q.toLowerCase();
-                let resp = `The hidden meaning of "${q}" is found within the biological processes of the human body. Scripture is not history — it is physiology.`;
-                if (lq.includes('pineal') || lq.includes('third eye') || lq.includes('single eye')) {
-                    resp = "The Single Eye is the Pineal Gland. When your eye is single, your whole body is full of light. It is the light receptor where Jacob saw God face to face — Peniel. The electrum, the holy anointing oil, the manna — all point to this gland.";
+            playMockAudio: function() {
+                const text = document.getElementById('ai-text-output').innerText;
+                if ('speechSynthesis' in window && text) {
+                    const utterance = new SpeechSynthesisUtterance(text);
+                    // Optional: Try to select a male voice to mimic Bill
+                    const voices = speechSynthesis.getVoices();
+                    const maleVoice = voices.find(v => v.gender === 'male' || v.name.toLowerCase().includes('male'));
+                    if (maleVoice) utterance.voice = maleVoice;
+                    utterance.rate = 0.9; // Slightly slower for emphasis
+                    utterance.pitch = 0.8; // Deeper tone
+                    speechSynthesis.speak(utterance);
+                } else {
+                    alert("Voice synthesis not supported in this browser or no text to speak.");
                 }
-                else if (lq.includes('egypt')) {
-                    resp = "Egypt represents the lower mind, the physical bondage of the senses. We must cross the Red Sea of emotion to reach the Promised Land of the higher mind. The Pharaoh is the ego that will not let the energy go.";
-                }
-                else if (lq.includes('jesus') || lq.includes('christ')) {
-                    resp = "Jesus is the Greek word for Joshua — the electrical energy rising up the spine to the brain, waiting to be born in the manger of the solar plexus. The Christ is the oil, the chrism, the sacred secretion that must be raised.";
-                }
-                else if (lq.includes('east') || lq.includes('rising sun')) {
-                    resp = "Look to the East — the right hemisphere of the brain. The place of the rising sun, where the spiritual intellect is born. The wise men come from the East bearing gifts.";
-                }
-                else if (lq.includes('meditation') || lq.includes('silence') || lq.includes('still')) {
-                    resp = "We must shut down the five senses. Take no thought. In the silence, the electrical energy moves up the spine to the Pineal Gland. Be still and know that I am God — that is meditation.";
-                }
-                else if (lq.includes('kundalini') || lq.includes('serpent')) {
-                    resp = "The serpent is the kundalini fire at the base of the spine — the root chakra. When it rises and reaches the brain, it opens the Single Eye. Moses' serpent staff, the brazen serpent — all symbols of this sacred energy.";
-                }
-                else if (lq.includes('chakra') || lq.includes('center') || lq.includes('gland')) {
-                    resp = "The seven churches of Asia are the seven chakras, the seven seals, the seven candles. Each center has its own color, sound, and biblical correspondence. The temple of God is within you.";
-                }
-                else if (lq.includes('bible') || lq.includes('scripture')) {
-                    resp = "The Bible is not a history book. It is a book of symbols describing the journey of the soul through the human body. Every character, every story, is inside you right now.";
-                }
-                else {
-                    // Fallback random quote for unmatched queries
-                    const fallbacks = [
-                        "Everything in scripture is a symbol of the inner workings of the mind and body. The kingdom is within you.",
-                        "The stars above reflect the energies within. Let them be for signs.",
-                        "The crucifixion is the crossing of energies at Golgotha, the place of the skull — your brain."
-                    ];
-                    resp = fallbacks[Math.floor(Math.random() * fallbacks.length)];
-                }
-                aiText.innerText = resp;
-            }, 1400);
-        },
-      
-        playMockAudio: function() { alert("Voice synthesis active."); },
-        nav: function(id) {
-            document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
-            document.querySelectorAll('.dock-btn').forEach(b => b.classList.remove('active'));
-            const target = document.getElementById('view-' + id);
-            if(target) target.classList.add('active');
-            const btn = document.getElementById('btn-' + id);
-            if(btn) btn.classList.add('active');
-            if(id !== 'search') document.getElementById('global-search').value = '';
-            window.scrollTo(0,0);
-        },
-      
-        showView: function(id) { this.nav(id); },
-        showAnatomy: function(t,d) {
-            document.getElementById('anatomy-title').innerText = t;
-            document.getElementById('anatomy-desc').innerText = d;
-        },
-        handleFileUpload: function(i) {
-            const f = i.files[0];
-            if(!f) return;
-            Papa.parse(f, {
-                header: true,
-                complete: (results) => {
-                    this.data = results.data.filter(row => row['TITLE OF VIDEO']);
-                    this.renderCategories();
-                    alert("Updated!");
-                }
-            });
-        }
-    };
-    window.onload = () => app.init();
-</script>
+            },
+            nav: function(id) {
+                document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
+                document.querySelectorAll('.dock-btn').forEach(b => b.classList.remove('active'));
+                const target = document.getElementById('view-' + id);
+                if(target) target.classList.add('active');
+                const btn = document.getElementById('btn-' + id);
+                if(btn) btn.classList.add('active');
+                if(id !== 'search') document.getElementById('global-search').value = '';
+                window.scrollTo(0,0);
+            },
+          
+            showView: function(id) { this.nav(id); },
+            showAnatomy: function(t,d) {
+                document.getElementById('anatomy-title').innerText = t;
+                document.getElementById('anatomy-desc').innerText = d;
+            },
+            handleFileUpload: function(i) {
+                const f = i.files[0];
+                if(!f) return;
+                Papa.parse(f, {
+                    header: true,
+                    complete: (results) => {
+                        this.data = results.data.filter(row => row['TITLE OF VIDEO']);
+                        this.renderCategories();
+                        alert("Updated!");
+                    }
+                });
+            }
+        };
+        window.onload = () => app.init();
+    </script>
 </body>
 </html>
-```
-
-
-
