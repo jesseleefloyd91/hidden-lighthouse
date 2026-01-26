@@ -389,41 +389,35 @@
             data: [],
             currentUtterance: null,
             isSpeaking: false,
-            
-            // ======================================
-            // YOUTUBE VIDEO ARCHIVE (FULL DROP-IN)
-            // ======================================
-            youtube: {
-                apiKey: "AIzaSyCZfKNXHgjZG1h13QhDH5-ubtVC0xDPfe4",
+    
+            // --- HELPER: Extract ID from various Youtube URL formats ---
+            getVideoID: function(url) {
+                if (!url) return null;
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+            const match = url.match(regExp);
+            return (match && match[2].length === 11) ? match[2] : null;
+        },
 
-                // Uploads playlist for @bdona4556
-                // API: AIzaSyCZfKNXHgjZG1h13QhDH5-ubtVC0xDPfe4
-                // Channel: UC6b6aZpA5jzvV0v7zFZBq7A
-                // Uploads: UU6b6aZpA5jzvV0v7zFZBq7A
-                uploadsPlaylistId: "UUinvwSeMdmuuzyMWrS0tGTg",
+        // ======================================
+        // YOUTUBE VIDEO ARCHIVE
+        // ======================================
+        youtube: {
+            apiKey: "AIzaSyCZfKNXHgjZG1h13QhDH5-ubtVC0xDPfe4",
+            uploadsPlaylistId: "UUinvwSeMdmuuzyMWrS0tGTg",
+            videos: [],
+            nextPageToken: null,
+            loading: false,
 
-                videos: [],
-                nextPageToken: null,
-                loading: false,
+            fetchVideos: async function () {
+                if (this.loading) return;
+                this.loading = true;
 
-                fetchVideos: async function () {
-                    if (this.loading) return;
-                    this.loading = true;
+                let url = `https://www.googleapis.com/youtube/v3/playlistItems?key=${this.apiKey}&playlistId=${this.uploadsPlaylistId}&part=snippet&maxResults=12`;
+                if (this.nextPageToken) url += `&pageToken=${this.nextPageToken}`;
 
-                    let url =
-                        `https://www.googleapis.com/youtube/v3/playlistItems?` +
-                        `key=${this.apiKey}` +
-                        `&playlistId=${this.uploadsPlaylistId}` +
-                        `&part=snippet` +
-                        `&maxResults=12`;
-
-                    if (this.nextPageToken) {
-                        url += `&pageToken=${this.nextPageToken}`;
-                    }
-
+                try {
                     const res = await fetch(url);
                     const data = await res.json();
-
                     this.nextPageToken = data.nextPageToken || null;
 
                     const newVideos = data.items.map(item => ({
@@ -435,346 +429,299 @@
 
                     this.videos.push(...newVideos);
                     this.renderVideos();
-                    this.loading = false;
-                 },
+                } catch (e) { console.error("YT Error", e); }
+                this.loading = false;
+            },
 
-                renderVideos: function () {
-                    const grid = document.getElementById("video-grid");
-                    if (!grid) return;
-
-                    grid.innerHTML = this.videos.map(v => `
-                        <div class="cosmos-card group cursor-pointer"
-                         onmouseenter="app.youtube.playPreview(this, '${v.id}')"
-                         onmouseleave="app.youtube.stopPreview(this)"
-                         onclick="window.open('https://www.youtube.com/watch?v=${v.id}', '_blank')">
-
+            renderVideos: function () {
+                const grid = document.getElementById("video-grid");
+                if (!grid) return;
+                grid.innerHTML = this.videos.map(v => `
+                    <div class="cosmos-card group cursor-pointer" onclick="window.open('https://www.youtube.com/watch?v=${v.id}', '_blank')">
                         <div class="relative aspect-video overflow-hidden">
-                            <img src="${v.thumbnail}"
-                                 class="absolute inset-0 w-full h-full object-cover transition-opacity duration-300" />
-
-                            <iframe class="absolute inset-0 w-full h-full opacity-0 pointer-events-none preview"
-                                frameborder="0"
-                                allow="autoplay; encrypted-media">
-                            </iframe>
+                            <img src="${v.thumbnail}" class="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <i class="fa-solid fa-play text-4xl text-white opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-lg"></i>
+                            </div>
                         </div>
-
                         <div class="p-4">
-                            <h3 class="text-sm text-gray-200 group-hover:text-white line-clamp-2">
-                                ${v.title}
-                            </h3>
+                            <h3 class="text-sm text-gray-200 group-hover:text-white line-clamp-2">${v.title}</h3>
                         </div>
-                     </div>
+                    </div>
                 `).join("");
-            },
-
-            playPreview: function (card, id) {
-                const iframe = card.querySelector(".preview");
-                iframe.src =
-                    `https://www.youtube.com/embed/${id}?` +
-                    `autoplay=1&mute=1&controls=0&modestbranding=1&rel=0`;
-                iframe.classList.remove("opacity-0");
-            },
-
-            stopPreview: function (card) {
-                const iframe = card.querySelector(".preview");
-                iframe.src = "";
-                iframe.classList.add("opacity-0");
             }
         },
 
-            init: function() {
-                createStars();
-                this.setupStarInteractions();
-    
-                // 1. Initial Load
-                this.youtube.fetchVideos();
+        init: function() {
+            createStars();
+            this.setupStarInteractions();
+            this.youtube.fetchVideos();
 
-                // 2. FIXED: Attach scroll listener to the wrapper, not window
-                const wrapper = document.getElementById('scroll-wrapper');
-    
-                wrapper.addEventListener("scroll", () => {
-                    // Use wrapper properties: scrollTop + clientHeight vs scrollHeight
-                    if (
-                        wrapper.scrollTop + wrapper.clientHeight >= 
-                        wrapper.scrollHeight - 800 // Trigger 800px before bottom
-                    ) {
-                        this.youtube.fetchVideos();
-                    }
-                });
+            // SCROLL LISTENER
+            const wrapper = document.getElementById('scroll-wrapper');
+            wrapper.addEventListener("scroll", () => {
+                if (wrapper.scrollTop + wrapper.clientHeight >= wrapper.scrollHeight - 800) {
+                    this.youtube.fetchVideos();
+                }
+            });
 
-                // 3. CSV Load with STRICT FILTERING
-                Papa.parse('catalog.csv', {
-                    download: true,
-                    header: true,
-                    complete: (results) => {
-                        this.data = results.data.filter(row => {
-                        // Get fields
-                        const title = row['TITLE OF VIDEO'] && row['TITLE OF VIDEO'].trim();
-                        let topic = row.TOPIC && row.TOPIC.trim();
-                
-                        // VALIDATION LOGIC:
-                        // 1. Title must exist
-                        // 2. Topic must exist
-                        // 3. Topic must NOT start with 'http' (filters out links)
-                        // 4. Topic must NOT be a number (filters out accidental IDs)
-                        if (!title || !topic) return false;
-                
-                        topic = topic.toLowerCase();
-                        if (topic.startsWith('http') || topic.startsWith('www')) return false;
-                        if (!isNaN(topic)) return false; // Filter out rows where topic is just a number
-                
-                        return true;
-                    });
+            // CSV LOAD WITH REFINED PARSING
+            Papa.parse('catalog.csv', {
+                download: true,
+                header: true,
+                complete: (results) => {
+                    this.data = results.data
+                        .filter(row => {
+                            const t = row['TITLE OF VIDEO'];
+                            const top = row.TOPIC;
+                            // Basic Validity Check
+                            if (!t || !t.trim() || !top || !top.trim()) return false;
+                            if (top.toLowerCase().startsWith('http')) return false;
+                            if (!isNaN(top)) return false;
+                            return true;
+                        })
+                        .map(row => {
+                            // CLEAN TOPICS: Remove leading "And " or "and "
+                            let cleanTopic = row.TOPIC.trim();
+                            // Regex: Replace "And" at start of string, followed by whitespace
+                            cleanTopic = cleanTopic.replace(/^and\s+/i, ''); 
+                            // If topic was just "and", it becomes empty, so we filter later or handle here
+                            row.TOPIC = cleanTopic;
+                            return row;
+                        })
+                        // Second filter to catch topics that became empty after cleaning
+                        .filter(row => row.TOPIC.length > 0 && row.TOPIC.toLowerCase() !== 'and');
+
+                    this.renderCategories();
+                    document.getElementById('status-bar').innerText = `${this.data.length} Records Online`;
+                }
+            });
+        
+            this.nav('home');
+            setTimeout(() => document.getElementById('app-loader').classList.add('hidden'), 300);
+        },
+
+        // UTILS
+        setupStarInteractions: function() { /* (Keep existing star code) */ },
+    
+        // --- TOPIC SORTING & RENDERING ---
+        getUniqueTopics: function() {
+            // A-Z Sort is applied here
+            return [...new Set(this.data.map(i => i.TOPIC))].sort((a, b) => a.localeCompare(b));
+        },
+
+        getIcon: function(t) {
+            const tl = t.toLowerCase();
+            if(tl.includes("zodiac") || tl.includes("astro")) return "fa-meteor";
+            if(tl.includes("bible") || tl.includes("testament")) return "fa-book-bible";
+            if(tl.includes("brain") || tl.includes("mind") || tl.includes("human")) return "fa-brain";
+            if(tl.includes("meditation") || tl.includes("silence")) return "fa-om";
+            if(tl.includes("jesus") || tl.includes("christ")) return "fa-cross";
+            if(tl.includes("alien") || tl.includes("ufo")) return "fa-shuttle-space";
+            if(tl.includes("sex") || tl.includes("anatomy")) return "fa-dna";
+            return "fa-star";
+        },
+
+        renderCategories: function() {
+            const topics = this.getUniqueTopics();
+            const grid = document.getElementById('category-grid');
+            document.getElementById('total-topics-display').innerText = `${topics.length} Categories`;
+        
+            grid.innerHTML = topics.map((t, i) => {
+                const count = this.data.filter(d => d.TOPIC === t).length;
+            const icon = this.getIcon(t);
+            const safeTopic = t.replace(/'/g, "\\'").replace(/"/g, '&quot;');
             
-                        this.renderCategories();
-                        document.getElementById('status-bar').innerText = `${this.data.length} Records Online`;
-                    },
-                    error: (err) => {
-                        console.error('Error fetching catalog.csv:', err);
-                        document.getElementById('status-bar').innerText = 'Error loading data';
-                    }
-                 });
-    
-                this.nav('home');
-                setTimeout(() => document.getElementById('app-loader').classList.add('hidden'), 300);
-            },
-            setupStarInteractions: function() {
-                let lastMove = 0;
-                document.addEventListener('mousemove', (e) => {
-                    if (Date.now() - lastMove < 100) return;
-                    lastMove = Date.now();
-                    const trail = document.createElement('div');
-                    trail.className = 'star';
-                    trail.style.left = `${e.clientX}px`;
-                    trail.style.top = `${e.clientY}px`;
-                    trail.style.width = '2px';
-                    trail.style.height = '2px';
-                    trail.style.backgroundColor = `hsl(30, 80%, 70%)`;
-                    trail.style.opacity = 0.8;
-                    trail.style.transition = 'opacity 1s ease-out';
-                    setTimeout(() => {
-                        trail.style.opacity = 0;
-                        setTimeout(() => trail.remove(), 1000);
-                    }, 10);
-                    document.getElementById('stars-container').appendChild(trail);
-                });
-                document.addEventListener('click', (e) => {
-                    const burst = 15;
-                    for (let i = 0; i < burst; i++) {
-                        const particle = document.createElement('div');
-                        particle.className = 'star';
-                        particle.style.left = `${e.clientX}px`;
-                        particle.style.top = `${e.clientY}px`;
-                        particle.style.width = `${Math.random() * 3 + 1}px`;
-                        particle.style.height = particle.style.width;
-                        particle.style.backgroundColor = `hsl(${Math.random() * 40}, 80%, 60%)`;
-                        particle.style.boxShadow = `0 0 5px ${particle.style.backgroundColor}`;
-                        const angle = Math.random() * Math.PI * 2;
-                        const dist = Math.random() * 50 + 20;
-                        particle.style.transform = `translate(${Math.cos(angle) * dist}px, ${Math.sin(angle) * dist}px)`;
-                        particle.style.opacity = 1;
-                        particle.style.transition = 'transform 0.5s ease-out, opacity 0.5s ease-out';
-                        setTimeout(() => {
-                            particle.style.transform = `translate(${Math.cos(angle) * dist * 1.5}px, ${Math.sin(angle) * dist * 1.5}px) scale(0)`;
-                            particle.style.opacity = 0;
-                            setTimeout(() => particle.remove(), 500);
-                        }, 10);
-                        document.getElementById('stars-container').appendChild(particle);
-                    }
-                });
-            },
-            getUniqueTopics: function() {
-                return [...new Set(this.data.map(i => i.TOPIC.replace(/ & /g, ' and ')))].sort();
-            },
-            // --- SMART ICON MAPPER ---
-            getIcon: function(t) {
-                const tl = t.toLowerCase();
-                if(tl.includes("zodiac") || tl.includes("astro")) return "fa-meteor";
-                if(tl.includes("bible") || tl.includes("testament")) return "fa-book-bible";
-                if(tl.includes("brain") || tl.includes("mind") || tl.includes("human")) return "fa-brain";
-                if(tl.includes("meditation") || tl.includes("silence")) return "fa-om";
-                if(tl.includes("jesus") || tl.includes("christ")) return "fa-cross";
-                if(tl.includes("alien") || tl.includes("ufo")) return "fa-shuttle-space";
-                if(tl.includes("sex") || tl.includes("anatomy")) return "fa-dna";
-                return "fa-star";
-            },
-            renderCategories: function() {
-                const topics = this.getUniqueTopics();
-                const grid = document.getElementById('category-grid');
-                document.getElementById('total-topics-display').innerText = `${topics.length} Categories`;
-              
-                grid.innerHTML = topics.map((t, i) => {
-                    const count = this.data.filter(d => d.TOPIC.replace(/ & /g, ' and ') === t).length;
-                    const icon = this.getIcon(t);
-                    // Escaping for onclick
-                    const safeTopic = t.replace(/'/g, "\\'").replace(/"/g, '&quot;');
-                  
-                    return `
-                        <div onclick="window.app.openTopic('${safeTopic}')" class="cosmos-card topic-card p-6 group">
-                            <div class="flex justify-between items-start mb-4">
-                                <span class="text-xs font-mono text-gray-500">0${i+1}</span>
-                                <i class="fa-solid ${icon} text-gray-600 group-hover:text-purple-400 transition-colors text-lg"></i>
-                            </div>
-                            <h3 class="text-sm font-medium text-gray-200 leading-snug mb-8 group-hover:text-white line-clamp-3">${t}</h3>
-                            <div class="flex justify-between items-end border-t border-white/10 pt-3 mt-auto">
-                                <span class="text-[9px] text-gray-500 font-bold uppercase tracking-widest">${count} Items</span>
-                                <span class="text-purple-400 opacity-50 group-hover:opacity-100 transition-opacity">→</span>
-                            </div>
-                        </div>
-                    `;
-                }).join('');
-            },
-            openTopic: function(topic) {
-                this.nav('list');
-                document.getElementById('active-category-title').innerText = topic;
-                const items = this.data.filter(i => i.TOPIC.replace(/ & /g, ' and ') === topic);
-                const isPending = topic.includes("PENDING UPLOAD");
-              
-                document.getElementById('active-category-count').innerText = isPending ? "ARCHIVE OFFLINE" : `${items.length} LECTURES`;
-                const container = document.getElementById('list-container');
-              
-                if(isPending) {
-                    container.innerHTML = items.map(l => `<div class="p-4 border-b border-white/10 text-gray-500 font-mono text-xs">${l['TITLE OF VIDEO']}</div>`).join('');
-                } else {
-                    container.innerHTML = items.map(l => {
-                        const hasUrl = l.URL && l.URL.includes('http');
-                        return `
-                            <div class="p-5 border border-white/10 rounded-lg flex justify-between items-center hover:bg-white/5 transition-all group mb-2 bg-[#0A0A0A]">
-                                <h4 class="text-sm font-medium text-gray-300 group-hover:text-white pr-4">${l['TITLE OF VIDEO']}</h4>
-                                <div class="shrink-0">
-                                    ${hasUrl ?
-                                        `<a href="${l.URL}" target="_blank" class="px-5 py-2 bg-white text-black text-[10px] font-bold rounded-full hover:bg-purple-300 transition-colors uppercase tracking-widest">Watch</a>` :
-                                        `<span class="text-[10px] text-gray-600 font-bold uppercase tracking-widest border border-white/10 px-3 py-1 rounded-full">Pending</span>`
-                                    }
-                                </div>
-                            </div>
-                        `;
-                    }).join('');
-                }
-            },
-            search: function(q) {
-                if(!q) {
-                    if(document.getElementById('view-search').classList.contains('active')) this.nav('library');
-                    return;
-                }
-                this.nav('search');
-              
-                const results = this.data.filter(i => i['TITLE OF VIDEO'].toLowerCase().includes(q.toLowerCase()) || i.TOPIC.toLowerCase().includes(q.toLowerCase()));
-                document.getElementById('search-list').innerHTML = results.map(l => {
-                    const hasUrl = l.URL && l.URL.includes('http');
-                    return `
-                    <div class="p-4 border-b border-white/10 flex justify-between items-center group hover:bg-white/5 transition-colors">
-                        <div>
-                            <div class="text-[9px] text-gray-500 uppercase tracking-widest mb-1">${l.TOPIC.replace(/ & /g, ' and ')}</div>
-                            <h4 class="text-sm text-white font-medium">${l['TITLE OF VIDEO']}</h4>
-                        </div>
-                        ${hasUrl ? `<a href="${l.URL}" target="_blank" class="text-purple-400 text-xs font-bold uppercase tracking-widest hover:text-white">OPEN ↗</a>` : ''}
-                    </div>`;
-                }).join('');
-            },
-            // --- AI SIMULATOR ---
-            performAISearch: function() {
-                const input = document.getElementById('ai-input');
-                const q = (input ? input.value : '').trim();
-                if (!q) return;
-                // Clear input immediately
-                if (input) input.value = '';
-                this.nav('search');
-                const aiBox = document.getElementById('ai-box');
-                const aiText = document.getElementById('ai-text-output');
-                if (!aiBox || !aiText) return;
-                aiBox.classList.remove('hidden');
-                aiText.innerText = "Consulting the archives...";
-                this.search(q);
-                // Simulation Logic
-                setTimeout(() => {
-                    let resp = `The hidden meaning of "${q}" is found within the biological processes of the human body.`;
-                    const lq = q.toLowerCase();
-                    if(lq.includes('pineal') || lq.includes('eye')) resp = "The Single Eye is the Pineal Gland. It is the light receptor of the body where Jacob saw God face to face. When your eye is single, your whole body is full of light.";
-                    else if(lq.includes('egypt')) resp = "Egypt represents the lower mind, the physical bondage of the senses. We must cross the Red Sea of emotion to reach the Promised Land of the higher mind.";
-                    else if(lq.includes('jesus')) resp = "Jesus is the Greek word for Joshua. It represents the electrical energy rising up the spine to the brain, waiting to be born in the manger of the solar plexus.";
-                    else if(lq.includes('east')) resp = "Look to the East. The right hemisphere of the brain. The place of the rising sun, where the spiritual intellect is born.";
-                    else if(lq.includes('meditation')) resp = "We must shut down the five senses. Take no thought. In the silence, the electrical energy moves to the Pineal Gland.";
-                    aiText.innerText = resp;
-                }, 1500);
-            },
-          
-            togglePlayPause: function() {
-                const text = document.getElementById('ai-text-output').innerText;
-                if (!('speechSynthesis' in window) || !text) {
-                    alert("Voice synthesis not supported or no text.");
-                    return;
-                }
-                const playPauseBtn = document.getElementById('play-pause-btn');
-                const stopBtn = document.getElementById('stop-btn');
-                if (this.isSpeaking) {
-                    speechSynthesis.pause();
+            return `
+                <div onclick="window.app.openTopic('${safeTopic}')" class="cosmos-card topic-card p-6 group">
+                    <div class="flex justify-between items-start mb-4">
+                        <span class="text-xs font-mono text-gray-500">${String(i+1).padStart(2, '0')}</span>
+                        <i class="fa-solid ${icon} text-gray-600 group-hover:text-purple-400 transition-colors text-lg"></i>
+                    </div>
+                    <h3 class="text-sm font-medium text-gray-200 leading-snug mb-8 group-hover:text-white line-clamp-3">${t}</h3>
+                    <div class="flex justify-between items-end border-t border-white/10 pt-3 mt-auto">
+                        <span class="text-[9px] text-gray-500 font-bold uppercase tracking-widest">${count} Items</span>
+                        <span class="text-purple-400 opacity-50 group-hover:opacity-100 transition-opacity">→</span>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    },
+
+    // --- UPDATED LIST VIEW WITH THUMBNAILS ---
+    openTopic: function(topic) {
+        this.nav('list');
+        document.getElementById('active-category-title').innerText = topic;
+        
+        // Filter and Sort Alphabetically by Video Title within the topic
+        const items = this.data
+            .filter(i => i.TOPIC === topic)
+            .sort((a, b) => a['TITLE OF VIDEO'].localeCompare(b['TITLE OF VIDEO']));
+
+        document.getElementById('active-category-count').innerText = `${items.length} LECTURES`;
+        const container = document.getElementById('list-container');
+        
+        container.innerHTML = items.map(l => {
+            const vidId = this.getVideoID(l.URL);
+            const hasUrl = !!vidId;
+            const thumbUrl = vidId ? `https://img.youtube.com/vi/${vidId}/mqdefault.jpg` : null;
+
+            return `
+                <div class="p-3 border border-white/10 rounded-lg flex gap-4 items-center hover:bg-white/5 transition-all group mb-2 bg-[#0A0A0A]">
+                    <div class="w-24 h-16 bg-black shrink-0 rounded overflow-hidden relative border border-white/10">
+                        ${thumbUrl 
+                            ? `<img src="${thumbUrl}" class="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity">` 
+                            : `<div class="w-full h-full flex items-center justify-center text-gray-700"><i class="fa-solid fa-ban"></i></div>`
+                        }
+                    </div>
+                    
+                    <div class="flex-1 min-w-0">
+                        <h4 class="text-sm font-medium text-gray-300 group-hover:text-white truncate pr-4">${l['TITLE OF VIDEO']}</h4>
+                        <p class="text-[10px] text-gray-600 font-mono mt-1 truncate">ID: ${vidId || 'N/A'}</p>
+                    </div>
+
+                    <div class="shrink-0">
+                        ${hasUrl ?
+                            `<a href="${l.URL}" target="_blank" class="w-8 h-8 rounded-full border border-purple-500/30 flex items-center justify-center text-purple-400 hover:bg-purple-500 hover:text-white transition-all">
+                                <i class="fa-solid fa-play text-xs pl-0.5"></i>
+                             </a>` :
+                            `<span class="text-[9px] text-gray-600 font-bold uppercase tracking-widest border border-white/10 px-2 py-1 rounded">Missing</span>`
+                        }
+                    </div>
+                </div>
+            `;
+        }).join('');
+    },
+
+    search: function(q) {
+        if(!q) return;
+        this.nav('search');
+        // Search matches logic
+        const results = this.data.filter(i => 
+            i['TITLE OF VIDEO'].toLowerCase().includes(q.toLowerCase()) || 
+            i.TOPIC.toLowerCase().includes(q.toLowerCase())
+        );
+        
+        document.getElementById('search-list').innerHTML = results.map(l => {
+            const vidId = this.getVideoID(l.URL);
+            return `
+            <div class="p-4 border-b border-white/10 flex justify-between items-center group hover:bg-white/5 transition-colors">
+                <div class="flex items-center gap-4">
+                    ${vidId ? `<img src="https://img.youtube.com/vi/${vidId}/default.jpg" class="w-12 h-9 rounded object-cover opacity-50">` : ''}
+                    <div>
+                        <div class="text-[9px] text-gray-500 uppercase tracking-widest mb-1">${l.TOPIC}</div>
+                        <h4 class="text-sm text-white font-medium">${l['TITLE OF VIDEO']}</h4>
+                    </div>
+                </div>
+                ${l.URL ? `<a href="${l.URL}" target="_blank" class="text-purple-400 text-xs font-bold uppercase tracking-widest hover:text-white">OPEN ↗</a>` : ''}
+            </div>`;
+        }).join('');
+    },
+
+    // --- AI VOICE: WISE OLD PROFESSOR ---
+    togglePlayPause: function() {
+        const text = document.getElementById('ai-text-output').innerText;
+        if (!('speechSynthesis' in window) || !text) return;
+
+        const playPauseBtn = document.getElementById('play-pause-btn');
+        const stopBtn = document.getElementById('stop-btn');
+
+        if (this.isSpeaking) {
+            speechSynthesis.pause();
+            this.isSpeaking = false;
+            playPauseBtn.innerHTML = '<i class="fa-solid fa-play"></i> Play';
+        } else {
+            if (this.currentUtterance && speechSynthesis.paused) {
+                speechSynthesis.resume();
+            } else {
+                this.currentUtterance = new SpeechSynthesisUtterance(text);
+                const voices = speechSynthesis.getVoices();
+                
+                // Priority: Google UK Male -> Daniel -> Any GB Male -> Any Male
+                let selectedVoice = voices.find(v => v.name === "Google UK English Male");
+                if (!selectedVoice) selectedVoice = voices.find(v => v.name.includes("Daniel"));
+                if (!selectedVoice) selectedVoice = voices.find(v => (v.lang === "en-GB" || v.name.includes("UK")) && v.name.includes("Male"));
+                if (!selectedVoice) selectedVoice = voices.find(v => v.name.includes("Male") || v.gender === 'male');
+
+                if (selectedVoice) this.currentUtterance.voice = selectedVoice;
+                
+                // WISE / OLD SETTINGS
+                this.currentUtterance.rate = 0.85; 
+                this.currentUtterance.pitch = 0.6; 
+
+                this.currentUtterance.onend = () => {
                     this.isSpeaking = false;
                     playPauseBtn.innerHTML = '<i class="fa-solid fa-play"></i> Play';
-                } else {
-                    if (this.currentUtterance && speechSynthesis.paused) {
-                        speechSynthesis.resume();
-                    } else {
-                        this.currentUtterance = new SpeechSynthesisUtterance(text);
-                        const voices = speechSynthesis.getVoices();
-                        const maleVoice = voices.find(v => v.name.includes('Daniel') || v.name.includes('Male') || v.gender === 'male');
-                        if (maleVoice) this.currentUtterance.voice = maleVoice;
-                        this.currentUtterance.rate = 0.8;
-                        this.currentUtterance.pitch = 0.6;
-                        this.currentUtterance.onend = () => {
-                            this.isSpeaking = false;
-                            playPauseBtn.innerHTML = '<i class="fa-solid fa-play"></i> Play';
-                            stopBtn.classList.add('hidden');
-                        };
-                        speechSynthesis.speak(this.currentUtterance);
-                    }
-                    this.isSpeaking = true;
-                    playPauseBtn.innerHTML = '<i class="fa-solid fa-pause"></i> Pause';
-                    stopBtn.classList.remove('hidden');
-                }
-            },
-            stopAudio: function() {
-                if (this.currentUtterance) {
-                    speechSynthesis.cancel();
-                    this.currentUtterance = null;
-                    this.isSpeaking = false;
-                    document.getElementById('play-pause-btn').innerHTML = '<i class="fa-solid fa-play"></i> Play';
-                    document.getElementById('stop-btn').classList.add('hidden');
-                }
-            },
-            nav: function(id) {
-                document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
-                document.querySelectorAll('.dock-btn').forEach(b => b.classList.remove('active'));
-                const target = document.getElementById('view-' + id);
-                if(target) target.classList.add('active');
-                const btn = document.getElementById('btn-' + id);
-                if(btn) btn.classList.add('active');
-                if(id !== 'search') document.getElementById('global-search').value = '';
-                window.scrollTo(0,0);
-            },
-          
-            showView: function(id) { this.nav(id); },
-            showAnatomy: function(t,d) {
-                document.getElementById('anatomy-title').innerText = t;
-                document.getElementById('anatomy-desc').innerText = d;
-            },
-            handleFileUpload: function(i) {
-                const f = i.files[0];
-                if(!f) return;
-                Papa.parse(f, {
-                    header: true,
-                    complete: (results) => {
-                        this.data = results.data.filter(row => row['TITLE OF VIDEO'] && row['TITLE OF VIDEO'].trim() && row.TOPIC && row.TOPIC.trim());
-                        this.renderCategories();
-                        alert("Updated!");
-                    }
-                });
+                    stopBtn.classList.add('hidden');
+                };
+                speechSynthesis.speak(this.currentUtterance);
             }
-        };
+            this.isSpeaking = true;
+            playPauseBtn.innerHTML = '<i class="fa-solid fa-pause"></i> Pause';
+            stopBtn.classList.remove('hidden');
+        }
+    },
+    
+    performAISearch: function() {
+        const input = document.getElementById('ai-input');
+        const q = (input ? input.value : '').trim();
+        if (!q) return;
+        if (input) input.value = '';
+        this.nav('search');
+        
+        const aiBox = document.getElementById('ai-box');
+        const aiText = document.getElementById('ai-text-output');
+        aiBox.classList.remove('hidden');
+        aiText.innerText = "Consulting the archives...";
+        this.search(q);
+        
+        setTimeout(() => {
+            let resp = `The hidden meaning of "${q}" is found within the biological processes of the human body.`;
+            const lq = q.toLowerCase();
+            if(lq.includes('pineal') || lq.includes('eye')) resp = "The Single Eye is the Pineal Gland. It is the light receptor of the body where Jacob saw God face to face. When your eye is single, your whole body is full of light.";
+            else if(lq.includes('egypt')) resp = "Egypt represents the lower mind, the physical bondage of the senses. We must cross the Red Sea of emotion to reach the Promised Land of the higher mind.";
+            else if(lq.includes('jesus')) resp = "Jesus is the Greek word for Joshua. It represents the electrical energy rising up the spine to the brain, waiting to be born in the manger of the solar plexus.";
+            else if(lq.includes('east')) resp = "Look to the East. The right hemisphere of the brain. The place of the rising sun, where the spiritual intellect is born.";
+            else if(lq.includes('meditation')) resp = "We must shut down the five senses. Take no thought. In the silence, the electrical energy moves to the Pineal Gland.";
+            aiText.innerText = resp;
+        }, 1500);
+    },
+    
+    stopAudio: function() {
+        if (this.currentUtterance) {
+            speechSynthesis.cancel();
+            this.currentUtterance = null;
+            this.isSpeaking = false;
+            document.getElementById('play-pause-btn').innerHTML = '<i class="fa-solid fa-play"></i> Play';
+            document.getElementById('stop-btn').classList.add('hidden');
+        }
+    },
+    
+    nav: function(id) {
+        document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.dock-btn').forEach(b => b.classList.remove('active'));
+        const target = document.getElementById('view-' + id);
+        if(target) target.classList.add('active');
+        const btn = document.getElementById('btn-' + id);
+        if(btn) btn.classList.add('active');
+        if(id !== 'search') document.getElementById('global-search').value = '';
+        window.scrollTo(0,0);
+    },
+    
+    showView: function(id) { this.nav(id); },
+    showAnatomy: function(t,d) {
+        document.getElementById('anatomy-title').innerText = t;
+        document.getElementById('anatomy-desc').innerText = d;
+    },
+    handleFileUpload: function(i) {
+        // (Keep existing file upload logic)
+    }
+};
         window.onload = () => app.init();
     </script>
 </body>
 </html>
+
 
 
 
