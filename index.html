@@ -439,8 +439,7 @@
                         }));
 
                         this.videos.push(...newVideos);
-                        this.youtube.videos = [...this.youtube.videos];
-                        this.youtube.renderVideos();
+                        this.renderVideos();
                     } catch (e) { console.error("YT Error", e); }
                     this.loading = false;
                 },
@@ -865,3 +864,4 @@
     </script>
 </body>
 </html>
+
