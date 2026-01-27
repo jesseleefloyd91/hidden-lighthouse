@@ -21,6 +21,7 @@
             --text-main: #EAEAEA;
             --orange: #FFCC80;
             --orange-glow: rgba(255, 204, 128, 0.25);
+            --cyan: #22d3ee; /* Added for Archive Tab */
         }
         body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text-main); overflow-x: hidden; height: 100vh; }
         .cinzel { font-family: 'Cinzel', serif; }
@@ -460,11 +461,27 @@
               </div>
         </section>
         
+        <section id="view-archive" class="view-section px-6">
+              <div class="max-w-[1800px] mx-auto w-full">
+                <div class="mb-10 pb-8 border-b border-white/10 flex justify-between items-end">
+                    <div>
+                        <h2 class="cinzel text-3xl md:text-5xl font-bold text-white mb-2">HD RESTORATION</h2>
+                        <p class="font-mono text-cyan-400 text-xs uppercase tracking-[0.2em]">The 900+ Video Collection</p>
+                    </div>
+                    <div class="hidden md:block">
+                        <span class="text-[10px] text-stone-500 font-mono" id="archive-count">Connecting to Archive.org...</span>
+                    </div>
+                </div>
+                <div id="archive-grid" class="masonry-grid"></div>
+              </div>
+        </section>
+        
         <section id="view-meditation" class="view-section px-6">
             <div class="max-w-4xl mx-auto text-center pt-10">
                  <h1 class="cinzel text-4xl md:text-6xl font-bold text-white mb-6">The Upper Room</h1>
                  <p class="text-stone-400 text-lg md:text-xl italic font-serif mb-16 max-w-2xl mx-auto leading-relaxed">
-                    "When you pray, enter into your closet, and when you have shut the door, pray to your Father which is in secret."<br><span class="text-purple-400 text-sm not-italic font-mono uppercase tracking-widest mt-4 block">- Matthew 6:6</span>
+                    "When you pray, enter into your closet, and when you have shut the door, pray to your Father which is in secret."
+<span class="text-purple-400 text-sm not-italic font-mono uppercase tracking-widest mt-4 block">- Matthew 6:6</span>
                  </p>
 
                  <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-20">
@@ -518,7 +535,7 @@
             <button class="dock-btn active" id="btn-home" onclick="window.app.nav('home')">Home</button>
             <button class="dock-btn" id="btn-library" onclick="window.app.nav('library')">Library</button>
             <button class="dock-btn" id="btn-videos" onclick="window.app.nav('videos')">Videos</button>
-            <button class="dock-btn" id="btn-anatomy" onclick="window.app.nav('anatomy')">Temple</button>
+            <button class="dock-btn text-cyan-300 hover:text-cyan-100" id="btn-archive" onclick="window.app.nav('archive')"><i class="fa-solid fa-box-archive mr-1"></i> HD Archive</button> <button class="dock-btn" id="btn-anatomy" onclick="window.app.nav('anatomy')">Temple</button>
             <button class="dock-btn" id="btn-meditation" onclick="window.app.nav('meditation')">Silence</button> <button class="dock-btn" id="btn-resources" onclick="window.app.nav('resources')">Links</button>
             <button class="dock-btn" id="btn-social" onclick="window.app.nav('social')">Social</button>
             <div class="w-px bg-white/20 mx-1"></div>
@@ -554,6 +571,7 @@
             transcriptData: null, 
             currentUtterance: null,
             isSpeaking: false,
+            archiveData: [], // Store archive videos
 
             // --- BILL DONAHUE'S CHAKRA DATA ---
             anatomyData: {
@@ -611,11 +629,21 @@
                 document.getElementById('ana-title').style.color = data.color;
             },
 
-            // --- VIDEO PLAYER MODAL ---
-            openVideo: function(id) {
+            // --- VIDEO PLAYER MODAL (UPDATED FOR ARCHIVE.ORG) ---
+            openVideo: function(id, type = 'youtube') {
                 const modal = document.getElementById('video-modal');
                 const container = document.getElementById('video-frame-container');
-                container.innerHTML = `<iframe src="https://www.youtube.com/embed/${id}?autoplay=1&rel=0" class="w-full h-full" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+                let src = "";
+                
+                if (type === 'archive') {
+                    // Archive.org Embed format
+                    src = `https://archive.org/embed/${id}?autoplay=1`;
+                } else {
+                    // YouTube Embed format
+                    src = `https://www.youtube.com/embed/${id}?autoplay=1&rel=0`;
+                }
+                
+                container.innerHTML = `<iframe src="${src}" class="w-full h-full" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
                 modal.classList.remove('hidden');
             },
 
@@ -624,6 +652,77 @@
                 const container = document.getElementById('video-frame-container');
                 container.innerHTML = ''; // Stop audio
                 modal.classList.add('hidden');
+            },
+
+            // --- INTERNET ARCHIVE INTEGRATION ---
+            fetchArchiveVideos: async function() {
+                const grid = document.getElementById("archive-grid");
+                const countDisplay = document.getElementById("archive-count");
+                
+                // IMPORTANT: Change this query to 'uploader:(YOUR_USERNAME_HERE)' after you upload!
+                // For now, I'm setting it to search for Bill Donahue content generally so you see it working.
+                const query = 'subject:"Bill Donahue" AND mediatype:"movies"'; 
+                
+                // API URL
+                const url = `https://archive.org/advancedsearch.php?q=${encodeURIComponent(query)}&fl[]=identifier&fl[]=title&fl[]=description&fl[]=downloads&sort[]=-downloads&output=json&rows=100`;
+
+                try {
+                    const res = await fetch(url);
+                    const data = await res.json();
+                    
+                    if (data.response && data.response.docs) {
+                        this.archiveData = data.response.docs;
+                        countDisplay.innerText = `${this.archiveData.length} Videos Restored`;
+                        this.renderArchiveVideos();
+                    } else {
+                        grid.innerHTML = '<div class="col-span-3 text-center text-stone-500">No archives found. Check connection.</div>';
+                    }
+                } catch (e) {
+                    console.error("Archive Error", e);
+                    grid.innerHTML = '<div class="col-span-3 text-center text-red-400">Error connecting to Archive.org</div>';
+                }
+            },
+
+            renderArchiveVideos: function() {
+                const grid = document.getElementById("archive-grid");
+                if(!grid) return;
+                
+                if (this.archiveData.length === 0) {
+                     grid.innerHTML = '<div class="col-span-3 text-center text-stone-500 py-20">Searching the Archives...</div>';
+                     return;
+                }
+
+                grid.innerHTML = this.archiveData.map(v => {
+                    // Archive.org thumbnail structure
+                    const thumb = `https://archive.org/services/img/${v.identifier}`;
+                    
+                    return `
+                    <div class="cosmos-card group">
+                        <div class="relative aspect-video overflow-hidden cursor-pointer bg-black" 
+                            onclick="window.app.openVideo('${v.identifier}', 'archive')">
+                            <img src="${thumb}" class="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" onerror="this.src='https://archive.org/images/not_found.png'" />
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <i class="fa-solid fa-film text-4xl text-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-lg"></i>
+                            </div>
+                            <div class="absolute top-2 right-2 bg-black/80 text-cyan-400 text-[9px] px-2 py-1 rounded font-mono uppercase tracking-widest border border-cyan-900/50">
+                                Archive
+                            </div>
+                        </div>
+                        <div class="p-4 flex flex-col flex-1 bg-[#0A0A0A] border-t border-cyan-900/30">
+                            <h3 class="text-sm text-gray-200 group-hover:text-cyan-100 line-clamp-2 mb-2 font-medium">${v.title}</h3>
+                            <p class="text-[10px] text-stone-500 line-clamp-2 mb-3 leading-relaxed">${v.description || 'Restored Video Archive'}</p>
+                            <div class="mt-auto pt-2 border-t border-white/5 flex justify-between items-center">
+                                <span class="text-[9px] text-stone-600 font-mono uppercase tracking-widest">
+                                    <i class="fa-solid fa-download mr-1"></i> ${v.downloads || 0}
+                                </span>
+                                <button class="text-cyan-500 hover:text-white text-xs transition-colors" 
+                                    onclick="event.stopPropagation(); window.open('https://archive.org/details/${v.identifier}', '_blank')">
+                                    <i class="fa-solid fa-external-link-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `}).join("");
             },
 
             youtube: {
@@ -700,6 +799,7 @@
                     this.setupStarInteractions();
                     this.renderSocialGallery();
                     this.youtube.fetchVideos();
+                    this.fetchArchiveVideos(); // INIT ARCHIVE FETCH
                     const wrapper = document.getElementById('scroll-wrapper');
                     wrapper.addEventListener("scroll", () => {
                         if (wrapper.scrollTop + wrapper.clientHeight >= wrapper.scrollHeight - 800) {
