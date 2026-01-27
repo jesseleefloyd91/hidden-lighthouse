@@ -51,14 +51,12 @@
         /* CARDS */
         .masonry-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 16px;
             padding-bottom: 140px;
         }
         @media (max-width: 640px) {
-            .masonry-grid {
-                grid-template-columns: 1fr; /* Single column on mobile */
-            }
+            .masonry-grid { grid-template-columns: 1fr; }
         }
 
         .cosmos-card {
@@ -98,8 +96,7 @@
             background: rgba(10, 10, 10, 0.95); backdrop-filter: blur(20px);
             border: 1px solid rgba(255,255,255,0.15); padding: 8px; border-radius: 20px;
             display: flex; gap: 4px; box-shadow: 0 20px 40px -10px rgba(0,0,0,0.9); pointer-events: auto;
-            max-width: 100%; overflow-x: auto; /* Scrollable on mobile */
-            scrollbar-width: none; /* Hide scrollbar */
+            max-width: 100%; overflow-x: auto; scrollbar-width: none;
         }
         .dock::-webkit-scrollbar { display: none; }
         
@@ -112,7 +109,7 @@
         .dock-btn:hover { color: white; background: rgba(255,255,255,0.1); }
         .dock-btn.active { background: white; color: black; box-shadow: 0 0 15px rgba(255,255,255,0.2); }
 
-        /* ANATOMY */
+        /* ANATOMY SPECIFIC */
         .anatomy-wrapper {
             position: relative; width: 300px; height: 650px;
             border: 1px solid rgba(255,255,255,0.1);
@@ -121,7 +118,6 @@
             box-shadow: 0 0 80px -20px rgba(168,85,247,0.15);
             transition: box-shadow 0.5s ease;
         }
-        /* Mobile Scaling for Anatomy */
         @media (max-width: 768px) {
             .anatomy-scale-container { transform: scale(0.75); transform-origin: top center; height: 500px; }
         }
@@ -137,7 +133,7 @@
             transform: translateX(-50%) scale(1.5);
             border-color: white;
         }
-
+        
         /* SEARCH */
         .search-input {
             background: rgba(20, 20, 20, 0.8); backdrop-filter: blur(10px);
@@ -161,6 +157,7 @@
 
         /* UTILS */
         .hidden { display: none !important; }
+        .highlight { background: rgba(216, 180, 254, 0.2); color: #fff; font-weight: bold; border-radius: 2px; padding: 0 2px; }
         .profile-img { box-shadow: 0 0 50px rgba(216, 180, 254, 0.15); transition: 0.5s; }
         .profile-img:hover { box-shadow: 0 0 80px rgba(216, 180, 254, 0.3); transform: scale(1.02); }
         .diamond-box {
@@ -191,7 +188,7 @@
        
         <div class="relative group w-1/2 max-w-[240px]">
             <svg class="w-3.5 h-3.5 absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-            <input type="text" id="global-search" oninput="window.app.search(this.value)" placeholder="SEARCH..." class="search-input placeholder-gray-500 font-mono uppercase">
+            <input type="text" id="global-search" oninput="window.app.performAISearch()" onkeydown="if(event.key === 'Enter') window.app.performAISearch()" placeholder="SEARCH..." class="search-input placeholder-gray-500 font-mono uppercase">
         </div>
     </div>
 
@@ -369,8 +366,15 @@
 
         <section id="view-search" class="view-section px-6 max-w-5xl mx-auto bg-[#050505]">
             <div id="ai-box" class="mb-12 bg-white/5 p-8 border-l-4 border-purple-500 hidden rounded-xl fade-in">
-                <span class="text-purple-400 font-mono text-[10px] uppercase tracking-widest mb-3 block">Teacher's Insight</span>
-                <div id="ai-text-output" class="text-stone-200 text-lg md:text-xl leading-relaxed italic font-light mb-4 font-serif"></div>
+                <div class="flex justify-between items-start mb-4">
+                    <span class="text-purple-400 font-mono text-[10px] uppercase tracking-widest block">Teacher's Insight</span>
+                    <a id="ai-video-link" href="#" target="_blank" class="hidden text-[10px] bg-purple-600 text-white px-3 py-1 rounded-full hover:bg-white hover:text-black transition-colors font-bold uppercase tracking-widest">
+                        <i class="fa-solid fa-play mr-1"></i> Watch Video
+                    </a>
+                </div>
+                
+                <div id="ai-text-output" class="text-stone-200 text-lg md:text-xl leading-relaxed italic font-light mb-6 font-serif"></div>
+                
                 <div class="flex items-center gap-4">
                     <button id="play-pause-btn" onclick="window.app.togglePlayPause()" class="flex items-center gap-2 text-xs font-bold text-purple-300 uppercase tracking-widest hover:text-white"><i class="fa-solid fa-play"></i> Play</button>
                     <button id="stop-btn" onclick="window.app.stopAudio()" class="flex items-center gap-2 text-xs font-bold text-purple-300 uppercase tracking-widest hover:text-white hidden"><i class="fa-solid fa-stop"></i> Stop</button>
@@ -382,7 +386,7 @@
                 <div id="download-area"></div>
             </div>
             
-            <div id="search-list" class="grid grid-cols-1 lg:grid-cols-2 gap-4 pb-20"></div>
+            <div id="search-list" class="masonry-grid pb-20"></div>
         </section>
 
         <section id="view-social" class="view-section px-6 max-w-[1800px] mx-auto">
@@ -690,17 +694,22 @@
                     });
                 } catch(e) { console.error("Init failed", e); }
                 this.nav('home');
+                
+                // Allow "Enter" key on input if performAISearch is waiting for it
+                document.getElementById('ai-input').addEventListener('keypress', function (e) {
+                    if (e.key === 'Enter') {
+                        window.app.performAISearch();
+                    }
+                });
             },
 
             setupStarInteractions: function() { /* (Keep existing star code) */ },
             getUniqueTopics: function() { return [...new Set(this.data.map(i => i.TOPIC).filter(t => t))].sort((a, b) => a.localeCompare(b)); },
             
-            // --- NEW: ROBUST ICON MAPPING ---
+            // --- ICON MAPPING ---
             getIcon: function(t) {
                 if(!t) return "fa-star";
                 const tl = t.toLowerCase();
-                
-                // 1. SPECIFIC MAPPINGS
                 const map = {
                     "zodiac": "fa-star-of-life", "astrology": "fa-user-astronaut", "constellation": "fa-meteor",
                     "bible": "fa-book-bible", "scripture": "fa-scroll", "testament": "fa-cross",
@@ -717,56 +726,64 @@
                     "music": "fa-music", "sound": "fa-wave-square",
                     "math": "fa-calculator", "number": "fa-hashtag"
                 };
-
-                for(const key in map) {
-                    if(tl.includes(key)) return map[key];
-                }
-
-                // 2. HASH FALLBACK (Guarantees same icon for same topic)
-                const fallbackIcons = [
-                    "fa-infinity", "fa-eye", "fa-fingerprint", "fa-tree", "fa-om", "fa-gavel", 
-                    "fa-flask", "fa-dove", "fa-compass", "fa-key", "fa-microchip", "fa-scale-balanced", 
-                    "fa-star-of-life", "fa-atom", "fa-book-open", "fa-shield-halved", "fa-dungeon", 
-                    "fa-brain", "fa-dna", "fa-fire-flame-curved", "fa-droplet", "fa-wind", "fa-icicles", 
-                    "fa-mountain-sun", "fa-moon", "fa-sun", "fa-meteor", "fa-explosion", "fa-hand-sparkles", 
-                    "fa-wand-magic-sparkles", "fa-scroll", "fa-landmark", "fa-timeline", "fa-clock", 
-                    "fa-unlock", "fa-lightbulb", "fa-puzzle-piece", "fa-chess-knight", "fa-bridge", 
-                    "fa-stairs", "fa-door-open", "fa-cube", "fa-vector-square", "fa-bullseye", 
-                    "fa-route", "fa-signs-post", "fa-book-skull", "fa-ankh"
-                ];
-                
-                let hash = 0;
-                for (let i = 0; i < t.length; i++) {
-                    hash = t.charCodeAt(i) + ((hash << 5) - hash);
-                }
+                for(const key in map) { if(tl.includes(key)) return map[key]; }
+                const fallbackIcons = ["fa-infinity", "fa-eye", "fa-fingerprint", "fa-tree", "fa-om", "fa-gavel", "fa-flask", "fa-dove", "fa-compass", "fa-key", "fa-microchip", "fa-scale-balanced", "fa-star-of-life", "fa-atom", "fa-book-open", "fa-shield-halved", "fa-dungeon", "fa-brain", "fa-dna", "fa-fire-flame-curved", "fa-droplet", "fa-wind", "fa-icicles", "fa-mountain-sun", "fa-moon", "fa-sun", "fa-meteor", "fa-explosion", "fa-hand-sparkles", "fa-wand-magic-sparkles", "fa-scroll", "fa-landmark", "fa-timeline", "fa-clock", "fa-unlock", "fa-lightbulb", "fa-puzzle-piece", "fa-chess-knight", "fa-bridge", "fa-stairs", "fa-door-open", "fa-cube", "fa-vector-square", "fa-bullseye", "fa-route", "fa-signs-post", "fa-book-skull", "fa-ankh"];
+                let hash = 0; for (let i = 0; i < t.length; i++) { hash = t.charCodeAt(i) + ((hash << 5) - hash); }
                 const index = Math.abs(hash) % fallbackIcons.length;
                 return fallbackIcons[index];
             },
 
             renderCategories: function() { const topics = this.getUniqueTopics(); const grid = document.getElementById('category-grid'); document.getElementById('total-topics-display').innerText = `${topics.length} Categories`; grid.innerHTML = topics.map((t, i) => { const count = this.data.filter(d => d.TOPIC === t).length; const icon = this.getIcon(t); const safeTopic = t.replace(/'/g, "\\'").replace(/"/g, '&quot;'); return ` <div onclick="window.app.openTopic('${safeTopic}')" class="cosmos-card topic-card p-6 group"> <div class="flex justify-between items-start mb-4"> <span class="text-xs font-mono text-gray-500">${String(i+1).padStart(2, '0')}</span> <i class="fa-solid ${icon} text-gray-600 group-hover:text-purple-400 transition-colors text-lg"></i> </div> <h3 class="text-sm font-medium text-gray-200 leading-snug mb-8 group-hover:text-white line-clamp-3">${t}</h3> <div class="flex justify-between items-end border-t border-white/10 pt-3 mt-auto"> <span class="text-[9px] text-gray-500 font-bold uppercase tracking-widest">${count} Items</span> <span class="text-purple-400 opacity-50 group-hover:opacity-100 transition-opacity">→</span> </div> </div> `; }).join(''); },
             openTopic: function(topic) { this.nav('list'); document.getElementById('active-category-title').innerText = topic; const items = this.data.filter(i => i.TOPIC === topic).sort((a, b) => { const t1 = a['TITLE OF VIDEO'] || ""; const t2 = b['TITLE OF VIDEO'] || ""; return t1.localeCompare(t2); }); document.getElementById('active-category-count').innerText = `${items.length} LECTURES`; const container = document.getElementById('list-container'); container.innerHTML = items.map(l => { const vidId = this.getVideoID(l.URL); const hasUrl = !!vidId; const thumbUrl = vidId ? `https://img.youtube.com/vi/${vidId}/mqdefault.jpg` : null; return ` <div class="p-3 border border-white/10 rounded-lg flex gap-4 items-center hover:bg-white/5 transition-all group mb-2 bg-[#0A0A0A]"> <div class="w-24 h-16 bg-black shrink-0 rounded overflow-hidden relative border border-white/10"> ${thumbUrl ? `<img src="${thumbUrl}" class="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity">` : `<div class="w-full h-full flex items-center justify-center text-gray-700"><i class="fa-solid fa-ban"></i></div>` } </div> <div class="flex-1 min-w-0"> <h4 class="text-sm font-medium text-gray-300 group-hover:text-white truncate pr-4">${l['TITLE OF VIDEO']}</h4> <p class="text-[10px] text-gray-600 font-mono mt-1 truncate">ID: ${vidId || 'N/A'}</p> </div> <div class="shrink-0"> ${hasUrl ? `<a href="${l.URL}" target="_blank" class="w-8 h-8 rounded-full border border-purple-500/30 flex items-center justify-center text-purple-400 hover:bg-purple-500 hover:text-white transition-all"> <i class="fa-solid fa-play text-xs pl-0.5"></i> </a>` : `<span class="text-[9px] text-gray-600 font-bold uppercase tracking-widest border border-white/10 px-2 py-1 rounded">Missing</span>` } </div> </div> `; }).join(''); },
-            search: function(q) { if(!q) return; this.nav('search'); document.getElementById('search-title').innerText = "Archive Matches"; const results = this.data.filter(i => (i['TITLE OF VIDEO'] && i['TITLE OF VIDEO'].toLowerCase().includes(q.toLowerCase())) || (i.TOPIC && i.TOPIC.toLowerCase().includes(q.toLowerCase()))); document.getElementById('search-list').innerHTML = results.map(l => { const vidId = this.getVideoID(l.URL); const safeTopic = l.TOPIC.replace(/'/g, "\\'").replace(/"/g, '&quot;'); return ` <div class="p-4 border-b border-white/10 flex justify-between items-center group hover:bg-white/5 transition-colors"> <div class="flex items-center gap-4"> ${vidId ? `<img src="https://img.youtube.com/vi/${vidId}/default.jpg" class="w-12 h-9 rounded object-cover opacity-50">` : ''} <div> <div class="text-[9px] text-purple-400 font-bold uppercase tracking-widest mb-1 cursor-pointer hover:text-white transition-colors" onclick="window.app.openTopic('${safeTopic}')"> ${l.TOPIC} </div> <h4 class="text-sm text-white font-medium">${l['TITLE OF VIDEO']}</h4> </div> </div> ${l.URL ? `<a href="${l.URL}" target="_blank" class="text-purple-400 text-xs font-bold uppercase tracking-widest hover:text-white">OPEN ↗</a>` : ''} </div>`; }).join(''); },
-            scanForBrokenLinks: async function() { this.nav('search'); document.getElementById('search-title').innerText = "Scanning YouTube Status..."; document.getElementById('ai-box').classList.add('hidden'); const list = document.getElementById('search-list'); document.getElementById('download-area').innerHTML = ''; list.innerHTML = '<div class="text-center p-8"><i class="fa-solid fa-circle-notch fa-spin text-purple-500 text-2xl"></i><p class="mt-4 text-stone-400 text-xs font-mono uppercase tracking-widest">Verifying with YouTube API...</p></div>'; const allItems = this.data.filter(i => i.URL && i.URL.includes('http')); const idMap = {}; const idsToCheck = []; allItems.forEach(item => { const id = this.getVideoID(item.URL); if (id) { if (!idMap[id]) { idMap[id] = []; idsToCheck.push(id); } idMap[id].push(item); } }); const batchSize = 50; const validIds = new Set(); for (let i = 0; i < idsToCheck.length; i += batchSize) { const batch = idsToCheck.slice(i, i + batchSize); const url = `https://www.googleapis.com/youtube/v3/videos?key=${this.youtube.apiKey}&part=id&id=${batch.join(',')}`; try { const res = await fetch(url); const json = await res.json(); if (json.items) json.items.forEach(item => validIds.add(item.id)); } catch (e) { console.error("Scan error", e); } } const brokenItems = []; idsToCheck.forEach(id => { if (!validIds.has(id)) brokenItems.push(...idMap[id]); }); document.getElementById('search-title').innerText = `Found ${brokenItems.length} Broken / Private Links`; if (brokenItems.length === 0) { list.innerHTML = `<div class="p-8 text-center text-green-500 mono">All links are active and public!</div>`; return; } let csvContent = "data:text/csv;charset=utf-8,TITLE,TOPIC,URL\n"; brokenItems.forEach(row => { csvContent += `"${row['TITLE OF VIDEO']}","${row.TOPIC}","${row.URL}"\n`; }); const encodedUri = encodeURI(csvContent); document.getElementById('download-area').innerHTML = ` <a href="${encodedUri}" download="bad_links_report.csv" class="px-4 py-2 bg-red-900/30 text-red-400 border border-red-900 rounded text-xs font-bold uppercase tracking-widest hover:bg-red-900 hover:text-white transition-all flex items-center gap-2"> <i class="fa-solid fa-download"></i> Download Report (.csv) </a> `; list.innerHTML = brokenItems.map(l => ` <div class="p-4 border-b border-red-900/30 flex justify-between items-center group hover:bg-red-900/10 transition-colors"> <div class="flex items-center gap-4"> <div class="w-12 h-9 bg-red-900/20 rounded flex items-center justify-center text-red-500"><i class="fa-solid fa-link-slash"></i></div> <div> <div class="text-[9px] text-red-400 uppercase tracking-widest mb-1">Video Deleted / Private</div> <h4 class="text-sm text-white font-medium">${l['TITLE OF VIDEO']}</h4> <p class="text-[10px] text-gray-600 font-mono mt-1">${l.TOPIC}</p> </div> </div> <a href="${l.URL}" target="_blank" class="text-gray-500 text-xs font-bold uppercase tracking-widest hover:text-white">CHECK ↗</a> </div>` ).join(''); },
-            renderSocialGallery: function() { const grid = document.getElementById('social-gallery-grid'); if(!grid) return; const placeholders = ['Community Photos', 'Recent Events', 'Group Media', 'Shared Memories', 'Discussion Archives', 'Latest Uploads']; grid.innerHTML = placeholders.map(p => ` <a href="https://www.facebook.com/groups/356472414984195/media" target="_blank" class="cosmos-card group cursor-pointer block min-h-[200px]"> <div class="relative h-40 bg-[#111] flex items-center justify-center overflow-hidden"> <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60"></div> <i class="fa-brands fa-facebook text-5xl text-[#1877F2] opacity-30 group-hover:scale-110 group-hover:opacity-60 transition-all duration-500"></i> </div> <div class="p-4 border-t border-white/10 bg-[#0A0A0A]"> <h3 class="text-sm text-gray-200 group-hover:text-white mb-1">${p}</h3> <p class="text-[10px] text-purple-400 font-bold uppercase tracking-widest group-hover:text-purple-300">View Gallery ↗</p> </div> </a>` ).join(''); },
-            togglePlayPause: function() { const text = document.getElementById('ai-text-output').innerText; if (!('speechSynthesis' in window) || !text) return; const playPauseBtn = document.getElementById('play-pause-btn'); const stopBtn = document.getElementById('stop-btn'); if (this.isSpeaking) { speechSynthesis.pause(); this.isSpeaking = false; playPauseBtn.innerHTML = '<i class="fa-solid fa-play"></i> Play'; } else { if (this.currentUtterance && speechSynthesis.paused) { speechSynthesis.resume(); } else { this.currentUtterance = new SpeechSynthesisUtterance(text); const voices = speechSynthesis.getVoices(); let selectedVoice = voices.find(v => v.name.includes("David") && v.name.includes("Microsoft")); if (!selectedVoice) selectedVoice = voices.find(v => v.name === "Alex"); if (!selectedVoice) selectedVoice = voices.find(v => v.lang === "en-US" && (v.name.includes("Male") || v.gender === 'male')); if (!selectedVoice) selectedVoice = voices.find(v => v.lang === "en-US"); if (selectedVoice) this.currentUtterance.voice = selectedVoice; this.currentUtterance.rate = 0.9; this.currentUtterance.pitch = 0.8; this.currentUtterance.onend = () => { this.isSpeaking = false; playPauseBtn.innerHTML = '<i class="fa-solid fa-play"></i> Play'; stopBtn.classList.add('hidden'); }; speechSynthesis.speak(this.currentUtterance); } this.isSpeaking = true; playPauseBtn.innerHTML = '<i class="fa-solid fa-pause"></i> Pause'; stopBtn.classList.remove('hidden'); } },
             
-            // --- SMART SENTENCE SNIPPETS ---
+            // --- UNIFIED SEARCH: TITLES + TRANSCRIPTS ---
             performAISearch: async function() {
                 const input = document.getElementById('ai-input');
-                const q = (input ? input.value : '').trim();
+                let q = (input ? input.value : '').trim();
+                
+                // If input is empty, maybe they typed in global search
+                if (!q) {
+                    const global = document.getElementById('global-search');
+                    q = global ? global.value.trim() : '';
+                }
+                
                 if (!q) return;
                 if (input) input.value = '';
-                this.nav('search');
                 
+                this.nav('search');
                 const aiBox = document.getElementById('ai-box');
                 const aiText = document.getElementById('ai-text-output');
-                aiBox.classList.remove('hidden');
+                const aiLink = document.getElementById('ai-video-link');
+                const grid = document.getElementById('search-list');
                 
-                // 1. Initial State
+                aiBox.classList.remove('hidden');
                 aiText.innerText = "Consulting the archives...";
-                this.search(q); // Run standard title search
+                aiLink.classList.add('hidden');
+                
+                // 1. Prepare Results Array
+                let combinedResults = [];
+                const searchTerms = q.toLowerCase().split(/\s+/); // Split by space for multi-word matching
 
-                // 2. Load the Brain (Lazy Load - only happens on first search)
+                // 2. CSV Search (Title Matches)
+                this.data.forEach(row => {
+                    const title = row['TITLE OF VIDEO'].toLowerCase();
+                    const topic = row.TOPIC.toLowerCase();
+                    const url = row.URL;
+                    
+                    if (title.includes(q.toLowerCase()) || topic.includes(q.toLowerCase())) {
+                        const vidId = this.getVideoID(url);
+                        combinedResults.push({
+                            id: vidId,
+                            title: row['TITLE OF VIDEO'],
+                            topic: row.TOPIC,
+                            snippet: null, // No text snippet for title match
+                            score: 9999, // High priority
+                            url: url
+                        });
+                    }
+                });
+
+                // 3. Transcript Search
                 if (!this.transcriptData) {
                     try {
                         const response = await fetch('transcripts.json');
@@ -776,74 +793,154 @@
                             throw new Error("File not found");
                         }
                     } catch (e) {
-                        // Fallback to simulation if brain file is missing
                         console.warn("Brain not found, using simulation");
-                        setTimeout(() => {
-                            let resp = `The hidden meaning of "${q}" is found within the biological processes...`;
-                            aiText.innerText = resp;
-                        }, 1000);
+                        aiText.innerText = `The hidden meaning of "${q}" is found within the biological processes...`;
+                        // Keep rendering title matches found so far
+                        this.renderSearchResults(combinedResults, q);
                         return;
                     }
                 }
 
-                // 3. Search the Brain
                 aiText.innerText = "Scanning transcripts...";
-                const searchTerms = q.toLowerCase().split(' ');
+                
                 let bestMatch = null;
                 let highestScore = 0;
-                let snippet = "";
 
                 this.transcriptData.forEach(video => {
                     const text = video.content.toLowerCase();
                     let score = 0;
                     
+                    // Simple frequency count
                     searchTerms.forEach(term => {
                         const count = (text.match(new RegExp(term, "g")) || []).length;
                         score += count;
                     });
 
-                    if (score > highestScore) {
-                        highestScore = score;
-                        bestMatch = video;
-                        
-                        // --- SMART SNIPPET EXTRACTION ---
+                    if (score > 0) {
+                        // Create Snippet
                         const idx = text.indexOf(searchTerms[0]);
                         
-                        // 1. Broad Window
-                        const windowStart = Math.max(0, idx - 150);
-                        const windowEnd = Math.min(text.length, idx + 250);
+                        // Smart Windowing
+                        const windowStart = Math.max(0, idx - 100);
+                        const windowEnd = Math.min(text.length, idx + 200);
                         let rawSnippet = text.substring(windowStart, windowEnd);
+                        
+                        // Clean edges
+                        const firstSpace = rawSnippet.indexOf(' ');
+                        const lastSpace = rawSnippet.lastIndexOf(' ');
+                        if(firstSpace !== -1 && lastSpace !== -1) {
+                            rawSnippet = rawSnippet.substring(firstSpace + 1, lastSpace);
+                        }
+                        
+                        // Highlight
+                        const highlightSnippet = "..." + rawSnippet + "...";
 
-                        // 2. Snap to Start Punctuation/Space
-                        const firstPeriod = rawSnippet.indexOf('. ');
-                        if (firstPeriod !== -1 && firstPeriod < 100) { 
-                            rawSnippet = rawSnippet.substring(firstPeriod + 2);
+                        // Check if already in results (deduplicate)
+                        const existing = combinedResults.find(r => r.id === video.id);
+                        if (existing) {
+                            existing.snippet = highlightSnippet;
+                            existing.score += score; // Boost score
+                            existing.count = score;
                         } else {
-                            const firstSpace = rawSnippet.indexOf(' ');
-                            if (firstSpace !== -1) rawSnippet = "..." + rawSnippet.substring(firstSpace + 1);
+                            combinedResults.push({
+                                id: video.id,
+                                title: video.title,
+                                topic: video.topic,
+                                snippet: highlightSnippet,
+                                score: score,
+                                count: score,
+                                url: `https://www.youtube.com/watch?v=${video.id}`
+                            });
                         }
 
-                        // 3. Snap to End Punctuation/Space
-                        const lastPeriod = rawSnippet.lastIndexOf('.');
-                        if (lastPeriod !== -1 && lastPeriod > rawSnippet.length - 80) {
-                            rawSnippet = rawSnippet.substring(0, lastPeriod + 1);
-                        } else {
-                            const lastSpace = rawSnippet.lastIndexOf(' ');
-                            if (lastSpace !== -1) rawSnippet = rawSnippet.substring(0, lastSpace) + "...";
+                        if (score > highestScore) {
+                            highestScore = score;
+                            bestMatch = video;
+                            bestMatch.cleanSnippet = rawSnippet; // For TTS
                         }
-
-                        snippet = rawSnippet;
                     }
                 });
 
-                // 4. Display Result
+                // 4. Sort by Score (High to Low)
+                combinedResults.sort((a, b) => b.score - a.score);
+
+                // 5. Render Grid
+                this.renderSearchResults(combinedResults, q);
+
+                // 6. Update AI Insight
                 if (bestMatch && highestScore > 0) {
-                    aiText.innerText = `In "${bestMatch.title}", the Teacher says: "${snippet}"`;
+                    aiText.innerText = `In "${bestMatch.title}", the Teacher says: "...${bestMatch.cleanSnippet}..."`;
+                    aiLink.href = `https://www.youtube.com/watch?v=${bestMatch.id}`;
+                    aiLink.classList.remove('hidden');
+                } else if (combinedResults.length > 0) {
+                    aiText.innerText = `I found ${combinedResults.length} videos matching "${q}".`;
+                    aiLink.classList.add('hidden');
                 } else {
-                    aiText.innerText = `I could not find a direct transcript reference for "${q}".`;
+                    aiText.innerText = `I could not find a direct reference for "${q}".`;
+                    aiLink.classList.add('hidden');
                 }
             },
-           
+
+            // --- RENDER SEARCH RESULTS (GRID) ---
+            renderSearchResults: function(results, query) {
+                const list = document.getElementById('search-list');
+                const title = document.getElementById('search-title');
+                
+                title.innerText = `${results.length} Matches Found`;
+                
+                if (results.length === 0) {
+                    list.innerHTML = `<div class="p-8 text-center text-stone-500 font-mono">No matches found.</div>`;
+                    return;
+                }
+
+                list.innerHTML = results.map(r => {
+                    const vidId = r.id || this.getVideoID(r.url);
+                    const thumbUrl = vidId ? `https://img.youtube.com/vi/${vidId}/mqdefault.jpg` : null;
+                    
+                    // Highlight the keyword in the snippet visually
+                    const displaySnippet = r.snippet 
+                        ? r.snippet.replace(new RegExp(`(${query})`, 'gi'), '<span class="highlight">$1</span>') 
+                        : null;
+
+                    return `
+                    <div class="cosmos-card p-0 overflow-hidden bg-[#0A0A0A] border border-white/10 rounded-xl group hover:border-purple-500/50 transition-all">
+                        <div class="flex flex-col h-full">
+                            <div class="relative h-40 bg-black overflow-hidden">
+                                ${thumbUrl 
+                                    ? `<img src="${thumbUrl}" class="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity">` 
+                                    : `<div class="w-full h-full flex items-center justify-center text-white/20"><i class="fa-solid fa-play"></i></div>`
+                                }
+                                <div class="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black to-transparent">
+                                    <h4 class="text-sm font-bold text-white line-clamp-1">${r.title}</h4>
+                                </div>
+                            </div>
+                            
+                            <div class="p-4 flex-1 flex flex-col">
+                                ${r.count ? 
+                                    `<div class="mb-3">
+                                        <span class="text-[9px] font-bold uppercase tracking-widest text-green-400 bg-green-900/20 px-2 py-1 rounded">
+                                            ${r.count} Mentions
+                                        </span>
+                                    </div>` : ''
+                                }
+                                
+                                <p class="text-xs text-stone-400 leading-relaxed font-serif italic mb-4 line-clamp-4">
+                                    ${displaySnippet || "Matched by Title"}
+                                </p>
+                                
+                                <div class="mt-auto pt-4 border-t border-white/5 flex justify-between items-center">
+                                    <span class="text-[9px] text-purple-400 font-bold uppercase tracking-widest">${r.topic || 'General'}</span>
+                                    <a href="${r.url}" target="_blank" class="text-white text-xs hover:text-purple-300"><i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>`;
+                }).join('');
+            },
+
+            scanForBrokenLinks: async function() { this.nav('search'); document.getElementById('search-title').innerText = "Scanning YouTube Status..."; document.getElementById('ai-box').classList.add('hidden'); const list = document.getElementById('search-list'); document.getElementById('download-area').innerHTML = ''; list.innerHTML = '<div class="text-center p-8"><i class="fa-solid fa-circle-notch fa-spin text-purple-500 text-2xl"></i><p class="mt-4 text-stone-400 text-xs font-mono uppercase tracking-widest">Verifying with YouTube API...</p></div>'; const allItems = this.data.filter(i => i.URL && i.URL.includes('http')); const idMap = {}; const idsToCheck = []; allItems.forEach(item => { const id = this.getVideoID(item.URL); if (id) { if (!idMap[id]) { idMap[id] = []; idsToCheck.push(id); } idMap[id].push(item); } }); const batchSize = 50; const validIds = new Set(); for (let i = 0; i < idsToCheck.length; i += batchSize) { const batch = idsToCheck.slice(i, i + batchSize); const url = `https://www.googleapis.com/youtube/v3/videos?key=${this.youtube.apiKey}&part=id&id=${batch.join(',')}`; try { const res = await fetch(url); const json = await res.json(); if (json.items) json.items.forEach(item => validIds.add(item.id)); } catch (e) { console.error("Scan error", e); } } const brokenItems = []; idsToCheck.forEach(id => { if (!validIds.has(id)) brokenItems.push(...idMap[id]); }); document.getElementById('search-title').innerText = `Found ${brokenItems.length} Broken / Private Links`; if (brokenItems.length === 0) { list.innerHTML = `<div class="p-8 text-center text-green-500 mono">All links are active and public!</div>`; return; } let csvContent = "data:text/csv;charset=utf-8,TITLE,TOPIC,URL\n"; brokenItems.forEach(row => { csvContent += `"${row['TITLE OF VIDEO']}","${row.TOPIC}","${row.URL}"\n`; }); const encodedUri = encodeURI(csvContent); document.getElementById('download-area').innerHTML = ` <a href="${encodedUri}" download="bad_links_report.csv" class="px-4 py-2 bg-red-900/30 text-red-400 border border-red-900 rounded text-xs font-bold uppercase tracking-widest hover:bg-red-900 hover:text-white transition-all flex items-center gap-2"> <i class="fa-solid fa-download"></i> Download Report (.csv) </a> `; list.innerHTML = brokenItems.map(l => ` <div class="p-4 border-b border-red-900/30 flex justify-between items-center group hover:bg-red-900/10 transition-colors"> <div class="flex items-center gap-4"> <div class="w-12 h-9 bg-red-900/20 rounded flex items-center justify-center text-red-500"><i class="fa-solid fa-link-slash"></i></div> <div> <div class="text-[9px] text-red-400 uppercase tracking-widest mb-1">Video Deleted / Private</div> <h4 class="text-sm text-white font-medium">${l['TITLE OF VIDEO']}</h4> <p class="text-[10px] text-gray-600 font-mono mt-1">${l.TOPIC}</p> </div> </div> <a href="${l.URL}" target="_blank" class="text-gray-500 text-xs font-bold uppercase tracking-widest hover:text-white">CHECK ↗</a> </div>` ).join(''); },
+            renderSocialGallery: function() { const grid = document.getElementById('social-gallery-grid'); if(!grid) return; const placeholders = ['Community Photos', 'Recent Events', 'Group Media', 'Shared Memories', 'Discussion Archives', 'Latest Uploads']; grid.innerHTML = placeholders.map(p => ` <a href="https://www.facebook.com/groups/356472414984195/media" target="_blank" class="cosmos-card group cursor-pointer block min-h-[200px]"> <div class="relative h-40 bg-[#111] flex items-center justify-center overflow-hidden"> <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60"></div> <i class="fa-brands fa-facebook text-5xl text-[#1877F2] opacity-30 group-hover:scale-110 group-hover:opacity-60 transition-all duration-500"></i> </div> <div class="p-4 border-t border-white/10 bg-[#0A0A0A]"> <h3 class="text-sm text-gray-200 group-hover:text-white mb-1">${p}</h3> <p class="text-[10px] text-purple-400 font-bold uppercase tracking-widest group-hover:text-purple-300">View Gallery ↗</p> </div> </a>` ).join(''); },
+            togglePlayPause: function() { const text = document.getElementById('ai-text-output').innerText; if (!('speechSynthesis' in window) || !text) return; const playPauseBtn = document.getElementById('play-pause-btn'); const stopBtn = document.getElementById('stop-btn'); if (this.isSpeaking) { speechSynthesis.pause(); this.isSpeaking = false; playPauseBtn.innerHTML = '<i class="fa-solid fa-play"></i> Play'; } else { if (this.currentUtterance && speechSynthesis.paused) { speechSynthesis.resume(); } else { this.currentUtterance = new SpeechSynthesisUtterance(text); const voices = speechSynthesis.getVoices(); let selectedVoice = voices.find(v => v.name.includes("David") && v.name.includes("Microsoft")); if (!selectedVoice) selectedVoice = voices.find(v => v.name === "Alex"); if (!selectedVoice) selectedVoice = voices.find(v => v.lang === "en-US" && (v.name.includes("Male") || v.gender === 'male')); if (!selectedVoice) selectedVoice = voices.find(v => v.lang === "en-US"); if (selectedVoice) this.currentUtterance.voice = selectedVoice; this.currentUtterance.rate = 0.9; this.currentUtterance.pitch = 0.8; this.currentUtterance.onend = () => { this.isSpeaking = false; playPauseBtn.innerHTML = '<i class="fa-solid fa-play"></i> Play'; stopBtn.classList.add('hidden'); }; speechSynthesis.speak(this.currentUtterance); } this.isSpeaking = true; playPauseBtn.innerHTML = '<i class="fa-solid fa-pause"></i> Pause'; stopBtn.classList.remove('hidden'); } },
             stopAudio: function() { if (this.currentUtterance) { speechSynthesis.cancel(); this.currentUtterance = null; this.isSpeaking = false; document.getElementById('play-pause-btn').innerHTML = '<i class="fa-solid fa-play"></i> Play'; document.getElementById('stop-btn').classList.add('hidden'); } },
             nav: function(id) { document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active')); document.querySelectorAll('.dock-btn').forEach(b => b.classList.remove('active')); const target = document.getElementById('view-' + id); if(target) target.classList.add('active'); const btn = document.getElementById('btn-' + id); if(btn) btn.classList.add('active'); if(id !== 'search') document.getElementById('global-search').value = ''; window.scrollTo(0,0); },
             showView: function(id) { this.nav(id); },
