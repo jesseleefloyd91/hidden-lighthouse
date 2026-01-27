@@ -223,7 +223,7 @@
                     </div>
                 </div>
                 <div class="max-w-lg mx-auto relative group w-full mb-8 px-4">
-                    <input type="text" id="ai-input" placeholder="Ask the Teacher (e.g. 'Pineal')..."
+                    <input type="text" id="ai-input" placeholder="Ask (e.g. 'Pineal')..."
                            class="w-full bg-white/5 border border-white/10 rounded-full py-4 pl-8 pr-16 text-sm text-white placeholder-stone-500 focus:outline-none focus:border-purple-400 font-mono transition-all backdrop-blur-md"
                            onkeydown="if(event.key === 'Enter') window.app.performAISearch()">
                     <button onclick="window.app.performAISearch()" class="absolute right-6 top-2 bottom-2 bg-purple-600 text-white w-10 rounded-full flex items-center justify-center hover:bg-white hover:text-black transition-colors shadow-lg">
@@ -427,16 +427,16 @@
             }
         }
         
-       window.app = {
+        window.app = {
             data: [], // CSV Data (The "Catalog")
             transcriptData: null, // The "Brain" (transcripts.json)
             currentUtterance: null,
             isSpeaking: false,
            
-            // --- UPDATED: BULLETPROOF ID EXTRACTOR ---
+            // --- HELPER: Extract ID from various Youtube URL formats ---
             getVideoID: function(url) {
                 if (!url) return null;
-                const str = url.toString().trim(); // CRITICAL: Remove spaces
+                const str = url.toString().trim();
                 
                 // 1. If it's just the 11-character ID, return it immediately
                 if (/^[a-zA-Z0-9_-]{11}$/.test(str)) return str;
@@ -448,16 +448,26 @@
             },
 
             // --- HELPER: Get Topic for a Video ID ---
-            getTopicByVideoID: function(vidId) {
+            getTopicByVideoID: function(vidId, vidTitle) {
                 if (!this.data || this.data.length === 0) return null;
                 
-                // Find matching row
-                const found = this.data.find(row => {
-                    // We extract the ID from the CSV URL to match the API ID
+                // Method 1: Strict ID Match
+                const matchById = this.data.find(row => {
                     const csvId = this.getVideoID(row.URL); 
                     return csvId === vidId;
                 });
-                return found ? found.TOPIC : null;
+                if (matchById) return matchById.TOPIC;
+
+                // Method 2: Fuzzy Title Match (Fallback)
+                if (vidTitle) {
+                    const cleanVidTitle = vidTitle.toLowerCase().replace(/[^a-z0-9]/g, '');
+                    const matchByTitle = this.data.find(row => {
+                         const cleanRowTitle = row['TITLE OF VIDEO'].toLowerCase().replace(/[^a-z0-9]/g, '');
+                         return cleanRowTitle.includes(cleanVidTitle) || cleanVidTitle.includes(cleanRowTitle);
+                    });
+                    if (matchByTitle) return matchByTitle.TOPIC;
+                }
+                return null;
             },
 
             // ======================================
@@ -508,13 +518,9 @@
                     }
 
                     grid.innerHTML = this.videos.map(v => {
-                        const topic = window.app.getTopicByVideoID(v.id);
+                        // Pass title for fuzzy match fallback
+                        const topic = window.app.getTopicByVideoID(v.id, v.title);
                         const safeTopic = topic ? topic.replace(/'/g, "\\'").replace(/"/g, '&quot;') : '';
-
-                        // DEBUGGING: Inspect the first few failures
-                        if (!topic && Math.random() < 0.05) {
-                             console.log(`Uncatalogued ID: ${v.id} | Title: ${v.title}`);
-                        }
 
                         return `
                         <div class="cosmos-card group">
@@ -543,58 +549,62 @@
             },
 
             init: function() {
-                createStars();
-                this.setupStarInteractions();
-                this.renderSocialGallery();
-                this.youtube.fetchVideos();
+                // SAFETY: Ensure loader is removed even if scripts fail
+                try {
+                    setTimeout(() => {
+                         const loader = document.getElementById('app-loader');
+                         if(loader) loader.classList.add('hidden');
+                    }, 1000);
+                
+                    createStars();
+                    this.setupStarInteractions();
+                    this.renderSocialGallery();
+                    this.youtube.fetchVideos();
 
-                // Infinite Scroll
-                const wrapper = document.getElementById('scroll-wrapper');
-                wrapper.addEventListener("scroll", () => {
-                    if (wrapper.scrollTop + wrapper.clientHeight >= wrapper.scrollHeight - 800) {
-                        window.app.youtube.fetchVideos();
-                    }
-                });
+                    // Infinite Scroll
+                    const wrapper = document.getElementById('scroll-wrapper');
+                    wrapper.addEventListener("scroll", () => {
+                        if (wrapper.scrollTop + wrapper.clientHeight >= wrapper.scrollHeight - 800) {
+                            window.app.youtube.fetchVideos();
+                        }
+                    });
 
-                // Load CSV
-                Papa.parse('catalog.csv', {
-                    download: true,
-                    header: true,
-                    skipEmptyLines: true,
-                    complete: (results) => {
-                        this.data = results.data.filter(row => {
-                            // Ensure row has TITLE and TOPIC
-                            if (!row['TITLE OF VIDEO'] || !row.TOPIC) return false;
-                            // Ensure row has a valid ID in the 'URL' column
-                            if (!window.app.getVideoID(row.URL)) return false; 
-                            return true;
-                        }).map(row => {
-                             // Clean up the topic string
-                             let cleanTopic = row.TOPIC.trim();
-                             cleanTopic = cleanTopic.replace(/^and\s+/i, ''); 
-                             row.TOPIC = cleanTopic;
-                             return row;
-                        });
+                    // Load CSV
+                    Papa.parse('catalog.csv', {
+                        download: true,
+                        header: true,
+                        skipEmptyLines: true,
+                        complete: (results) => {
+                            this.data = results.data.filter(row => {
+                                // Accept row if it has Title OR Topic OR URL
+                                return (row['TITLE OF VIDEO'] || row.TOPIC || row.URL);
+                            }).map(row => {
+                                 let cleanTopic = row.TOPIC ? row.TOPIC.trim() : "";
+                                 cleanTopic = cleanTopic.replace(/^and\s+/i, ''); 
+                                 row.TOPIC = cleanTopic;
+                                 return row;
+                            });
 
-                        this.renderCategories();
-                        document.getElementById('status-bar').innerText = `${this.data.length} Records Online`;
-                        
-                        // Force re-render of YouTube section to apply tags
-                        this.youtube.renderVideos();
-                    }
-                });
-               
+                            this.renderCategories();
+                            document.getElementById('status-bar').innerText = `${this.data.length} Records Online`;
+                            this.youtube.renderVideos();
+                        }
+                    });
+                } catch(e) {
+                    console.error("Init failed", e);
+                }
+                
                 this.nav('home');
-                setTimeout(() => document.getElementById('app-loader').classList.add('hidden'), 300);
             },
 
             setupStarInteractions: function() { /* (Keep existing star code) */ },
            
             getUniqueTopics: function() {
-                return [...new Set(this.data.map(i => i.TOPIC))].sort((a, b) => a.localeCompare(b));
+                return [...new Set(this.data.map(i => i.TOPIC).filter(t => t))].sort((a, b) => a.localeCompare(b));
             },
 
             getIcon: function(t) {
+                if(!t) return "fa-star";
                 const tl = t.toLowerCase();
                 if(tl.includes("zodiac") || tl.includes("astro")) return "fa-meteor";
                 if(tl.includes("bible") || tl.includes("testament")) return "fa-book-bible";
@@ -639,7 +649,11 @@
                
                 const items = this.data
                     .filter(i => i.TOPIC === topic)
-                    .sort((a, b) => a['TITLE OF VIDEO'].localeCompare(b['TITLE OF VIDEO']));
+                    .sort((a, b) => {
+                        const t1 = a['TITLE OF VIDEO'] || "";
+                        const t2 = b['TITLE OF VIDEO'] || "";
+                        return t1.localeCompare(t2);
+                    });
 
                 document.getElementById('active-category-count').innerText = `${items.length} LECTURES`;
                 const container = document.getElementById('list-container');
@@ -681,8 +695,8 @@
                 this.nav('search');
                 document.getElementById('search-title').innerText = "Archive Matches";
                 const results = this.data.filter(i => 
-                    i['TITLE OF VIDEO'].toLowerCase().includes(q.toLowerCase()) || 
-                    i.TOPIC.toLowerCase().includes(q.toLowerCase())
+                    (i['TITLE OF VIDEO'] && i['TITLE OF VIDEO'].toLowerCase().includes(q.toLowerCase())) || 
+                    (i.TOPIC && i.TOPIC.toLowerCase().includes(q.toLowerCase()))
                 );
                
                 document.getElementById('search-list').innerHTML = results.map(l => {
@@ -715,7 +729,6 @@
                 document.getElementById('download-area').innerHTML = ''; 
                 list.innerHTML = '<div class="text-center p-8"><i class="fa-solid fa-circle-notch fa-spin text-purple-500 text-2xl"></i><p class="mt-4 text-stone-400 text-xs font-mono uppercase tracking-widest">Verifying with YouTube API...</p></div>';
 
-                // 1. Gather all IDs
                 const allItems = this.data.filter(i => i.URL && i.URL.includes('http'));
                 const idMap = {}; 
                 const idsToCheck = [];
@@ -723,15 +736,11 @@
                 allItems.forEach(item => {
                     const id = this.getVideoID(item.URL);
                     if (id) {
-                        if (!idMap[id]) {
-                            idMap[id] = [];
-                            idsToCheck.push(id);
-                        }
+                        if (!idMap[id]) { idMap[id] = []; idsToCheck.push(id); }
                         idMap[id].push(item);
                     }
                 });
 
-                // 2. Batch Requests (50 at a time)
                 const batchSize = 50;
                 const validIds = new Set();
 
@@ -741,23 +750,15 @@
                     try {
                         const res = await fetch(url);
                         const json = await res.json();
-                        if (json.items) {
-                            json.items.forEach(item => validIds.add(item.id));
-                        }
-                    } catch (e) {
-                        console.error("Scan error", e);
-                    }
+                        if (json.items) json.items.forEach(item => validIds.add(item.id));
+                    } catch (e) { console.error("Scan error", e); }
                 }
 
-                // 3. Determine Broken Links (IDs we sent but didn't get back)
                 const brokenItems = [];
                 idsToCheck.forEach(id => {
-                    if (!validIds.has(id)) {
-                        brokenItems.push(...idMap[id]);
-                    }
+                    if (!validIds.has(id)) brokenItems.push(...idMap[id]);
                 });
 
-                // 4. Render Results
                 document.getElementById('search-title').innerText = `Found ${brokenItems.length} Broken / Private Links`;
                 
                 if (brokenItems.length === 0) {
@@ -765,12 +766,8 @@
                     return;
                 }
 
-                // 5. ENABLE EXPORT
-                // Create CSV Content
                 let csvContent = "data:text/csv;charset=utf-8,TITLE,TOPIC,URL\n";
-                brokenItems.forEach(row => {
-                    csvContent += `"${row['TITLE OF VIDEO']}","${row.TOPIC}","${row.URL}"\n`;
-                });
+                brokenItems.forEach(row => { csvContent += `"${row['TITLE OF VIDEO']}","${row.TOPIC}","${row.URL}"\n`; });
                 const encodedUri = encodeURI(csvContent);
                 
                 document.getElementById('download-area').innerHTML = `
@@ -782,9 +779,7 @@
                 list.innerHTML = brokenItems.map(l => `
                     <div class="p-4 border-b border-red-900/30 flex justify-between items-center group hover:bg-red-900/10 transition-colors">
                         <div class="flex items-center gap-4">
-                            <div class="w-12 h-9 bg-red-900/20 rounded flex items-center justify-center text-red-500">
-                                <i class="fa-solid fa-link-slash"></i>
-                            </div>
+                            <div class="w-12 h-9 bg-red-900/20 rounded flex items-center justify-center text-red-500"><i class="fa-solid fa-link-slash"></i></div>
                             <div>
                                 <div class="text-[9px] text-red-400 uppercase tracking-widest mb-1">Video Deleted / Private</div>
                                 <h4 class="text-sm text-white font-medium">${l['TITLE OF VIDEO']}</h4>
@@ -796,30 +791,24 @@
                 ).join('');
             },
 
-            // --- RENDER SOCIAL (SIMULATED GALLERY) ---
             renderSocialGallery: function() {
                 const grid = document.getElementById('social-gallery-grid');
                 if(!grid) return;
-                let html = '';
                 const placeholders = ['Community Photos', 'Recent Events', 'Group Media', 'Shared Memories', 'Discussion Archives', 'Latest Uploads'];
-                
-                for(let i=0; i<6; i++) {
-                    html += `
+                grid.innerHTML = placeholders.map(p => `
                     <a href="https://www.facebook.com/groups/356472414984195/media" target="_blank" class="cosmos-card group cursor-pointer block min-h-[200px]">
                         <div class="relative h-40 bg-[#111] flex items-center justify-center overflow-hidden">
                             <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60"></div>
                             <i class="fa-brands fa-facebook text-5xl text-[#1877F2] opacity-30 group-hover:scale-110 group-hover:opacity-60 transition-all duration-500"></i>
                         </div>
                         <div class="p-4 border-t border-white/10 bg-[#0A0A0A]">
-                            <h3 class="text-sm text-gray-200 group-hover:text-white mb-1">${placeholders[i]}</h3>
+                            <h3 class="text-sm text-gray-200 group-hover:text-white mb-1">${p}</h3>
                             <p class="text-[10px] text-purple-400 font-bold uppercase tracking-widest group-hover:text-purple-300">View Gallery ↗</p>
                         </div>
-                    </a>`;
-                }
-                grid.innerHTML = html;
+                    </a>`
+                ).join('');
             },
 
-            // --- AI VOICE: AMERICAN PROFESSOR ---
             togglePlayPause: function() {
                 const text = document.getElementById('ai-text-output').innerText;
                 if (!('speechSynthesis' in window) || !text) return;
@@ -838,17 +827,12 @@
                         this.currentUtterance = new SpeechSynthesisUtterance(text);
                         const voices = speechSynthesis.getVoices();
                         
-                        // VOICE STRATEGY: AMERICAN MALE
                         let selectedVoice = voices.find(v => v.name.includes("David") && v.name.includes("Microsoft"));
                         if (!selectedVoice) selectedVoice = voices.find(v => v.name === "Alex");
                         if (!selectedVoice) selectedVoice = voices.find(v => v.lang === "en-US" && (v.name.includes("Male") || v.gender === 'male'));
-                        
-                        // Fallback to anything US
                         if (!selectedVoice) selectedVoice = voices.find(v => v.lang === "en-US");
 
                         if (selectedVoice) this.currentUtterance.voice = selectedVoice;
-                        
-                        // PROFESSOR SETTINGS: Steady, slightly deeper
                         this.currentUtterance.rate = 0.9; 
                         this.currentUtterance.pitch = 0.8; 
 
@@ -865,7 +849,6 @@
                 }
             },
            
-            // --- UPDATED AI SEARCH TO USE TRANSCRIPT BRAIN ---
             performAISearch: async function() {
                 const input = document.getElementById('ai-input');
                 const q = (input ? input.value : '').trim();
@@ -877,11 +860,9 @@
                 const aiText = document.getElementById('ai-text-output');
                 aiBox.classList.remove('hidden');
                 
-                // 1. Initial State
                 aiText.innerText = "Consulting the archives...";
-                this.search(q); // Run standard title search
+                this.search(q);
 
-                // 2. Load the Brain (Lazy Load - only happens on first search)
                 if (!this.transcriptData) {
                     try {
                         const response = await fetch('transcripts.json');
@@ -891,7 +872,6 @@
                             throw new Error("File not found");
                         }
                     } catch (e) {
-                        // Fallback to simulation if brain file is missing
                         console.warn("Brain not found, using simulation");
                         setTimeout(() => {
                             let resp = `The hidden meaning of "${q}" is found within the biological processes...`;
@@ -901,7 +881,6 @@
                     }
                 }
 
-                // 3. Search the Brain
                 aiText.innerText = "Scanning transcripts...";
                 const searchTerms = q.toLowerCase().split(' ');
                 let bestMatch = null;
@@ -926,7 +905,6 @@
                     }
                 });
 
-                // 4. Display Result
                 if (bestMatch && highestScore > 0) {
                     aiText.innerText = `In "${bestMatch.title}", the Teacher says: "${snippet}"`;
                 } else {
@@ -961,3 +939,7 @@
                 document.getElementById('anatomy-desc').innerText = d;
             }
         };
+        window.onload = () => app.init();
+    </script>
+</body>
+</html>
