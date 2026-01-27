@@ -51,12 +51,14 @@
         /* CARDS */
         .masonry-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 16px;
             padding-bottom: 140px;
         }
         @media (max-width: 640px) {
-            .masonry-grid { grid-template-columns: 1fr; }
+            .masonry-grid {
+                grid-template-columns: 1fr; /* Single column on mobile */
+            }
         }
 
         .cosmos-card {
@@ -96,7 +98,8 @@
             background: rgba(10, 10, 10, 0.95); backdrop-filter: blur(20px);
             border: 1px solid rgba(255,255,255,0.15); padding: 8px; border-radius: 20px;
             display: flex; gap: 4px; box-shadow: 0 20px 40px -10px rgba(0,0,0,0.9); pointer-events: auto;
-            max-width: 100%; overflow-x: auto; scrollbar-width: none;
+            max-width: 100%; overflow-x: auto; /* Scrollable on mobile */
+            scrollbar-width: none; /* Hide scrollbar */
         }
         .dock::-webkit-scrollbar { display: none; }
         
@@ -109,7 +112,7 @@
         .dock-btn:hover { color: white; background: rgba(255,255,255,0.1); }
         .dock-btn.active { background: white; color: black; box-shadow: 0 0 15px rgba(255,255,255,0.2); }
 
-        /* ANATOMY SPECIFIC */
+        /* ANATOMY */
         .anatomy-wrapper {
             position: relative; width: 300px; height: 650px;
             border: 1px solid rgba(255,255,255,0.1);
@@ -118,6 +121,7 @@
             box-shadow: 0 0 80px -20px rgba(168,85,247,0.15);
             transition: box-shadow 0.5s ease;
         }
+        /* Mobile Scaling for Anatomy */
         @media (max-width: 768px) {
             .anatomy-scale-container { transform: scale(0.75); transform-origin: top center; height: 500px; }
         }
@@ -133,7 +137,7 @@
             transform: translateX(-50%) scale(1.5);
             border-color: white;
         }
-        
+
         /* SEARCH */
         .search-input {
             background: rgba(20, 20, 20, 0.8); backdrop-filter: blur(10px);
@@ -195,6 +199,15 @@
     <div id="app-loader" class="fixed inset-0 bg-[#050505] z-[100] flex flex-col items-center justify-center transition-opacity duration-500">
         <div class="w-12 h-12 border-2 border-purple-500/30 border-t-purple-400 rounded-full animate-spin mb-4"></div>
         <p class="text-purple-300 text-xs uppercase tracking-[0.3em] font-bold animate-pulse">Initializing...</p>
+    </div>
+
+    <div id="video-modal" class="fixed inset-0 z-[60] bg-black/95 backdrop-blur-xl hidden flex items-center justify-center p-4 transition-all duration-300" onclick="if(event.target === this) window.app.closeVideo()">
+        <div class="relative w-full max-w-6xl aspect-video bg-black border border-white/10 rounded-2xl overflow-hidden shadow-2xl flex flex-col">
+            <button onclick="window.app.closeVideo()" class="absolute top-4 right-4 z-50 w-10 h-10 bg-black/50 text-white rounded-full hover:bg-red-600 transition-colors flex items-center justify-center border border-white/20 backdrop-blur-md">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div id="video-frame-container" class="w-full h-full bg-black"></div>
+        </div>
     </div>
 
     <div class="h-screen overflow-y-auto custom-scrollbar" id="scroll-wrapper">
@@ -368,9 +381,9 @@
             <div id="ai-box" class="mb-12 bg-white/5 p-8 border-l-4 border-purple-500 hidden rounded-xl fade-in">
                 <div class="flex justify-between items-start mb-4">
                     <span class="text-purple-400 font-mono text-[10px] uppercase tracking-widest block">Teacher's Insight</span>
-                    <a id="ai-video-link" href="#" target="_blank" class="hidden text-[10px] bg-purple-600 text-white px-3 py-1 rounded-full hover:bg-white hover:text-black transition-colors font-bold uppercase tracking-widest">
+                    <button id="ai-video-link" onclick="" class="hidden text-[10px] bg-purple-600 text-white px-3 py-1 rounded-full hover:bg-white hover:text-black transition-colors font-bold uppercase tracking-widest">
                         <i class="fa-solid fa-play mr-1"></i> Watch Video
-                    </a>
+                    </button>
                 </div>
                 
                 <div id="ai-text-output" class="text-stone-200 text-lg md:text-xl leading-relaxed italic font-light mb-6 font-serif"></div>
@@ -594,6 +607,21 @@
                 document.getElementById('ana-title').style.color = data.color;
             },
 
+            // --- VIDEO PLAYER MODAL ---
+            openVideo: function(id) {
+                const modal = document.getElementById('video-modal');
+                const container = document.getElementById('video-frame-container');
+                container.innerHTML = `<iframe src="https://www.youtube.com/embed/${id}?autoplay=1&rel=0" class="w-full h-full" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+                modal.classList.remove('hidden');
+            },
+
+            closeVideo: function() {
+                const modal = document.getElementById('video-modal');
+                const container = document.getElementById('video-frame-container');
+                container.innerHTML = ''; // Stop audio
+                modal.classList.add('hidden');
+            },
+
             youtube: {
                 apiKey: "AIzaSyCZfKNXHgjZG1h13QhDH5-ubtVC0xDPfe4",
                 uploadsPlaylistId: "UUinvwSeMdmuuzyMWrS0tGTg",
@@ -635,7 +663,7 @@
                         return `
                         <div class="cosmos-card group">
                             <div class="relative aspect-video overflow-hidden cursor-pointer" 
-                                onclick="window.open('https://www.youtube.com/watch?v=${v.id}', '_blank')">
+                                onclick="window.app.openVideo('${v.id}')">
                                 <img src="${v.thumbnail}" class="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
                                 <div class="absolute inset-0 flex items-center justify-center">
                                     <i class="fa-solid fa-play text-4xl text-white opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-lg"></i>
@@ -646,7 +674,7 @@
                                 <div class="mt-auto pt-2 border-t border-white/5">
                                     ${topic ? 
                                         `<button class="inline-flex items-center gap-2 text-[9px] font-bold uppercase tracking-widest text-purple-300 bg-purple-900/20 border border-purple-500/30 px-3 py-1.5 rounded hover:bg-purple-500 hover:text-white transition-all w-full justify-center" 
-                                               onclick="window.app.openTopic('${safeTopic}')">
+                                               onclick="event.stopPropagation(); window.app.openTopic('${safeTopic}')">
                                             <i class="fa-solid fa-tag"></i> ${topic}
                                          </button>` 
                                         : `<span class="text-[9px] text-stone-600 font-mono uppercase tracking-widest block text-center py-1.5 opacity-30">Uncatalogued</span>`
@@ -695,7 +723,6 @@
                 } catch(e) { console.error("Init failed", e); }
                 this.nav('home');
                 
-                // Allow "Enter" key on input if performAISearch is waiting for it
                 document.getElementById('ai-input').addEventListener('keypress', function (e) {
                     if (e.key === 'Enter') {
                         window.app.performAISearch();
@@ -706,7 +733,6 @@
             setupStarInteractions: function() { /* (Keep existing star code) */ },
             getUniqueTopics: function() { return [...new Set(this.data.map(i => i.TOPIC).filter(t => t))].sort((a, b) => a.localeCompare(b)); },
             
-            // --- ICON MAPPING ---
             getIcon: function(t) {
                 if(!t) return "fa-star";
                 const tl = t.toLowerCase();
@@ -734,19 +760,16 @@
             },
 
             renderCategories: function() { const topics = this.getUniqueTopics(); const grid = document.getElementById('category-grid'); document.getElementById('total-topics-display').innerText = `${topics.length} Categories`; grid.innerHTML = topics.map((t, i) => { const count = this.data.filter(d => d.TOPIC === t).length; const icon = this.getIcon(t); const safeTopic = t.replace(/'/g, "\\'").replace(/"/g, '&quot;'); return ` <div onclick="window.app.openTopic('${safeTopic}')" class="cosmos-card topic-card p-6 group"> <div class="flex justify-between items-start mb-4"> <span class="text-xs font-mono text-gray-500">${String(i+1).padStart(2, '0')}</span> <i class="fa-solid ${icon} text-gray-600 group-hover:text-purple-400 transition-colors text-lg"></i> </div> <h3 class="text-sm font-medium text-gray-200 leading-snug mb-8 group-hover:text-white line-clamp-3">${t}</h3> <div class="flex justify-between items-end border-t border-white/10 pt-3 mt-auto"> <span class="text-[9px] text-gray-500 font-bold uppercase tracking-widest">${count} Items</span> <span class="text-purple-400 opacity-50 group-hover:opacity-100 transition-opacity">→</span> </div> </div> `; }).join(''); },
-            openTopic: function(topic) { this.nav('list'); document.getElementById('active-category-title').innerText = topic; const items = this.data.filter(i => i.TOPIC === topic).sort((a, b) => { const t1 = a['TITLE OF VIDEO'] || ""; const t2 = b['TITLE OF VIDEO'] || ""; return t1.localeCompare(t2); }); document.getElementById('active-category-count').innerText = `${items.length} LECTURES`; const container = document.getElementById('list-container'); container.innerHTML = items.map(l => { const vidId = this.getVideoID(l.URL); const hasUrl = !!vidId; const thumbUrl = vidId ? `https://img.youtube.com/vi/${vidId}/mqdefault.jpg` : null; return ` <div class="p-3 border border-white/10 rounded-lg flex gap-4 items-center hover:bg-white/5 transition-all group mb-2 bg-[#0A0A0A]"> <div class="w-24 h-16 bg-black shrink-0 rounded overflow-hidden relative border border-white/10"> ${thumbUrl ? `<img src="${thumbUrl}" class="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity">` : `<div class="w-full h-full flex items-center justify-center text-gray-700"><i class="fa-solid fa-ban"></i></div>` } </div> <div class="flex-1 min-w-0"> <h4 class="text-sm font-medium text-gray-300 group-hover:text-white truncate pr-4">${l['TITLE OF VIDEO']}</h4> <p class="text-[10px] text-gray-600 font-mono mt-1 truncate">ID: ${vidId || 'N/A'}</p> </div> <div class="shrink-0"> ${hasUrl ? `<a href="${l.URL}" target="_blank" class="w-8 h-8 rounded-full border border-purple-500/30 flex items-center justify-center text-purple-400 hover:bg-purple-500 hover:text-white transition-all"> <i class="fa-solid fa-play text-xs pl-0.5"></i> </a>` : `<span class="text-[9px] text-gray-600 font-bold uppercase tracking-widest border border-white/10 px-2 py-1 rounded">Missing</span>` } </div> </div> `; }).join(''); },
+            openTopic: function(topic) { this.nav('list'); document.getElementById('active-category-title').innerText = topic; const items = this.data.filter(i => i.TOPIC === topic).sort((a, b) => { const t1 = a['TITLE OF VIDEO'] || ""; const t2 = b['TITLE OF VIDEO'] || ""; return t1.localeCompare(t2); }); document.getElementById('active-category-count').innerText = `${items.length} LECTURES`; const container = document.getElementById('list-container'); container.innerHTML = items.map(l => { const vidId = this.getVideoID(l.URL); const hasUrl = !!vidId; const thumbUrl = vidId ? `https://img.youtube.com/vi/${vidId}/mqdefault.jpg` : null; return ` <div class="p-3 border border-white/10 rounded-lg flex gap-4 items-center hover:bg-white/5 transition-all group mb-2 bg-[#0A0A0A]"> <div class="w-24 h-16 bg-black shrink-0 rounded overflow-hidden relative border border-white/10 cursor-pointer" onclick="window.app.openVideo('${vidId}')"> ${thumbUrl ? `<img src="${thumbUrl}" class="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity">` : `<div class="w-full h-full flex items-center justify-center text-gray-700"><i class="fa-solid fa-ban"></i></div>` } <div class="absolute inset-0 flex items-center justify-center pointer-events-none"> <i class="fa-solid fa-play text-2xl text-white opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-lg"></i> </div> </div> <div class="flex-1 min-w-0"> <h4 class="text-sm font-medium text-gray-300 group-hover:text-white truncate pr-4 cursor-pointer" onclick="window.app.openVideo('${vidId}')">${l['TITLE OF VIDEO']}</h4> <p class="text-[10px] text-gray-600 font-mono mt-1 truncate">ID: ${vidId || 'N/A'}</p> </div> <div class="shrink-0"> ${hasUrl ? `<button onclick="window.app.openVideo('${vidId}')" class="w-8 h-8 rounded-full border border-purple-500/30 flex items-center justify-center text-purple-400 hover:bg-purple-500 hover:text-white transition-all"> <i class="fa-solid fa-play text-xs pl-0.5"></i> </button>` : `<span class="text-[9px] text-gray-600 font-bold uppercase tracking-widest border border-white/10 px-2 py-1 rounded">Missing</span>` } </div> </div> `; }).join(''); },
             
             // --- UNIFIED SEARCH: TITLES + TRANSCRIPTS ---
             performAISearch: async function() {
                 const input = document.getElementById('ai-input');
                 let q = (input ? input.value : '').trim();
-                
-                // If input is empty, maybe they typed in global search
                 if (!q) {
                     const global = document.getElementById('global-search');
                     q = global ? global.value.trim() : '';
                 }
-                
                 if (!q) return;
                 if (input) input.value = '';
                 
@@ -754,17 +777,14 @@
                 const aiBox = document.getElementById('ai-box');
                 const aiText = document.getElementById('ai-text-output');
                 const aiLink = document.getElementById('ai-video-link');
-                const grid = document.getElementById('search-list');
                 
                 aiBox.classList.remove('hidden');
                 aiText.innerText = "Consulting the archives...";
                 aiLink.classList.add('hidden');
                 
-                // 1. Prepare Results Array
                 let combinedResults = [];
-                const searchTerms = q.toLowerCase().split(/\s+/); // Split by space for multi-word matching
+                const searchTerms = q.toLowerCase().split(/\s+/); 
 
-                // 2. CSV Search (Title Matches)
                 this.data.forEach(row => {
                     const title = row['TITLE OF VIDEO'].toLowerCase();
                     const topic = row.TOPIC.toLowerCase();
@@ -776,14 +796,13 @@
                             id: vidId,
                             title: row['TITLE OF VIDEO'],
                             topic: row.TOPIC,
-                            snippet: null, // No text snippet for title match
-                            score: 9999, // High priority
+                            snippet: null, 
+                            score: 9999, 
                             url: url
                         });
                     }
                 });
 
-                // 3. Transcript Search
                 if (!this.transcriptData) {
                     try {
                         const response = await fetch('transcripts.json');
@@ -795,7 +814,6 @@
                     } catch (e) {
                         console.warn("Brain not found, using simulation");
                         aiText.innerText = `The hidden meaning of "${q}" is found within the biological processes...`;
-                        // Keep rendering title matches found so far
                         this.renderSearchResults(combinedResults, q);
                         return;
                     }
@@ -810,36 +828,29 @@
                     const text = video.content.toLowerCase();
                     let score = 0;
                     
-                    // Simple frequency count
                     searchTerms.forEach(term => {
                         const count = (text.match(new RegExp(term, "g")) || []).length;
                         score += count;
                     });
 
                     if (score > 0) {
-                        // Create Snippet
                         const idx = text.indexOf(searchTerms[0]);
-                        
-                        // Smart Windowing
-                        const windowStart = Math.max(0, idx - 100);
-                        const windowEnd = Math.min(text.length, idx + 200);
+                        const windowStart = Math.max(0, idx - 150);
+                        const windowEnd = Math.min(text.length, idx + 250);
                         let rawSnippet = text.substring(windowStart, windowEnd);
                         
-                        // Clean edges
-                        const firstSpace = rawSnippet.indexOf(' ');
-                        const lastSpace = rawSnippet.lastIndexOf(' ');
-                        if(firstSpace !== -1 && lastSpace !== -1) {
-                            rawSnippet = rawSnippet.substring(firstSpace + 1, lastSpace);
-                        }
+                        // Smart trimming
+                        const firstPeriod = rawSnippet.indexOf('. ');
+                        if (firstPeriod !== -1 && firstPeriod < 100) rawSnippet = rawSnippet.substring(firstPeriod + 2);
+                        const lastPeriod = rawSnippet.lastIndexOf('.');
+                        if (lastPeriod !== -1 && lastPeriod > rawSnippet.length - 80) rawSnippet = rawSnippet.substring(0, lastPeriod + 1);
                         
-                        // Highlight
                         const highlightSnippet = "..." + rawSnippet + "...";
 
-                        // Check if already in results (deduplicate)
                         const existing = combinedResults.find(r => r.id === video.id);
                         if (existing) {
                             existing.snippet = highlightSnippet;
-                            existing.score += score; // Boost score
+                            existing.score += score; 
                             existing.count = score;
                         } else {
                             combinedResults.push({
@@ -856,21 +867,17 @@
                         if (score > highestScore) {
                             highestScore = score;
                             bestMatch = video;
-                            bestMatch.cleanSnippet = rawSnippet; // For TTS
+                            bestMatch.cleanSnippet = rawSnippet; 
                         }
                     }
                 });
 
-                // 4. Sort by Score (High to Low)
                 combinedResults.sort((a, b) => b.score - a.score);
-
-                // 5. Render Grid
                 this.renderSearchResults(combinedResults, q);
 
-                // 6. Update AI Insight
                 if (bestMatch && highestScore > 0) {
                     aiText.innerText = `In "${bestMatch.title}", the Teacher says: "...${bestMatch.cleanSnippet}..."`;
-                    aiLink.href = `https://www.youtube.com/watch?v=${bestMatch.id}`;
+                    aiLink.onclick = function() { window.app.openVideo(bestMatch.id); };
                     aiLink.classList.remove('hidden');
                 } else if (combinedResults.length > 0) {
                     aiText.innerText = `I found ${combinedResults.length} videos matching "${q}".`;
@@ -881,56 +888,35 @@
                 }
             },
 
-            // --- RENDER SEARCH RESULTS (GRID) ---
             renderSearchResults: function(results, query) {
                 const list = document.getElementById('search-list');
                 const title = document.getElementById('search-title');
-                
                 title.innerText = `${results.length} Matches Found`;
-                
                 if (results.length === 0) {
                     list.innerHTML = `<div class="p-8 text-center text-stone-500 font-mono">No matches found.</div>`;
                     return;
                 }
-
                 list.innerHTML = results.map(r => {
                     const vidId = r.id || this.getVideoID(r.url);
                     const thumbUrl = vidId ? `https://img.youtube.com/vi/${vidId}/mqdefault.jpg` : null;
-                    
-                    // Highlight the keyword in the snippet visually
-                    const displaySnippet = r.snippet 
-                        ? r.snippet.replace(new RegExp(`(${query})`, 'gi'), '<span class="highlight">$1</span>') 
-                        : null;
+                    const displaySnippet = r.snippet ? r.snippet.replace(new RegExp(`(${query})`, 'gi'), '<span class="highlight">$1</span>') : null;
 
                     return `
-                    <div class="cosmos-card p-0 overflow-hidden bg-[#0A0A0A] border border-white/10 rounded-xl group hover:border-purple-500/50 transition-all">
+                    <div class="cosmos-card p-0 overflow-hidden bg-[#0A0A0A] border border-white/10 rounded-xl group hover:border-purple-500/50 transition-all cursor-pointer" onclick="window.app.openVideo('${vidId}')">
                         <div class="flex flex-col h-full">
                             <div class="relative h-40 bg-black overflow-hidden">
-                                ${thumbUrl 
-                                    ? `<img src="${thumbUrl}" class="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity">` 
-                                    : `<div class="w-full h-full flex items-center justify-center text-white/20"><i class="fa-solid fa-play"></i></div>`
-                                }
+                                ${thumbUrl ? `<img src="${thumbUrl}" class="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity">` : `<div class="w-full h-full flex items-center justify-center text-white/20"><i class="fa-solid fa-play"></i></div>`}
+                                <div class="absolute inset-0 flex items-center justify-center"><i class="fa-solid fa-play text-3xl text-white opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-lg"></i></div>
                                 <div class="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black to-transparent">
                                     <h4 class="text-sm font-bold text-white line-clamp-1">${r.title}</h4>
                                 </div>
                             </div>
-                            
                             <div class="p-4 flex-1 flex flex-col">
-                                ${r.count ? 
-                                    `<div class="mb-3">
-                                        <span class="text-[9px] font-bold uppercase tracking-widest text-green-400 bg-green-900/20 px-2 py-1 rounded">
-                                            ${r.count} Mentions
-                                        </span>
-                                    </div>` : ''
-                                }
-                                
-                                <p class="text-xs text-stone-400 leading-relaxed font-serif italic mb-4 line-clamp-4">
-                                    ${displaySnippet || "Matched by Title"}
-                                </p>
-                                
+                                ${r.count ? `<div class="mb-3"><span class="text-[9px] font-bold uppercase tracking-widest text-green-400 bg-green-900/20 px-2 py-1 rounded">${r.count} Mentions</span></div>` : ''}
+                                <p class="text-xs text-stone-400 leading-relaxed font-serif italic mb-4 line-clamp-4">${displaySnippet || "Matched by Title"}</p>
                                 <div class="mt-auto pt-4 border-t border-white/5 flex justify-between items-center">
                                     <span class="text-[9px] text-purple-400 font-bold uppercase tracking-widest">${r.topic || 'General'}</span>
-                                    <a href="${r.url}" target="_blank" class="text-white text-xs hover:text-purple-300"><i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+                                    <span class="text-white text-xs hover:text-purple-300"><i class="fa-solid fa-play"></i> Watch</span>
                                 </div>
                             </div>
                         </div>
