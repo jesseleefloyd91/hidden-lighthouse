@@ -17,8 +17,10 @@
             --border: #222;
             --purple: #D8B4FE;
             --purple-glow: rgba(216, 180, 254, 0.2);
+            --gold: #D4AF37;
             --text-main: #EAEAEA;
             --orange: #FFCC80;
+            --orange-glow: rgba(255, 204, 128, 0.25);
         }
         body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text-main); overflow-x: hidden; height: 100vh; }
         .cinzel { font-family: 'Cinzel', serif; }
@@ -43,6 +45,7 @@
             background: linear-gradient(180deg, rgba(20,20,20,0.85) 0%, rgba(10,10,10,0.98) 100%);
             backdrop-filter: blur(20px);
             border: 1px solid rgba(216, 180, 254, 0.1);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
         }
 
         /* CARDS */
@@ -53,7 +56,9 @@
             padding-bottom: 140px;
         }
         @media (max-width: 640px) {
-            .masonry-grid { grid-template-columns: 1fr; }
+            .masonry-grid {
+                grid-template-columns: 1fr; /* Single column on mobile */
+            }
         }
 
         .cosmos-card {
@@ -74,7 +79,14 @@
             border-color: var(--orange);
             transform: translateY(-4px);
             background: #111;
+            box-shadow: 0 10px 40px -10px var(--orange-glow);
         }
+        .cosmos-card:active {
+            border-color: #FFFFFF;
+            box-shadow: 0 10px 40px -10px rgba(255, 255, 255, 0.25);
+        }
+        .cosmos-card i { transition: transform 0.3s ease; }
+        .cosmos-card:hover i { transform: scale(1.2) rotate(10deg); color: var(--orange); }
 
         /* DOCK */
         .dock-container {
@@ -86,7 +98,8 @@
             background: rgba(10, 10, 10, 0.95); backdrop-filter: blur(20px);
             border: 1px solid rgba(255,255,255,0.15); padding: 8px; border-radius: 20px;
             display: flex; gap: 4px; box-shadow: 0 20px 40px -10px rgba(0,0,0,0.9); pointer-events: auto;
-            max-width: 100%; overflow-x: auto; scrollbar-width: none;
+            max-width: 100%; overflow-x: auto; /* Scrollable on mobile */
+            scrollbar-width: none; /* Hide scrollbar */
         }
         .dock::-webkit-scrollbar { display: none; }
         
@@ -155,9 +168,11 @@
         }
         .diamond-text { transform: skew(15deg); color: var(--purple); text-shadow: 0 0 15px rgba(216, 180, 254, 0.5); }
        
+        /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: var(--bg); }
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--purple); }
     </style>
 </head>
 <body class="flex flex-col min-h-screen">
@@ -678,7 +693,55 @@
 
             setupStarInteractions: function() { /* (Keep existing star code) */ },
             getUniqueTopics: function() { return [...new Set(this.data.map(i => i.TOPIC).filter(t => t))].sort((a, b) => a.localeCompare(b)); },
-            getIcon: function(t) { if(!t) return "fa-star"; const tl = t.toLowerCase(); if(tl.includes("zodiac") || tl.includes("astro")) return "fa-meteor"; if(tl.includes("bible") || tl.includes("testament")) return "fa-book-bible"; if(tl.includes("brain") || tl.includes("mind") || tl.includes("human")) return "fa-brain"; if(tl.includes("meditation") || tl.includes("silence")) return "fa-om"; if(tl.includes("jesus") || tl.includes("christ")) return "fa-cross"; if(tl.includes("alien") || tl.includes("ufo")) return "fa-shuttle-space"; if(tl.includes("sex") || tl.includes("anatomy")) return "fa-dna"; return "fa-star"; },
+            
+            // --- NEW: ROBUST ICON MAPPING ---
+            getIcon: function(t) {
+                if(!t) return "fa-star";
+                const tl = t.toLowerCase();
+                
+                // 1. SPECIFIC MAPPINGS
+                const map = {
+                    "zodiac": "fa-star-of-life", "astrology": "fa-user-astronaut", "constellation": "fa-meteor",
+                    "bible": "fa-book-bible", "scripture": "fa-scroll", "testament": "fa-cross",
+                    "brain": "fa-brain", "mind": "fa-microchip", "pineal": "fa-eye",
+                    "meditation": "fa-om", "silence": "fa-spa", "yoga": "fa-yin-yang",
+                    "jesus": "fa-cross", "christ": "fa-dove", "god": "fa-sun",
+                    "alien": "fa-rocket", "ufo": "fa-shuttle-space", "cosmos": "fa-globe",
+                    "sex": "fa-venus-mars", "anatomy": "fa-heart-pulse", "dna": "fa-dna",
+                    "physics": "fa-atom", "quantum": "fa-circle-nodes", "light": "fa-lightbulb",
+                    "mythology": "fa-dragon", "greek": "fa-landmark", "egypt": "fa-pyramid",
+                    "earth": "fa-earth-americas", "nature": "fa-leaf", "tree": "fa-tree",
+                    "fire": "fa-fire", "water": "fa-water", "air": "fa-wind",
+                    "time": "fa-hourglass-half", "death": "fa-skull", "birth": "fa-baby",
+                    "music": "fa-music", "sound": "fa-wave-square",
+                    "math": "fa-calculator", "number": "fa-hashtag"
+                };
+
+                for(const key in map) {
+                    if(tl.includes(key)) return map[key];
+                }
+
+                // 2. HASH FALLBACK (Guarantees same icon for same topic)
+                const fallbackIcons = [
+                    "fa-infinity", "fa-eye", "fa-fingerprint", "fa-tree", "fa-om", "fa-gavel", 
+                    "fa-flask", "fa-dove", "fa-compass", "fa-key", "fa-microchip", "fa-scale-balanced", 
+                    "fa-star-of-life", "fa-atom", "fa-book-open", "fa-shield-halved", "fa-dungeon", 
+                    "fa-brain", "fa-dna", "fa-fire-flame-curved", "fa-droplet", "fa-wind", "fa-icicles", 
+                    "fa-mountain-sun", "fa-moon", "fa-sun", "fa-meteor", "fa-explosion", "fa-hand-sparkles", 
+                    "fa-wand-magic-sparkles", "fa-scroll", "fa-landmark", "fa-timeline", "fa-clock", 
+                    "fa-unlock", "fa-lightbulb", "fa-puzzle-piece", "fa-chess-knight", "fa-bridge", 
+                    "fa-stairs", "fa-door-open", "fa-cube", "fa-vector-square", "fa-bullseye", 
+                    "fa-route", "fa-signs-post", "fa-book-skull", "fa-ankh"
+                ];
+                
+                let hash = 0;
+                for (let i = 0; i < t.length; i++) {
+                    hash = t.charCodeAt(i) + ((hash << 5) - hash);
+                }
+                const index = Math.abs(hash) % fallbackIcons.length;
+                return fallbackIcons[index];
+            },
+
             renderCategories: function() { const topics = this.getUniqueTopics(); const grid = document.getElementById('category-grid'); document.getElementById('total-topics-display').innerText = `${topics.length} Categories`; grid.innerHTML = topics.map((t, i) => { const count = this.data.filter(d => d.TOPIC === t).length; const icon = this.getIcon(t); const safeTopic = t.replace(/'/g, "\\'").replace(/"/g, '&quot;'); return ` <div onclick="window.app.openTopic('${safeTopic}')" class="cosmos-card topic-card p-6 group"> <div class="flex justify-between items-start mb-4"> <span class="text-xs font-mono text-gray-500">${String(i+1).padStart(2, '0')}</span> <i class="fa-solid ${icon} text-gray-600 group-hover:text-purple-400 transition-colors text-lg"></i> </div> <h3 class="text-sm font-medium text-gray-200 leading-snug mb-8 group-hover:text-white line-clamp-3">${t}</h3> <div class="flex justify-between items-end border-t border-white/10 pt-3 mt-auto"> <span class="text-[9px] text-gray-500 font-bold uppercase tracking-widest">${count} Items</span> <span class="text-purple-400 opacity-50 group-hover:opacity-100 transition-opacity">→</span> </div> </div> `; }).join(''); },
             openTopic: function(topic) { this.nav('list'); document.getElementById('active-category-title').innerText = topic; const items = this.data.filter(i => i.TOPIC === topic).sort((a, b) => { const t1 = a['TITLE OF VIDEO'] || ""; const t2 = b['TITLE OF VIDEO'] || ""; return t1.localeCompare(t2); }); document.getElementById('active-category-count').innerText = `${items.length} LECTURES`; const container = document.getElementById('list-container'); container.innerHTML = items.map(l => { const vidId = this.getVideoID(l.URL); const hasUrl = !!vidId; const thumbUrl = vidId ? `https://img.youtube.com/vi/${vidId}/mqdefault.jpg` : null; return ` <div class="p-3 border border-white/10 rounded-lg flex gap-4 items-center hover:bg-white/5 transition-all group mb-2 bg-[#0A0A0A]"> <div class="w-24 h-16 bg-black shrink-0 rounded overflow-hidden relative border border-white/10"> ${thumbUrl ? `<img src="${thumbUrl}" class="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity">` : `<div class="w-full h-full flex items-center justify-center text-gray-700"><i class="fa-solid fa-ban"></i></div>` } </div> <div class="flex-1 min-w-0"> <h4 class="text-sm font-medium text-gray-300 group-hover:text-white truncate pr-4">${l['TITLE OF VIDEO']}</h4> <p class="text-[10px] text-gray-600 font-mono mt-1 truncate">ID: ${vidId || 'N/A'}</p> </div> <div class="shrink-0"> ${hasUrl ? `<a href="${l.URL}" target="_blank" class="w-8 h-8 rounded-full border border-purple-500/30 flex items-center justify-center text-purple-400 hover:bg-purple-500 hover:text-white transition-all"> <i class="fa-solid fa-play text-xs pl-0.5"></i> </a>` : `<span class="text-[9px] text-gray-600 font-bold uppercase tracking-widest border border-white/10 px-2 py-1 rounded">Missing</span>` } </div> </div> `; }).join(''); },
             search: function(q) { if(!q) return; this.nav('search'); document.getElementById('search-title').innerText = "Archive Matches"; const results = this.data.filter(i => (i['TITLE OF VIDEO'] && i['TITLE OF VIDEO'].toLowerCase().includes(q.toLowerCase())) || (i.TOPIC && i.TOPIC.toLowerCase().includes(q.toLowerCase()))); document.getElementById('search-list').innerHTML = results.map(l => { const vidId = this.getVideoID(l.URL); const safeTopic = l.TOPIC.replace(/'/g, "\\'").replace(/"/g, '&quot;'); return ` <div class="p-4 border-b border-white/10 flex justify-between items-center group hover:bg-white/5 transition-colors"> <div class="flex items-center gap-4"> ${vidId ? `<img src="https://img.youtube.com/vi/${vidId}/default.jpg" class="w-12 h-9 rounded object-cover opacity-50">` : ''} <div> <div class="text-[9px] text-purple-400 font-bold uppercase tracking-widest mb-1 cursor-pointer hover:text-white transition-colors" onclick="window.app.openTopic('${safeTopic}')"> ${l.TOPIC} </div> <h4 class="text-sm text-white font-medium">${l['TITLE OF VIDEO']}</h4> </div> </div> ${l.URL ? `<a href="${l.URL}" target="_blank" class="text-purple-400 text-xs font-bold uppercase tracking-widest hover:text-white">OPEN ↗</a>` : ''} </div>`; }).join(''); },
