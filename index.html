@@ -433,23 +433,29 @@
             currentUtterance: null,
             isSpeaking: false,
            
-            // --- HELPER: Extract ID from various Youtube URL formats ---
+            // --- UPDATED: BULLETPROOF ID EXTRACTOR ---
             getVideoID: function(url) {
                 if (!url) return null;
-                // If it's already an 11-char ID (alphanumeric+dashed), return it
-                if (/^[a-zA-Z0-9_-]{11}$/.test(url.trim())) return url.trim();
-                // Otherwise handle URLs
+                const str = url.toString().trim();
+                
+                // 1. If it's just the 11-character ID, return it immediately
+                if (/^[a-zA-Z0-9_-]{11}$/.test(str)) return str;
+                
+                // 2. Otherwise, try to extract it from a URL
                 const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
-                const match = url.match(regExp);
+                const match = str.match(regExp);
                 return (match && match[2].length === 11) ? match[2] : null;
             },
 
-            // --- HELPER: Get Topic for a Video ID (From CSV Data) ---
+            // --- HELPER: Get Topic for a Video ID ---
             getTopicByVideoID: function(vidId) {
                 if (!this.data || this.data.length === 0) return null;
-                // Fuzzy Search: Find matching ID
+                
+                // Find matching row
                 const found = this.data.find(row => {
-                    const csvId = this.getVideoID(row.URL);
+                    // Ensure we are checking the 'URL' column specifically. 
+                    // IF YOUR CSV COLUMN IS NAMED DIFFERENTLY (e.g. 'Link'), CHANGE 'row.URL' BELOW:
+                    const csvId = this.getVideoID(row.URL); 
                     return csvId === vidId;
                 });
                 return found ? found.TOPIC : null;
@@ -469,7 +475,8 @@
                     if (this.loading) return;
                     this.loading = true;
 
-                    let url = `https://www.googleapis.com/youtube/v3/playlistItems?key=${this.apiKey}&playlistId=${this.uploadsPlaylistId}&part=snippet&maxResults=24`;
+                    // Fetch 50 at a time for better matching odds
+                    let url = `https://www.googleapis.com/youtube/v3/playlistItems?key=${this.apiKey}&playlistId=${this.uploadsPlaylistId}&part=snippet&maxResults=50`;
                     if (this.nextPageToken) url += `&pageToken=${this.nextPageToken}`;
 
                     try {
@@ -494,16 +501,19 @@
                     const grid = document.getElementById("video-grid");
                     if (!grid) return;
                     
-                    // RETRY: If CSV data isn't ready yet, videos will load without tags.
-                    // This forces a re-render if we have videos but no CSV data yet.
-                    if (this.videos.length > 0 && window.app.data.length === 0) {
-                         // We wait silently, because CSV callback will trigger re-render
+                    // RETRY LOGIC: If CSV isn't ready, wait a split second and try again.
+                    if (window.app.data.length === 0 && this.videos.length > 0) {
+                        console.log("Waiting for Catalog to load...");
+                        setTimeout(() => this.renderVideos(), 500);
+                        return; 
                     }
 
                     grid.innerHTML = this.videos.map(v => {
                         const topic = window.app.getTopicByVideoID(v.id);
-                        // Escaping for onclick
                         const safeTopic = topic ? topic.replace(/'/g, "\\'").replace(/"/g, '&quot;') : '';
+
+                        // Debugging: Uncomment this line if you still see "Uncatalogued" to see what IDs are failing
+                        // if(!topic) console.log("Failed to match YouTube ID:", v.id);
 
                         return `
                         <div class="cosmos-card group">
@@ -535,11 +545,9 @@
                 createStars();
                 this.setupStarInteractions();
                 this.renderSocialGallery();
-                
-                // 1. Start loading YouTube videos
                 this.youtube.fetchVideos();
 
-                // 2. Setup Infinite Scroll
+                // Infinite Scroll
                 const wrapper = document.getElementById('scroll-wrapper');
                 wrapper.addEventListener("scroll", () => {
                     if (wrapper.scrollTop + wrapper.clientHeight >= wrapper.scrollHeight - 800) {
@@ -547,33 +555,24 @@
                     }
                 });
 
-                // 3. Load CSV (The "Catalog")
+                // Load CSV
                 Papa.parse('catalog.csv', {
                     download: true,
                     header: true,
                     skipEmptyLines: true,
                     complete: (results) => {
-                        this.data = results.data
-                            .filter(row => {
-                                const t = row['TITLE OF VIDEO'];
-                                const top = row.TOPIC;
-                                if (!t || !t.trim() || !top || !top.trim()) return false;
-                                // Allow if it has URL OR if it has ID.
-                                // We check if getVideoID returns something valid
-                                if (!window.app.getVideoID(row.URL)) return false;
-                                return true;
-                            })
-                            .map(row => {
-                                let cleanTopic = row.TOPIC.trim();
-                                cleanTopic = cleanTopic.replace(/^and\s+/i, ''); 
-                                row.TOPIC = cleanTopic;
-                                return row;
-                            });
+                        this.data = results.data.filter(row => {
+                            // Ensure row has TITLE and TOPIC
+                            if (!row['TITLE OF VIDEO'] || !row.TOPIC) return false;
+                            // Ensure row has a valid ID in the 'URL' column
+                            if (!window.app.getVideoID(row.URL)) return false; 
+                            return true;
+                        });
 
                         this.renderCategories();
                         document.getElementById('status-bar').innerText = `${this.data.length} Records Online`;
                         
-                        // CRITICAL: Re-render YouTube section now that we have the Topic Map
+                        // Force re-render of YouTube section to apply tags
                         this.youtube.renderVideos();
                     }
                 });
@@ -582,7 +581,7 @@
                 setTimeout(() => document.getElementById('app-loader').classList.add('hidden'), 300);
             },
 
-            setupStarInteractions: function() { /* (Keep star code) */ },
+            setupStarInteractions: function() { /* (Keep existing star code) */ },
            
             getUniqueTopics: function() {
                 return [...new Set(this.data.map(i => i.TOPIC))].sort((a, b) => a.localeCompare(b));
@@ -626,7 +625,6 @@
                 }).join('');
             },
 
-            // --- UPDATED LIST VIEW WITH THUMBNAILS ---
             openTopic: function(topic) {
                 this.nav('list');
                 document.getElementById('active-category-title').innerText = topic;
@@ -700,7 +698,6 @@
                 }).join('');
             },
 
-            // --- NEW: API-BASED SCAN FOR BROKEN LINKS ---
             scanForBrokenLinks: async function() {
                 this.nav('search');
                 document.getElementById('search-title').innerText = "Scanning YouTube Status...";
@@ -709,7 +706,6 @@
                 document.getElementById('download-area').innerHTML = ''; 
                 list.innerHTML = '<div class="text-center p-8"><i class="fa-solid fa-circle-notch fa-spin text-purple-500 text-2xl"></i><p class="mt-4 text-stone-400 text-xs font-mono uppercase tracking-widest">Verifying with YouTube API...</p></div>';
 
-                // 1. Gather all IDs
                 const allItems = this.data.filter(i => i.URL && i.URL.includes('http'));
                 const idMap = {}; 
                 const idsToCheck = [];
@@ -717,15 +713,11 @@
                 allItems.forEach(item => {
                     const id = this.getVideoID(item.URL);
                     if (id) {
-                        if (!idMap[id]) {
-                            idMap[id] = [];
-                            idsToCheck.push(id);
-                        }
+                        if (!idMap[id]) { idMap[id] = []; idsToCheck.push(id); }
                         idMap[id].push(item);
                     }
                 });
 
-                // 2. Batch Requests (50 at a time)
                 const batchSize = 50;
                 const validIds = new Set();
 
@@ -735,23 +727,15 @@
                     try {
                         const res = await fetch(url);
                         const json = await res.json();
-                        if (json.items) {
-                            json.items.forEach(item => validIds.add(item.id));
-                        }
-                    } catch (e) {
-                        console.error("Scan error", e);
-                    }
+                        if (json.items) json.items.forEach(item => validIds.add(item.id));
+                    } catch (e) { console.error("Scan error", e); }
                 }
 
-                // 3. Determine Broken Links (IDs we sent but didn't get back)
                 const brokenItems = [];
                 idsToCheck.forEach(id => {
-                    if (!validIds.has(id)) {
-                        brokenItems.push(...idMap[id]);
-                    }
+                    if (!validIds.has(id)) brokenItems.push(...idMap[id]);
                 });
 
-                // 4. Render Results
                 document.getElementById('search-title').innerText = `Found ${brokenItems.length} Broken / Private Links`;
                 
                 if (brokenItems.length === 0) {
@@ -759,12 +743,8 @@
                     return;
                 }
 
-                // 5. ENABLE EXPORT
-                // Create CSV Content
                 let csvContent = "data:text/csv;charset=utf-8,TITLE,TOPIC,URL\n";
-                brokenItems.forEach(row => {
-                    csvContent += `"${row['TITLE OF VIDEO']}","${row.TOPIC}","${row.URL}"\n`;
-                });
+                brokenItems.forEach(row => { csvContent += `"${row['TITLE OF VIDEO']}","${row.TOPIC}","${row.URL}"\n`; });
                 const encodedUri = encodeURI(csvContent);
                 
                 document.getElementById('download-area').innerHTML = `
@@ -776,9 +756,7 @@
                 list.innerHTML = brokenItems.map(l => `
                     <div class="p-4 border-b border-red-900/30 flex justify-between items-center group hover:bg-red-900/10 transition-colors">
                         <div class="flex items-center gap-4">
-                            <div class="w-12 h-9 bg-red-900/20 rounded flex items-center justify-center text-red-500">
-                                <i class="fa-solid fa-link-slash"></i>
-                            </div>
+                            <div class="w-12 h-9 bg-red-900/20 rounded flex items-center justify-center text-red-500"><i class="fa-solid fa-link-slash"></i></div>
                             <div>
                                 <div class="text-[9px] text-red-400 uppercase tracking-widest mb-1">Video Deleted / Private</div>
                                 <h4 class="text-sm text-white font-medium">${l['TITLE OF VIDEO']}</h4>
@@ -790,30 +768,24 @@
                 ).join('');
             },
 
-            // --- RENDER SOCIAL (SIMULATED GALLERY) ---
             renderSocialGallery: function() {
                 const grid = document.getElementById('social-gallery-grid');
                 if(!grid) return;
-                let html = '';
                 const placeholders = ['Community Photos', 'Recent Events', 'Group Media', 'Shared Memories', 'Discussion Archives', 'Latest Uploads'];
-                
-                for(let i=0; i<6; i++) {
-                    html += `
+                grid.innerHTML = placeholders.map(p => `
                     <a href="https://www.facebook.com/groups/356472414984195/media" target="_blank" class="cosmos-card group cursor-pointer block min-h-[200px]">
                         <div class="relative h-40 bg-[#111] flex items-center justify-center overflow-hidden">
                             <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60"></div>
                             <i class="fa-brands fa-facebook text-5xl text-[#1877F2] opacity-30 group-hover:scale-110 group-hover:opacity-60 transition-all duration-500"></i>
                         </div>
                         <div class="p-4 border-t border-white/10 bg-[#0A0A0A]">
-                            <h3 class="text-sm text-gray-200 group-hover:text-white mb-1">${placeholders[i]}</h3>
+                            <h3 class="text-sm text-gray-200 group-hover:text-white mb-1">${p}</h3>
                             <p class="text-[10px] text-purple-400 font-bold uppercase tracking-widest group-hover:text-purple-300">View Gallery ↗</p>
                         </div>
-                    </a>`;
-                }
-                grid.innerHTML = html;
+                    </a>`
+                ).join('');
             },
 
-            // --- AI VOICE: AMERICAN PROFESSOR ---
             togglePlayPause: function() {
                 const text = document.getElementById('ai-text-output').innerText;
                 if (!('speechSynthesis' in window) || !text) return;
@@ -832,17 +804,12 @@
                         this.currentUtterance = new SpeechSynthesisUtterance(text);
                         const voices = speechSynthesis.getVoices();
                         
-                        // VOICE STRATEGY: AMERICAN MALE
                         let selectedVoice = voices.find(v => v.name.includes("David") && v.name.includes("Microsoft"));
                         if (!selectedVoice) selectedVoice = voices.find(v => v.name === "Alex");
                         if (!selectedVoice) selectedVoice = voices.find(v => v.lang === "en-US" && (v.name.includes("Male") || v.gender === 'male'));
-                        
-                        // Fallback to anything US
                         if (!selectedVoice) selectedVoice = voices.find(v => v.lang === "en-US");
 
                         if (selectedVoice) this.currentUtterance.voice = selectedVoice;
-                        
-                        // PROFESSOR SETTINGS: Steady, slightly deeper
                         this.currentUtterance.rate = 0.9; 
                         this.currentUtterance.pitch = 0.8; 
 
@@ -859,7 +826,6 @@
                 }
             },
            
-            // --- UPDATED AI SEARCH TO USE TRANSCRIPT BRAIN ---
             performAISearch: async function() {
                 const input = document.getElementById('ai-input');
                 const q = (input ? input.value : '').trim();
@@ -871,11 +837,9 @@
                 const aiText = document.getElementById('ai-text-output');
                 aiBox.classList.remove('hidden');
                 
-                // 1. Initial State
                 aiText.innerText = "Consulting the archives...";
-                this.search(q); // Run standard title search
+                this.search(q);
 
-                // 2. Load the Brain (Lazy Load - only happens on first search)
                 if (!this.transcriptData) {
                     try {
                         const response = await fetch('transcripts.json');
@@ -885,7 +849,6 @@
                             throw new Error("File not found");
                         }
                     } catch (e) {
-                        // Fallback to simulation if brain file is missing
                         console.warn("Brain not found, using simulation");
                         setTimeout(() => {
                             let resp = `The hidden meaning of "${q}" is found within the biological processes...`;
@@ -895,7 +858,6 @@
                     }
                 }
 
-                // 3. Search the Brain
                 aiText.innerText = "Scanning transcripts...";
                 const searchTerms = q.toLowerCase().split(' ');
                 let bestMatch = null;
@@ -920,7 +882,6 @@
                     }
                 });
 
-                // 4. Display Result
                 if (bestMatch && highestScore > 0) {
                     aiText.innerText = `In "${bestMatch.title}", the Teacher says: "${snippet}"`;
                 } else {
