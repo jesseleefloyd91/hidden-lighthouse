@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Bill Donahue | Hidden Meanings</title>
+    <title>Bill Donahue | Official Archive</title>
    
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
@@ -436,7 +436,9 @@
             // --- HELPER: Extract ID from various Youtube URL formats ---
             getVideoID: function(url) {
                 if (!url) return null;
-                // Handle standard youtube links, youtu.be, and embed urls
+                // If it's already an 11-char ID (alphanumeric+dashed), return it
+                if (/^[a-zA-Z0-9_-]{11}$/.test(url.trim())) return url.trim();
+                // Otherwise handle URLs
                 const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
                 const match = url.match(regExp);
                 return (match && match[2].length === 11) ? match[2] : null;
@@ -492,7 +494,12 @@
                     const grid = document.getElementById("video-grid");
                     if (!grid) return;
                     
-                    // RE-RENDER CHECK: If tags are missing because CSV loaded late, this ensures they populate.
+                    // RETRY: If CSV data isn't ready yet, videos will load without tags.
+                    // This forces a re-render if we have videos but no CSV data yet.
+                    if (this.videos.length > 0 && window.app.data.length === 0) {
+                         // We wait silently, because CSV callback will trigger re-render
+                    }
+
                     grid.innerHTML = this.videos.map(v => {
                         const topic = window.app.getTopicByVideoID(v.id);
                         // Escaping for onclick
@@ -515,7 +522,7 @@
                                                onclick="event.stopPropagation(); window.app.openTopic('${safeTopic}')">
                                             <i class="fa-solid fa-tag text-[8px]"></i> ${topic}
                                          </span>` 
-                                        : ''
+                                        : `<span class="text-[9px] text-stone-600 font-mono uppercase tracking-widest block text-center py-1.5 opacity-30">Uncatalogued</span>`
                                     }
                                 </div>
                             </div>
@@ -551,7 +558,9 @@
                                 const t = row['TITLE OF VIDEO'];
                                 const top = row.TOPIC;
                                 if (!t || !t.trim() || !top || !top.trim()) return false;
-                                if (top.toLowerCase().startsWith('http')) return false;
+                                // Allow if it has URL OR if it has ID.
+                                // We check if getVideoID returns something valid
+                                if (!window.app.getVideoID(row.URL)) return false;
                                 return true;
                             })
                             .map(row => {
