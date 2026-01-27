@@ -661,7 +661,7 @@
                 
                 // IMPORTANT: Change this query to 'uploader:(YOUR_USERNAME_HERE)' after you upload!
                 // For now, I'm setting it to search for Bill Donahue content generally so you see it working.
-                const query = 'subject:"Bill Donahue" AND mediatype:"movies"'; 
+                const query = 'uploader:(@jesse_floyd405)'; 
                 
                 // API URL
                 const url = `https://archive.org/advancedsearch.php?q=${encodeURIComponent(query)}&fl[]=identifier&fl[]=title&fl[]=description&fl[]=downloads&sort[]=-downloads&output=json&rows=100`;
@@ -1108,3 +1108,4 @@
     </script>
 </body>
 </html>
+
