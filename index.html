@@ -158,6 +158,18 @@
         .highlight { background: var(--gold); color: black; padding: 0 2px; border-radius: 2px; }
         .profile-img { box-shadow: 0 0 50px var(--accent-glow); transition: 0.5s; border-color: var(--border-color); }
         
+        /* DIAGNOSTICS OVERLAY (SCANNER) */
+        #diagnostics-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 100; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
+        .diag-box { width: 90%; max-width: 500px; background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 30px; border-radius: 16px; text-align: center; box-shadow: 0 0 50px rgba(0,0,0,0.5); }
+        .progress-bar { height: 4px; background: var(--bg-tertiary); width: 100%; border-radius: 2px; overflow: hidden; margin: 20px 0; }
+        .progress-fill { height: 100%; background: var(--gold); width: 0%; transition: width 0.3s; }
+
+        /* SEARCH OVERLAY */
+        #search-overlay { position: fixed; inset: 0; background: rgba(5, 5, 5, 0.95); backdrop-filter: blur(20px); z-index: 90; display: flex; flex-direction: column; align-items: center; padding-top: 100px; transition: opacity 0.3s; opacity: 0; pointer-events: none; }
+        #search-overlay.active { opacity: 1; pointer-events: auto; }
+        .big-search-input { width: 90%; max-width: 600px; background: transparent; border: none; border-bottom: 2px solid var(--gold); font-size: 2rem; color: var(--text-primary); padding: 10px; text-align: center; outline: none; font-family: 'Cinzel', serif; }
+        .big-search-input::placeholder { color: var(--text-secondary); opacity: 0.5; }
+
         /* SCROLLBAR */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: var(--bg-primary); }
@@ -167,7 +179,6 @@
 </head>
 <body class="flex flex-col min-h-screen">
     <div id="stars-container" class="stars-container"></div>
-    
     <div id="photon-bg" class="photon-bg"><div class="photon-grid"></div></div>
 
     <div id="diagnostics-overlay" class="hidden">
@@ -402,7 +413,7 @@
                     <h3 class="cinzel text-2xl mb-2 group-hover:text-purple-400 transition-colors" style="color: var(--text-primary);">HiddenMeanings.com</h3>
                     <p class="font-mono text-xs uppercase tracking-widest" style="color: var(--text-secondary);">Main Portal</p>
                 </a>
-                 <a href="https://lifestyleluminaries.blogspot.com/p/bill-donahue.html" target="_blank" class="cosmos-card p-8 group block">
+                <a href="https://lifestyleluminaries.blogspot.com/p/bill-donahue.html" target="_blank" class="cosmos-card p-8 group block">
                     <div class="flex justify-between items-start mb-6">
                         <div class="w-10 h-10 rounded-full flex items-center justify-center font-serif" style="background: var(--bg-tertiary); color: var(--text-primary);">L</div>
                         <span class="group-hover:text-purple-400 transition-colors" style="color: var(--text-secondary);">↗</span>
@@ -701,16 +712,25 @@
                 status.innerText = "Initializing Scanner...";
                 progressFill.style.width = "0%";
                 
-                const allVideoIds = this.data.map(row => ({ id: this.getVideoID(row.URL), title: row['TITLE OF VIDEO'], topic: row.TOPIC, url: row.URL })).filter(item => item.id);
-                const total = allVideoIds.length;
+                // 1. Map entries and separate invalid/missing IDs immediately
+                const allEntries = this.data.map(row => ({
+                    id: this.getVideoID(row.URL),
+                    title: row['TITLE OF VIDEO'],
+                    topic: row.TOPIC,
+                    url: row.URL
+                }));
+
+                let brokenLinks = allEntries.filter(e => !e.id).map(e => ({...e, reason: "Missing/Invalid URL"}));
+                const validEntries = allEntries.filter(e => e.id);
+                
+                const total = validEntries.length;
                 const batchSize = 50;
                 let processed = 0;
-                let brokenLinks = [];
                 
                 status.innerText = `Scanning ${total} videos...`;
 
                 for (let i = 0; i < total; i += batchSize) {
-                    const batch = allVideoIds.slice(i, i + batchSize);
+                    const batch = validEntries.slice(i, i + batchSize);
                     const batchIds = batch.map(item => item.id).join(',');
                     const url = `https://www.googleapis.com/youtube/v3/videos?key=${this.youtube.apiKey}&part=id&id=${batchIds}`;
                     try {
@@ -718,7 +738,7 @@
                         const data = await res.json();
                         if (data.items) {
                             const foundIds = new Set(data.items.map(item => item.id));
-                            batch.forEach(video => { if (!foundIds.has(video.id)) brokenLinks.push(video); });
+                            batch.forEach(video => { if (!foundIds.has(video.id)) brokenLinks.push({...video, reason: "Video Unavailable"}); });
                         }
                     } catch (e) { console.error("Batch Check Failed", e); }
                     processed += batch.length;
@@ -733,9 +753,9 @@
                 if (brokenLinks.length === 0) {
                     resultsBox.innerHTML = '<div class="text-green-400 p-4">All systems operational. No broken links found.</div>';
                 } else {
-                    let csvContent = "data:text/csv;charset=utf-8,TITLE,ID,TOPIC,URL\n" + brokenLinks.map(e => `"${e.title.replace(/"/g, '""')}","${e.id}","${e.topic}","${e.url}"`).join("\n");
+                    let csvContent = "data:text/csv;charset=utf-8,TITLE,ID,TOPIC,URL,REASON\n" + brokenLinks.map(e => `"${e.title.replace(/"/g, '""')}","${e.id || 'NULL'}","${e.topic}","${e.url}","${e.reason}"`).join("\n");
                     const encodedUri = encodeURI(csvContent);
-                    resultsBox.innerHTML = `<div class="mb-4"><a href="${encodedUri}" download="broken_links_report.csv" class="text-red-400 border border-red-900 px-4 py-2 rounded uppercase font-bold text-[10px] hover:bg-red-900 hover:text-white transition-colors"><i class="fa-solid fa-download mr-2"></i> Download Report (.csv)</a></div><ul class="text-left text-[10px] font-mono text-stone-400 space-y-1">${brokenLinks.slice(0, 10).map(l => `<li><span class="text-red-500">X</span> ${l.title} (${l.id})</li>`).join('')}${brokenLinks.length > 10 ? `<li>...and ${brokenLinks.length - 10} more</li>` : ''}</ul>`;
+                    resultsBox.innerHTML = `<div class="mb-4"><a href="${encodedUri}" download="broken_links_report.csv" class="text-red-400 border border-red-900 px-4 py-2 rounded uppercase font-bold text-[10px] hover:bg-red-900 hover:text-white transition-colors"><i class="fa-solid fa-download mr-2"></i> Download Report (.csv)</a></div><ul class="text-left text-[10px] font-mono text-stone-400 space-y-1">${brokenLinks.slice(0, 10).map(l => `<li><span class="text-red-500">X</span> ${l.title} (${l.reason})</li>`).join('')}${brokenLinks.length > 10 ? `<li>...and ${brokenLinks.length - 10} more</li>` : ''}</ul>`;
                 }
             },
             
