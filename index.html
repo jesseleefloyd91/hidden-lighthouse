@@ -19,7 +19,6 @@
             --text-primary: #EAEAEA;
             --text-secondary: #9ca3af;
             --border-color: rgba(255,255,255,0.1);
-            --card-border: #222;
             --purple: #D8B4FE;
             --accent-glow: rgba(216, 180, 254, 0.2);
             --input-bg: rgba(255,255,255,0.05);
@@ -34,88 +33,72 @@
             --text-primary: #1F2937;
             --text-secondary: #4B5563;
             --border-color: rgba(0,0,0,0.1);
-            --card-border: #E5E7EB;
-            --purple: #7C3AED; /* Darker purple for readability */
+            --purple: #7C3AED;
             --accent-glow: rgba(124, 58, 237, 0.1);
             --input-bg: rgba(0,0,0,0.05);
             --dock-bg: rgba(255, 255, 255, 0.95);
         }
 
-        /* BASE STYLES */
         body { font-family: 'Inter', sans-serif; background-color: var(--bg-primary); color: var(--text-primary); transition: background-color 0.3s, color 0.3s; overflow-x: hidden; height: 100vh; }
         .cinzel { font-family: 'Cinzel', serif; }
         .mono { font-family: 'Space Grotesk', monospace; }
         
-        /* STARRY BACKGROUND (Hidden in Light Mode) */
+        /* BACKGROUND ELEMENTS */
         .stars-container {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             z-index: -1; pointer-events: none;
             background: radial-gradient(circle at bottom center, #1a103c 0%, #000000 80%);
             transition: opacity 0.5s;
         }
-        body.light-mode .stars-container { opacity: 0; }
-
-        /* MASONRY GRID */
-        .masonry-grid {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; padding-bottom: 140px;
+        .planet {
+            position: absolute; border-radius: 50%; opacity: 0.2;
+            background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.1), transparent);
+            animation: floatPlanet 100s linear infinite;
         }
+        .star {
+            position: absolute; border-radius: 50%;
+            animation: twinkle var(--duration) ease-in-out infinite;
+            opacity: 0; box-shadow: 0 0 4px rgba(255, 215, 0, 0.3);
+        }
+        body.light-mode .stars-container { opacity: 0; }
+        @keyframes twinkle { 0%, 100% { opacity: 0; } 50% { opacity: var(--opacity); } }
+        @keyframes floatPlanet { from { transform: translateX(-100px) translateY(0); } to { transform: translateX(100vw) translateY(-20vh); } }
+
+        /* GRID & CARDS */
+        .masonry-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; padding-bottom: 140px; }
         @media (max-width: 640px) { .masonry-grid { grid-template-columns: 1fr; } }
 
-        /* CARDS */
         .cosmos-card {
-            background-color: var(--bg-secondary);
-            border: 1px solid var(--card-border);
-            border-radius: 12px;
-            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            cursor: pointer; position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; min-height: 200px; z-index: 10;
+            background-color: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 12px;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94); cursor: pointer; position: relative; overflow: hidden;
+            display: flex; flex-direction: column; justify-content: space-between; min-height: 200px; z-index: 10;
         }
-        .cosmos-card:hover {
-            border-color: var(--purple); transform: translateY(-4px);
-            box-shadow: 0 10px 40px -10px var(--accent-glow);
-        }
+        .cosmos-card:hover { border-color: var(--purple); transform: translateY(-4px); box-shadow: 0 10px 40px -10px var(--accent-glow); }
 
-        /* DOCK */
+        /* UI COMPONENTS */
         .dock-container { position: fixed; bottom: 20px; left: 0; width: 100%; display: flex; justify-content: center; z-index: 50; padding: 0 20px; }
         .dock {
-            background: var(--dock-bg); backdrop-filter: blur(20px);
-            border: 1px solid var(--border-color); padding: 8px; border-radius: 20px;
-            display: flex; gap: 4px; box-shadow: 0 20px 40px -10px rgba(0,0,0,0.2); pointer-events: auto;
+            background: var(--dock-bg); backdrop-filter: blur(20px); border: 1px solid var(--border-color);
+            padding: 8px; border-radius: 20px; display: flex; gap: 4px; box-shadow: 0 20px 40px -10px rgba(0,0,0,0.2);
             max-width: 100%; overflow-x: auto; scrollbar-width: none; 
         }
-        .dock::-webkit-scrollbar { display: none; }
-        
         .dock-btn {
-            padding: 10px 16px; border-radius: 12px; font-size: 10px; font-weight: 700;
-            text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-secondary);
-            transition: all 0.2s; cursor: pointer; border: 1px solid transparent; white-space: nowrap; flex-shrink: 0;
+            padding: 10px 16px; border-radius: 12px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;
+            color: var(--text-secondary); transition: all 0.2s; cursor: pointer; border: 1px solid transparent; white-space: nowrap; flex-shrink: 0;
         }
         .dock-btn:hover { color: var(--text-primary); background: var(--bg-tertiary); }
         .dock-btn.active { background: var(--text-primary); color: var(--bg-primary); }
 
-        /* INPUTS */
         .search-input {
-            background: var(--input-bg); backdrop-filter: blur(10px);
-            border: 1px solid var(--border-color); color: var(--text-primary);
-            padding: 10px 20px 10px 40px; border-radius: 99px; font-size: 12px;
-            width: 100%; max-width: 300px; transition: all 0.3s ease; outline: none;
+            background: var(--input-bg); backdrop-filter: blur(10px); border: 1px solid var(--border-color); color: var(--text-primary);
+            padding: 10px 20px 10px 40px; border-radius: 99px; font-size: 12px; width: 100%; max-width: 300px; outline: none;
         }
         .search-input:focus { border-color: var(--purple); box-shadow: 0 0 20px var(--accent-glow); }
 
-        /* THEME TOGGLE */
-        .theme-toggle {
-            width: 40px; height: 40px; border-radius: 50%;
-            display: flex; items-center; justify-content: center;
-            background: var(--input-bg); border: 1px solid var(--border-color);
-            color: var(--text-primary); cursor: pointer; transition: all 0.3s;
-        }
-        .theme-toggle:hover { background: var(--bg-tertiary); }
-
         /* ANATOMY */
         .anatomy-wrapper {
-            position: relative; width: 300px; height: 650px;
-            border: 1px solid var(--border-color); border-radius: 999px;
-            background: var(--bg-secondary);
-            box-shadow: 0 0 80px -20px var(--accent-glow);
+            position: relative; width: 300px; height: 650px; border: 1px solid var(--border-color); border-radius: 999px;
+            background: var(--bg-secondary); box-shadow: 0 0 80px -20px var(--accent-glow);
         }
         @media (max-width: 768px) { .anatomy-scale-container { transform: scale(0.75); transform-origin: top center; height: 500px; } }
         .anatomy-dot {
@@ -130,9 +113,7 @@
         #view-home.active { display: flex; flex-direction: column; justify-content: center; align-items: center; padding-top: 0; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* UTILS */
         .hidden { display: none !important; }
-        .highlight { background: var(--accent-glow); color: var(--text-primary); font-weight: bold; padding: 0 2px; }
         .profile-img { box-shadow: 0 0 50px var(--accent-glow); transition: 0.5s; }
         
         /* SCROLLBAR */
@@ -157,9 +138,9 @@
         
         <div class="flex items-center gap-4">
             <div class="relative group hidden md:block">
-                <input type="text" id="global-search" oninput="window.app.performAISearch()" onkeydown="if(event.key === 'Enter') window.app.performAISearch()" placeholder="SEARCH..." class="search-input placeholder-gray-500 font-mono uppercase">
+                <input type="text" id="global-search" oninput="window.app.performAISearch()" onkeydown="if(event.key === 'Enter') window.app.performAISearch()" placeholder="SEARCH..." class="search-input font-mono uppercase">
             </div>
-            <button class="theme-toggle" onclick="window.app.toggleTheme()" title="Toggle Light/Dark Mode">
+            <button onclick="window.app.toggleTheme()" class="w-10 h-10 rounded-full flex items-center justify-center border transition-all hover:bg-white/10" style="border-color: var(--border-color); color: var(--text-primary);">
                 <i class="fa-solid fa-moon" id="theme-icon"></i>
             </button>
         </div>
@@ -273,14 +254,9 @@
             <div id="ai-box" class="mb-12 p-8 border-l-4 rounded-xl fade-in relative hidden" style="background: var(--bg-secondary); border-color: var(--border-color); border-left-color: var(--purple);">
                 <div class="flex justify-between items-start mb-6">
                     <span class="font-mono text-[10px] uppercase tracking-widest block" style="color: var(--purple);">Teacher's Insight</span>
-                    <button id="ai-video-link" class="hidden text-[10px] px-3 py-1 rounded-full font-bold uppercase tracking-widest transition-colors" style="background: var(--purple); color: white;">
-                        <i class="fa-solid fa-play mr-1"></i> Watch Video
-                    </button>
                 </div>
-                
                 <div id="ai-text-output" class="text-lg md:text-xl leading-relaxed italic font-light font-serif" style="color: var(--text-primary);"></div>
             </div>
-           
             <div class="flex justify-between items-end mb-8 border-b pb-4" style="border-color: var(--border-color);">
                 <h2 id="search-title" class="cinzel text-2xl font-bold" style="color: var(--text-primary);">Archive Matches</h2>
                 <div id="download-area"></div>
@@ -297,7 +273,6 @@
                      </h1>
                      <p class="text-xs uppercase tracking-[0.3em] font-mono" style="color: var(--text-secondary);">- Bill Donahue</p>
                  </div>
-
                  <div class="border-t pt-12 text-left" style="border-color: var(--border-color);">
                      <h2 class="cinzel text-2xl mb-8" style="color: var(--text-primary);">Meditative Lectures</h2>
                      <div id="meditation-lectures-grid" class="masonry-grid"></div>
@@ -312,19 +287,16 @@
                         <h2 class="cinzel text-3xl md:text-5xl font-bold mb-2" style="color: var(--text-primary);">The Archive</h2>
                         <p class="font-mono text-xs uppercase tracking-[0.2em]" style="color: var(--purple);">Video Collection</p>
                     </div>
-                    
                     <div class="flex gap-2">
-                        <button id="toggle-yt" class="toggle-btn px-4 py-2 border rounded text-xs font-bold uppercase tracking-widest active-yt" onclick="window.app.setVideoSource('youtube')" style="border-color: var(--border-color);">
+                        <button id="toggle-yt" class="px-4 py-2 border rounded text-xs font-bold uppercase tracking-widest" style="background: #DC2626; color: white; border-color: #DC2626;" onclick="window.app.setVideoSource('youtube')">
                             <i class="fa-brands fa-youtube mr-2"></i> YouTube
                         </button>
-                        <button id="toggle-arc" class="toggle-btn px-4 py-2 border rounded text-xs font-bold uppercase tracking-widest" onclick="window.app.setVideoSource('archive')" style="border-color: var(--border-color);">
+                        <button id="toggle-arc" class="px-4 py-2 border rounded text-xs font-bold uppercase tracking-widest" style="color: var(--text-secondary); border-color: var(--border-color);" onclick="window.app.setVideoSource('archive')">
                             <i class="fa-solid fa-film mr-2"></i> HD Restored
                         </button>
                     </div>
                 </div>
-                
                 <div id="video-grid" class="masonry-grid"></div>
-                
                 <div id="video-loader" class="text-center py-8 hidden">
                     <i class="fa-solid fa-circle-notch fa-spin text-2xl" style="color: var(--purple);"></i>
                     <p class="mt-2 text-[10px] font-mono uppercase" style="color: var(--text-secondary);">Loading Data...</p>
@@ -351,13 +323,29 @@
                     <h3 class="cinzel text-2xl mb-2 group-hover:text-purple-400 transition-colors" style="color: var(--text-primary);">HiddenMeanings.com</h3>
                     <p class="font-mono text-xs uppercase tracking-widest" style="color: var(--text-secondary);">Main Portal</p>
                 </a>
-                 <a href="https://lifestyleluminaries.blogspot.com/p/bill-donahue.html" target="_blank" class="cosmos-card p-8 group block">
+                <a href="https://lifestyleluminaries.blogspot.com/p/bill-donahue.html" target="_blank" class="cosmos-card p-8 group block">
                     <div class="flex justify-between items-start mb-6">
                         <div class="w-10 h-10 rounded-full flex items-center justify-center font-serif" style="background: var(--bg-tertiary); color: var(--text-primary);">L</div>
                         <span class="group-hover:text-purple-400 transition-colors" style="color: var(--text-secondary);">↗</span>
                     </div>
                     <h3 class="cinzel text-2xl mb-2 group-hover:text-purple-400 transition-colors" style="color: var(--text-primary);">Lifestyle Luminaries</h3>
                     <p class="font-mono text-xs uppercase tracking-widest" style="color: var(--text-secondary);">Video Archive</p>
+                </a>
+                <a href="https://thehiddenlighthouse.blogspot.com/2012/09/the-hidden-lighthouse.html?m=1" target="_blank" class="cosmos-card p-8 group block">
+                    <div class="flex justify-between items-start mb-6">
+                        <div class="w-10 h-10 rounded-full flex items-center justify-center font-serif" style="background: var(--bg-tertiary); color: var(--text-primary);">B</div>
+                        <span class="group-hover:text-purple-400 transition-colors" style="color: var(--text-secondary);">↗</span>
+                    </div>
+                    <h3 class="cinzel text-2xl mb-2 group-hover:text-purple-400 transition-colors" style="color: var(--text-primary);">Lighthouse Blog</h3>
+                    <p class="font-mono text-xs uppercase tracking-widest" style="color: var(--text-secondary);">2012 Writings</p>
+                </a>
+                <a href="https://archive.org/details/1-revised-bill-donahue-speaks-book-of-secret-doctrines/page/18/mode/1up?ui=embed&wrapper=false" target="_blank" class="cosmos-card p-8 group block">
+                    <div class="flex justify-between items-start mb-6">
+                        <div class="w-10 h-10 rounded-full flex items-center justify-center font-serif" style="background: var(--bg-tertiary); color: var(--text-primary);">S</div>
+                        <span class="group-hover:text-purple-400 transition-colors" style="color: var(--text-secondary);">↗</span>
+                    </div>
+                    <h3 class="cinzel text-2xl mb-2 group-hover:text-purple-400 transition-colors" style="color: var(--text-primary);">Secret Doctrines</h3>
+                    <p class="font-mono text-xs uppercase tracking-widest" style="color: var(--text-secondary);">PDF Book</p>
                 </a>
             </div>
         </section>
@@ -380,7 +368,9 @@
         function createStars() {
             const container = document.getElementById('stars-container');
             if(!container) return;
-            container.innerHTML = ''; // Clear existing
+            container.innerHTML = '';
+            
+            // Stars
             for(let i=0; i<150; i++) {
                 const star = document.createElement('div');
                 star.className = 'star';
@@ -395,41 +385,89 @@
                 star.style.setProperty('--opacity', Math.random() * 0.5 + 0.5);
                 container.appendChild(star);
             }
+
+            // Planets
+            for(let i=0; i<3; i++) {
+                const planet = document.createElement('div');
+                planet.className = 'planet';
+                const size = Math.random() * 100 + 50;
+                planet.style.width = `${size}px`;
+                planet.style.height = `${size}px`;
+                planet.style.top = `${Math.random() * 80}%`;
+                planet.style.left = `-${size}px`;
+                planet.style.animationDuration = `${Math.random() * 100 + 100}s`;
+                planet.style.background = `radial-gradient(circle at 30% 30%, hsla(${Math.random()*360}, 50%, 50%, 0.1), transparent)`;
+                container.appendChild(planet);
+            }
         }
         
         window.app = {
-            data: [], transcriptData: null, 
-            
-            // STATE
+            data: [], 
             currentVideoSource: 'youtube', 
             archiveVideos: [], archivePage: 1, archiveLoading: false, archiveHasMore: true,
             isLightMode: false,
             
-            // MEDITATION QUOTES
             quotes: [
                 "When you pray, enter into your closet, and when you have shut the door, pray to your Father which is in secret.",
                 "The Kingdom of God is within you.",
-                "Take no thought for tomorrow.",
                 "If thine eye be single, thy whole body shall be full of light.",
-                "You must kill the beast within yourself.",
-                "Look at the things that are not seen, for the things which are seen are temporal; but the things which are not seen are eternal.",
                 "The Bible is not a book of history, it is a book of biology.",
-                "Resist not evil.",
                 "Be still, and know that I am God.",
-                "You are the Temple of the Living God."
+                "You are the Temple of the Living God.",
+                "Look at the things that are not seen, for the things which are seen are temporal."
             ],
 
-            // ANATOMY DATA
             anatomyData: {
-                "root": { title: "Root / Base", name: "Muladhara", color: "#ef4444", freq: "400-484 THz", biblical: "Egypt / The Red Sea", church: "Ephesus", desc: "The starting point. Egypt represents the physical bondage of the senses." },
-                "sacral": { title: "Sacral", name: "Svadhisthana", color: "#f97316", freq: "484-508 THz", biblical: "Wilderness", church: "Smyrna", desc: "The seat of emotions and sexual energy." },
-                "solar": { title: "Solar Plexus", name: "Manipura", color: "#eab308", freq: "508-526 THz", biblical: "The Manger", church: "Pergamos", desc: "The place of the Sun (Son)." },
+                "root": { title: "Root", name: "Muladhara", color: "#ef4444", freq: "400-484 THz", biblical: "Egypt", church: "Ephesus", desc: "The starting point. Egypt represents physical bondage." },
+                "sacral": { title: "Sacral", name: "Svadhisthana", color: "#f97316", freq: "484-508 THz", biblical: "Wilderness", church: "Smyrna", desc: "Seat of emotions. Wilderness of the mind." },
+                "solar": { title: "Solar Plexus", name: "Manipura", color: "#eab308", freq: "508-526 THz", biblical: "The Manger", church: "Pergamos", desc: "The place of the Sun/Son born in the manger." },
                 "heart": { title: "Heart", name: "Anahata", color: "#22c55e", freq: "526-606 THz", biblical: "Jerusalem", church: "Thyatira", desc: "The balance point. The Green Ray." },
-                "throat": { title: "Throat", name: "Vishuddha", color: "#3b82f6", freq: "606-668 THz", biblical: "Jordan River", church: "Sardis", desc: "The power of the Word (Logos)." },
-                "brow": { title: "Brow / Third Eye", name: "Ajna", color: "#4f46e5", freq: "668-789 THz", biblical: "The Single Eye", church: "Philadelphia", desc: "The Command Center." },
-                "crown": { title: "Crown / Pineal", name: "Sahasrara", color: "#a855f7", freq: "789+ THz", biblical: "The Promised Land / Peniel", church: "Laodicea", desc: "The destination. The Pineal Gland. Peniel - 'I have seen God face to face.'" }
+                "throat": { title: "Throat", name: "Vishuddha", color: "#3b82f6", freq: "606-668 THz", biblical: "Jordan", church: "Sardis", desc: "Power of the Word. Crossing over." },
+                "brow": { title: "Brow", name: "Ajna", color: "#4f46e5", freq: "668-789 THz", biblical: "Single Eye", church: "Philadelphia", desc: "The Command Center. Pituitary." },
+                "crown": { title: "Crown", name: "Sahasrara", color: "#a855f7", freq: "789+ THz", biblical: "Peniel", church: "Laodicea", desc: "The Pineal Gland. Face to Face." }
             },
            
+            // --- CORE RENDERER (UNIFIED) ---
+            renderCard: function(videoObj, isArchive = false) {
+                // Determine Data
+                let id = isArchive ? videoObj.identifier : videoObj.id;
+                let title = isArchive ? videoObj.title : videoObj.title;
+                let thumb = isArchive ? `https://archive.org/services/img/${id}` : videoObj.thumbnail;
+                let linkUrl = isArchive ? `https://archive.org/details/${id}` : `https://www.youtube.com/watch?v=${id}`;
+                
+                // Determine Topic
+                let topic = this.getTopicByVideoID(null, title);
+                if (!isArchive && videoObj.id) topic = this.getTopicByVideoID(videoObj.id, title);
+
+                // Source Button (If Archive has YT ID)
+                let crossRefBtn = '';
+                if (isArchive && videoObj['external-identifier'] && videoObj['external-identifier'].includes('urn:youtube:')) {
+                    const ytId = videoObj['external-identifier'].replace('urn:youtube:', '');
+                    crossRefBtn = `<button onclick="event.stopPropagation(); window.open('https://youtube.com/watch?v=${ytId}', '_blank')" class="text-[9px] border px-2 py-1 rounded transition-colors uppercase font-bold tracking-widest" style="border-color: #7f1d1d; color: #f87171;"><i class="fa-brands fa-youtube mr-1"></i> Source</button>`;
+                }
+
+                return `
+                <div class="cosmos-card group">
+                    <div class="relative aspect-video overflow-hidden cursor-pointer bg-black" onclick="window.app.openVideo('${id}', '${isArchive ? 'archive' : 'youtube'}')">
+                        <img src="${thumb}" class="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" onerror="this.src='https://archive.org/images/not_found.png'" />
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <i class="fa-solid ${isArchive ? 'fa-film text-cyan-400' : 'fa-play text-white'} text-4xl opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-lg"></i>
+                        </div>
+                        ${isArchive ? '<div class="absolute top-2 right-2 bg-black/80 text-cyan-400 text-[9px] px-2 py-1 rounded font-mono uppercase tracking-widest border border-cyan-900/50">Restored</div>' : ''}
+                    </div>
+                    <div class="p-4 flex flex-col flex-1" style="background: var(--bg-secondary); border-top: 1px solid var(--border-color);">
+                        <h3 class="text-sm font-medium line-clamp-2 mb-3" style="color: var(--text-primary);">${title}</h3>
+                        <div class="mt-auto pt-2 flex flex-wrap gap-2 justify-between items-center" style="border-top: 1px solid var(--border-color);">
+                            ${this.createTagButton(topic)}
+                            ${crossRefBtn}
+                        </div>
+                        <div class="mt-3 pt-2 text-right" style="border-top: 1px solid var(--border-color);">
+                            <a href="${linkUrl}" target="_blank" onclick="event.stopPropagation();" class="text-[9px] font-mono transition-colors" style="color: var(--text-secondary);">ID: ${id} <i class="fa-solid fa-arrow-up-right-from-square ml-1 text-[8px]"></i></a>
+                        </div>
+                    </div>
+                </div>`;
+            },
+
             // --- UTILS ---
             getVideoID: function(url) {
                 if (!url) return null;
@@ -458,102 +496,64 @@
                 return null;
             },
 
-            // --- THEME ---
             toggleTheme: function() {
                 this.isLightMode = !this.isLightMode;
                 document.body.classList.toggle('light-mode');
-                const icon = document.getElementById('theme-icon');
-                if (this.isLightMode) {
-                    icon.className = 'fa-solid fa-sun text-yellow-500';
-                } else {
-                    icon.className = 'fa-solid fa-moon';
-                }
+                document.getElementById('theme-icon').className = this.isLightMode ? 'fa-solid fa-sun text-yellow-500' : 'fa-solid fa-moon';
             },
 
-            // --- NAV & UI ---
             nav: function(id) { 
                 document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active')); 
                 document.querySelectorAll('.dock-btn').forEach(b => b.classList.remove('active')); 
-                const target = document.getElementById('view-' + id); 
-                if(target) target.classList.add('active'); 
-                const btn = document.getElementById('btn-' + id); 
-                if(btn) btn.classList.add('active'); 
+                document.getElementById('view-' + id).classList.add('active'); 
+                document.getElementById('btn-' + id).classList.add('active'); 
                 if(id !== 'search') document.getElementById('global-search').value = ''; 
-                
-                // Meditation Specific Logic
                 if (id === 'meditation') {
-                    // Random Quote
-                    const q = this.quotes[Math.floor(Math.random() * this.quotes.length)];
-                    document.getElementById('meditation-quote').innerText = `"${q}"`;
+                    document.getElementById('meditation-quote').innerText = `"${this.quotes[Math.floor(Math.random() * this.quotes.length)]}"`;
                     this.renderMeditationLectures();
                 }
-
                 window.scrollTo(0,0); 
             },
             
             showAnatomy: function(key) { const data = this.anatomyData[key]; if(!data) return; document.getElementById('anatomy-content-default').classList.add('hidden'); const content = document.getElementById('anatomy-content-active'); content.classList.remove('hidden'); document.getElementById('ana-name').innerText = data.name; document.getElementById('ana-freq').innerText = data.freq; document.getElementById('ana-title').innerText = data.title; document.getElementById('ana-bib').innerText = data.biblical; document.getElementById('ana-church').innerText = data.church; document.getElementById('ana-desc').innerText = data.desc; const box = document.getElementById('anatomy-info'); box.style.borderColor = data.color; box.style.boxShadow = `0 0 30px -10px ${data.color}`; document.getElementById('ana-title').style.color = data.color; },
 
-            // --- MEDITATION LOGIC ---
             renderMeditationLectures: function() {
                 const grid = document.getElementById('meditation-lectures-grid');
                 if(!grid || this.data.length === 0) return;
-                
-                const meditationKeywords = ['meditation', 'silence', 'pineal', 'single eye', 'upper room', 'watch', 'prayer'];
+                const keywords = ['meditation', 'silence', 'pineal', 'single eye', 'upper room', 'watch', 'prayer'];
                 const relatedVideos = this.data.filter(row => {
                     const topic = (row.TOPIC || '').toLowerCase();
                     const title = (row['TITLE OF VIDEO'] || '').toLowerCase();
-                    return meditationKeywords.some(kw => topic.includes(kw) || title.includes(kw));
-                }).slice(0, 12); // Limit to 12
-
+                    return keywords.some(kw => topic.includes(kw) || title.includes(kw));
+                }).slice(0, 12);
                 grid.innerHTML = relatedVideos.map(v => {
-                    const vidId = this.getVideoID(v.URL);
-                    const thumbUrl = vidId ? `https://img.youtube.com/vi/${vidId}/mqdefault.jpg` : null;
-                    return `
-                        <div class="cosmos-card group" onclick="window.app.openVideo('${vidId}')">
-                             <div class="relative aspect-video bg-black overflow-hidden">
-                                ${thumbUrl ? `<img src="${thumbUrl}" class="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity">` : ''}
-                                <div class="absolute inset-0 flex items-center justify-center"><i class="fa-solid fa-play text-3xl text-white opacity-0 group-hover:opacity-100 transition-opacity"></i></div>
-                            </div>
-                            <div class="p-4" style="background: var(--bg-secondary); border-top: 1px solid var(--border-color);">
-                                <h4 class="text-sm font-medium line-clamp-2 mb-2" style="color: var(--text-primary);">${v['TITLE OF VIDEO']}</h4>
-                                <span class="text-[9px] font-bold uppercase tracking-widest" style="color: var(--purple);">${v.TOPIC}</span>
-                            </div>
-                        </div>
-                    `;
+                    // Create minimal object for the renderer
+                    const obj = { id: this.getVideoID(v.URL), title: v['TITLE OF VIDEO'], thumbnail: `https://img.youtube.com/vi/${this.getVideoID(v.URL)}/mqdefault.jpg` };
+                    return this.renderCard(obj, false);
                 }).join('');
             },
 
-            // --- VIDEO PLAYER ---
             openVideo: function(id, type) {
                 if(!id || id === 'null') return;
                 if (!type) type = (this.currentVideoSource === 'archive' && !id.match(/^[a-zA-Z0-9_-]{11}$/)) ? 'archive' : 'youtube';
-                const modal = document.getElementById('video-modal');
                 const container = document.getElementById('video-frame-container');
                 let src = type === 'archive' ? `https://archive.org/embed/${id}?autoplay=1` : `https://www.youtube.com/embed/${id}?autoplay=1&rel=0`;
                 container.innerHTML = `<iframe src="${src}" class="w-full h-full" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
-                modal.classList.remove('hidden');
+                document.getElementById('video-modal').classList.remove('hidden');
             },
             closeVideo: function() { document.getElementById('video-frame-container').innerHTML = ''; document.getElementById('video-modal').classList.add('hidden'); },
 
-            // --- MERGED VIDEO LOGIC ---
             setVideoSource: function(source) {
                 this.currentVideoSource = source;
                 const btnYT = document.getElementById('toggle-yt');
                 const btnArc = document.getElementById('toggle-arc');
-                
-                // Reset styles
-                btnYT.style.background = 'transparent'; btnYT.style.color = 'var(--text-secondary)';
-                btnArc.style.background = 'transparent'; btnArc.style.color = 'var(--text-secondary)';
-
-                if (source === 'youtube') {
-                    btnYT.style.background = '#DC2626'; btnYT.style.color = 'white';
-                } else {
-                    btnArc.style.background = '#22d3ee'; btnArc.style.color = 'black';
-                }
-
-                if (source === 'archive' && this.archiveVideos.length === 0) {
-                    this.fetchArchiveVideos();
-                }
+                // Reset to default
+                btnYT.style.background = 'transparent'; btnYT.style.color = 'var(--text-secondary)'; btnYT.style.borderColor = 'var(--border-color)';
+                btnArc.style.background = 'transparent'; btnArc.style.color = 'var(--text-secondary)'; btnArc.style.borderColor = 'var(--border-color)';
+                // Active State
+                if (source === 'youtube') { btnYT.style.background = '#DC2626'; btnYT.style.color = 'white'; btnYT.style.borderColor = '#DC2626'; }
+                else { btnArc.style.background = '#22d3ee'; btnArc.style.color = 'black'; btnArc.style.borderColor = '#22d3ee'; }
+                if (source === 'archive' && this.archiveVideos.length === 0) this.fetchArchiveVideos();
                 this.renderMergedGrid();
             },
 
@@ -561,82 +561,25 @@
                 if (this.archiveLoading || !this.archiveHasMore) return;
                 this.archiveLoading = true;
                 document.getElementById('video-loader').classList.remove('hidden');
-
                 const query = 'uploader:jesse_floyd405 AND mediatype:movies';
-                const rows = 50;
-                const url = `https://archive.org/advancedsearch.php?q=${encodeURIComponent(query)}&fl[]=identifier&fl[]=title&fl[]=description&fl[]=external-identifier&fl[]=downloads&sort[]=-addeddate&output=json&rows=${rows}&page=${this.archivePage}`;
-
+                const url = `https://archive.org/advancedsearch.php?q=${encodeURIComponent(query)}&fl[]=identifier&fl[]=title&fl[]=description&fl[]=external-identifier&fl[]=downloads&sort[]=-addeddate&output=json&rows=50&page=${this.archivePage}`;
                 try {
-                    const res = await fetch(url);
-                    const data = await res.json();
-                    
-                    if (data.response && data.response.docs && data.response.docs.length > 0) {
-                        this.archiveVideos.push(...data.response.docs);
-                        this.archivePage++;
-                    } else {
-                        this.archiveHasMore = false;
-                    }
-                    if (this.currentVideoSource === 'archive') {
-                        this.renderMergedGrid();
-                    }
+                    const res = await fetch(url); const data = await res.json();
+                    if (data.response && data.response.docs && data.response.docs.length > 0) { this.archiveVideos.push(...data.response.docs); this.archivePage++; } else { this.archiveHasMore = false; }
+                    if (this.currentVideoSource === 'archive') this.renderMergedGrid();
                 } catch (e) { console.error("Archive Error", e); }
-                this.archiveLoading = false;
-                document.getElementById('video-loader').classList.add('hidden');
+                this.archiveLoading = false; document.getElementById('video-loader').classList.add('hidden');
             },
 
             renderMergedGrid: function() {
                 const grid = document.getElementById("video-grid");
                 grid.innerHTML = '';
-                
-                let videosToRender = [];
-                let isArchive = (this.currentVideoSource === 'archive');
-
-                if (isArchive) {
-                    videosToRender = this.archiveVideos;
-                    if (videosToRender.length === 0 && !this.archiveLoading) {
-                        grid.innerHTML = '<div class="col-span-full text-center py-20 text-stone-500">No Restored Videos Found Yet.<br><span class="text-xs">Uploads take ~30mins to appear.</span></div>';
-                        return;
-                    }
-                } else {
-                    videosToRender = this.youtube.videos;
-                }
-
-                grid.innerHTML = videosToRender.map(v => {
-                    let id, title, thumb, displayID, topic, linkUrl;
-                    let crossRefBtn = '';
-
-                    if (isArchive) {
-                        id = v.identifier; title = v.title; thumb = `https://archive.org/services/img/${id}`; displayID = id; linkUrl = `https://archive.org/details/${id}`;
-                        topic = this.getTopicByVideoID(null, title);
-                        if (v['external-identifier'] && v['external-identifier'].includes('urn:youtube:')) {
-                            const ytId = v['external-identifier'].replace('urn:youtube:', '');
-                            crossRefBtn = `<button onclick="event.stopPropagation(); window.open('https://youtube.com/watch?v=${ytId}', '_blank')" class="text-[9px] text-red-400 border border-red-900/50 px-2 py-1 rounded hover:bg-red-900 hover:text-white transition-colors uppercase font-bold tracking-widest"><i class="fa-brands fa-youtube mr-1"></i> Source</button>`;
-                        }
-                    } else {
-                        id = v.id; title = v.title; thumb = v.thumbnail; displayID = id; linkUrl = `https://www.youtube.com/watch?v=${id}`; topic = window.app.getTopicByVideoID(id, title);
-                    }
-                    
-                    return `
-                    <div class="cosmos-card group">
-                        <div class="relative aspect-video overflow-hidden cursor-pointer bg-black" onclick="window.app.openVideo('${id}', '${isArchive ? 'archive' : 'youtube'}')">
-                            <img src="${thumb}" class="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" onerror="this.src='https://archive.org/images/not_found.png'" />
-                            <div class="absolute inset-0 flex items-center justify-center">
-                                <i class="fa-solid ${isArchive ? 'fa-film text-cyan-400' : 'fa-play text-white'} text-4xl opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-lg"></i>
-                            </div>
-                            ${isArchive ? '<div class="absolute top-2 right-2 bg-black/80 text-cyan-400 text-[9px] px-2 py-1 rounded font-mono uppercase tracking-widest border border-cyan-900/50">Restored</div>' : ''}
-                        </div>
-                        <div class="p-4 flex flex-col flex-1" style="background: var(--bg-secondary); border-top: 1px solid var(--border-color);">
-                            <h3 class="text-sm group-hover:text-white line-clamp-2 mb-3 font-medium" style="color: var(--text-primary);">${title}</h3>
-                            <div class="mt-auto pt-2 flex flex-wrap gap-2 justify-between items-center" style="border-top: 1px solid var(--border-color);">
-                                ${this.createTagButton(topic)}
-                                ${crossRefBtn}
-                            </div>
-                        </div>
-                    </div>`;
-                }).join("");
+                const isArchive = (this.currentVideoSource === 'archive');
+                const videos = isArchive ? this.archiveVideos : this.youtube.videos;
+                if (videos.length === 0 && !this.archiveLoading && isArchive) { grid.innerHTML = '<div class="col-span-full text-center py-20 text-stone-500">No Restored Videos Found Yet.<br><span class="text-xs">Uploads take ~30mins to appear.</span></div>'; return; }
+                grid.innerHTML = videos.map(v => this.renderCard(v, isArchive)).join("");
             },
 
-            // --- YOUTUBE LOGIC ---
             youtube: {
                 apiKey: "AIzaSyCZfKNXHgjZG1h13QhDH5-ubtVC0xDPfe4", uploadsPlaylistId: "UUinvwSeMdmuuzyMWrS0tGTg", videos: [], nextPageToken: null, loading: false,
                 fetchVideos: async function () {
@@ -650,15 +593,12 @@
                         this.videos.push(...data.items.map(item => ({ id: item.snippet.resourceId.videoId, title: item.snippet.title, thumbnail: item.snippet.thumbnails.high.url })));
                         if (window.app.currentVideoSource === 'youtube') window.app.renderMergedGrid();
                     } catch (e) { console.error("YT Error", e); }
-                    this.loading = false;
-                    document.getElementById('video-loader').classList.add('hidden');
+                    this.loading = false; document.getElementById('video-loader').classList.add('hidden');
                 }
             },
 
-            // --- CATEGORIES ---
-            getUniqueTopics: function() { return [...new Set(this.data.map(i => i.TOPIC).filter(t => t))].sort((a, b) => a.localeCompare(b)); },
             renderCategories: function() { 
-                const topics = this.getUniqueTopics(); 
+                const topics = [...new Set(this.data.map(i => i.TOPIC).filter(t => t))].sort((a, b) => a.localeCompare(b)); 
                 document.getElementById('total-topics-display').innerText = `${topics.length} Categories`; 
                 document.getElementById('category-grid').innerHTML = topics.map((t, i) => { 
                     const count = this.data.filter(d => d.TOPIC === t).length; 
@@ -671,15 +611,12 @@
                 const items = this.data.filter(i => i.TOPIC === topic); 
                 document.getElementById('active-category-count').innerText = `${items.length} LECTURES`; 
                 document.getElementById('list-container').innerHTML = items.map(l => { 
-                    const vidId = this.getVideoID(l.URL); const thumbUrl = vidId ? `https://img.youtube.com/vi/${vidId}/mqdefault.jpg` : null; 
-                    return `<div class="p-3 rounded-lg flex gap-4 items-center transition-all group mb-2" style="background: var(--bg-secondary); border: 1px solid var(--border-color);">
-                        <div class="w-24 h-16 bg-black shrink-0 rounded overflow-hidden relative border border-white/10 cursor-pointer" onclick="window.app.openVideo('${vidId}')">${thumbUrl ? `<img src="${thumbUrl}" class="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity">` : ''}<div class="absolute inset-0 flex items-center justify-center pointer-events-none"><i class="fa-solid fa-play text-2xl text-white opacity-0 group-hover:opacity-100 transition-opacity"></i></div></div>
-                        <div class="flex-1 min-w-0"><h4 class="text-sm font-medium truncate pr-4 cursor-pointer" style="color: var(--text-primary);" onclick="window.app.openVideo('${vidId}')">${l['TITLE OF VIDEO']}</h4><p class="text-[10px] text-gray-600 font-mono mt-1">ID: ${vidId}</p></div>
-                        <div class="shrink-0"><button onclick="window.app.openVideo('${vidId}')" class="w-8 h-8 rounded-full border border-purple-500/30 flex items-center justify-center text-purple-400 hover:bg-purple-500 hover:text-white transition-all"><i class="fa-solid fa-play text-xs pl-0.5"></i></button></div></div>`; 
+                    // Construct a video object for the card renderer
+                    const obj = { id: this.getVideoID(l.URL), title: l['TITLE OF VIDEO'], thumbnail: `https://img.youtube.com/vi/${this.getVideoID(l.URL)}/mqdefault.jpg` };
+                    return this.renderCard(obj, false);
                 }).join(''); 
             },
 
-            // --- AI SEARCH (REVISED) ---
             performAISearch: async function() {
                 const input = document.getElementById('ai-input'); let q = (input ? input.value : '').trim();
                 if (!q) { const global = document.getElementById('global-search'); q = global ? global.value.trim() : ''; }
@@ -687,58 +624,27 @@
                 this.nav('search'); document.getElementById('ai-box').classList.remove('hidden');
                 
                 let combinedResults = [];
-                this.data.forEach(row => {
-                    if ((row['TITLE OF VIDEO']||"").toLowerCase().includes(q.toLowerCase()) || (row.TOPIC||"").toLowerCase().includes(q.toLowerCase())) {
-                        combinedResults.push({ id: this.getVideoID(row.URL), title: row['TITLE OF VIDEO'], topic: row.TOPIC, snippet: null, score: 9999, url: row.URL });
-                    }
-                });
+                this.data.forEach(row => { if ((row['TITLE OF VIDEO']||"").toLowerCase().includes(q.toLowerCase()) || (row.TOPIC||"").toLowerCase().includes(q.toLowerCase())) { combinedResults.push({ id: this.getVideoID(row.URL), title: row['TITLE OF VIDEO'], thumbnail: `https://img.youtube.com/vi/${this.getVideoID(row.URL)}/mqdefault.jpg` }); }});
                 
-                // INSIGHT BOX TEXT
-                const count = combinedResults.length;
-                let insightText = "";
-                if(count > 0) {
-                     insightText = `I have searched the archives for <strong>"${q}"</strong>. There are ${count} lectures where the Teacher touches on this vibration. Below are the specific entries from the library.`;
-                } else {
-                     insightText = `The archives are silent on the specific word <strong>"${q}"</strong>. However, the path often requires looking for the spirit of the word, not just the letter. Try a broader term.`;
-                }
-                
-                document.getElementById('ai-text-output').innerHTML = insightText;
-                this.renderSearchResults(combinedResults, q);
-            },
-            renderSearchResults: function(results, query) {
+                document.getElementById('ai-text-output').innerHTML = combinedResults.length > 0 ? `I have searched the archives for <strong>"${q}"</strong>. There are ${combinedResults.length} lectures where the Teacher touches on this vibration.` : `The archives are silent on the specific word <strong>"${q}"</strong>.`;
                 const list = document.getElementById('search-list');
-                document.getElementById('search-title').innerText = `${results.length} Matches Found`;
-                if(results.length === 0) { list.innerHTML = '<div class="p-8 text-center text-stone-500">No matches found.</div>'; return; }
-                list.innerHTML = results.map(r => {
-                    const vidId = r.id || this.getVideoID(r.url); const thumbUrl = vidId ? `https://img.youtube.com/vi/${vidId}/mqdefault.jpg` : null;
-                    return `<div class="cosmos-card p-0 overflow-hidden rounded-xl group transition-all cursor-pointer" onclick="window.app.openVideo('${vidId}')" style="background: var(--bg-secondary); border: 1px solid var(--border-color);">
-                        <div class="flex flex-col h-full"><div class="relative h-40 bg-black overflow-hidden">${thumbUrl ? `<img src="${thumbUrl}" class="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity">` : ''}<div class="absolute inset-0 flex items-center justify-center"><i class="fa-solid fa-play text-3xl text-white opacity-0 group-hover:opacity-100 transition-opacity"></i></div></div>
-                        <div class="p-4 flex-1 flex flex-col"><h4 class="text-sm font-bold mb-2 line-clamp-1" style="color: var(--text-primary);">${r.title}</h4><div class="mt-auto pt-4 flex justify-between items-center" style="border-top: 1px solid var(--border-color);">${this.createTagButton(r.topic)}</div></div></div></div>`;
-                }).join('');
+                list.innerHTML = combinedResults.length === 0 ? '<div class="p-8 text-center text-stone-500">No matches found.</div>' : combinedResults.map(r => this.renderCard(r, false)).join('');
             },
 
-            // --- INIT ---
             init: function() {
                 setTimeout(() => document.getElementById('app-loader').classList.add('hidden'), 1000);
                 createStars();
                 this.youtube.fetchVideos(); 
-                
                 Papa.parse('catalog.csv', { download: true, header: true, skipEmptyLines: true, complete: (results) => {
                     this.data = results.data.filter(row => row['TITLE OF VIDEO']).map(row => { row.TOPIC = (row.TOPIC || "").replace(/^and\s+/i, '').trim(); return row; });
                     this.renderCategories(); this.youtube.renderVideos();
                 }});
-                
                 const wrapper = document.getElementById('scroll-wrapper');
                 wrapper.addEventListener("scroll", () => {
                     if (wrapper.scrollTop + wrapper.clientHeight >= wrapper.scrollHeight - 100) {
-                        if (window.app.currentVideoSource === 'youtube') {
-                            window.app.youtube.fetchVideos();
-                        } else {
-                            window.app.fetchArchiveVideos();
-                        }
+                        if (window.app.currentVideoSource === 'youtube') window.app.youtube.fetchVideos(); else window.app.fetchArchiveVideos();
                     }
                 });
-                
                 this.nav('home');
             }
         };
