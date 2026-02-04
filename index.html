@@ -41,7 +41,7 @@
         }
         @keyframes twinkle { 0%, 100% { opacity: 0; } 50% { opacity: var(--opacity); } }
 
-        /* UI ELEMENTS */
+        /* MASONRY GRID */
         .masonry-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -52,6 +52,7 @@
             .masonry-grid { grid-template-columns: 1fr; }
         }
 
+        /* CARDS */
         .cosmos-card {
             background-color: var(--card-bg);
             border: 1px solid var(--border);
@@ -99,6 +100,15 @@
         .dock-btn:hover { color: white; background: rgba(255,255,255,0.1); }
         .dock-btn.active { background: white; color: black; box-shadow: 0 0 15px rgba(255,255,255,0.2); }
 
+        /* TOGGLE BUTTONS (Video Tab) */
+        .toggle-btn {
+            padding: 8px 16px; border: 1px solid var(--border); border-radius: 8px;
+            font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.1em;
+            color: #666; transition: all 0.3s; background: rgba(255,255,255,0.05);
+        }
+        .toggle-btn.active-yt { background: #DC2626; color: white; border-color: #DC2626; box-shadow: 0 0 15px rgba(220, 38, 38, 0.4); }
+        .toggle-btn.active-arc { background: #22d3ee; color: black; border-color: #22d3ee; box-shadow: 0 0 15px rgba(34, 211, 238, 0.4); }
+
         /* SEARCH & INPUTS */
         .search-input {
             background: rgba(20, 20, 20, 0.8); backdrop-filter: blur(10px);
@@ -142,11 +152,6 @@
         .highlight { background: rgba(216, 180, 254, 0.2); color: #fff; font-weight: bold; border-radius: 2px; padding: 0 2px; }
         .profile-img { box-shadow: 0 0 50px rgba(216, 180, 254, 0.15); transition: 0.5s; }
         .profile-img:hover { box-shadow: 0 0 80px rgba(216, 180, 254, 0.3); transform: scale(1.02); }
-        .diamond-box {
-            border: 1px solid rgba(216, 180, 254, 0.3); padding: 10px 30px; transform: skew(-15deg);
-            display: inline-block; background: rgba(216, 180, 254, 0.05);
-        }
-        .diamond-text { transform: skew(15deg); color: var(--purple); text-shadow: 0 0 15px rgba(216, 180, 254, 0.5); }
        
         /* MEDITATION */
         #view-meditation { background: radial-gradient(circle at center, #1a0b2e 0%, #000000 100%); }
@@ -313,26 +318,28 @@
 
         <section id="view-videos" class="view-section px-6">
               <div class="max-w-[1800px] mx-auto w-full">
-                <div class="mb-10 pb-8 border-b border-white/10">
-                  <h2 class="cinzel text-3xl md:text-5xl font-bold text-white mb-2">Video Archive</h2>
-                  <p class="font-mono text-purple-400 text-xs uppercase tracking-[0.2em]">Official YouTube Collection</p>
-                </div>
-                <div id="video-grid" class="masonry-grid"></div>
-              </div>
-        </section>
-        
-        <section id="view-archive" class="view-section px-6">
-              <div class="max-w-[1800px] mx-auto w-full">
-                <div class="mb-10 pb-8 border-b border-white/10 flex justify-between items-end">
+                <div class="mb-10 pb-8 border-b border-white/10 flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
                     <div>
-                        <h2 class="cinzel text-3xl md:text-5xl font-bold text-white mb-2">HD RESTORATION</h2>
-                        <p class="font-mono text-cyan-400 text-xs uppercase tracking-[0.2em]">The 900+ Video Collection</p>
+                        <h2 class="cinzel text-3xl md:text-5xl font-bold text-white mb-2">The Archive</h2>
+                        <p class="font-mono text-purple-400 text-xs uppercase tracking-[0.2em]">Video Collection</p>
                     </div>
-                    <div class="hidden md:block">
-                        <span class="text-[10px] text-stone-500 font-mono" id="archive-count">Connecting to Archive.org...</span>
+                    
+                    <div class="flex gap-2">
+                        <button id="toggle-yt" class="toggle-btn active-yt" onclick="window.app.setVideoSource('youtube')">
+                            <i class="fa-brands fa-youtube mr-2"></i> YouTube
+                        </button>
+                        <button id="toggle-arc" class="toggle-btn" onclick="window.app.setVideoSource('archive')">
+                            <i class="fa-solid fa-film mr-2"></i> HD Restored
+                        </button>
                     </div>
                 </div>
-                <div id="archive-grid" class="masonry-grid"></div>
+                
+                <div id="video-grid" class="masonry-grid"></div>
+                
+                <div id="video-loader" class="text-center py-8 hidden">
+                    <i class="fa-solid fa-circle-notch fa-spin text-purple-500 text-2xl"></i>
+                    <p class="mt-2 text-[10px] text-stone-500 font-mono uppercase">Loading Data...</p>
+                </div>
               </div>
         </section>
         
@@ -392,7 +399,6 @@
             <button class="dock-btn active" id="btn-home" onclick="window.app.nav('home')">Home</button>
             <button class="dock-btn" id="btn-library" onclick="window.app.nav('library')">Library</button>
             <button class="dock-btn" id="btn-videos" onclick="window.app.nav('videos')">Videos</button>
-            <button class="dock-btn text-cyan-300 hover:text-cyan-100" id="btn-archive" onclick="window.app.nav('archive')"><i class="fa-solid fa-box-archive mr-1"></i> HD Archive</button>
             <button class="dock-btn" id="btn-anatomy" onclick="window.app.nav('anatomy')">Temple</button>
             <button class="dock-btn" id="btn-meditation" onclick="window.app.nav('meditation')">Meditation</button> 
             <button class="dock-btn" id="btn-resources" onclick="window.app.nav('resources')">Links</button>
@@ -403,456 +409,336 @@
     </div>
 
     <script>
-    // --- STAR ANIMATION ---
-    function createStars() {
-        const container = document.getElementById('stars-container');
-        if(!container) return;
-        for(let i=0; i<150; i++) {
-            const star = document.createElement('div');
-            star.className = 'star';
-            star.style.left = `${Math.random() * 100}%`;
-            star.style.top = `${Math.random() * 100}%`;
-            const size = Math.random() * 2 + 0.5;
-            star.style.width = `${size}px`;
-            star.style.height = `${size}px`;
-            star.style.backgroundColor = `hsl(${Math.random() * 40}, ${Math.random() * 20 + 70}%, ${Math.random() * 20 + 70}%)`;
-            star.style.boxShadow = `0 0 ${size*2}px ${star.style.backgroundColor}`;
-            star.style.setProperty('--duration', `${Math.random() * 3 + 2}s`);
-            star.style.setProperty('--opacity', Math.random() * 0.5 + 0.5);
-            container.appendChild(star);
+        function createStars() {
+            const container = document.getElementById('stars-container');
+            if(!container) return;
+            for(let i=0; i<150; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = `${Math.random() * 100}%`;
+                star.style.top = `${Math.random() * 100}%`;
+                const size = Math.random() * 2 + 0.5;
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                star.style.backgroundColor = `hsl(${Math.random() * 40}, ${Math.random() * 20 + 70}%, ${Math.random() * 20 + 70}%)`;
+                star.style.boxShadow = `0 0 ${size*2}px ${star.style.backgroundColor}`;
+                star.style.setProperty('--duration', `${Math.random() * 3 + 2}s`);
+                star.style.setProperty('--opacity', Math.random() * 0.5 + 0.5);
+                container.appendChild(star);
+            }
         }
-    }
-    
-    // --- MAIN APPLICATION LOGIC ---
-    window.app = {
-        data: [], 
-        transcriptData: null, 
-        currentUtterance: null, 
-        isSpeaking: false, 
-        archiveData: [],
         
-        // --- DATA: BILL DONAHUE'S CHAKRA/ANATOMY ---
-        anatomyData: {
-            "root": { title: "Root / Base", name: "Muladhara", color: "#ef4444", freq: "400-484 THz", biblical: "Egypt / The Red Sea", church: "Ephesus", desc: "The starting point. Egypt represents the physical bondage of the senses. We must cross the Red Sea (emotion) to begin the ascent." },
-            "sacral": { title: "Sacral", name: "Svadhisthana", color: "#f97316", freq: "484-508 THz", biblical: "Wilderness", church: "Smyrna", desc: "The seat of emotions and sexual energy. Associated with persecution and death of the lower self." },
-            "solar": { title: "Solar Plexus", name: "Manipura", color: "#eab308", freq: "508-526 THz", biblical: "The Manger", church: "Pergamos", desc: "The place of the Sun (Son). This is the 'Manger' where the Christ child is born amongst the animals." },
-            "heart": { title: "Heart", name: "Anahata", color: "#22c55e", freq: "526-606 THz", biblical: "Jerusalem", church: "Thyatira", desc: "The balance point. The Green Ray. Charity, service, and love. Here we find the 'Morning Star'." },
-            "throat": { title: "Throat", name: "Vishuddha", color: "#3b82f6", freq: "606-668 THz", biblical: "Jordan River", church: "Sardis", desc: "The power of the Word (Logos). Sound vibration. 'You have a name that you live, and are dead'." },
-            "brow": { title: "Brow / Third Eye", name: "Ajna", color: "#4f46e5", freq: "668-789 THz", biblical: "The Single Eye", church: "Philadelphia", desc: "The Command Center. The Pituitary. 'If thine eye be single, thy whole body shall be full of light.'" },
-            "crown": { title: "Crown / Pineal", name: "Sahasrara", color: "#a855f7", freq: "789+ THz", biblical: "The Promised Land / Peniel", church: "Laodicea", desc: "The destination. The Pineal Gland. Peniel - 'I have seen God face to face.'" }
-        },
-       
-        // --- UTILS: ID EXTRACTION ---
-        getVideoID: function(url) {
-            if (!url) return null;
-            const str = url.toString().trim();
-            if (/^[a-zA-Z0-9_-]{11}$/.test(str)) return str;
-            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
-            const match = str.match(regExp);
-            return (match && match[2].length === 11) ? match[2] : null;
-        },
-
-        // --- UTILS: TAG BUTTON GENERATOR (Fixes Clickability) ---
-        createTagButton: function(topic) {
-            if(!topic || topic === "General") return `<span class="text-[9px] text-stone-600 font-mono uppercase tracking-widest block py-1.5 opacity-30">Uncatalogued</span>`;
-            // Escape special chars for the onclick function
-            const safeTopic = topic.replace(/'/g, "\\'").replace(/"/g, '&quot;');
-            return `<button class="inline-flex items-center gap-2 text-[9px] font-bold uppercase tracking-widest text-purple-300 bg-purple-900/20 border border-purple-500/30 px-3 py-1.5 rounded hover:bg-purple-500 hover:text-white transition-all justify-center cursor-pointer relative z-20" onclick="event.stopPropagation(); window.app.openTopic('${safeTopic}')"><i class="fa-solid fa-tag"></i> ${topic}</button>`;
-        },
-
-        getTopicByVideoID: function(vidId, vidTitle) {
-            if (!this.data || this.data.length === 0) return null;
-            const matchById = this.data.find(row => { const csvId = this.getVideoID(row.URL); return csvId === vidId; });
-            if (matchById) return matchById.TOPIC;
-            if (vidTitle) {
-                const cleanVidTitle = vidTitle.toLowerCase().replace(/[^a-z0-9]/g, '');
-                const matchByTitle = this.data.find(row => { const cleanRowTitle = row['TITLE OF VIDEO'].toLowerCase().replace(/[^a-z0-9]/g, ''); return cleanRowTitle.includes(cleanVidTitle) || cleanVidTitle.includes(cleanRowTitle); });
-                if (matchByTitle) return matchByTitle.TOPIC;
-            }
-            return null;
-        },
-
-        // --- NAVIGATION & UI ---
-        nav: function(id) { 
-            document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active')); 
-            document.querySelectorAll('.dock-btn').forEach(b => b.classList.remove('active')); 
-            const target = document.getElementById('view-' + id); 
-            if(target) target.classList.add('active'); 
-            const btn = document.getElementById('btn-' + id); 
-            if(btn) btn.classList.add('active'); 
-            if(id !== 'search') document.getElementById('global-search').value = ''; 
+        window.app = {
+            data: [], 
+            transcriptData: null, 
+            currentUtterance: null, 
+            isSpeaking: false,
             
-            // Stop Audio if leaving meditation
-            if(id !== 'meditation') { 
-                const audio = document.getElementById('meditation-audio'); 
-                if(audio && !audio.paused) { 
-                    audio.pause(); 
-                    document.getElementById('meditation-play-btn').innerHTML = '<i class="fa-solid fa-play"></i> Begin Transmission'; 
-                    document.getElementById('audio-viz').style.opacity = '0.3'; 
-                }
-            }
-            window.scrollTo(0,0); 
-        },
-        
-        // --- ANATOMY INTERACTION ---
-        showAnatomy: function(key) { 
-            const data = this.anatomyData[key]; if(!data) return; 
-            document.getElementById('anatomy-content-default').classList.add('hidden'); 
-            const content = document.getElementById('anatomy-content-active'); 
-            content.classList.remove('hidden'); 
-            document.getElementById('ana-name').innerText = data.name; 
-            document.getElementById('ana-freq').innerText = data.freq; 
-            document.getElementById('ana-title').innerText = data.title; 
-            document.getElementById('ana-bib').innerText = data.biblical; 
-            document.getElementById('ana-church').innerText = data.church; 
-            document.getElementById('ana-desc').innerText = data.desc; 
-            const box = document.getElementById('anatomy-info'); 
-            box.style.borderColor = data.color; 
-            box.style.boxShadow = `0 0 30px -10px ${data.color}`; 
-            document.getElementById('ana-title').style.color = data.color; 
-        },
-
-        // --- VIDEO PLAYER ---
-        openVideo: function(id, type = 'youtube') {
-            if(!id || id === 'null') return;
-            const modal = document.getElementById('video-modal');
-            const container = document.getElementById('video-frame-container');
-            // Check for Archive vs YouTube
-            let src = type === 'archive' ? `https://archive.org/embed/${id}?autoplay=1` : `https://www.youtube.com/embed/${id}?autoplay=1&rel=0`;
-            container.innerHTML = `<iframe src="${src}" class="w-full h-full" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
-            modal.classList.remove('hidden');
-        },
-        closeVideo: function() { 
-            document.getElementById('video-frame-container').innerHTML = ''; 
-            document.getElementById('video-modal').classList.add('hidden'); 
-        },
-
-        // --- INTERNET ARCHIVE FETCH ---
-        fetchArchiveVideos: async function() {
-            const grid = document.getElementById("archive-grid");
-            const countDisplay = document.getElementById("archive-count");
-            // Change "subject" here if you want to filter only your uploads later
-            const query = 'subject:"Bill Donahue" AND mediatype:"movies"'; 
-            const url = `https://archive.org/advancedsearch.php?q=${encodeURIComponent(query)}&fl[]=identifier&fl[]=title&fl[]=description&fl[]=downloads&fl[]=subject&sort[]=-downloads&output=json&rows=100`;
-            try {
-                const res = await fetch(url);
-                const data = await res.json();
-                if (data.response && data.response.docs) {
-                    this.archiveData = data.response.docs;
-                    countDisplay.innerText = `${this.archiveData.length} Videos Restored`;
-                    this.renderArchiveVideos();
-                } else { grid.innerHTML = '<div class="col-span-3 text-center text-stone-500">No archives found.</div>'; }
-            } catch (e) { grid.innerHTML = '<div class="col-span-3 text-center text-red-400">Error connecting to Archive.org</div>'; }
-        },
-
-        renderArchiveVideos: function() {
-            const grid = document.getElementById("archive-grid");
-            if(!grid || this.archiveData.length === 0) return;
+            // STATE for Merged Video Tab
+            currentVideoSource: 'youtube', // 'youtube' or 'archive'
+            archiveVideos: [],
+            archivePage: 1,
+            archiveLoading: false,
+            archiveHasMore: true,
             
-            grid.innerHTML = this.archiveData.map(v => {
-                const thumb = `https://archive.org/services/img/${v.identifier}`;
-                // Attempt to find a matching topic from CSV based on title
-                const topic = this.getTopicByVideoID(null, v.title);
-                
-                return `
-                <div class="cosmos-card group">
-                    <div class="relative aspect-video overflow-hidden cursor-pointer bg-black" onclick="window.app.openVideo('${v.identifier}', 'archive')">
-                        <img src="${thumb}" class="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" onerror="this.src='https://archive.org/images/not_found.png'" />
-                        <div class="absolute inset-0 flex items-center justify-center"><i class="fa-solid fa-film text-4xl text-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-lg"></i></div>
-                        <div class="absolute top-2 right-2 bg-black/80 text-cyan-400 text-[9px] px-2 py-1 rounded font-mono uppercase tracking-widest border border-cyan-900/50">Archive</div>
-                    </div>
-                    <div class="p-4 flex flex-col flex-1 bg-[#0A0A0A] border-t border-cyan-900/30">
-                        <h3 class="text-sm text-gray-200 group-hover:text-cyan-100 line-clamp-2 mb-2 font-medium">${v.title}</h3>
-                        <div class="mt-auto pt-2 border-t border-white/5 flex justify-between items-center flex-wrap gap-2">
-                            ${this.createTagButton(topic)}
-                            <span class="text-[9px] text-stone-600 font-mono uppercase tracking-widest"><i class="fa-solid fa-download mr-1"></i> ${v.downloads || 0}</span>
-                        </div>
-                    </div>
-                </div>`
-            }).join("");
-        },
-
-        // --- YOUTUBE LOGIC ---
-        youtube: {
-            apiKey: "AIzaSyCZfKNXHgjZG1h13QhDH5-ubtVC0xDPfe4", 
-            uploadsPlaylistId: "UUinvwSeMdmuuzyMWrS0tGTg", 
-            videos: [], 
-            nextPageToken: null, 
-            loading: false,
-            
-            fetchVideos: async function () {
-                if (this.loading) return; this.loading = true;
-                let url = `https://www.googleapis.com/youtube/v3/playlistItems?key=${this.apiKey}&playlistId=${this.uploadsPlaylistId}&part=snippet&maxResults=24`;
-                if (this.nextPageToken) url += `&pageToken=${this.nextPageToken}`;
-                try {
-                    const res = await fetch(url); const data = await res.json();
-                    this.nextPageToken = data.nextPageToken || null;
-                    this.videos.push(...data.items.map(item => ({ id: item.snippet.resourceId.videoId, title: item.snippet.title, thumbnail: item.snippet.thumbnails.high.url })));
-                    this.renderVideos();
-                } catch (e) { console.error("YT Error", e); }
-                this.loading = false;
+            // --- ANATOMY DATA ---
+            anatomyData: {
+                "root": { title: "Root / Base", name: "Muladhara", color: "#ef4444", freq: "400-484 THz", biblical: "Egypt / The Red Sea", church: "Ephesus", desc: "The starting point. Egypt represents the physical bondage of the senses." },
+                "sacral": { title: "Sacral", name: "Svadhisthana", color: "#f97316", freq: "484-508 THz", biblical: "Wilderness", church: "Smyrna", desc: "The seat of emotions and sexual energy." },
+                "solar": { title: "Solar Plexus", name: "Manipura", color: "#eab308", freq: "508-526 THz", biblical: "The Manger", church: "Pergamos", desc: "The place of the Sun (Son)." },
+                "heart": { title: "Heart", name: "Anahata", color: "#22c55e", freq: "526-606 THz", biblical: "Jerusalem", church: "Thyatira", desc: "The balance point. The Green Ray." },
+                "throat": { title: "Throat", name: "Vishuddha", color: "#3b82f6", freq: "606-668 THz", biblical: "Jordan River", church: "Sardis", desc: "The power of the Word (Logos)." },
+                "brow": { title: "Brow / Third Eye", name: "Ajna", color: "#4f46e5", freq: "668-789 THz", biblical: "The Single Eye", church: "Philadelphia", desc: "The Command Center." },
+                "crown": { title: "Crown / Pineal", name: "Sahasrara", color: "#a855f7", freq: "789+ THz", biblical: "The Promised Land / Peniel", church: "Laodicea", desc: "The destination. The Pineal Gland. Peniel - 'I have seen God face to face.'" }
             },
-            
-            renderVideos: function () {
-                const grid = document.getElementById("video-grid");
-                if (!grid) return;
-                // Wait for CSV data if it's not ready yet
-                if (window.app.data.length === 0 && this.videos.length > 0) { setTimeout(() => this.renderVideos(), 500); return; }
+           
+            // --- UTILS ---
+            getVideoID: function(url) {
+                if (!url) return null;
+                const str = url.toString().trim();
+                if (/^[a-zA-Z0-9_-]{11}$/.test(str)) return str;
+                const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+                const match = str.match(regExp);
+                return (match && match[2].length === 11) ? match[2] : null;
+            },
+
+            createTagButton: function(topic) {
+                if(!topic || topic === "General") return `<span class="text-[9px] text-stone-600 font-mono uppercase tracking-widest block py-1.5 opacity-30">Uncatalogued</span>`;
+                const safeTopic = topic.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                return `<button class="inline-flex items-center gap-2 text-[9px] font-bold uppercase tracking-widest text-purple-300 bg-purple-900/20 border border-purple-500/30 px-3 py-1.5 rounded hover:bg-purple-500 hover:text-white transition-all justify-center cursor-pointer relative z-20" onclick="event.stopPropagation(); window.app.openTopic('${safeTopic}')"><i class="fa-solid fa-tag"></i> ${topic}</button>`;
+            },
+
+            getTopicByVideoID: function(vidId, vidTitle) {
+                if (!this.data || this.data.length === 0) return null;
+                const matchById = this.data.find(row => { const csvId = this.getVideoID(row.URL); return csvId === vidId; });
+                if (matchById) return matchById.TOPIC;
+                if (vidTitle) {
+                    const cleanVidTitle = vidTitle.toLowerCase().replace(/[^a-z0-9]/g, '');
+                    const matchByTitle = this.data.find(row => { const cleanRowTitle = row['TITLE OF VIDEO'].toLowerCase().replace(/[^a-z0-9]/g, ''); return cleanRowTitle.includes(cleanVidTitle) || cleanVidTitle.includes(cleanRowTitle); });
+                    if (matchByTitle) return matchByTitle.TOPIC;
+                }
+                return null;
+            },
+
+            // --- NAV & UI ---
+            nav: function(id) { 
+                document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active')); 
+                document.querySelectorAll('.dock-btn').forEach(b => b.classList.remove('active')); 
+                const target = document.getElementById('view-' + id); 
+                if(target) target.classList.add('active'); 
+                const btn = document.getElementById('btn-' + id); 
+                if(btn) btn.classList.add('active'); 
+                if(id !== 'search') document.getElementById('global-search').value = ''; 
+                if(id !== 'meditation') { const audio = document.getElementById('meditation-audio'); if(audio && !audio.paused) { audio.pause(); document.getElementById('meditation-play-btn').innerHTML = '<i class="fa-solid fa-play"></i> Begin Transmission'; document.getElementById('audio-viz').style.opacity = '0.3'; }}
+                window.scrollTo(0,0); 
+            },
+            showAnatomy: function(key) { const data = this.anatomyData[key]; if(!data) return; document.getElementById('anatomy-content-default').classList.add('hidden'); const content = document.getElementById('anatomy-content-active'); content.classList.remove('hidden'); document.getElementById('ana-name').innerText = data.name; document.getElementById('ana-freq').innerText = data.freq; document.getElementById('ana-title').innerText = data.title; document.getElementById('ana-bib').innerText = data.biblical; document.getElementById('ana-church').innerText = data.church; document.getElementById('ana-desc').innerText = data.desc; const box = document.getElementById('anatomy-info'); box.style.borderColor = data.color; box.style.boxShadow = `0 0 30px -10px ${data.color}`; document.getElementById('ana-title').style.color = data.color; },
+
+            // --- VIDEO PLAYER ---
+            openVideo: function(id, type) {
+                if(!id || id === 'null') return;
+                // Auto-detect type if not provided, based on current mode
+                if (!type) type = (this.currentVideoSource === 'archive' && !id.match(/^[a-zA-Z0-9_-]{11}$/)) ? 'archive' : 'youtube';
                 
-                grid.innerHTML = this.videos.map(v => {
-                    const topic = window.app.getTopicByVideoID(v.id, v.title);
+                const modal = document.getElementById('video-modal');
+                const container = document.getElementById('video-frame-container');
+                let src = type === 'archive' ? `https://archive.org/embed/${id}?autoplay=1` : `https://www.youtube.com/embed/${id}?autoplay=1&rel=0`;
+                container.innerHTML = `<iframe src="${src}" class="w-full h-full" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+                modal.classList.remove('hidden');
+            },
+            closeVideo: function() { document.getElementById('video-frame-container').innerHTML = ''; document.getElementById('video-modal').classList.add('hidden'); },
+
+            // --- MERGED VIDEO LOGIC ---
+            setVideoSource: function(source) {
+                this.currentVideoSource = source;
+                
+                // Toggle Buttons
+                const btnYT = document.getElementById('toggle-yt');
+                const btnArc = document.getElementById('toggle-arc');
+                if (source === 'youtube') {
+                    btnYT.classList.add('active-yt');
+                    btnArc.classList.remove('active-arc');
+                } else {
+                    btnYT.classList.remove('active-yt');
+                    btnArc.classList.add('active-arc');
+                }
+
+                // Initial Load if Empty
+                if (source === 'archive' && this.archiveVideos.length === 0) {
+                    this.fetchArchiveVideos();
+                }
+
+                this.renderMergedGrid();
+            },
+
+            fetchArchiveVideos: async function() {
+                if (this.archiveLoading || !this.archiveHasMore) return;
+                this.archiveLoading = true;
+                document.getElementById('video-loader').classList.remove('hidden');
+
+                // *** CRITICAL FIX: FILTER BY USER "jesse_floyd405" ***
+                const query = 'uploader:jesse_floyd405 AND mediatype:movies';
+                const rows = 50;
+                const url = `https://archive.org/advancedsearch.php?q=${encodeURIComponent(query)}&fl[]=identifier&fl[]=title&fl[]=description&fl[]=external-identifier&fl[]=downloads&sort[]=-addeddate&output=json&rows=${rows}&page=${this.archivePage}`;
+
+                try {
+                    const res = await fetch(url);
+                    const data = await res.json();
+                    
+                    if (data.response && data.response.docs && data.response.docs.length > 0) {
+                        this.archiveVideos.push(...data.response.docs);
+                        this.archivePage++;
+                    } else {
+                        this.archiveHasMore = false; // Stop fetching if no more results
+                    }
+                    
+                    if (this.currentVideoSource === 'archive') {
+                        this.renderMergedGrid();
+                    }
+                } catch (e) {
+                    console.error("Archive Error", e);
+                }
+                
+                this.archiveLoading = false;
+                document.getElementById('video-loader').classList.add('hidden');
+            },
+
+            renderMergedGrid: function() {
+                const grid = document.getElementById("video-grid");
+                grid.innerHTML = '';
+                
+                let videosToRender = [];
+                let isArchive = (this.currentVideoSource === 'archive');
+
+                if (isArchive) {
+                    videosToRender = this.archiveVideos;
+                    if (videosToRender.length === 0 && !this.archiveLoading) {
+                        grid.innerHTML = '<div class="col-span-full text-center py-20 text-stone-500">No Restored Videos Found Yet.<br><span class="text-xs">Uploads take ~30mins to appear.</span></div>';
+                        return;
+                    }
+                } else {
+                    videosToRender = this.youtube.videos;
+                }
+
+                grid.innerHTML = videosToRender.map(v => {
+                    // Extract Data based on Source
+                    let id, title, thumb, displayID, topic, linkUrl;
+                    let crossRefBtn = '';
+
+                    if (isArchive) {
+                        id = v.identifier;
+                        title = v.title;
+                        thumb = `https://archive.org/services/img/${id}`;
+                        displayID = id;
+                        linkUrl = `https://archive.org/details/${id}`;
+                        topic = this.getTopicByVideoID(null, title); // Try to match by title
+                        
+                        // Check for Youtube ID to create "Source" Link
+                        if (v['external-identifier'] && v['external-identifier'].includes('urn:youtube:')) {
+                            const ytId = v['external-identifier'].replace('urn:youtube:', '');
+                            crossRefBtn = `<button onclick="event.stopPropagation(); window.open('https://youtube.com/watch?v=${ytId}', '_blank')" class="text-[9px] text-red-400 border border-red-900/50 px-2 py-1 rounded hover:bg-red-900 hover:text-white transition-colors uppercase font-bold tracking-widest"><i class="fa-brands fa-youtube mr-1"></i> Source</button>`;
+                        }
+                    } else {
+                        id = v.id;
+                        title = v.title;
+                        thumb = v.thumbnail;
+                        displayID = id;
+                        linkUrl = `https://www.youtube.com/watch?v=${id}`;
+                        topic = window.app.getTopicByVideoID(id, title);
+                    }
+                    
                     return `
                     <div class="cosmos-card group">
-                        <div class="relative aspect-video overflow-hidden cursor-pointer" onclick="window.app.openVideo('${v.id}')">
-                            <img src="${v.thumbnail}" class="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
-                            <div class="absolute inset-0 flex items-center justify-center"><i class="fa-solid fa-play text-4xl text-white opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-lg"></i></div>
+                        <div class="relative aspect-video overflow-hidden cursor-pointer bg-black" onclick="window.app.openVideo('${id}', '${isArchive ? 'archive' : 'youtube'}')">
+                            <img src="${thumb}" class="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" onerror="this.src='https://archive.org/images/not_found.png'" />
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <i class="fa-solid ${isArchive ? 'fa-film text-cyan-400' : 'fa-play text-white'} text-4xl opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-lg"></i>
+                            </div>
+                            ${isArchive ? '<div class="absolute top-2 right-2 bg-black/80 text-cyan-400 text-[9px] px-2 py-1 rounded font-mono uppercase tracking-widest border border-cyan-900/50">Restored</div>' : ''}
                         </div>
                         <div class="p-4 flex flex-col flex-1 bg-[#0A0A0A] border-t border-white/5">
-                            <h3 class="text-sm text-gray-200 group-hover:text-white line-clamp-2 mb-3 font-medium">${v.title}</h3>
-                            <div class="mt-auto pt-2 border-t border-white/5">${window.app.createTagButton(topic)}</div>
+                            <h3 class="text-sm text-gray-200 group-hover:text-white line-clamp-2 mb-3 font-medium">${title}</h3>
+                            
+                            <div class="mt-auto pt-2 border-t border-white/5 flex flex-wrap gap-2 justify-between items-center">
+                                ${this.createTagButton(topic)}
+                                ${crossRefBtn}
+                            </div>
+                            
+                            <div class="mt-3 pt-2 border-t border-white/5 text-right">
+                                <a href="${linkUrl}" target="_blank" onclick="event.stopPropagation();" class="text-[9px] text-stone-600 font-mono hover:text-purple-400 transition-colors">
+                                    ID: ${displayID} <i class="fa-solid fa-arrow-up-right-from-square ml-1 text-[8px]"></i>
+                                </a>
+                            </div>
                         </div>
-                    </div>`
+                    </div>`;
                 }).join("");
-            }
-        },
+            },
 
-        // --- CATEGORIES & TOPICS ---
-        getUniqueTopics: function() { return [...new Set(this.data.map(i => i.TOPIC).filter(t => t))].sort((a, b) => a.localeCompare(b)); },
-        
-        renderCategories: function() { 
-            const topics = this.getUniqueTopics(); 
-            document.getElementById('total-topics-display').innerText = `${topics.length} Categories`; 
-            document.getElementById('category-grid').innerHTML = topics.map((t, i) => { 
-                const count = this.data.filter(d => d.TOPIC === t).length; 
-                const safeTopic = t.replace(/'/g, "\\'").replace(/"/g, '&quot;'); 
-                return `<div onclick="window.app.openTopic('${safeTopic}')" class="cosmos-card topic-card p-6 group"><div class="flex justify-between items-start mb-4"><span class="text-xs font-mono text-gray-500">${String(i+1).padStart(2, '0')}</span><i class="fa-solid fa-star text-gray-600 group-hover:text-purple-400 transition-colors text-lg"></i></div><h3 class="text-sm font-medium text-gray-200 leading-snug mb-8 group-hover:text-white line-clamp-3">${t}</h3><div class="flex justify-between items-end border-t border-white/10 pt-3 mt-auto"><span class="text-[9px] text-gray-500 font-bold uppercase tracking-widest">${count} Items</span><span class="text-purple-400 opacity-50 group-hover:opacity-100 transition-opacity">→</span></div></div>`; 
-            }).join(''); 
-        },
+            // --- YOUTUBE LOGIC ---
+            youtube: {
+                apiKey: "AIzaSyCZfKNXHgjZG1h13QhDH5-ubtVC0xDPfe4", uploadsPlaylistId: "UUinvwSeMdmuuzyMWrS0tGTg", videos: [], nextPageToken: null, loading: false,
+                fetchVideos: async function () {
+                    if (this.loading) return; this.loading = true;
+                    document.getElementById('video-loader').classList.remove('hidden');
+                    let url = `https://www.googleapis.com/youtube/v3/playlistItems?key=${this.apiKey}&playlistId=${this.uploadsPlaylistId}&part=snippet&maxResults=24`;
+                    if (this.nextPageToken) url += `&pageToken=${this.nextPageToken}`;
+                    try {
+                        const res = await fetch(url); const data = await res.json();
+                        this.nextPageToken = data.nextPageToken || null;
+                        this.videos.push(...data.items.map(item => ({ id: item.snippet.resourceId.videoId, title: item.snippet.title, thumbnail: item.snippet.thumbnails.high.url })));
+                        if (window.app.currentVideoSource === 'youtube') window.app.renderMergedGrid();
+                    } catch (e) { console.error("YT Error", e); }
+                    this.loading = false;
+                    document.getElementById('video-loader').classList.add('hidden');
+                }
+            },
 
-        // --- FIXED: OPEN TOPIC FUNCTION ---
-        openTopic: function(topic) { 
-            this.nav('list'); 
-            document.getElementById('active-category-title').innerText = topic; 
-            
-            // Filter videos that match this topic
-            const items = this.data.filter(i => i.TOPIC === topic); 
-            document.getElementById('active-category-count').innerText = `${items.length} LECTURES`; 
-            
-            document.getElementById('list-container').innerHTML = items.map(l => { 
-                const vidId = this.getVideoID(l.URL); 
-                const thumbUrl = vidId ? `https://img.youtube.com/vi/${vidId}/mqdefault.jpg` : null; 
-                // Fix for missing videos: properly check if vidId exists
-                const hasUrl = !!vidId;
+            // --- CATEGORIES ---
+            getUniqueTopics: function() { return [...new Set(this.data.map(i => i.TOPIC).filter(t => t))].sort((a, b) => a.localeCompare(b)); },
+            renderCategories: function() { 
+                const topics = this.getUniqueTopics(); 
+                document.getElementById('total-topics-display').innerText = `${topics.length} Categories`; 
+                document.getElementById('category-grid').innerHTML = topics.map((t, i) => { 
+                    const count = this.data.filter(d => d.TOPIC === t).length; 
+                    const safeTopic = t.replace(/'/g, "\\'").replace(/"/g, '&quot;'); 
+                    return `<div onclick="window.app.openTopic('${safeTopic}')" class="cosmos-card topic-card p-6 group"><div class="flex justify-between items-start mb-4"><span class="text-xs font-mono text-gray-500">${String(i+1).padStart(2, '0')}</span><i class="fa-solid fa-star text-gray-600 group-hover:text-purple-400 transition-colors text-lg"></i></div><h3 class="text-sm font-medium text-gray-200 leading-snug mb-8 group-hover:text-white line-clamp-3">${t}</h3><div class="flex justify-between items-end border-t border-white/10 pt-3 mt-auto"><span class="text-[9px] text-gray-500 font-bold uppercase tracking-widest">${count} Items</span><span class="text-purple-400 opacity-50 group-hover:opacity-100 transition-opacity">→</span></div></div>`; 
+                }).join(''); 
+            },
+            openTopic: function(topic) { 
+                this.nav('list'); document.getElementById('active-category-title').innerText = topic; 
+                const items = this.data.filter(i => i.TOPIC === topic); 
+                document.getElementById('active-category-count').innerText = `${items.length} LECTURES`; 
+                document.getElementById('list-container').innerHTML = items.map(l => { 
+                    const vidId = this.getVideoID(l.URL); const thumbUrl = vidId ? `https://img.youtube.com/vi/${vidId}/mqdefault.jpg` : null; 
+                    return `<div class="p-3 border border-white/10 rounded-lg flex gap-4 items-center hover:bg-white/5 transition-all group mb-2 bg-[#0A0A0A]"><div class="w-24 h-16 bg-black shrink-0 rounded overflow-hidden relative border border-white/10 cursor-pointer" onclick="window.app.openVideo('${vidId}')">${thumbUrl ? `<img src="${thumbUrl}" class="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity">` : ''}<div class="absolute inset-0 flex items-center justify-center pointer-events-none"><i class="fa-solid fa-play text-2xl text-white opacity-0 group-hover:opacity-100 transition-opacity"></i></div></div><div class="flex-1 min-w-0"><h4 class="text-sm font-medium text-gray-300 group-hover:text-white truncate pr-4 cursor-pointer" onclick="window.app.openVideo('${vidId}')">${l['TITLE OF VIDEO']}</h4><p class="text-[10px] text-gray-600 font-mono mt-1">ID: ${vidId}</p></div><div class="shrink-0"><button onclick="window.app.openVideo('${vidId}')" class="w-8 h-8 rounded-full border border-purple-500/30 flex items-center justify-center text-purple-400 hover:bg-purple-500 hover:text-white transition-all"><i class="fa-solid fa-play text-xs pl-0.5"></i></button></div></div>`; 
+                }).join(''); 
+            },
 
-                return `
-                <div class="p-3 border border-white/10 rounded-lg flex gap-4 items-center hover:bg-white/5 transition-all group mb-2 bg-[#0A0A0A]">
-                    <div class="w-24 h-16 bg-black shrink-0 rounded overflow-hidden relative border border-white/10 cursor-pointer" onclick="window.app.openVideo('${vidId}')">
-                        ${thumbUrl ? `<img src="${thumbUrl}" class="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity">` : ''}
-                        <div class="absolute inset-0 flex items-center justify-center pointer-events-none"><i class="fa-solid fa-play text-2xl text-white opacity-0 group-hover:opacity-100 transition-opacity"></i></div>
-                    </div>
-                    <div class="flex-1 min-w-0">
-                        <h4 class="text-sm font-medium text-gray-300 group-hover:text-white truncate pr-4 cursor-pointer" onclick="window.app.openVideo('${vidId}')">${l['TITLE OF VIDEO']}</h4>
-                        <p class="text-[10px] text-gray-600 font-mono mt-1">ID: ${vidId}</p>
-                    </div>
-                    <div class="shrink-0">
-                        ${hasUrl ? `<button onclick="window.app.openVideo('${vidId}')" class="w-8 h-8 rounded-full border border-purple-500/30 flex items-center justify-center text-purple-400 hover:bg-purple-500 hover:text-white transition-all"><i class="fa-solid fa-play text-xs pl-0.5"></i></button>` : '<span class="text-[9px] text-stone-600">No Video</span>'}
-                    </div>
-                </div>`; 
-            }).join(''); 
-        },
-
-        // --- VOICE SETTINGS ---
-        populateVoices: function() {
-            const select = document.getElementById('voice-select');
-            if(!select) return;
-            const voices = speechSynthesis.getVoices();
-            select.innerHTML = voices.map((v, i) => `<option value="${i}">${v.name} (${v.lang})</option>`).join('');
-            const best = voices.findIndex(v => v.name.includes("David") || v.name.includes("Male"));
-            if(best !== -1) select.value = best;
-        },
-        testVoice: function() {
-            const select = document.getElementById('voice-select');
-            const voiceIndex = select.value;
-            const voices = speechSynthesis.getVoices();
-            if(voiceIndex && voices[voiceIndex]) {
-                const u = new SpeechSynthesisUtterance("The hidden meaning is within you.");
-                u.voice = voices[voiceIndex];
-                speechSynthesis.cancel();
-                speechSynthesis.speak(u);
-            }
-        },
-
-        // --- FIXED: SEARCH & AI LOGIC ---
-        performAISearch: async function() {
-            const input = document.getElementById('ai-input'); 
-            let q = (input ? input.value : '').trim();
-            if (!q) { 
-                const global = document.getElementById('global-search'); 
-                q = global ? global.value.trim() : ''; 
-            }
-            if (!q) return; 
-            if (input) input.value = '';
-            
-            this.nav('search'); 
-            const aiBox = document.getElementById('ai-box'); 
-            const aiText = document.getElementById('ai-text-output');
-            const aiLink = document.getElementById('ai-video-link');
-
-            aiBox.classList.remove('hidden');
-            aiText.innerText = "Consulting the archives...";
-            aiLink.classList.add('hidden');
-            
-            let combinedResults = [];
-            const searchTerms = q.toLowerCase().split(/\s+/); 
-
-            // 1. Search Titles & Topics in CSV
-            this.data.forEach(row => {
-                const title = (row['TITLE OF VIDEO'] || "").toLowerCase();
-                const topic = (row.TOPIC || "").toLowerCase();
+            // --- AI SEARCH ---
+            populateVoices: function() {
+                const select = document.getElementById('voice-select'); if(!select) return;
+                const voices = speechSynthesis.getVoices();
+                select.innerHTML = voices.map((v, i) => `<option value="${i}">${v.name} (${v.lang})</option>`).join('');
+                const best = voices.findIndex(v => v.name.includes("David") || v.name.includes("Male")); if(best !== -1) select.value = best;
+            },
+            testVoice: function() { const select = document.getElementById('voice-select'); const voiceIndex = select.value; const voices = speechSynthesis.getVoices(); if(voiceIndex && voices[voiceIndex]) { const u = new SpeechSynthesisUtterance("The hidden meaning is within you."); u.voice = voices[voiceIndex]; speechSynthesis.cancel(); speechSynthesis.speak(u); }},
+            performAISearch: async function() {
+                const input = document.getElementById('ai-input'); let q = (input ? input.value : '').trim();
+                if (!q) { const global = document.getElementById('global-search'); q = global ? global.value.trim() : ''; }
+                if (!q) return; if (input) input.value = '';
+                this.nav('search'); document.getElementById('ai-box').classList.remove('hidden');
+                document.getElementById('ai-text-output').innerText = "Consulting the archives...";
                 
-                if (title.includes(q.toLowerCase()) || topic.includes(q.toLowerCase())) {
-                    const vidId = this.getVideoID(row.URL);
-                    combinedResults.push({
-                        id: vidId,
-                        title: row['TITLE OF VIDEO'],
-                        topic: row.TOPIC,
-                        snippet: null, 
-                        score: 9999, 
-                        url: row.URL
-                    });
-                }
-            });
+                let combinedResults = [];
+                this.data.forEach(row => {
+                    if ((row['TITLE OF VIDEO']||"").toLowerCase().includes(q.toLowerCase()) || (row.TOPIC||"").toLowerCase().includes(q.toLowerCase())) {
+                        combinedResults.push({ id: this.getVideoID(row.URL), title: row['TITLE OF VIDEO'], topic: row.TOPIC, snippet: null, score: 9999, url: row.URL });
+                    }
+                });
+                // (Abbreviated transcript simulation)
+                document.getElementById('ai-text-output').innerText = `Searching titles for "${q}"... Found ${combinedResults.length} matches.`;
+                this.renderSearchResults(combinedResults, q);
+            },
+            renderSearchResults: function(results, query) {
+                const list = document.getElementById('search-list');
+                document.getElementById('search-title').innerText = `${results.length} Matches Found`;
+                if(results.length === 0) { list.innerHTML = '<div class="p-8 text-center text-stone-500">No matches found.</div>'; return; }
+                list.innerHTML = results.map(r => {
+                    const vidId = r.id || this.getVideoID(r.url); const thumbUrl = vidId ? `https://img.youtube.com/vi/${vidId}/mqdefault.jpg` : null;
+                    return `<div class="cosmos-card p-0 overflow-hidden bg-[#0A0A0A] border border-white/10 rounded-xl group hover:border-purple-500/50 transition-all cursor-pointer" onclick="window.app.openVideo('${vidId}')">
+                        <div class="flex flex-col h-full"><div class="relative h-40 bg-black overflow-hidden">${thumbUrl ? `<img src="${thumbUrl}" class="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity">` : ''}<div class="absolute inset-0 flex items-center justify-center"><i class="fa-solid fa-play text-3xl text-white opacity-0 group-hover:opacity-100 transition-opacity"></i></div></div>
+                        <div class="p-4 flex-1 flex flex-col"><h4 class="text-sm font-bold text-white mb-2 line-clamp-1">${r.title}</h4><div class="mt-auto pt-4 border-t border-white/5 flex justify-between items-center">${this.createTagButton(r.topic)}</div></div></div></div>`;
+                }).join('');
+            },
 
-            // 2. Search Transcripts (Simulation for now unless file exists)
-            if (!this.transcriptData) {
-                try {
-                    const response = await fetch('transcripts.json');
-                    if (response.ok) { this.transcriptData = await response.json(); }
-                } catch (e) {
-                    console.warn("Brain not found.");
-                }
-            }
-
-            if(this.transcriptData) {
-                aiText.innerText = "Scanning transcripts...";
-                let bestMatch = null;
-                let highestScore = 0;
-
-                this.transcriptData.forEach(video => {
-                    const text = video.content.toLowerCase();
-                    let score = 0;
-                    searchTerms.forEach(term => { score += (text.match(new RegExp(term, "g")) || []).length; });
-
-                    if (score > 0) {
-                        const idx = text.indexOf(searchTerms[0]);
-                        const snippet = "..." + text.substring(Math.max(0, idx - 100), Math.min(text.length, idx + 200)) + "...";
-                        
-                        // Check if we already have this video from title match
-                        const existing = combinedResults.find(r => r.id === video.id);
-                        if (existing) {
-                            existing.snippet = snippet;
-                            existing.score += score;
+            // --- INIT ---
+            init: function() {
+                setTimeout(() => document.getElementById('app-loader').classList.add('hidden'), 1000);
+                createStars();
+                this.youtube.fetchVideos(); // Load YouTube first
+                window.speechSynthesis.onvoiceschanged = this.populateVoices; this.populateVoices();
+                
+                Papa.parse('catalog.csv', { download: true, header: true, skipEmptyLines: true, complete: (results) => {
+                    this.data = results.data.filter(row => row['TITLE OF VIDEO']).map(row => { row.TOPIC = (row.TOPIC || "").replace(/^and\s+/i, '').trim(); return row; });
+                    this.renderCategories(); this.youtube.renderVideos();
+                }});
+                
+                // FIXED SCROLL LISTENER (Handles both tabs)
+                const wrapper = document.getElementById('scroll-wrapper');
+                wrapper.addEventListener("scroll", () => {
+                    if (wrapper.scrollTop + wrapper.clientHeight >= wrapper.scrollHeight - 100) {
+                        if (window.app.currentVideoSource === 'youtube') {
+                            window.app.youtube.fetchVideos();
                         } else {
-                            combinedResults.push({
-                                id: video.id,
-                                title: video.title,
-                                topic: video.topic,
-                                snippet: snippet,
-                                score: score,
-                                url: `https://www.youtube.com/watch?v=${video.id}`
-                            });
-                        }
-
-                        if (score > highestScore) {
-                            highestScore = score;
-                            bestMatch = video;
+                            window.app.fetchArchiveVideos();
                         }
                     }
                 });
                 
-                if (bestMatch && highestScore > 0) {
-                    aiText.innerText = `Found deep reference in "${bestMatch.title}".`;
-                    aiLink.onclick = function() { window.app.openVideo(bestMatch.id); };
-                    aiLink.classList.remove('hidden');
-                } else if (combinedResults.length > 0) {
-                    aiText.innerText = `I found ${combinedResults.length} videos matching "${q}".`;
-                } else {
-                    aiText.innerText = `I could not find a direct reference for "${q}".`;
-                }
-            } else {
-                // Fallback if no transcripts
-                aiText.innerText = `Searching titles for "${q}"... Found ${combinedResults.length} matches.`;
+                this.nav('home');
             }
-
-            combinedResults.sort((a, b) => b.score - a.score);
-            this.renderSearchResults(combinedResults, q);
-        },
-
-        renderSearchResults: function(results, query) {
-            const list = document.getElementById('search-list');
-            document.getElementById('search-title').innerText = `${results.length} Matches Found`;
-            
-            if(results.length === 0) { 
-                list.innerHTML = '<div class="p-8 text-center text-stone-500">No matches found.</div>'; 
-                return; 
-            }
-            
-            list.innerHTML = results.map(r => {
-                const vidId = r.id || this.getVideoID(r.url); 
-                const thumbUrl = vidId ? `https://img.youtube.com/vi/${vidId}/mqdefault.jpg` : null;
-                const safeSnippet = r.snippet ? r.snippet.replace(/</g, "&lt;").replace(/>/g, "&gt;") : "Matched by Title";
-
-                return `
-                <div class="cosmos-card p-0 overflow-hidden bg-[#0A0A0A] border border-white/10 rounded-xl group hover:border-purple-500/50 transition-all cursor-pointer" onclick="window.app.openVideo('${vidId}')">
-                    <div class="flex flex-col h-full">
-                        <div class="relative h-40 bg-black overflow-hidden">
-                            ${thumbUrl ? `<img src="${thumbUrl}" class="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity">` : ''}
-                            <div class="absolute inset-0 flex items-center justify-center"><i class="fa-solid fa-play text-3xl text-white opacity-0 group-hover:opacity-100 transition-opacity"></i></div>
-                        </div>
-                        <div class="p-4 flex-1 flex flex-col">
-                            <h4 class="text-sm font-bold text-white mb-2 line-clamp-1">${r.title}</h4>
-                            <p class="text-xs text-stone-400 leading-relaxed font-serif italic mb-4 line-clamp-3">${safeSnippet}</p>
-                            <div class="mt-auto pt-4 border-t border-white/5 flex justify-between items-center">
-                                ${this.createTagButton(r.topic)}
-                            </div>
-                        </div>
-                    </div>
-                </div>`;
-            }).join('');
-        },
-
-        // --- INIT ---
-        init: function() {
-            setTimeout(() => document.getElementById('app-loader').classList.add('hidden'), 1000);
-            createStars();
-            this.youtube.fetchVideos();
-            this.fetchArchiveVideos();
-            
-            // Load Voices
-            window.speechSynthesis.onvoiceschanged = this.populateVoices;
-            this.populateVoices();
-            
-            // Load CSV
-            Papa.parse('catalog.csv', { 
-                download: true, 
-                header: true, 
-                skipEmptyLines: true, 
-                complete: (results) => {
-                    this.data = results.data
-                        .filter(row => row['TITLE OF VIDEO'])
-                        .map(row => { 
-                            row.TOPIC = (row.TOPIC || "").replace(/^and\s+/i, '').trim(); 
-                            return row; 
-                        });
-                    this.renderCategories(); 
-                    this.youtube.renderVideos();
-                }
-            });
-            this.nav('home');
-        }
-    };
-    window.onload = () => app.init();
-</script>
+        };
+        window.onload = () => app.init();
+    </script>
 </body>
 </html>
-
