@@ -174,7 +174,13 @@
                     <input type="text" id="teacher-input" placeholder="Ask the Teacher (e.g. 'What is the Pineal?')..."
                            class="w-full rounded-full py-4 pl-8 pr-16 text-sm font-mono transition-all backdrop-blur-md search-input"
                            style="border-color: var(--purple);"
-                           onkeydown="if(event.key === 'Enter') window.app.askTheTeacher()">
+                           onkeydown="if(event.key === 'Enter') window.app.askTheTeacher()"
+                           oninput="window.app.toggleClearButton()">
+                    
+                    <button id="clear-teacher-btn" onclick="window.app.resetHome()" class="absolute right-16 top-1/2 -translate-y-1/2 text-xs hover:scale-110 transition-transform hidden" style="color: var(--text-secondary);">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+
                     <button onclick="window.app.askTheTeacher()" class="absolute right-6 top-2 bottom-2 w-10 rounded-full flex items-center justify-center hover:bg-white hover:text-black transition-colors shadow-lg" style="background-color: var(--purple); color: white;">
                         <i class="fa-solid fa-paper-plane"></i>
                     </button>
@@ -193,6 +199,14 @@
                     <button onclick="window.app.focusTeacherInput()" class="px-6 py-3 rounded-full border text-xs font-bold uppercase tracking-widest hover:bg-white/10 transition-all" style="border-color: var(--border-color); color: var(--text-primary);">Ask Bill</button>
                 </div>
             </div>
+        </section>
+
+        <section id="view-search" class="view-section px-6 max-w-5xl mx-auto">
+            <div class="flex justify-between items-end mb-8 border-b pb-4" style="border-color: var(--border-color);">
+                <h2 class="cinzel text-2xl font-bold" style="color: var(--text-primary);">Library Search Results</h2>
+                <button onclick="window.app.nav('home')" class="text-xs uppercase font-bold text-red-400">Clear Search</button>
+            </div>
+            <div id="global-search-list" class="masonry-grid pb-20"></div>
         </section>
 
         <section id="view-library" class="view-section px-6">
@@ -225,30 +239,6 @@
                     <div id="library-grid" class="masonry-grid hidden"></div>
                 </div>
             </div>
-        </section>
-
-        <section id="view-videos" class="view-section px-6">
-              <div class="max-w-[1800px] mx-auto w-full">
-                <div class="mb-10 pb-8 border-b flex flex-col md:flex-row justify-between items-start md:items-end gap-6" style="border-color: var(--border-color);">
-                    <div>
-                        <h2 class="cinzel text-3xl md:text-5xl font-bold mb-2" style="color: var(--text-primary);">The Archive</h2>
-                        <p class="font-mono text-xs uppercase tracking-[0.2em]" style="color: var(--purple);">Video Collection</p>
-                    </div>
-                    <div class="flex gap-2">
-                        <button id="toggle-yt" class="px-4 py-2 border rounded text-xs font-bold uppercase tracking-widest" style="background: #DC2626; color: white; border-color: #DC2626;" onclick="window.app.setVideoSource('youtube')">
-                            <i class="fa-brands fa-youtube mr-2"></i> YouTube
-                        </button>
-                        <button id="toggle-arc" class="px-4 py-2 border rounded text-xs font-bold uppercase tracking-widest" style="color: var(--text-secondary); border-color: var(--border-color);" onclick="window.app.setVideoSource('archive')">
-                            <i class="fa-solid fa-film mr-2"></i> HD Restored
-                        </button>
-                    </div>
-                </div>
-                <div id="video-grid" class="masonry-grid"></div>
-                <div id="video-loader" class="text-center py-8 hidden">
-                    <i class="fa-solid fa-circle-notch fa-spin text-2xl" style="color: var(--purple);"></i>
-                    <p class="mt-2 text-[10px] font-mono uppercase" style="color: var(--text-secondary);">Loading Data...</p>
-                </div>
-              </div>
         </section>
 
         <section id="view-anatomy" class="view-section px-6">
@@ -302,12 +292,28 @@
             </div>
         </section>
 
-        <section id="view-search" class="view-section px-6 max-w-5xl mx-auto">
-            <div class="flex justify-between items-end mb-8 border-b pb-4" style="border-color: var(--border-color);">
-                <h2 class="cinzel text-2xl font-bold" style="color: var(--text-primary);">Library Search Results</h2>
-                <button onclick="window.app.nav('home')" class="text-xs uppercase font-bold text-red-400">Clear Search</button>
-            </div>
-            <div id="global-search-list" class="masonry-grid pb-20"></div>
+        <section id="view-videos" class="view-section px-6">
+              <div class="max-w-[1800px] mx-auto w-full">
+                <div class="mb-10 pb-8 border-b flex flex-col md:flex-row justify-between items-start md:items-end gap-6" style="border-color: var(--border-color);">
+                    <div>
+                        <h2 class="cinzel text-3xl md:text-5xl font-bold mb-2" style="color: var(--text-primary);">The Archive</h2>
+                        <p class="font-mono text-xs uppercase tracking-[0.2em]" style="color: var(--purple);">Video Collection</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button id="toggle-yt" class="px-4 py-2 border rounded text-xs font-bold uppercase tracking-widest" style="background: #DC2626; color: white; border-color: #DC2626;" onclick="window.app.setVideoSource('youtube')">
+                            <i class="fa-brands fa-youtube mr-2"></i> YouTube
+                        </button>
+                        <button id="toggle-arc" class="px-4 py-2 border rounded text-xs font-bold uppercase tracking-widest" style="color: var(--text-secondary); border-color: var(--border-color);" onclick="window.app.setVideoSource('archive')">
+                            <i class="fa-solid fa-film mr-2"></i> HD Restored
+                        </button>
+                    </div>
+                </div>
+                <div id="video-grid" class="masonry-grid"></div>
+                <div id="video-loader" class="text-center py-8 hidden">
+                    <i class="fa-solid fa-circle-notch fa-spin text-2xl" style="color: var(--purple);"></i>
+                    <p class="mt-2 text-[10px] font-mono uppercase" style="color: var(--text-secondary);">Loading Data...</p>
+                </div>
+              </div>
         </section>
 
         <section id="view-resources" class="view-section px-6 max-w-5xl mx-auto">
@@ -571,8 +577,12 @@
                 document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active')); 
                 document.querySelectorAll('.dock-btn').forEach(b => b.classList.remove('active')); 
                 document.getElementById('view-' + id).classList.add('active'); 
-                if (id === 'search') {
-                    // Activate search tab if using dock button
+                
+                // RESET HOME IF HOME CLICKED
+                if (id === 'home') {
+                    this.resetHome();
+                    document.getElementById('btn-home').classList.add('active');
+                } else if (id === 'search') {
                     const btn = document.querySelectorAll('.dock-btn')[3]; 
                     if(btn) btn.classList.add('active');
                 } else {
@@ -687,8 +697,6 @@
                 
                 // TRIGGERS "THE LIBRARIAN" (SITE SEARCH)
                 this.nav('search');
-                // We need to pass the query to the global search function logic manually
-                // because setting the value of the hidden input won't trigger 'oninput' automatically
                 
                 // Set the value so the user sees it
                 const searchInput = document.getElementById('global-search');
@@ -734,6 +742,20 @@
             // --- FOCUS HELPER FOR "ASK BILL" BUTTON ---
             focusTeacherInput: function() {
                 document.getElementById('teacher-input').focus();
+            },
+            
+            // --- NEW: FRESH START LOGIC ---
+            resetHome: function() {
+                const input = document.getElementById('teacher-input');
+                input.value = '';
+                document.getElementById('teacher-response-box').classList.add('hidden');
+                document.getElementById('clear-teacher-btn').classList.add('hidden');
+            },
+            toggleClearButton: function() {
+                const val = document.getElementById('teacher-input').value;
+                const btn = document.getElementById('clear-teacher-btn');
+                if (val.length > 0) btn.classList.remove('hidden');
+                else btn.classList.add('hidden');
             },
 
             // --- GLOBAL SEARCH (Navbar) ---
