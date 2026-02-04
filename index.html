@@ -13,7 +13,6 @@
     <style>
         /* --- THEME VARIABLES --- */
         :root {
-            /* DARK MODE (Default) */
             --bg-primary: #050505;
             --bg-secondary: #0f0f0f;
             --bg-tertiary: #1a1a1a;
@@ -27,7 +26,6 @@
             --dock-bg: rgba(10, 10, 10, 0.90);
         }
 
-        /* LIGHT MODE (Photon / Electric) */
         body.light-mode {
             --bg-primary: #f8fafc;
             --bg-secondary: #ffffff;
@@ -42,133 +40,79 @@
             --dock-bg: rgba(255, 255, 255, 0.90);
         }
 
-        /* BASE CSS */
         body { font-family: 'Inter', sans-serif; background-color: var(--bg-primary); color: var(--text-primary); transition: background-color 0.5s ease, color 0.5s ease; overflow-x: hidden; height: 100vh; }
         .cinzel { font-family: 'Cinzel', serif; }
         .mono { font-family: 'Space Grotesk', monospace; }
         
-        /* --- BACKGROUNDS --- */
+        /* BACKGROUNDS */
+        .stars-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; background: radial-gradient(circle at bottom center, #11001c 0%, #000000 80%); transition: opacity 0.8s; opacity: 1; }
+        .photon-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; opacity: 0; transition: opacity 0.8s; background-color: #ffffff; background-image: radial-gradient(at 0% 0%, hsla(253,16%,90%,1) 0, transparent 50%), radial-gradient(at 50% 100%, hsla(225,39%,95%,1) 0, transparent 50%); }
+        .photon-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px); background-size: 40px 40px; }
+        body.light-mode .stars-container { opacity: 0; } body.light-mode .photon-bg { opacity: 1; }
         
-        /* DARK MODE: Stars */
-        .stars-container {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: -1; pointer-events: none;
-            background: radial-gradient(circle at bottom center, #11001c 0%, #000000 80%);
-            transition: opacity 0.8s; opacity: 1;
-        }
-        .planet {
-            position: absolute; border-radius: 50%; opacity: 0.3;
-            background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.1), transparent);
-            box-shadow: 0 0 20px rgba(216, 180, 254, 0.05);
-            animation: floatPlanet 120s linear infinite;
-        }
-        .star {
-            position: absolute; border-radius: 50%;
-            animation: twinkle var(--duration) ease-in-out infinite;
-            opacity: 0;
-        }
-        
-        /* LIGHT MODE: Photon Field (Mesh Gradient) */
-        .photon-bg {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: -1; pointer-events: none; opacity: 0; transition: opacity 0.8s;
-            background-color: #ffffff;
-            background-image: 
-                radial-gradient(at 0% 0%, hsla(253,16%,90%,1) 0, transparent 50%), 
-                radial-gradient(at 50% 100%, hsla(225,39%,95%,1) 0, transparent 50%), 
-                radial-gradient(at 100% 0%, hsla(339,49%,95%,1) 0, transparent 50%);
-        }
-        .photon-grid {
-            position: absolute; inset: 0;
-            background-image: linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
-            background-size: 40px 40px;
-        }
-        
-        body.light-mode .stars-container { opacity: 0; }
-        body.light-mode .photon-bg { opacity: 1; }
-
+        .planet { position: absolute; border-radius: 50%; opacity: 0.3; background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.1), transparent); box-shadow: 0 0 20px rgba(216, 180, 254, 0.05); animation: floatPlanet 120s linear infinite; }
+        .star { position: absolute; border-radius: 50%; animation: twinkle var(--duration) ease-in-out infinite; opacity: 0; }
         @keyframes twinkle { 0%, 100% { opacity: 0; transform: scale(0.5); } 50% { opacity: var(--opacity); transform: scale(1); } }
         @keyframes floatPlanet { from { transform: translateX(-100px) rotate(0deg); } to { transform: translateX(110vw) rotate(20deg); } }
 
-        /* --- CARDS & GRID --- */
+        /* CARDS */
         .masonry-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; padding-bottom: 140px; }
         @media (max-width: 640px) { .masonry-grid { grid-template-columns: 1fr; } }
+        .cosmos-card { background-color: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 12px; transition: all 0.3s; cursor: pointer; position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; min-height: 200px; z-index: 10; }
+        .cosmos-card:hover { border-color: var(--gold); transform: translateY(-4px); box-shadow: 0 10px 40px -10px var(--accent-glow); }
 
-        .cosmos-card {
-            background-color: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 12px;
-            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94); cursor: pointer; position: relative; overflow: hidden;
-            display: flex; flex-direction: column; justify-content: space-between; min-height: 200px; z-index: 10;
-        }
-        .cosmos-card:hover {
-            border-color: var(--gold); 
-            transform: translateY(-4px);
-            box-shadow: 0 10px 40px -10px var(--accent-glow);
-        }
-
-        /* --- UI COMPONENTS --- */
+        /* UI */
         .dock-container { position: fixed; bottom: 20px; left: 0; width: 100%; display: flex; justify-content: center; z-index: 50; padding: 0 20px; }
-        .dock {
-            background: var(--dock-bg); backdrop-filter: blur(20px); border: 1px solid var(--border-color);
-            padding: 8px; border-radius: 20px; display: flex; gap: 4px; box-shadow: 0 20px 40px -10px rgba(0,0,0,0.3);
-            max-width: 100%; overflow-x: auto; scrollbar-width: none; 
-        }
-        .dock-btn {
-            padding: 10px 16px; border-radius: 12px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;
-            color: var(--text-secondary); transition: all 0.2s; cursor: pointer; border: 1px solid transparent; white-space: nowrap; flex-shrink: 0;
-        }
+        .dock { background: var(--dock-bg); backdrop-filter: blur(20px); border: 1px solid var(--border-color); padding: 8px; border-radius: 20px; display: flex; gap: 4px; box-shadow: 0 20px 40px -10px rgba(0,0,0,0.3); max-width: 100%; overflow-x: auto; scrollbar-width: none; }
+        .dock-btn { padding: 10px 16px; border-radius: 12px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-secondary); transition: all 0.2s; cursor: pointer; border: 1px solid transparent; white-space: nowrap; flex-shrink: 0; }
         .dock-btn:hover { color: var(--text-primary); background: var(--bg-tertiary); }
         .dock-btn.active { background: var(--text-primary); color: var(--bg-primary); }
 
-        .search-input {
-            background: var(--input-bg); backdrop-filter: blur(10px); border: 1px solid var(--border-color); color: var(--text-primary);
-            padding: 10px 20px; border-radius: 99px; font-size: 12px; width: 100%; outline: none; transition: all 0.3s;
-        }
-        .search-input:focus { border-color: var(--purple); box-shadow: 0 0 15px rgba(216, 180, 254, 0.1); }
-
-        /* CHIPS (With Counts) */
-        .topic-chip {
-            padding: 6px 12px; border-radius: 99px; font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.05em;
-            cursor: pointer; border: 1px solid var(--border-color); color: var(--text-secondary); background: var(--bg-secondary);
-            transition: all 0.2s; user-select: none; display: inline-flex; align-items: center; gap: 6px;
-        }
-        .topic-chip:hover { border-color: var(--purple); color: var(--text-primary); }
-        .topic-chip.active { background: var(--purple); color: white; border-color: var(--purple); }
-        .chip-count { opacity: 0.5; font-size: 9px; }
+        /* SEARCH OVERLAY */
+        #search-overlay { position: fixed; inset: 0; background: rgba(5, 5, 5, 0.95); backdrop-filter: blur(20px); z-index: 90; display: flex; flex-direction: column; align-items: center; padding-top: 100px; transition: opacity 0.3s; opacity: 0; pointer-events: none; }
+        #search-overlay.active { opacity: 1; pointer-events: auto; }
+        .big-search-input { width: 90%; max-width: 600px; background: transparent; border: none; border-bottom: 2px solid var(--gold); font-size: 2rem; color: var(--text-primary); padding: 10px; text-align: center; outline: none; font-family: 'Cinzel', serif; }
+        .big-search-input::placeholder { color: var(--text-secondary); opacity: 0.5; }
 
         /* ANATOMY */
-        .anatomy-wrapper {
-            position: relative; width: 300px; height: 650px; border: 1px solid var(--border-color); border-radius: 999px;
-            background: var(--bg-secondary); box-shadow: 0 0 80px -20px var(--accent-glow);
-        }
+        .anatomy-wrapper { position: relative; width: 300px; height: 650px; border: 1px solid var(--border-color); border-radius: 999px; background: var(--bg-secondary); box-shadow: 0 0 80px -20px var(--accent-glow); }
         @media (max-width: 768px) { .anatomy-scale-container { transform: scale(0.75); transform-origin: top center; height: 500px; } }
-        .anatomy-dot {
-            width: 24px; height: 24px; border-radius: 50%; position: absolute; left: 50%; transform: translateX(-50%);
-            cursor: pointer; transition: all 0.3s ease; border: 2px solid rgba(255,255,255,0.5); z-index: 20;
-        }
+        .anatomy-dot { width: 24px; height: 24px; border-radius: 50%; position: absolute; left: 50%; transform: translateX(-50%); cursor: pointer; transition: all 0.3s ease; border: 2px solid rgba(255,255,255,0.5); z-index: 20; }
         .anatomy-dot:hover { transform: translateX(-50%) scale(1.5); border-color: white; }
 
-        /* SECTIONS */
         .view-section { display: none; padding-top: 140px; padding-bottom: 150px; width: 100%; min-height: 100vh; animation: fadeIn 0.4s ease; }
         .view-section.active { display: block; }
         #view-home.active { display: flex; flex-direction: column; justify-content: center; align-items: center; padding-top: 0; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
+        
         .hidden { display: none !important; }
-        .highlight { background: var(--gold); color: black; padding: 0 2px; border-radius: 2px; }
         .profile-img { box-shadow: 0 0 50px var(--accent-glow); transition: 0.5s; border-color: var(--border-color); }
         
-        /* SCROLLBAR */
+        /* CHIPS */
+        .topic-chip { padding: 6px 12px; border-radius: 99px; font-size: 10px; font-weight: bold; text-transform: uppercase; cursor: pointer; border: 1px solid var(--border-color); color: var(--text-secondary); background: var(--bg-secondary); transition: all 0.2s; user-select: none; display: inline-flex; align-items: center; gap: 6px; }
+        .topic-chip:hover { border-color: var(--purple); color: var(--text-primary); }
+        .topic-chip.active { background: var(--purple); color: white; border-color: var(--purple); }
+        .chip-count { opacity: 0.5; font-size: 9px; }
+
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: var(--bg-primary); }
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--purple); }
     </style>
 </head>
 <body class="flex flex-col min-h-screen">
     <div id="stars-container" class="stars-container"></div>
-    
     <div id="photon-bg" class="photon-bg"><div class="photon-grid"></div></div>
+
+    <div id="search-overlay">
+        <button onclick="window.app.closeSearchOverlay()" class="absolute top-10 right-10 text-4xl" style="color: var(--text-secondary);"><i class="fa-solid fa-xmark"></i></button>
+        <div class="text-center w-full px-6">
+            <p class="font-mono text-xs uppercase tracking-[0.3em] mb-4" style="color: var(--gold);">Ask or Search</p>
+            <input type="text" id="overlay-search-input" class="big-search-input" placeholder="Type a keyword..." onkeydown="if(event.key === 'Enter') window.app.performOverlaySearch()">
+            <div class="mt-8 flex gap-4 justify-center">
+                <button onclick="window.app.performOverlaySearch()" class="px-6 py-2 rounded-full font-bold uppercase tracking-widest text-xs transition-all" style="background: var(--gold); color: black;">Search Archive</button>
+            </div>
+        </div>
+    </div>
 
     <div class="fixed top-0 left-0 w-full p-4 z-40 flex justify-between items-center bg-opacity-95 backdrop-blur-xl border-b shadow-sm transition-colors duration-300" style="background-color: var(--bg-primary); border-color: var(--border-color);">
         <div class="flex items-center gap-3 cursor-pointer group" onclick="window.app.nav('home')">
@@ -181,11 +125,6 @@
         </div>
         
         <div class="flex items-center gap-4">
-            <div class="relative group hidden md:block w-64">
-                <input type="text" id="global-search" oninput="window.app.performGlobalSearch()" placeholder="SEARCH LIBRARY..." class="search-input font-mono uppercase">
-                <i class="fa-solid fa-search absolute right-4 top-1/2 -translate-y-1/2 text-xs" style="color: var(--text-secondary);"></i>
-            </div>
-            
             <button onclick="window.app.toggleTheme()" class="w-10 h-10 rounded-full flex items-center justify-center border transition-all hover:bg-white/10" style="border-color: var(--border-color); color: var(--text-primary);">
                 <i class="fa-solid fa-moon" id="theme-icon"></i>
             </button>
@@ -224,31 +163,22 @@
                     HIDDEN<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400 italic">MEANINGS</span>
                 </h1>
                 
-                <div class="max-w-lg mx-auto relative group w-full mb-8 px-4">
-                    <input type="text" id="teacher-input" placeholder="Ask the Teacher (e.g. 'What is the Pineal?')..."
-                           class="w-full rounded-full py-4 pl-8 pr-16 text-sm font-mono transition-all backdrop-blur-md search-input"
-                           style="border-color: var(--purple);"
-                           onkeydown="if(event.key === 'Enter') window.app.askTheTeacher()">
-                    <button onclick="window.app.askTheTeacher()" class="absolute right-6 top-2 bottom-2 w-10 rounded-full flex items-center justify-center hover:bg-white hover:text-black transition-colors shadow-lg" style="background-color: var(--purple); color: white;">
-                        <i class="fa-solid fa-paper-plane"></i>
-                    </button>
-                </div>
-
-                <div id="teacher-response-box" class="max-w-2xl mx-auto text-left p-8 border-l-4 rounded-xl fade-in hidden mt-10" style="background: var(--bg-secondary); border-color: var(--border-color); border-left-color: var(--purple);">
-                    <span class="font-mono text-[10px] uppercase tracking-widest block mb-4" style="color: var(--purple);">The Teacher's Response</span>
-                    <div id="teacher-text" class="text-lg md:text-xl leading-relaxed italic font-light font-serif mb-6" style="color: var(--text-primary);"></div>
-                    <div class="border-t pt-4" style="border-color: var(--border-color);">
-                        <span class="text-[9px] uppercase font-bold tracking-widest block mb-3" style="color: var(--text-secondary);">Related Materials</span>
-                        <div id="teacher-related-grid" class="masonry-grid"></div>
-                    </div>
+                <div class="flex justify-center gap-4 mt-8">
+                    <button onclick="window.app.nav('library')" class="px-6 py-3 rounded-full border text-xs font-bold uppercase tracking-widest hover:bg-white/10 transition-all" style="border-color: var(--border-color); color: var(--text-primary);">Browse Library</button>
+                    <button onclick="window.app.openSearchOverlay()" class="px-6 py-3 rounded-full text-xs font-bold uppercase tracking-widest hover:brightness-110 transition-all shadow-lg" style="background: var(--purple); color: white;">Ask Bill</button>
                 </div>
             </div>
         </section>
 
         <section id="view-search" class="view-section px-6 max-w-5xl mx-auto">
+            <div id="teacher-response-box" class="mb-12 p-8 border-l-4 rounded-xl fade-in hidden" style="background: var(--bg-secondary); border-color: var(--border-color); border-left-color: var(--gold);">
+                <span class="font-mono text-[10px] uppercase tracking-widest block mb-4" style="color: var(--gold);">The Teacher's Response</span>
+                <div id="teacher-text" class="text-lg md:text-xl leading-relaxed italic font-light font-serif mb-6" style="color: var(--text-primary);"></div>
+            </div>
+
             <div class="flex justify-between items-end mb-8 border-b pb-4" style="border-color: var(--border-color);">
-                <h2 class="cinzel text-2xl font-bold" style="color: var(--text-primary);">Library Search Results</h2>
-                <button onclick="window.app.nav('home')" class="text-xs uppercase font-bold text-red-400">Clear Search</button>
+                <h2 class="cinzel text-2xl font-bold" style="color: var(--text-primary);">Library Matches</h2>
+                <button onclick="window.app.nav('home')" class="text-xs uppercase font-bold text-red-400">Clear</button>
             </div>
             <div id="global-search-list" class="masonry-grid pb-20"></div>
         </section>
@@ -379,7 +309,7 @@
                     <h3 class="cinzel text-2xl mb-2 group-hover:text-purple-400 transition-colors" style="color: var(--text-primary);">HiddenMeanings.com</h3>
                     <p class="font-mono text-xs uppercase tracking-widest" style="color: var(--text-secondary);">Main Portal</p>
                 </a>
-                <a href="https://lifestyleluminaries.blogspot.com/p/bill-donahue.html" target="_blank" class="cosmos-card p-8 group block">
+                 <a href="https://lifestyleluminaries.blogspot.com/p/bill-donahue.html" target="_blank" class="cosmos-card p-8 group block">
                     <div class="flex justify-between items-start mb-6">
                         <div class="w-10 h-10 rounded-full flex items-center justify-center font-serif" style="background: var(--bg-tertiary); color: var(--text-primary);">L</div>
                         <span class="group-hover:text-purple-400 transition-colors" style="color: var(--text-secondary);">↗</span>
@@ -413,8 +343,8 @@
             <button class="dock-btn" id="btn-library" onclick="window.app.nav('library')">Library</button>
             <button class="dock-btn" id="btn-videos" onclick="window.app.nav('videos')">Videos</button>
             
-            <button class="dock-btn" style="color: var(--purple);" onclick="window.app.nav('search')">
-                <i class="fa-solid fa-magnifying-glass"></i>
+            <button class="dock-btn" style="color: var(--gold);" onclick="window.app.openSearchOverlay()">
+                <i class="fa-solid fa-magnifying-glass text-lg"></i>
             </button>
             
             <button class="dock-btn" id="btn-anatomy" onclick="window.app.nav('anatomy')">Temple</button>
@@ -463,32 +393,70 @@
             data: [], 
             currentVideoSource: 'youtube', 
             archiveVideos: [], archivePage: 1, archiveLoading: false, archiveHasMore: true,
-            archiveTotal: '...', // Store total count
+            archiveTotal: '...',
             isLightMode: false,
             selectedLibraryTopics: new Set(),
             
-            // "AI" SIMULATION BRAIN
+            // --- THE 10X SYNTH-BRAIN (Massively Expanded) ---
             synthBrain: {
-                "pineal": "The Pineal Gland is the light receptor of the body. It is the 'Single Eye' mentioned in scripture. When active, it secretes the melatonin that opens the door to the inner kingdom.",
-                "meditation": "Meditation is not thinking; it is the absence of thought. It is shutting down the five senses of Egypt to hear the still small voice within the Upper Room.",
-                "egypt": "Egypt is not a place on a map in the Bible; it represents the lower physical body, the house of bondage where the spirit is trapped in matter.",
-                "jesus": "Jesus is not a historical figure in the context of the mystery; he represents the solar energy within you, the 'Christos' oil that rises up the spine.",
-                "east": "The East is the right hemisphere of the brain, the place of rising light and intuition. We must move from the carnal West to the spiritual East.",
-                "zodiac": "The Zodiac is the path of the soul. The Bible is an astrological book written in code. The 12 disciples are the 12 signs within your own body.",
-                "light": "God is Light. This is not a metaphor. Photons are the messengers of the divine code. We are beings of light trapped in density.",
+                "pineal": "The Pineal Gland is the light receptor of the body. It is the 'Single Eye' (Matthew 6:22). When filled with light, the whole body is full of light. It secretes melatonin, the chemical of the Christos.",
+                "144000": "The 144,000 is not a number of people. It is a biological frequency. It represents the 12 cranial nerves multiplied by the 12 signs of the zodiac (12 x 12 = 144), raised to the power of the divine (1000). It is the measure of the light energy in the redeemed mind.",
+                "meditation": "Meditation is the shutting down of the five senses. You must enter the 'closet' and shut the door. It is the cessation of thought to allow the photon energy from above to enter the pineal gland.",
+                "egypt": "Egypt in the Bible is your lower physical body. It is the house of bondage. The Exodus is the movement of the seed (Israel) out of the solar plexus (Egypt) up to the brain (Promised Land).",
+                "jesus": "Jesus is the Greek word Iesous, representing the sun/son within you. It is the solar energy that is born in the manger (solar plexus) and must ascend the 33 vertebrae to the skull (Golgotha).",
+                "christ": "Christ is a substance, not a person. It is the 'Christos' oil, the sacred secretion produced by the claustrum in the brain, which flows down the spine and must be returned.",
+                "east": "The East represents the right hemisphere of the brain. The sun rises in the East. We must move our consciousness from the carnal West (left brain) to the spiritual East.",
+                "zodiac": "The Zodiac is the path of the soul. The Bible is an astrological book. The 12 disciples are the 12 signs of the zodiac within you. You must master these energies.",
+                "light": "God is Light. This is literal physics. Photons are angles of light (Angels). We are beings of light trapped in density.",
+                "virgo": "Virgo is the Virgin. In the body, this corresponds to the solar plexus where the seed (bread/Bethlehem) is born. It is the beginning of the alchemical process.",
+                "pisces": "Pisces is the two fish. It represents the feet, but also the age of the fish, the age of Christianity which we are leaving as we enter Aquarius (the water bearer/mind).",
+                "aquarius": "Aquarius is the man bearing a pitcher of water (Luke 22:10). This represents the age of the Mind, the outpouring of spirit/knowledge. The water is truth.",
+                "passover": "Passover is the sun 'passing over' the equator at the Spring Equinox. In you, it is the energy passing over from the lower chakras to the higher chakras.",
+                "crucifixion": "Crucifixion happens in the skull (Golgotha). It is the crossing of the optic thalamus nerve. The energy crosses over to enlighten the higher mind.",
+                "resurrection": "Resurrection is the awakening of the dormant brain cells. The 'dead' listed in scripture are those living in lower consciousness. To rise is to activate the pineal.",
+                "atom": "The Atom is the basic building block, but it reflects the solar system. Adam is Atom. We are all Adams/Atoms. The story of Adam is the story of the Atom.",
+                "electron": "The electron is the negative charge, the female principle, Eve. It circles the nucleus (Adam).",
+                "proton": "The proton is the positive charge, the male principle.",
+                "neutron": "The neutron is the neutral force, the balance. It is the Christ consciousness that unifies the duality of proton and electron.",
+                "ion": "Ion is John. John the Baptist. The Ion (John) prepares the way for the coming of the light.",
+                "salt": "You are the salt of the earth. Salt is the preservative. It represents the chemical balance required for the electrical firing of the nervous system.",
+                "single eye": "If thine eye be single, thy body shall be full of light. This is the Pineal Gland activated, seeing beyond duality into unity.",
+                "furnace": "The fiery furnace of Shadrach, Meshach, and Abednego is the solar plexus. When we overcome the lower fires (passions), we walk with the fourth man (spirit) and are not burned.",
+                "lion": "The Lion represents the sign of Leo, the heart. It is the King of Beasts (the lower animal nature mastered by the heart). The Lion of the Tribe of Judah.",
+                "lamb": "The Lamb is Aries, the Ram. It represents the higher mind, the cerebrum. The marriage of the Lamb is the union of the lower and higher self.",
+                "wilderness": "The Wilderness is the state of the mind before enlightenment. It is the 40 years (states of consciousness) we wander before entering the Promised Land (the brain).",
+                "jordan": "The River Jordan represents the spinal cord. We must cross the Jordan (raise the energy up the spine) to enter the Promised Land.",
+                "jerusalem": "Jerusalem is 'Jeru-Salem', the City of Peace. It is not a city in the Middle East; it is the center of peace within the brain, the higher consciousness.",
+                "israel": "Is-Ra-El. Isis (Moon), Ra (Sun), El (God). It represents the integration of the feminine, masculine, and divine within the human body.",
+                "judas": "Judas represents the sign of Scorpio (the backbiter). It is the generative force that 'betrays' the seed if it is wasted in lower desires.",
+                "peter": "Peter represents the pineal gland/stone. 'Upon this rock I will build my church.' He is the unstable stone that becomes stable.",
+                "thomas": "Thomas represents the twins (Gemini). He is the doubter, the analytical lower mind that must see to believe.",
+                "lucifer": "Lucifer means 'Light Bearer'. It is not a devil. It is the energy falling into matter (descent) which must be raised back up.",
+                "satan": "Satan means 'adversary'. It is your own lower ego, the carnal mind that opposes the spirit. It is the resistance required for growth.",
+                "devil": "The Devil is 'D-Evil', the energy lived backward (LIVE vs EVIL). It is living for the senses rather than the spirit.",
+                "hell": "Hell is the lower state of consciousness. It is the burning of desire and passion in the solar plexus.",
+                "heaven": "Heaven is 'heaved up'. It is the higher state of consciousness in the brain.",
+                "ark": "The Ark of the Covenant is the area of the brain containing the pituitary and pineal glands. It is where the electrical connection (Arc) takes place.",
+                "moses": "Moses represents the Law, the intellectual understanding that leads us to the water but cannot cross over. Joshua (Jesus) takes us over.",
+                "manna": "Manna is the 'hidden manna' from the brain. It is the secretions of the brain that nourish the body when we are in the wilderness of meditation.",
+                "oil": "The Oil is the Christos, the sacred secretion. It must not be spilled (wasted). It lights the lamp of the body.",
+                "temple": "Know ye not that ye are the Temple of God? The external churches are metaphors for your own body.",
+                "stone": " The stone that the builders rejected is the Pineal Gland. It is the cornerstone of the spiritual temple.",
+                "water": "Water represents truth. Jesus walking on water is the spirit rising above the turbulent emotions/truth.",
+                "wine": "Wine represents the spirit fermented and potent. Turning water into wine is elevating mere facts into spiritual realization.",
+                "bread": "Bread represents the seed, the physical substance born in Virgo (House of Bread).",
+                "fish": "Fish represents the spiritual thought swimming in the sea of the mind. 153 fish represents the full catch of spiritual activation.",
+                "net": "The net is the nervous system catching the spiritual impulses.",
+                "right side": "Cast your net on the right side. Operate from the right hemisphere of the brain (intuitive) rather than the left (logical).",
+                "moon": "The Moon represents the emotions and the soul. It reflects the light of the sun (spirit) but has no light of its own.",
+                "sun": "The Sun represents the Spirit, the Christ consciousness. It is the source of all life and light.",
+                "stars": "The stars represent the chakras and the cranial nerves. 'He determines the number of the stars and calls them each by name.'",
+                "cloud": "A cloud represents the confusion of the lower mind that hides the sun. 'He comes with clouds' - spirit appearing through the veil of matter.",
+                "mountain": "A mountain represents a high state of meditation. Jesus went up the mountain to pray. We must elevate our consciousness.",
+                "tree": "The Tree of Life is the spine and the nervous system. The fruit is the enlightened action.",
+                "serpent": "The serpent represents the Kundalini energy at the base of the spine. Lifted up (Moses), it becomes healing. Crawling on the belly, it is deception.",
                 "default": "The hidden meaning of this concept lies within the biological decoding of scripture. Look not at the literal letter, but the spirit within the form."
             },
-
-            quotes: [
-                "When you pray, enter into your closet, and when you have shut the door, pray to your Father which is in secret.",
-                "The Kingdom of God is within you.",
-                "If thine eye be single, thy whole body shall be full of light.",
-                "The Bible is not a book of history, it is a book of biology.",
-                "Be still, and know that I am God.",
-                "You are the Temple of the Living God.",
-                "Look at the things that are not seen, for the things which are seen are temporal.",
-                "As above, so below."
-            ],
 
             anatomyData: {
                 "root": { title: "Root", name: "Muladhara", color: "#ef4444", freq: "400-484 THz", biblical: "Egypt", church: "Ephesus", desc: "The starting point. Egypt represents physical bondage." },
@@ -577,7 +545,7 @@
                 document.getElementById('view-' + id).classList.add('active'); 
                 if (id === 'search') {
                     // Activate search tab if using dock button
-                    const btn = document.querySelectorAll('.dock-btn')[3]; // 4th button is search
+                    const btn = document.querySelectorAll('.dock-btn')[3]; 
                     if(btn) btn.classList.add('active');
                 } else {
                     document.getElementById('btn-' + id)?.classList.add('active'); 
@@ -626,11 +594,8 @@
             renderLibraryInterface: function() {
                 const topics = [...new Set(this.data.map(i => i.TOPIC).filter(t => t))].sort((a, b) => a.localeCompare(b)); 
                 const container = document.getElementById('library-topics');
-                
-                // UPDATE COUNTS
                 document.getElementById('count-yt').innerText = this.data.length;
                 document.getElementById('count-hd').innerText = this.archiveTotal;
-
                 container.innerHTML = topics.map(t => {
                     const isActive = this.selectedLibraryTopics.has(t);
                     const count = this.data.filter(r => r.TOPIC === t).length;
@@ -638,7 +603,6 @@
                         ${t} <span class="chip-count">(${count})</span>
                     </div>`;
                 }).join('');
-                
                 if (this.selectedLibraryTopics.size > 0) this.renderLibraryResults();
                 else {
                     document.getElementById('library-placeholder').classList.remove('hidden');
@@ -672,6 +636,70 @@
                 }
                 if (results.length === 0) { grid.innerHTML = '<div class="col-span-full text-center py-20 text-stone-500">No videos found for selected topics.</div>'; return; }
                 grid.innerHTML = results.map(v => this.renderCard(v, v.type === 'archive')).join('');
+            },
+
+            // --- SEARCH OVERLAY LOGIC (The New Feature) ---
+            openSearchOverlay: function() {
+                const overlay = document.getElementById('search-overlay');
+                overlay.classList.add('active');
+                setTimeout(() => document.getElementById('overlay-search-input').focus(), 100);
+            },
+            closeSearchOverlay: function() {
+                document.getElementById('search-overlay').classList.remove('active');
+            },
+            performOverlaySearch: function() {
+                const query = document.getElementById('overlay-search-input').value;
+                if (!query.trim()) return;
+                
+                this.closeSearchOverlay();
+                
+                // 1. Trigger "The Teacher" (Concept Search) on Home
+                this.nav('home');
+                const teacherInput = document.getElementById('teacher-input');
+                teacherInput.value = query;
+                this.askTheTeacher();
+                
+                // 2. Trigger "The Librarian" (Global Search)
+                // (Optional: If you want to jump straight to file results instead of the teacher, you can uncomment below)
+                // this.nav('search');
+                // document.getElementById('global-search').value = query;
+                // this.performGlobalSearch();
+            },
+
+            // --- ASK THE TEACHER (EXPANDED LOGIC) ---
+            askTheTeacher: function() {
+                const input = document.getElementById('teacher-input');
+                let q = input.value.trim().toLowerCase();
+                if (!q) return;
+                
+                let match = null;
+                for (const key in this.synthBrain) {
+                    if (q.includes(key)) { match = this.synthBrain[key]; break; }
+                }
+                const response = match || this.synthBrain['default'];
+                
+                document.getElementById('teacher-response-box').classList.remove('hidden');
+                document.getElementById('teacher-text').innerHTML = `"${response}"`;
+                
+                // Find Related Videos
+                const related = this.data.filter(v => v['TITLE OF VIDEO'].toLowerCase().includes(q) || v.TOPIC.toLowerCase().includes(q)).slice(0, 4);
+                const grid = document.getElementById('teacher-related-grid');
+                grid.innerHTML = related.length > 0 ? related.map(v => {
+                    const obj = { id: this.getVideoID(v.URL), title: v['TITLE OF VIDEO'], thumbnail: `https://img.youtube.com/vi/${this.getVideoID(v.URL)}/mqdefault.jpg` };
+                    return this.renderCard(obj, false);
+                }).join('') : '<p class="text-xs text-stone-500 italic">No specific videos found.</p>';
+            },
+
+            // --- GLOBAL SEARCH ---
+            performGlobalSearch: function() {
+                const input = document.getElementById('global-search'); 
+                let q = input.value.trim();
+                if (!q) return;
+                this.nav('search');
+                const list = document.getElementById('global-search-list');
+                let combinedResults = [];
+                this.data.forEach(row => { if ((row['TITLE OF VIDEO']||"").toLowerCase().includes(q.toLowerCase()) || (row.TOPIC||"").toLowerCase().includes(q.toLowerCase())) { combinedResults.push({ id: this.getVideoID(row.URL), title: row['TITLE OF VIDEO'], thumbnail: `https://img.youtube.com/vi/${this.getVideoID(row.URL)}/mqdefault.jpg` }); }});
+                list.innerHTML = combinedResults.length === 0 ? '<div class="p-8 text-center text-stone-500">No matches found.</div>' : combinedResults.map(r => this.renderCard(r, false)).join('');
             },
 
             // --- MERGED VIDEO LOGIC ---
@@ -723,44 +751,6 @@
                     } catch (e) { console.error("YT Error", e); }
                     this.loading = false; document.getElementById('video-loader').classList.add('hidden');
                 }
-            },
-
-            // --- ASK THE TEACHER (AI SIMULATION) ---
-            askTheTeacher: function() {
-                const input = document.getElementById('teacher-input');
-                let q = input.value.trim().toLowerCase();
-                if (!q) return;
-                
-                // Find Match
-                let match = null;
-                for (const key in this.synthBrain) {
-                    if (q.includes(key)) { match = this.synthBrain[key]; break; }
-                }
-                const response = match || this.synthBrain['default'];
-                
-                // Display Response
-                document.getElementById('teacher-response-box').classList.remove('hidden');
-                document.getElementById('teacher-text').innerHTML = `"${response}"`;
-                
-                // Find Related Videos for Grid
-                const related = this.data.filter(v => v['TITLE OF VIDEO'].toLowerCase().includes(q) || v.TOPIC.toLowerCase().includes(q)).slice(0, 4);
-                const grid = document.getElementById('teacher-related-grid');
-                grid.innerHTML = related.length > 0 ? related.map(v => {
-                    const obj = { id: this.getVideoID(v.URL), title: v['TITLE OF VIDEO'], thumbnail: `https://img.youtube.com/vi/${this.getVideoID(v.URL)}/mqdefault.jpg` };
-                    return this.renderCard(obj, false);
-                }).join('') : '<p class="text-xs text-stone-500 italic">No specific videos found.</p>';
-            },
-
-            // --- GLOBAL SEARCH ---
-            performGlobalSearch: function() {
-                const input = document.getElementById('global-search'); 
-                let q = input.value.trim();
-                if (!q) return;
-                this.nav('search');
-                const list = document.getElementById('global-search-list');
-                let combinedResults = [];
-                this.data.forEach(row => { if ((row['TITLE OF VIDEO']||"").toLowerCase().includes(q.toLowerCase()) || (row.TOPIC||"").toLowerCase().includes(q.toLowerCase())) { combinedResults.push({ id: this.getVideoID(row.URL), title: row['TITLE OF VIDEO'], thumbnail: `https://img.youtube.com/vi/${this.getVideoID(row.URL)}/mqdefault.jpg` }); }});
-                list.innerHTML = combinedResults.length === 0 ? '<div class="p-8 text-center text-stone-500">No matches found.</div>' : combinedResults.map(r => this.renderCard(r, false)).join('');
             },
 
             init: function() {
