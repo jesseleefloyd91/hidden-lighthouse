@@ -25,7 +25,7 @@
             --dock-bg: rgba(10, 10, 10, 0.95);
         }
 
-        /* LIGHT MODE OVERRIDES */
+        /* LIGHT MODE */
         body.light-mode {
             --bg-primary: #F3F4F6;
             --bg-secondary: #FFFFFF;
@@ -43,7 +43,7 @@
         .cinzel { font-family: 'Cinzel', serif; }
         .mono { font-family: 'Space Grotesk', monospace; }
         
-        /* BACKGROUND ELEMENTS */
+        /* BACKGROUND */
         .stars-container {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             z-index: -1; pointer-events: none;
@@ -74,6 +74,15 @@
             display: flex; flex-direction: column; justify-content: space-between; min-height: 200px; z-index: 10;
         }
         .cosmos-card:hover { border-color: var(--purple); transform: translateY(-4px); box-shadow: 0 10px 40px -10px var(--accent-glow); }
+
+        /* CHIPS (Library Filter) */
+        .topic-chip {
+            padding: 6px 12px; border-radius: 99px; font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.05em;
+            cursor: pointer; border: 1px solid var(--border-color); color: var(--text-secondary); background: var(--bg-secondary);
+            transition: all 0.2s; user-select: none;
+        }
+        .topic-chip:hover { border-color: var(--purple); color: var(--text-primary); }
+        .topic-chip.active { background: var(--purple); color: white; border-color: var(--purple); box-shadow: 0 0 15px var(--accent-glow); }
 
         /* UI COMPONENTS */
         .dock-container { position: fixed; bottom: 20px; left: 0; width: 100%; display: flex; justify-content: center; z-index: 50; padding: 0 20px; }
@@ -190,26 +199,36 @@
 
         <section id="view-library" class="view-section px-6">
             <div class="max-w-[1800px] mx-auto w-full">
-                <div class="flex flex-col md:flex-row justify-between items-end mb-16 pb-8 border-b" style="border-color: var(--border-color);">
-                    <div>
-                        <h2 class="cinzel text-3xl md:text-5xl font-bold mb-2 tracking-tight" style="color: var(--text-primary);">The Catalog</h2>
-                        <p class="font-mono text-xs uppercase tracking-[0.2em]" style="color: var(--purple);">Comprehensive Subject Index</p>
+                <div class="mb-10 pb-8 border-b" style="border-color: var(--border-color);">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-6">
+                        <div>
+                            <h2 class="cinzel text-3xl md:text-5xl font-bold mb-2 tracking-tight" style="color: var(--text-primary);">The Catalog</h2>
+                            <p class="font-mono text-xs uppercase tracking-[0.2em]" style="color: var(--purple);">Filter by Topic</p>
+                        </div>
+                        
+                        <div class="flex flex-wrap gap-4 items-center">
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" id="filter-yt" checked onchange="window.app.renderLibraryResults()" class="accent-red-600">
+                                <span class="text-[10px] font-bold uppercase tracking-widest" style="color: var(--text-secondary);">YouTube</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" id="filter-hd" onchange="window.app.renderLibraryResults()" class="accent-cyan-400">
+                                <span class="text-[10px] font-bold uppercase tracking-widest" style="color: var(--text-secondary);">HD Restored</span>
+                            </label>
+                            <button onclick="window.app.clearLibraryFilters()" class="text-[10px] uppercase font-bold text-red-400 hover:text-red-300 ml-4">Clear All</button>
+                        </div>
                     </div>
-                    <div class="text-right mt-4 md:mt-0"><p class="font-mono text-xs" style="color: var(--text-secondary);" id="total-topics-display">Loading...</p></div>
-                </div>
-                <div id="category-grid" class="masonry-grid"></div>
-            </div>
-        </section>
 
-        <section id="view-list" class="view-section px-6">
-            <div class="max-w-6xl mx-auto w-full">
-                <button onclick="window.app.nav('library')" class="mb-10 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] transition-colors" style="color: var(--text-secondary);"><span>←</span> Back to Index</button>
-                <div class="mb-12 pl-6 border-l-2" style="border-color: var(--purple);">
-                    <span class="text-[10px] font-bold uppercase tracking-[0.3em] mb-3 block" style="color: var(--purple);">Selected Topic</span>
-                    <h2 id="active-category-title" class="cinzel text-3xl md:text-6xl font-bold leading-tight" style="color: var(--text-primary);"></h2>
-                    <p id="active-category-count" class="text-xs tracking-[0.2em] font-bold uppercase mt-6 pt-6 border-t inline-block" style="color: var(--text-secondary); border-color: var(--border-color);"></p>
+                    <div id="library-topics" class="flex flex-wrap gap-2 max-h-40 overflow-y-auto custom-scrollbar p-1"></div>
                 </div>
-                <div id="list-container" class="grid grid-cols-1 lg:grid-cols-2 gap-4"></div>
+
+                <div id="library-results-area">
+                    <div id="library-placeholder" class="text-center py-20">
+                        <i class="fa-solid fa-filter text-4xl mb-4 opacity-20" style="color: var(--text-secondary);"></i>
+                        <p class="text-sm font-mono uppercase tracking-widest" style="color: var(--text-secondary);">Select topics above to begin</p>
+                    </div>
+                    <div id="library-grid" class="masonry-grid hidden"></div>
+                </div>
             </div>
         </section>
 
@@ -406,6 +425,8 @@
             currentVideoSource: 'youtube', 
             archiveVideos: [], archivePage: 1, archiveLoading: false, archiveHasMore: true,
             isLightMode: false,
+            // LIBRARY FILTERS
+            selectedLibraryTopics: new Set(),
             
             quotes: [
                 "When you pray, enter into your closet, and when you have shut the door, pray to your Father which is in secret.",
@@ -429,17 +450,14 @@
            
             // --- CORE RENDERER (UNIFIED) ---
             renderCard: function(videoObj, isArchive = false) {
-                // Determine Data
                 let id = isArchive ? videoObj.identifier : videoObj.id;
                 let title = isArchive ? videoObj.title : videoObj.title;
                 let thumb = isArchive ? `https://archive.org/services/img/${id}` : videoObj.thumbnail;
                 let linkUrl = isArchive ? `https://archive.org/details/${id}` : `https://www.youtube.com/watch?v=${id}`;
                 
-                // Determine Topic
                 let topic = this.getTopicByVideoID(null, title);
                 if (!isArchive && videoObj.id) topic = this.getTopicByVideoID(videoObj.id, title);
 
-                // Source Button (If Archive has YT ID)
                 let crossRefBtn = '';
                 if (isArchive && videoObj['external-identifier'] && videoObj['external-identifier'].includes('urn:youtube:')) {
                     const ytId = videoObj['external-identifier'].replace('urn:youtube:', '');
@@ -481,7 +499,7 @@
             createTagButton: function(topic) {
                 if(!topic || topic === "General") return `<span class="text-[9px] font-mono uppercase tracking-widest block py-1.5 opacity-30">Uncatalogued</span>`;
                 const safeTopic = topic.replace(/'/g, "\\'").replace(/"/g, '&quot;');
-                return `<button class="inline-flex items-center gap-2 text-[9px] font-bold uppercase tracking-widest px-3 py-1.5 rounded transition-all justify-center cursor-pointer relative z-20" style="background: var(--input-bg); color: var(--purple); border: 1px solid var(--border-color);" onclick="event.stopPropagation(); window.app.openTopic('${safeTopic}')"><i class="fa-solid fa-tag"></i> ${topic}</button>`;
+                return `<button class="inline-flex items-center gap-2 text-[9px] font-bold uppercase tracking-widest px-3 py-1.5 rounded transition-all justify-center cursor-pointer relative z-20" style="background: var(--input-bg); color: var(--purple); border: 1px solid var(--border-color);" onclick="event.stopPropagation(); window.app.selectLibraryTopic('${safeTopic}')"><i class="fa-solid fa-tag"></i> ${topic}</button>`;
             },
 
             getTopicByVideoID: function(vidId, vidTitle) {
@@ -512,6 +530,10 @@
                     document.getElementById('meditation-quote').innerText = `"${this.quotes[Math.floor(Math.random() * this.quotes.length)]}"`;
                     this.renderMeditationLectures();
                 }
+                // Trigger Library Render if entering Library
+                if (id === 'library') {
+                    this.renderLibraryInterface();
+                }
                 window.scrollTo(0,0); 
             },
             
@@ -527,7 +549,6 @@
                     return keywords.some(kw => topic.includes(kw) || title.includes(kw));
                 }).slice(0, 12);
                 grid.innerHTML = relatedVideos.map(v => {
-                    // Create minimal object for the renderer
                     const obj = { id: this.getVideoID(v.URL), title: v['TITLE OF VIDEO'], thumbnail: `https://img.youtube.com/vi/${this.getVideoID(v.URL)}/mqdefault.jpg` };
                     return this.renderCard(obj, false);
                 }).join('');
@@ -543,14 +564,109 @@
             },
             closeVideo: function() { document.getElementById('video-frame-container').innerHTML = ''; document.getElementById('video-modal').classList.add('hidden'); },
 
+            // --- LIBRARY FEATURE ---
+            selectLibraryTopic: function(topic) {
+                // If not already in library, go there
+                if (!document.getElementById('view-library').classList.contains('active')) {
+                    this.nav('library');
+                }
+                this.toggleLibraryTopic(topic);
+            },
+
+            renderLibraryInterface: function() {
+                const topics = [...new Set(this.data.map(i => i.TOPIC).filter(t => t))].sort((a, b) => a.localeCompare(b)); 
+                const container = document.getElementById('library-topics');
+                container.innerHTML = topics.map(t => {
+                    const isActive = this.selectedLibraryTopics.has(t);
+                    return `<div class="topic-chip ${isActive ? 'active' : ''}" onclick="window.app.toggleLibraryTopic('${t.replace(/'/g, "\\'")}')">${t}</div>`;
+                }).join('');
+                
+                // If filters active, render results, else show placeholder
+                if (this.selectedLibraryTopics.size > 0) {
+                    this.renderLibraryResults();
+                } else {
+                    document.getElementById('library-placeholder').classList.remove('hidden');
+                    document.getElementById('library-grid').classList.add('hidden');
+                }
+            },
+
+            toggleLibraryTopic: function(topic) {
+                if (this.selectedLibraryTopics.has(topic)) {
+                    this.selectedLibraryTopics.delete(topic);
+                } else {
+                    this.selectedLibraryTopics.add(topic);
+                }
+                this.renderLibraryInterface();
+            },
+
+            clearLibraryFilters: function() {
+                this.selectedLibraryTopics.clear();
+                this.renderLibraryInterface();
+            },
+
+            renderLibraryResults: function() {
+                const grid = document.getElementById('library-grid');
+                const placeholder = document.getElementById('library-placeholder');
+                
+                if (this.selectedLibraryTopics.size === 0) {
+                    placeholder.classList.remove('hidden');
+                    grid.classList.add('hidden');
+                    return;
+                }
+
+                placeholder.classList.add('hidden');
+                grid.classList.remove('hidden');
+                grid.innerHTML = '<div class="col-span-full text-center py-10"><i class="fa-solid fa-circle-notch fa-spin text-purple-500"></i></div>';
+
+                const showYT = document.getElementById('filter-yt').checked;
+                const showHD = document.getElementById('filter-hd').checked;
+                
+                let results = [];
+
+                // 1. YouTube Matches (From CSV)
+                if (showYT) {
+                    const ytMatches = this.data.filter(row => this.selectedLibraryTopics.has(row.TOPIC)).map(row => {
+                        return { 
+                            id: this.getVideoID(row.URL), 
+                            title: row['TITLE OF VIDEO'], 
+                            thumbnail: `https://img.youtube.com/vi/${this.getVideoID(row.URL)}/mqdefault.jpg` 
+                        };
+                    });
+                    results.push(...ytMatches.map(v => ({...v, type: 'youtube'})));
+                }
+
+                // 2. HD Matches (Dynamic Filter)
+                if (showHD) {
+                    // Try to find HD videos that match the selected topics by Title text
+                    // (Since archive videos might not have the strict tags yet)
+                    const hdMatches = this.archiveVideos.filter(v => {
+                        // Check if title contains any selected topic
+                        const titleLower = v.title.toLowerCase();
+                        for (let topic of this.selectedLibraryTopics) {
+                            if (titleLower.includes(topic.toLowerCase())) return true;
+                        }
+                        return false;
+                    });
+                    results.push(...hdMatches.map(v => ({...v, type: 'archive'})));
+                }
+
+                if (results.length === 0) {
+                    grid.innerHTML = '<div class="col-span-full text-center py-20 text-stone-500">No videos found for selected topics.</div>';
+                    return;
+                }
+
+                grid.innerHTML = results.map(v => {
+                    if (v.type === 'youtube') return this.renderCard(v, false);
+                    return this.renderCard(v, true);
+                }).join('');
+            },
+
             setVideoSource: function(source) {
                 this.currentVideoSource = source;
                 const btnYT = document.getElementById('toggle-yt');
                 const btnArc = document.getElementById('toggle-arc');
-                // Reset to default
                 btnYT.style.background = 'transparent'; btnYT.style.color = 'var(--text-secondary)'; btnYT.style.borderColor = 'var(--border-color)';
                 btnArc.style.background = 'transparent'; btnArc.style.color = 'var(--text-secondary)'; btnArc.style.borderColor = 'var(--border-color)';
-                // Active State
                 if (source === 'youtube') { btnYT.style.background = '#DC2626'; btnYT.style.color = 'white'; btnYT.style.borderColor = '#DC2626'; }
                 else { btnArc.style.background = '#22d3ee'; btnArc.style.color = 'black'; btnArc.style.borderColor = '#22d3ee'; }
                 if (source === 'archive' && this.archiveVideos.length === 0) this.fetchArchiveVideos();
@@ -597,26 +713,6 @@
                 }
             },
 
-            renderCategories: function() { 
-                const topics = [...new Set(this.data.map(i => i.TOPIC).filter(t => t))].sort((a, b) => a.localeCompare(b)); 
-                document.getElementById('total-topics-display').innerText = `${topics.length} Categories`; 
-                document.getElementById('category-grid').innerHTML = topics.map((t, i) => { 
-                    const count = this.data.filter(d => d.TOPIC === t).length; 
-                    const safeTopic = t.replace(/'/g, "\\'").replace(/"/g, '&quot;'); 
-                    return `<div onclick="window.app.openTopic('${safeTopic}')" class="cosmos-card topic-card p-6 group"><div class="flex justify-between items-start mb-4"><span class="text-xs font-mono text-gray-500">${String(i+1).padStart(2, '0')}</span><i class="fa-solid fa-star text-gray-600 group-hover:text-purple-400 transition-colors text-lg"></i></div><h3 class="text-sm font-medium leading-snug mb-8 group-hover:text-white line-clamp-3" style="color: var(--text-primary);">${t}</h3><div class="flex justify-between items-end pt-3 mt-auto" style="border-top: 1px solid var(--border-color);"><span class="text-[9px] text-gray-500 font-bold uppercase tracking-widest">${count} Items</span><span class="text-purple-400 opacity-50 group-hover:opacity-100 transition-opacity">→</span></div></div>`; 
-                }).join(''); 
-            },
-            openTopic: function(topic) { 
-                this.nav('list'); document.getElementById('active-category-title').innerText = topic; 
-                const items = this.data.filter(i => i.TOPIC === topic); 
-                document.getElementById('active-category-count').innerText = `${items.length} LECTURES`; 
-                document.getElementById('list-container').innerHTML = items.map(l => { 
-                    // Construct a video object for the card renderer
-                    const obj = { id: this.getVideoID(l.URL), title: l['TITLE OF VIDEO'], thumbnail: `https://img.youtube.com/vi/${this.getVideoID(l.URL)}/mqdefault.jpg` };
-                    return this.renderCard(obj, false);
-                }).join(''); 
-            },
-
             performAISearch: async function() {
                 const input = document.getElementById('ai-input'); let q = (input ? input.value : '').trim();
                 if (!q) { const global = document.getElementById('global-search'); q = global ? global.value.trim() : ''; }
@@ -635,10 +731,14 @@
                 setTimeout(() => document.getElementById('app-loader').classList.add('hidden'), 1000);
                 createStars();
                 this.youtube.fetchVideos(); 
+                this.fetchArchiveVideos(); // Preload archive for cross-reference
+                
                 Papa.parse('catalog.csv', { download: true, header: true, skipEmptyLines: true, complete: (results) => {
                     this.data = results.data.filter(row => row['TITLE OF VIDEO']).map(row => { row.TOPIC = (row.TOPIC || "").replace(/^and\s+/i, '').trim(); return row; });
-                    this.renderCategories(); this.youtube.renderVideos();
+                    // No longer rendering initial categories here, waiting for nav('library')
+                    this.youtube.renderVideos();
                 }});
+                
                 const wrapper = document.getElementById('scroll-wrapper');
                 wrapper.addEventListener("scroll", () => {
                     if (wrapper.scrollTop + wrapper.clientHeight >= wrapper.scrollHeight - 100) {
