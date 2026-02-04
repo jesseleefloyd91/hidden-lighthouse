@@ -48,8 +48,6 @@
         .mono { font-family: 'Space Grotesk', monospace; }
         
         /* --- BACKGROUNDS --- */
-        
-        /* DARK MODE: Stars */
         .stars-container {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             z-index: -1; pointer-events: none;
@@ -68,7 +66,6 @@
             opacity: 0;
         }
         
-        /* LIGHT MODE: Photon Field (Mesh Gradient) */
         .photon-bg {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             z-index: -1; pointer-events: none; opacity: 0; transition: opacity 0.8s;
@@ -136,6 +133,18 @@
         .topic-chip.active { background: var(--purple); color: white; border-color: var(--purple); }
         .chip-count { opacity: 0.5; font-size: 9px; }
 
+        /* DIAGNOSTICS OVERLAY (SCANNER) */
+        #diagnostics-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 100; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
+        .diag-box { width: 90%; max-width: 500px; background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 30px; border-radius: 16px; text-align: center; box-shadow: 0 0 50px rgba(0,0,0,0.5); }
+        .progress-bar { height: 4px; background: var(--bg-tertiary); width: 100%; border-radius: 2px; overflow: hidden; margin: 20px 0; }
+        .progress-fill { height: 100%; background: var(--gold); width: 0%; transition: width 0.3s; }
+
+        /* SEARCH OVERLAY */
+        #search-overlay { position: fixed; inset: 0; background: rgba(5, 5, 5, 0.95); backdrop-filter: blur(20px); z-index: 90; display: flex; flex-direction: column; align-items: center; padding-top: 100px; transition: opacity 0.3s; opacity: 0; pointer-events: none; }
+        #search-overlay.active { opacity: 1; pointer-events: auto; }
+        .big-search-input { width: 90%; max-width: 600px; background: transparent; border: none; border-bottom: 2px solid var(--gold); font-size: 2rem; color: var(--text-primary); padding: 10px; text-align: center; outline: none; font-family: 'Cinzel', serif; }
+        .big-search-input::placeholder { color: var(--text-secondary); opacity: 0.5; }
+
         /* ANATOMY */
         .anatomy-wrapper {
             position: relative; width: 300px; height: 650px; border: 1px solid var(--border-color); border-radius: 999px;
@@ -158,18 +167,6 @@
         .highlight { background: var(--gold); color: black; padding: 0 2px; border-radius: 2px; }
         .profile-img { box-shadow: 0 0 50px var(--accent-glow); transition: 0.5s; border-color: var(--border-color); }
         
-        /* DIAGNOSTICS OVERLAY (SCANNER) */
-        #diagnostics-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 100; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
-        .diag-box { width: 90%; max-width: 500px; background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 30px; border-radius: 16px; text-align: center; box-shadow: 0 0 50px rgba(0,0,0,0.5); }
-        .progress-bar { height: 4px; background: var(--bg-tertiary); width: 100%; border-radius: 2px; overflow: hidden; margin: 20px 0; }
-        .progress-fill { height: 100%; background: var(--gold); width: 0%; transition: width 0.3s; }
-
-        /* SEARCH OVERLAY */
-        #search-overlay { position: fixed; inset: 0; background: rgba(5, 5, 5, 0.95); backdrop-filter: blur(20px); z-index: 90; display: flex; flex-direction: column; align-items: center; padding-top: 100px; transition: opacity 0.3s; opacity: 0; pointer-events: none; }
-        #search-overlay.active { opacity: 1; pointer-events: auto; }
-        .big-search-input { width: 90%; max-width: 600px; background: transparent; border: none; border-bottom: 2px solid var(--gold); font-size: 2rem; color: var(--text-primary); padding: 10px; text-align: center; outline: none; font-family: 'Cinzel', serif; }
-        .big-search-input::placeholder { color: var(--text-secondary); opacity: 0.5; }
-
         /* SCROLLBAR */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: var(--bg-primary); }
@@ -179,6 +176,7 @@
 </head>
 <body class="flex flex-col min-h-screen">
     <div id="stars-container" class="stars-container"></div>
+    
     <div id="photon-bg" class="photon-bg"><div class="photon-grid"></div></div>
 
     <div id="diagnostics-overlay" class="hidden">
@@ -712,7 +710,6 @@
                 status.innerText = "Initializing Scanner...";
                 progressFill.style.width = "0%";
                 
-                // 1. Map entries and separate invalid/missing IDs immediately
                 const allEntries = this.data.map(row => ({
                     id: this.getVideoID(row.URL),
                     title: row['TITLE OF VIDEO'],
@@ -954,7 +951,9 @@
                 grid.innerHTML = videos.map(v => this.renderCard(v, isArchive)).join("");
             },
             youtube: {
-                apiKey: "YOUR_NEW_GENERATED_KEY_HERE", uploadsPlaylistId: "UUinvwSeMdmuuzyMWrS0tGTg", videos: [], nextPageToken: null, loading: false,
+                // IMPORTANT: Replace this with your NEW RESTRICTED API KEY from Google Cloud Console
+                apiKey: "AIzaSyCZfKNXHgjZG1h13QhDH5-ubtVC0xDPfe4", 
+                uploadsPlaylistId: "UUinvwSeMdmuuzyMWrS0tGTg", videos: [], nextPageToken: null, loading: false,
                 fetchVideos: async function () {
                     if (this.loading) return; this.loading = true;
                     document.getElementById('video-loader').classList.remove('hidden');
@@ -977,22 +976,19 @@
                 this.fetchArchiveVideos(); 
                 Papa.parse('catalog.csv', { download: true, header: true, skipEmptyLines: true, complete: (results) => {
                     this.data = results.data.filter(row => row['TITLE OF VIDEO']).map(row => { row.TOPIC = (row.TOPIC || "").replace(/^and\s+/i, '').trim(); return row; });
-                    this.youtube.renderVideos();
+                    this.renderLibraryInterface(); // Render Library immediately (Shows All by default)
                 }});
                 
-                // --- SCROLL-FLOW NAVIGATION ---
                 const wrapper = document.getElementById('scroll-wrapper');
                 const tabs = ['home', 'library', 'videos', 'anatomy', 'meditation', 'resources'];
                 let scrollTimeout;
 
                 wrapper.addEventListener("scroll", () => {
-                    // Infinite Scroll
                     if (wrapper.scrollTop + wrapper.clientHeight >= wrapper.scrollHeight - 100) {
                         if (window.app.currentVideoSource === 'youtube') window.app.youtube.fetchVideos(); else window.app.fetchArchiveVideos();
                     }
                 });
 
-                // Wheel Event
                 wrapper.addEventListener("wheel", (e) => {
                     clearTimeout(scrollTimeout);
                     scrollTimeout = setTimeout(() => {
