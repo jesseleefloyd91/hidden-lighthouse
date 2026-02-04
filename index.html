@@ -94,6 +94,9 @@
         .topic-chip.active { background: var(--purple); color: white; border-color: var(--purple); }
         .chip-count { opacity: 0.5; font-size: 9px; }
 
+        .search-input { background: var(--input-bg); backdrop-filter: blur(10px); border: 1px solid var(--border-color); color: var(--text-primary); padding: 10px 20px; border-radius: 99px; font-size: 12px; width: 100%; outline: none; transition: all 0.3s; }
+        .search-input:focus { border-color: var(--purple); box-shadow: 0 0 15px rgba(216, 180, 254, 0.1); }
+
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: var(--bg-primary); }
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
@@ -106,7 +109,7 @@
     <div id="search-overlay">
         <button onclick="window.app.closeSearchOverlay()" class="absolute top-10 right-10 text-4xl" style="color: var(--text-secondary);"><i class="fa-solid fa-xmark"></i></button>
         <div class="text-center w-full px-6">
-            <p class="font-mono text-xs uppercase tracking-[0.3em] mb-4" style="color: var(--gold);">Ask or Search</p>
+            <p class="font-mono text-xs uppercase tracking-[0.3em] mb-4" style="color: var(--gold);">Search Library Files</p>
             <input type="text" id="overlay-search-input" class="big-search-input" placeholder="Type a keyword..." onkeydown="if(event.key === 'Enter') window.app.performOverlaySearch()">
             <div class="mt-8 flex gap-4 justify-center">
                 <button onclick="window.app.performOverlaySearch()" class="px-6 py-2 rounded-full font-bold uppercase tracking-widest text-xs transition-all" style="background: var(--gold); color: black;">Search Archive</button>
@@ -125,6 +128,10 @@
         </div>
         
         <div class="flex items-center gap-4">
+            <div class="relative group hidden md:block w-64">
+                <input type="text" id="global-search" oninput="window.app.performGlobalSearch()" placeholder="SEARCH LIBRARY..." class="search-input font-mono uppercase">
+                <i class="fa-solid fa-search absolute right-4 top-1/2 -translate-y-1/2 text-xs" style="color: var(--text-secondary);"></i>
+            </div>
             <button onclick="window.app.toggleTheme()" class="w-10 h-10 rounded-full flex items-center justify-center border transition-all hover:bg-white/10" style="border-color: var(--border-color); color: var(--text-primary);">
                 <i class="fa-solid fa-moon" id="theme-icon"></i>
             </button>
@@ -163,24 +170,29 @@
                     HIDDEN<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400 italic">MEANINGS</span>
                 </h1>
                 
-                <div class="flex justify-center gap-4 mt-8">
-                    <button onclick="window.app.nav('library')" class="px-6 py-3 rounded-full border text-xs font-bold uppercase tracking-widest hover:bg-white/10 transition-all" style="border-color: var(--border-color); color: var(--text-primary);">Browse Library</button>
-                    <button onclick="window.app.openSearchOverlay()" class="px-6 py-3 rounded-full text-xs font-bold uppercase tracking-widest hover:brightness-110 transition-all shadow-lg" style="background: var(--purple); color: white;">Ask Bill</button>
+                <div class="max-w-lg mx-auto relative group w-full mb-8 px-4">
+                    <input type="text" id="teacher-input" placeholder="Ask the Teacher (e.g. 'What is the Pineal?')..."
+                           class="w-full rounded-full py-4 pl-8 pr-16 text-sm font-mono transition-all backdrop-blur-md search-input"
+                           style="border-color: var(--purple);"
+                           onkeydown="if(event.key === 'Enter') window.app.askTheTeacher()">
+                    <button onclick="window.app.askTheTeacher()" class="absolute right-6 top-2 bottom-2 w-10 rounded-full flex items-center justify-center hover:bg-white hover:text-black transition-colors shadow-lg" style="background-color: var(--purple); color: white;">
+                        <i class="fa-solid fa-paper-plane"></i>
+                    </button>
+                </div>
+
+                <div id="teacher-response-box" class="max-w-2xl mx-auto text-left p-8 border-l-4 rounded-xl fade-in hidden mt-10" style="background: var(--bg-secondary); border-color: var(--border-color); border-left-color: var(--purple);">
+                    <span class="font-mono text-[10px] uppercase tracking-widest block mb-4" style="color: var(--purple);">The Teacher's Response</span>
+                    <div id="teacher-text" class="text-lg md:text-xl leading-relaxed italic font-light font-serif mb-6" style="color: var(--text-primary);"></div>
+                    <div class="border-t pt-4" style="border-color: var(--border-color);">
+                        <span class="text-[9px] uppercase font-bold tracking-widest block mb-3" style="color: var(--text-secondary);">Related Materials</span>
+                        <div id="teacher-related-grid" class="masonry-grid"></div>
+                    </div>
+                </div>
+                
+                <div class="flex justify-center gap-4 mt-8 pb-20">
+                    <button onclick="window.app.focusTeacherInput()" class="px-6 py-3 rounded-full border text-xs font-bold uppercase tracking-widest hover:bg-white/10 transition-all" style="border-color: var(--border-color); color: var(--text-primary);">Ask Bill</button>
                 </div>
             </div>
-        </section>
-
-        <section id="view-search" class="view-section px-6 max-w-5xl mx-auto">
-            <div id="teacher-response-box" class="mb-12 p-8 border-l-4 rounded-xl fade-in hidden" style="background: var(--bg-secondary); border-color: var(--border-color); border-left-color: var(--gold);">
-                <span class="font-mono text-[10px] uppercase tracking-widest block mb-4" style="color: var(--gold);">The Teacher's Response</span>
-                <div id="teacher-text" class="text-lg md:text-xl leading-relaxed italic font-light font-serif mb-6" style="color: var(--text-primary);"></div>
-            </div>
-
-            <div class="flex justify-between items-end mb-8 border-b pb-4" style="border-color: var(--border-color);">
-                <h2 class="cinzel text-2xl font-bold" style="color: var(--text-primary);">Library Matches</h2>
-                <button onclick="window.app.nav('home')" class="text-xs uppercase font-bold text-red-400">Clear</button>
-            </div>
-            <div id="global-search-list" class="masonry-grid pb-20"></div>
         </section>
 
         <section id="view-library" class="view-section px-6">
@@ -213,6 +225,30 @@
                     <div id="library-grid" class="masonry-grid hidden"></div>
                 </div>
             </div>
+        </section>
+
+        <section id="view-videos" class="view-section px-6">
+              <div class="max-w-[1800px] mx-auto w-full">
+                <div class="mb-10 pb-8 border-b flex flex-col md:flex-row justify-between items-start md:items-end gap-6" style="border-color: var(--border-color);">
+                    <div>
+                        <h2 class="cinzel text-3xl md:text-5xl font-bold mb-2" style="color: var(--text-primary);">The Archive</h2>
+                        <p class="font-mono text-xs uppercase tracking-[0.2em]" style="color: var(--purple);">Video Collection</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button id="toggle-yt" class="px-4 py-2 border rounded text-xs font-bold uppercase tracking-widest" style="background: #DC2626; color: white; border-color: #DC2626;" onclick="window.app.setVideoSource('youtube')">
+                            <i class="fa-brands fa-youtube mr-2"></i> YouTube
+                        </button>
+                        <button id="toggle-arc" class="px-4 py-2 border rounded text-xs font-bold uppercase tracking-widest" style="color: var(--text-secondary); border-color: var(--border-color);" onclick="window.app.setVideoSource('archive')">
+                            <i class="fa-solid fa-film mr-2"></i> HD Restored
+                        </button>
+                    </div>
+                </div>
+                <div id="video-grid" class="masonry-grid"></div>
+                <div id="video-loader" class="text-center py-8 hidden">
+                    <i class="fa-solid fa-circle-notch fa-spin text-2xl" style="color: var(--purple);"></i>
+                    <p class="mt-2 text-[10px] font-mono uppercase" style="color: var(--text-secondary);">Loading Data...</p>
+                </div>
+              </div>
         </section>
 
         <section id="view-anatomy" class="view-section px-6">
@@ -266,28 +302,12 @@
             </div>
         </section>
 
-        <section id="view-videos" class="view-section px-6">
-              <div class="max-w-[1800px] mx-auto w-full">
-                <div class="mb-10 pb-8 border-b flex flex-col md:flex-row justify-between items-start md:items-end gap-6" style="border-color: var(--border-color);">
-                    <div>
-                        <h2 class="cinzel text-3xl md:text-5xl font-bold mb-2" style="color: var(--text-primary);">The Archive</h2>
-                        <p class="font-mono text-xs uppercase tracking-[0.2em]" style="color: var(--purple);">Video Collection</p>
-                    </div>
-                    <div class="flex gap-2">
-                        <button id="toggle-yt" class="px-4 py-2 border rounded text-xs font-bold uppercase tracking-widest" style="background: #DC2626; color: white; border-color: #DC2626;" onclick="window.app.setVideoSource('youtube')">
-                            <i class="fa-brands fa-youtube mr-2"></i> YouTube
-                        </button>
-                        <button id="toggle-arc" class="px-4 py-2 border rounded text-xs font-bold uppercase tracking-widest" style="color: var(--text-secondary); border-color: var(--border-color);" onclick="window.app.setVideoSource('archive')">
-                            <i class="fa-solid fa-film mr-2"></i> HD Restored
-                        </button>
-                    </div>
-                </div>
-                <div id="video-grid" class="masonry-grid"></div>
-                <div id="video-loader" class="text-center py-8 hidden">
-                    <i class="fa-solid fa-circle-notch fa-spin text-2xl" style="color: var(--purple);"></i>
-                    <p class="mt-2 text-[10px] font-mono uppercase" style="color: var(--text-secondary);">Loading Data...</p>
-                </div>
-              </div>
+        <section id="view-search" class="view-section px-6 max-w-5xl mx-auto">
+            <div class="flex justify-between items-end mb-8 border-b pb-4" style="border-color: var(--border-color);">
+                <h2 class="cinzel text-2xl font-bold" style="color: var(--text-primary);">Library Search Results</h2>
+                <button onclick="window.app.nav('home')" class="text-xs uppercase font-bold text-red-400">Clear Search</button>
+            </div>
+            <div id="global-search-list" class="masonry-grid pb-20"></div>
         </section>
 
         <section id="view-resources" class="view-section px-6 max-w-5xl mx-auto">
@@ -309,7 +329,7 @@
                     <h3 class="cinzel text-2xl mb-2 group-hover:text-purple-400 transition-colors" style="color: var(--text-primary);">HiddenMeanings.com</h3>
                     <p class="font-mono text-xs uppercase tracking-widest" style="color: var(--text-secondary);">Main Portal</p>
                 </a>
-                 <a href="https://lifestyleluminaries.blogspot.com/p/bill-donahue.html" target="_blank" class="cosmos-card p-8 group block">
+                <a href="https://lifestyleluminaries.blogspot.com/p/bill-donahue.html" target="_blank" class="cosmos-card p-8 group block">
                     <div class="flex justify-between items-start mb-6">
                         <div class="w-10 h-10 rounded-full flex items-center justify-center font-serif" style="background: var(--bg-tertiary); color: var(--text-primary);">L</div>
                         <span class="group-hover:text-purple-400 transition-colors" style="color: var(--text-secondary);">↗</span>
@@ -342,11 +362,9 @@
             <button class="dock-btn active" id="btn-home" onclick="window.app.nav('home')">Home</button>
             <button class="dock-btn" id="btn-library" onclick="window.app.nav('library')">Library</button>
             <button class="dock-btn" id="btn-videos" onclick="window.app.nav('videos')">Videos</button>
-            
             <button class="dock-btn" style="color: var(--gold);" onclick="window.app.openSearchOverlay()">
                 <i class="fa-solid fa-magnifying-glass text-lg"></i>
             </button>
-            
             <button class="dock-btn" id="btn-anatomy" onclick="window.app.nav('anatomy')">Temple</button>
             <button class="dock-btn" id="btn-meditation" onclick="window.app.nav('meditation')">Meditation</button> 
             <button class="dock-btn" id="btn-resources" onclick="window.app.nav('resources')">Links</button>
@@ -360,7 +378,6 @@
             const container = document.getElementById('stars-container');
             if(!container) return;
             container.innerHTML = '';
-            // Stars
             const colors = ['#ffffff', '#ffcccb', '#ffd700', '#ff8c00'];
             for(let i=0; i<150; i++) {
                 const star = document.createElement('div');
@@ -375,7 +392,6 @@
                 star.style.setProperty('--duration', `${Math.random() * 3 + 2}s`);
                 container.appendChild(star);
             }
-            // Planets
             for(let i=0; i<3; i++) {
                 const planet = document.createElement('div');
                 planet.className = 'planet';
@@ -397,10 +413,11 @@
             isLightMode: false,
             selectedLibraryTopics: new Set(),
             
-            // --- THE 10X SYNTH-BRAIN (Massively Expanded) ---
+            // --- THE 10X EXPANDED SYNTH-BRAIN ---
             synthBrain: {
                 "pineal": "The Pineal Gland is the light receptor of the body. It is the 'Single Eye' (Matthew 6:22). When filled with light, the whole body is full of light. It secretes melatonin, the chemical of the Christos.",
                 "144000": "The 144,000 is not a number of people. It is a biological frequency. It represents the 12 cranial nerves multiplied by the 12 signs of the zodiac (12 x 12 = 144), raised to the power of the divine (1000). It is the measure of the light energy in the redeemed mind.",
+                "144,000": "The 144,000 is not a number of people. It is a biological frequency. It represents the 12 cranial nerves multiplied by the 12 signs of the zodiac (12 x 12 = 144), raised to the power of the divine (1000). It is the measure of the light energy in the redeemed mind.",
                 "meditation": "Meditation is the shutting down of the five senses. You must enter the 'closet' and shut the door. It is the cessation of thought to allow the photon energy from above to enter the pineal gland.",
                 "egypt": "Egypt in the Bible is your lower physical body. It is the house of bondage. The Exodus is the movement of the seed (Israel) out of the solar plexus (Egypt) up to the brain (Promised Land).",
                 "jesus": "Jesus is the Greek word Iesous, representing the sun/son within you. It is the solar energy that is born in the manger (solar plexus) and must ascend the 33 vertebrae to the skull (Golgotha).",
@@ -457,6 +474,17 @@
                 "serpent": "The serpent represents the Kundalini energy at the base of the spine. Lifted up (Moses), it becomes healing. Crawling on the belly, it is deception.",
                 "default": "The hidden meaning of this concept lies within the biological decoding of scripture. Look not at the literal letter, but the spirit within the form."
             },
+
+            quotes: [
+                "When you pray, enter into your closet, and when you have shut the door, pray to your Father which is in secret.",
+                "The Kingdom of God is within you.",
+                "If thine eye be single, thy whole body shall be full of light.",
+                "The Bible is not a book of history, it is a book of biology.",
+                "Be still, and know that I am God.",
+                "You are the Temple of the Living God.",
+                "Look at the things that are not seen, for the things which are seen are temporal.",
+                "As above, so below."
+            ],
 
             anatomyData: {
                 "root": { title: "Root", name: "Muladhara", color: "#ef4444", freq: "400-484 THz", biblical: "Egypt", church: "Ephesus", desc: "The starting point. Egypt represents physical bondage." },
@@ -594,8 +622,11 @@
             renderLibraryInterface: function() {
                 const topics = [...new Set(this.data.map(i => i.TOPIC).filter(t => t))].sort((a, b) => a.localeCompare(b)); 
                 const container = document.getElementById('library-topics');
+                
+                // UPDATE COUNTS
                 document.getElementById('count-yt').innerText = this.data.length;
                 document.getElementById('count-hd').innerText = this.archiveTotal;
+
                 container.innerHTML = topics.map(t => {
                     const isActive = this.selectedLibraryTopics.has(t);
                     const count = this.data.filter(r => r.TOPIC === t).length;
@@ -603,6 +634,7 @@
                         ${t} <span class="chip-count">(${count})</span>
                     </div>`;
                 }).join('');
+                
                 if (this.selectedLibraryTopics.size > 0) this.renderLibraryResults();
                 else {
                     document.getElementById('library-placeholder').classList.remove('hidden');
@@ -638,7 +670,7 @@
                 grid.innerHTML = results.map(v => this.renderCard(v, v.type === 'archive')).join('');
             },
 
-            // --- SEARCH OVERLAY LOGIC (The New Feature) ---
+            // --- SEARCH OVERLAY LOGIC (FIXED) ---
             openSearchOverlay: function() {
                 const overlay = document.getElementById('search-overlay');
                 overlay.classList.add('active');
@@ -648,25 +680,34 @@
                 document.getElementById('search-overlay').classList.remove('active');
             },
             performOverlaySearch: function() {
-                const query = document.getElementById('overlay-search-input').value;
-                if (!query.trim()) return;
+                const query = document.getElementById('overlay-search-input').value.trim();
+                if (!query) return;
                 
                 this.closeSearchOverlay();
                 
-                // 1. Trigger "The Teacher" (Concept Search) on Home
-                this.nav('home');
-                const teacherInput = document.getElementById('teacher-input');
-                teacherInput.value = query;
-                this.askTheTeacher();
+                // TRIGGERS "THE LIBRARIAN" (SITE SEARCH)
+                this.nav('search');
+                // We need to pass the query to the global search function logic manually
+                // because setting the value of the hidden input won't trigger 'oninput' automatically
                 
-                // 2. Trigger "The Librarian" (Global Search)
-                // (Optional: If you want to jump straight to file results instead of the teacher, you can uncomment below)
-                // this.nav('search');
-                // document.getElementById('global-search').value = query;
-                // this.performGlobalSearch();
+                // Set the value so the user sees it
+                const searchInput = document.getElementById('global-search');
+                if(searchInput) searchInput.value = query; 
+                
+                // Execute search directly
+                const list = document.getElementById('global-search-list');
+                let combinedResults = [];
+                this.data.forEach(row => { 
+                    if ((row['TITLE OF VIDEO']||"").toLowerCase().includes(query.toLowerCase()) || 
+                        (row.TOPIC||"").toLowerCase().includes(query.toLowerCase())) { 
+                        combinedResults.push({ id: this.getVideoID(row.URL), title: row['TITLE OF VIDEO'], thumbnail: `https://img.youtube.com/vi/${this.getVideoID(row.URL)}/mqdefault.jpg` }); 
+                    }
+                });
+                
+                list.innerHTML = combinedResults.length === 0 ? '<div class="p-8 text-center text-stone-500">No matches found.</div>' : combinedResults.map(r => this.renderCard(r, false)).join('');
             },
 
-            // --- ASK THE TEACHER (EXPANDED LOGIC) ---
+            // --- ASK THE TEACHER (AI SIMULATION) ---
             askTheTeacher: function() {
                 const input = document.getElementById('teacher-input');
                 let q = input.value.trim().toLowerCase();
@@ -689,8 +730,13 @@
                     return this.renderCard(obj, false);
                 }).join('') : '<p class="text-xs text-stone-500 italic">No specific videos found.</p>';
             },
+            
+            // --- FOCUS HELPER FOR "ASK BILL" BUTTON ---
+            focusTeacherInput: function() {
+                document.getElementById('teacher-input').focus();
+            },
 
-            // --- GLOBAL SEARCH ---
+            // --- GLOBAL SEARCH (Navbar) ---
             performGlobalSearch: function() {
                 const input = document.getElementById('global-search'); 
                 let q = input.value.trim();
@@ -762,12 +808,39 @@
                     this.data = results.data.filter(row => row['TITLE OF VIDEO']).map(row => { row.TOPIC = (row.TOPIC || "").replace(/^and\s+/i, '').trim(); return row; });
                     this.youtube.renderVideos();
                 }});
+                
+                // --- SCROLL-FLOW NAVIGATION ---
                 const wrapper = document.getElementById('scroll-wrapper');
+                const tabs = ['home', 'library', 'videos', 'anatomy', 'meditation', 'resources'];
+                let scrollTimeout;
+
                 wrapper.addEventListener("scroll", () => {
+                    // Infinite Scroll Loading
                     if (wrapper.scrollTop + wrapper.clientHeight >= wrapper.scrollHeight - 100) {
                         if (window.app.currentVideoSource === 'youtube') window.app.youtube.fetchVideos(); else window.app.fetchArchiveVideos();
                     }
                 });
+
+                // Wheel Event for Tab Jumping
+                wrapper.addEventListener("wheel", (e) => {
+                    clearTimeout(scrollTimeout);
+                    scrollTimeout = setTimeout(() => {
+                        const currentView = document.querySelector('.view-section.active');
+                        if(!currentView) return;
+                        const currentId = currentView.id.replace('view-', '');
+                        const index = tabs.indexOf(currentId);
+                        
+                        // Down Scroll (Next Tab)
+                        if (e.deltaY > 0 && Math.ceil(wrapper.scrollTop + wrapper.clientHeight) >= wrapper.scrollHeight) {
+                            if (index < tabs.length - 1) window.app.nav(tabs[index + 1]);
+                        }
+                        // Up Scroll (Prev Tab)
+                        else if (e.deltaY < 0 && wrapper.scrollTop === 0) {
+                            if (index > 0) window.app.nav(tabs[index - 1]);
+                        }
+                    }, 50); // Debounce to prevent rapid jumping
+                });
+                
                 this.nav('home');
             }
         };
