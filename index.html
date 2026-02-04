@@ -74,7 +74,7 @@
         .big-search-input { width: 90%; max-width: 600px; background: transparent; border: none; border-bottom: 2px solid var(--gold); font-size: 2rem; color: var(--text-primary); padding: 10px; text-align: center; outline: none; font-family: 'Cinzel', serif; }
         .big-search-input::placeholder { color: var(--text-secondary); opacity: 0.5; }
 
-        /* DIAGNOSTICS OVERLAY (SCANNER) */
+        /* DIAGNOSTICS OVERLAY */
         #diagnostics-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 100; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
         .diag-box { width: 90%; max-width: 500px; background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 30px; border-radius: 16px; text-align: center; box-shadow: 0 0 50px rgba(0,0,0,0.5); }
         .progress-bar { height: 4px; background: var(--bg-tertiary); width: 100%; border-radius: 2px; overflow: hidden; margin: 20px 0; }
@@ -249,11 +249,7 @@
                     <div id="library-topics" class="flex flex-wrap gap-2 max-h-40 overflow-y-auto custom-scrollbar p-1"></div>
                 </div>
                 <div id="library-results-area">
-                    <div id="library-placeholder" class="text-center py-20">
-                        <i class="fa-solid fa-filter text-4xl mb-4 opacity-20" style="color: var(--text-secondary);"></i>
-                        <p class="text-sm font-mono uppercase tracking-widest" style="color: var(--text-secondary);">Select topics above to begin</p>
-                    </div>
-                    <div id="library-grid" class="masonry-grid hidden"></div>
+                    <div id="library-grid" class="masonry-grid"></div>
                 </div>
             </div>
         </section>
@@ -437,23 +433,64 @@
             selectedLibraryTopics: new Set(),
             
             synthBrain: {
-                "pineal": "The Pineal Gland is the light receptor of the body. It is the 'Single Eye' (Matthew 6:22).",
-                "144000": "The 144,000 represents the 12 cranial nerves multiplied by the 12 signs of the zodiac (144), raised to the power of the divine (1000).",
-                "meditation": "Meditation is the shutting down of the five senses. You must enter the 'closet' and shut the door.",
-                "egypt": "Egypt in the Bible is your lower physical body. It is the house of bondage.",
-                "jesus": "Jesus represents the sun/son within you. It is the solar energy that is born in the manger (solar plexus).",
-                "christ": "Christ is a substance, not a person. It is the 'Christos' oil, the sacred secretion produced by the claustrum.",
-                "east": "The East represents the right hemisphere of the brain. The sun rises in the East.",
-                "zodiac": "The Zodiac is the path of the soul. The Bible is an astrological book.",
-                "light": "God is Light. This is literal physics. Photons are angles of light (Angels).",
-                "virgo": "Virgo is the Virgin. In the body, this corresponds to the solar plexus.",
-                "pisces": "Pisces is the two fish. It represents the feet, but also the age of the fish.",
-                "aquarius": "Aquarius is the man bearing a pitcher of water (Luke 22:10). This represents the age of the Mind.",
-                "passover": "Passover is the sun 'passing over' the equator at the Spring Equinox.",
-                "crucifixion": "Crucifixion happens in the skull (Golgotha). It is the crossing of the optic thalamus nerve.",
-                "resurrection": "Resurrection is the awakening of the dormant brain cells.",
-                "atom": "The Atom is the basic building block, but it reflects the solar system. Adam is Atom.",
-                "default": "The hidden meaning of this concept lies within the biological decoding of scripture."
+                "pineal": "The Pineal Gland is the light receptor of the body. It is the 'Single Eye' (Matthew 6:22). When filled with light, the whole body is full of light. It secretes melatonin, the chemical of the Christos.",
+                "144000": "The 144,000 is not a number of people. It is a biological frequency. It represents the 12 cranial nerves multiplied by the 12 signs of the zodiac (12 x 12 = 144), raised to the power of the divine (1000). It is the measure of the light energy in the redeemed mind.",
+                "144,000": "The 144,000 is not a number of people. It is a biological frequency. It represents the 12 cranial nerves multiplied by the 12 signs of the zodiac (12 x 12 = 144), raised to the power of the divine (1000). It is the measure of the light energy in the redeemed mind.",
+                "meditation": "Meditation is the shutting down of the five senses. You must enter the 'closet' and shut the door. It is the cessation of thought to allow the photon energy from above to enter the pineal gland.",
+                "egypt": "Egypt in the Bible is your lower physical body. It is the house of bondage. The Exodus is the movement of the seed (Israel) out of the solar plexus (Egypt) up to the brain (Promised Land).",
+                "jesus": "Jesus is the Greek word Iesous, representing the sun/son within you. It is the solar energy that is born in the manger (solar plexus) and must ascend the 33 vertebrae to the skull (Golgotha).",
+                "christ": "Christ is a substance, not a person. It is the 'Christos' oil, the sacred secretion produced by the claustrum in the brain, which flows down the spine and must be returned.",
+                "east": "The East represents the right hemisphere of the brain. The sun rises in the East. We must move our consciousness from the carnal West (left brain) to the spiritual East.",
+                "zodiac": "The Zodiac is the path of the soul. The Bible is an astrological book. The 12 disciples are the 12 signs of the zodiac within you. You must master these energies.",
+                "light": "God is Light. This is literal physics. Photons are angles of light (Angels). We are beings of light trapped in density.",
+                "virgo": "Virgo is the Virgin. In the body, this corresponds to the solar plexus where the seed (bread/Bethlehem) is born. It is the beginning of the alchemical process.",
+                "pisces": "Pisces is the two fish. It represents the feet, but also the age of the fish, the age of Christianity which we are leaving as we enter Aquarius (the water bearer/mind).",
+                "aquarius": "Aquarius is the man bearing a pitcher of water (Luke 22:10). This represents the age of the Mind, the outpouring of spirit/knowledge. The water is truth.",
+                "passover": "Passover is the sun 'passing over' the equator at the Spring Equinox. In you, it is the energy passing over from the lower chakras to the higher chakras.",
+                "crucifixion": "Crucifixion happens in the skull (Golgotha). It is the crossing of the optic thalamus nerve. The energy crosses over to enlighten the higher mind.",
+                "resurrection": "Resurrection is the awakening of the dormant brain cells. The 'dead' listed in scripture are those living in lower consciousness. To rise is to activate the pineal.",
+                "atom": "The Atom is the basic building block, but it reflects the solar system. Adam is Atom. We are all Adams/Atoms. The story of Adam is the story of the Atom.",
+                "electron": "The electron is the negative charge, the female principle, Eve. It circles the nucleus (Adam).",
+                "proton": "The proton is the positive charge, the male principle.",
+                "neutron": "The neutron is the neutral force, the balance. It is the Christ consciousness that unifies the duality of proton and electron.",
+                "ion": "Ion is John. John the Baptist. The Ion (John) prepares the way for the coming of the light.",
+                "salt": "You are the salt of the earth. Salt is the preservative. It represents the chemical balance required for the electrical firing of the nervous system.",
+                "single eye": "If thine eye be single, thy body shall be full of light. This is the Pineal Gland activated, seeing beyond duality into unity.",
+                "furnace": "The fiery furnace of Shadrach, Meshach, and Abednego is the solar plexus. When we overcome the lower fires (passions), we walk with the fourth man (spirit) and are not burned.",
+                "lion": "The Lion represents the sign of Leo, the heart. It is the King of Beasts (the lower animal nature mastered by the heart). The Lion of the Tribe of Judah.",
+                "lamb": "The Lamb is Aries, the Ram. It represents the higher mind, the cerebrum. The marriage of the Lamb is the union of the lower and higher self.",
+                "wilderness": "The Wilderness is the state of the mind before enlightenment. It is the 40 years (states of consciousness) we wander before entering the Promised Land (the brain).",
+                "jordan": "The River Jordan represents the spinal cord. We must cross the Jordan (raise the energy up the spine) to enter the Promised Land.",
+                "jerusalem": "Jerusalem is 'Jeru-Salem', the City of Peace. It is not a city in the Middle East; it is the center of peace within the brain, the higher consciousness.",
+                "israel": "Is-Ra-El. Isis (Moon), Ra (Sun), El (God). It represents the integration of the feminine, masculine, and divine within the human body.",
+                "judas": "Judas represents the sign of Scorpio (the backbiter). It is the generative force that 'betrays' the seed if it is wasted in lower desires.",
+                "peter": "Peter represents the pineal gland/stone. 'Upon this rock I will build my church.' He is the unstable stone that becomes stable.",
+                "thomas": "Thomas represents the twins (Gemini). He is the doubter, the analytical lower mind that must see to believe.",
+                "lucifer": "Lucifer means 'Light Bearer'. It is not a devil. It is the energy falling into matter (descent) which must be raised back up.",
+                "satan": "Satan means 'adversary'. It is your own lower ego, the carnal mind that opposes the spirit. It is the resistance required for growth.",
+                "devil": "The Devil is 'D-Evil', the energy lived backward (LIVE vs EVIL). It is living for the senses rather than the spirit.",
+                "hell": "Hell is the lower state of consciousness. It is the burning of desire and passion in the solar plexus.",
+                "heaven": "Heaven is 'heaved up'. It is the higher state of consciousness in the brain.",
+                "ark": "The Ark of the Covenant is the area of the brain containing the pituitary and pineal glands. It is where the electrical connection (Arc) takes place.",
+                "moses": "Moses represents the Law, the intellectual understanding that leads us to the water but cannot cross over. Joshua (Jesus) takes us over.",
+                "manna": "Manna is the 'hidden manna' from the brain. It is the secretions of the brain that nourish the body when we are in the wilderness of meditation.",
+                "oil": "The Oil is the Christos, the sacred secretion. It must not be spilled (wasted). It lights the lamp of the body.",
+                "temple": "Know ye not that ye are the Temple of God? The external churches are metaphors for your own body.",
+                "stone": " The stone that the builders rejected is the Pineal Gland. It is the cornerstone of the spiritual temple.",
+                "water": "Water represents truth. Jesus walking on water is the spirit rising above the turbulent emotions/truth.",
+                "wine": "Wine represents the spirit fermented and potent. Turning water into wine is elevating mere facts into spiritual realization.",
+                "bread": "Bread represents the seed, the physical substance born in Virgo (House of Bread).",
+                "fish": "Fish represents the spiritual thought swimming in the sea of the mind. 153 fish represents the full catch of spiritual activation.",
+                "net": "The net is the nervous system catching the spiritual impulses.",
+                "right side": "Cast your net on the right side. Operate from the right hemisphere of the brain (intuitive) rather than the left (logical).",
+                "moon": "The Moon represents the emotions and the soul. It reflects the light of the sun (spirit) but has no light of its own.",
+                "sun": "The Sun represents the Spirit, the Christ consciousness. It is the source of all life and light.",
+                "stars": "The stars represent the chakras and the cranial nerves. 'He determines the number of the stars and calls them each by name.'",
+                "cloud": "A cloud represents the confusion of the lower mind that hides the sun. 'He comes with clouds' - spirit appearing through the veil of matter.",
+                "mountain": "A mountain represents a high state of meditation. Jesus went up the mountain to pray. We must elevate our consciousness.",
+                "tree": "The Tree of Life is the spine and the nervous system. The fruit is the enlightened action.",
+                "serpent": "The serpent represents the Kundalini energy at the base of the spine. Lifted up (Moses), it becomes healing. Crawling on the belly, it is deception.",
+                "default": "The hidden meaning of this concept lies within the biological decoding of scripture. Look not at the literal letter, but the spirit within the form."
             },
 
             quotes: [
@@ -462,7 +499,9 @@
                 "If thine eye be single, thy whole body shall be full of light.",
                 "The Bible is not a book of history, it is a book of biology.",
                 "Be still, and know that I am God.",
-                "You are the Temple of the Living God."
+                "You are the Temple of the Living God.",
+                "Look at the things that are not seen, for the things which are seen are temporal.",
+                "As above, so below."
             ],
 
             anatomyData: {
@@ -565,7 +604,10 @@
                     document.getElementById('meditation-quote').innerText = `"${this.quotes[Math.floor(Math.random() * this.quotes.length)]}"`;
                     this.renderMeditationLectures();
                 }
-                if (id === 'library') this.renderLibraryInterface();
+                // FIXED: RENDER LIBRARY EVEN IF NO TOPICS SELECTED (Shows All)
+                if (id === 'library') {
+                    this.renderLibraryInterface();
+                }
                 window.scrollTo(0,0); 
             },
             
@@ -596,9 +638,8 @@
             },
             closeVideo: function() { document.getElementById('video-frame-container').innerHTML = ''; document.getElementById('video-modal').classList.add('hidden'); },
 
-            // --- BROKEN LINK SCANNER (NEW!) ---
+            // --- BROKEN LINK SCANNER ---
             scanForBrokenLinks: async function() {
-                // Show Diagnostics Overlay
                 const overlay = document.getElementById('diagnostics-overlay');
                 const status = document.getElementById('diag-status');
                 const progressFill = document.getElementById('diag-progress');
@@ -609,11 +650,7 @@
                 status.innerText = "Initializing Scanner...";
                 progressFill.style.width = "0%";
                 
-                // Collect IDs
-                const allVideoIds = this.data
-                    .map(row => ({ id: this.getVideoID(row.URL), title: row['TITLE OF VIDEO'], topic: row.TOPIC, url: row.URL }))
-                    .filter(item => item.id);
-                
+                const allVideoIds = this.data.map(row => ({ id: this.getVideoID(row.URL), title: row['TITLE OF VIDEO'], topic: row.TOPIC, url: row.URL })).filter(item => item.id);
                 const total = allVideoIds.length;
                 const batchSize = 50;
                 let processed = 0;
@@ -625,53 +662,29 @@
                     const batch = allVideoIds.slice(i, i + batchSize);
                     const batchIds = batch.map(item => item.id).join(',');
                     const url = `https://www.googleapis.com/youtube/v3/videos?key=${this.youtube.apiKey}&part=id&id=${batchIds}`;
-                    
                     try {
                         const res = await fetch(url);
                         const data = await res.json();
-                        
                         if (data.items) {
                             const foundIds = new Set(data.items.map(item => item.id));
-                            // Check which requested IDs are NOT in the response
-                            batch.forEach(video => {
-                                if (!foundIds.has(video.id)) {
-                                    brokenLinks.push(video);
-                                }
-                            });
+                            batch.forEach(video => { if (!foundIds.has(video.id)) brokenLinks.push(video); });
                         }
-                    } catch (e) {
-                        console.error("Batch Check Failed", e);
-                    }
-                    
+                    } catch (e) { console.error("Batch Check Failed", e); }
                     processed += batch.length;
                     const pct = Math.round((processed / total) * 100);
                     progressFill.style.width = `${pct}%`;
                     status.innerText = `Scanning... ${pct}% (${processed}/${total})`;
                 }
                 
-                // Done
                 status.innerText = `Scan Complete. Found ${brokenLinks.length} Broken Links.`;
                 resultsBox.classList.remove('hidden');
                 
                 if (brokenLinks.length === 0) {
                     resultsBox.innerHTML = '<div class="text-green-400 p-4">All systems operational. No broken links found.</div>';
                 } else {
-                    // Generate CSV Report Link
-                    let csvContent = "data:text/csv;charset=utf-8,TITLE,ID,TOPIC,URL\n" 
-                        + brokenLinks.map(e => `"${e.title.replace(/"/g, '""')}","${e.id}","${e.topic}","${e.url}"`).join("\n");
+                    let csvContent = "data:text/csv;charset=utf-8,TITLE,ID,TOPIC,URL\n" + brokenLinks.map(e => `"${e.title.replace(/"/g, '""')}","${e.id}","${e.topic}","${e.url}"`).join("\n");
                     const encodedUri = encodeURI(csvContent);
-                    
-                    resultsBox.innerHTML = `
-                        <div class="mb-4">
-                            <a href="${encodedUri}" download="broken_links_report.csv" class="text-red-400 border border-red-900 px-4 py-2 rounded uppercase font-bold text-[10px] hover:bg-red-900 hover:text-white transition-colors">
-                                <i class="fa-solid fa-download mr-2"></i> Download Report (.csv)
-                            </a>
-                        </div>
-                        <ul class="text-left text-[10px] font-mono text-stone-400 space-y-1">
-                            ${brokenLinks.slice(0, 10).map(l => `<li><span class="text-red-500">X</span> ${l.title} (${l.id})</li>`).join('')}
-                            ${brokenLinks.length > 10 ? `<li>...and ${brokenLinks.length - 10} more</li>` : ''}
-                        </ul>
-                    `;
+                    resultsBox.innerHTML = `<div class="mb-4"><a href="${encodedUri}" download="broken_links_report.csv" class="text-red-400 border border-red-900 px-4 py-2 rounded uppercase font-bold text-[10px] hover:bg-red-900 hover:text-white transition-colors"><i class="fa-solid fa-download mr-2"></i> Download Report (.csv)</a></div><ul class="text-left text-[10px] font-mono text-stone-400 space-y-1">${brokenLinks.slice(0, 10).map(l => `<li><span class="text-red-500">X</span> ${l.title} (${l.id})</li>`).join('')}${brokenLinks.length > 10 ? `<li>...and ${brokenLinks.length - 10} more</li>` : ''}</ul>`;
                 }
             },
             
@@ -699,11 +712,8 @@
                     </div>`;
                 }).join('');
                 
-                if (this.selectedLibraryTopics.size > 0) this.renderLibraryResults();
-                else {
-                    document.getElementById('library-placeholder').classList.remove('hidden');
-                    document.getElementById('library-grid').classList.add('hidden');
-                }
+                // FIXED: ALWAYS RENDER RESULTS (If no selection, it shows ALL)
+                this.renderLibraryResults();
             },
             toggleLibraryTopic: function(topic) {
                 if (this.selectedLibraryTopics.has(topic)) this.selectedLibraryTopics.delete(topic);
@@ -716,22 +726,55 @@
             },
             renderLibraryResults: function() {
                 const grid = document.getElementById('library-grid');
+                // Removed the placeholder logic entirely. Now it always shows content.
                 document.getElementById('library-placeholder').classList.add('hidden');
                 grid.classList.remove('hidden');
-                grid.innerHTML = '<div class="col-span-full text-center py-10"><i class="fa-solid fa-circle-notch fa-spin" style="color: var(--purple);"></i></div>';
+                
                 const showYT = document.getElementById('filter-yt').checked;
                 const showHD = document.getElementById('filter-hd').checked;
                 let results = [];
-                if (showYT) {
-                    const ytMatches = this.data.filter(row => this.selectedLibraryTopics.has(row.TOPIC)).map(row => { return { id: this.getVideoID(row.URL), title: row['TITLE OF VIDEO'], thumbnail: `https://img.youtube.com/vi/${this.getVideoID(row.URL)}/mqdefault.jpg` }; });
-                    results.push(...ytMatches.map(v => ({...v, type: 'youtube'})));
+
+                // 1. Filter YouTube
+                let ytMatches = this.data;
+                if (this.selectedLibraryTopics.size > 0) {
+                    ytMatches = ytMatches.filter(row => this.selectedLibraryTopics.has(row.TOPIC));
                 }
+                
+                if (showYT) {
+                    results.push(...ytMatches.map(row => ({ 
+                        id: this.getVideoID(row.URL), 
+                        title: row['TITLE OF VIDEO'], 
+                        thumbnail: `https://img.youtube.com/vi/${this.getVideoID(row.URL)}/mqdefault.jpg`,
+                        type: 'youtube'
+                    })));
+                }
+
+                // 2. Filter Archive
+                // (Since archive isn't tagged strictly, we fuzzy match title IF topics selected)
+                let hdMatches = this.archiveVideos;
+                if (this.selectedLibraryTopics.size > 0) {
+                    hdMatches = hdMatches.filter(v => {
+                        const titleLower = v.title.toLowerCase();
+                        for (let topic of this.selectedLibraryTopics) {
+                            if (titleLower.includes(topic.toLowerCase())) return true;
+                        }
+                        return false;
+                    });
+                }
+
                 if (showHD) {
-                    const hdMatches = this.archiveVideos.filter(v => { const titleLower = v.title.toLowerCase(); for (let topic of this.selectedLibraryTopics) { if (titleLower.includes(topic.toLowerCase())) return true; } return false; });
                     results.push(...hdMatches.map(v => ({...v, type: 'archive'})));
                 }
-                if (results.length === 0) { grid.innerHTML = '<div class="col-span-full text-center py-20 text-stone-500">No videos found for selected topics.</div>'; return; }
-                grid.innerHTML = results.map(v => this.renderCard(v, v.type === 'archive')).join('');
+
+                if (results.length === 0) { 
+                    grid.innerHTML = '<div class="col-span-full text-center py-20 text-stone-500">No videos found.</div>'; 
+                    return; 
+                }
+                
+                // Limit initial render for performance if "All" is selected
+                const displaySet = results.length > 100 ? results.slice(0, 100) : results;
+                
+                grid.innerHTML = displaySet.map(v => this.renderCard(v, v.type === 'archive')).join('');
             },
 
             // --- SEARCH OVERLAY LOGIC ---
@@ -750,7 +793,6 @@
                 this.closeSearchOverlay();
                 this.nav('search');
                 
-                // Set Global Search Input
                 const searchInput = document.getElementById('global-search');
                 if(searchInput) searchInput.value = query; 
                 
@@ -781,7 +823,6 @@
                 document.getElementById('teacher-response-box').classList.remove('hidden');
                 document.getElementById('teacher-text').innerHTML = `"${response}"`;
                 
-                // Find Related Videos
                 const related = this.data.filter(v => v['TITLE OF VIDEO'].toLowerCase().includes(q) || v.TOPIC.toLowerCase().includes(q)).slice(0, 4);
                 const grid = document.getElementById('teacher-related-grid');
                 grid.innerHTML = related.length > 0 ? related.map(v => {
@@ -878,19 +919,16 @@
                     this.youtube.renderVideos();
                 }});
                 
-                // --- SCROLL-FLOW NAVIGATION ---
                 const wrapper = document.getElementById('scroll-wrapper');
                 const tabs = ['home', 'library', 'videos', 'anatomy', 'meditation', 'resources'];
                 let scrollTimeout;
 
                 wrapper.addEventListener("scroll", () => {
-                    // Infinite Scroll
                     if (wrapper.scrollTop + wrapper.clientHeight >= wrapper.scrollHeight - 100) {
                         if (window.app.currentVideoSource === 'youtube') window.app.youtube.fetchVideos(); else window.app.fetchArchiveVideos();
                     }
                 });
 
-                // Wheel Event
                 wrapper.addEventListener("wheel", (e) => {
                     clearTimeout(scrollTimeout);
                     scrollTimeout = setTimeout(() => {
