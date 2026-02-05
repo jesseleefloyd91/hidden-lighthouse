@@ -110,6 +110,7 @@
 </head>
 <body class="flex flex-col min-h-screen">
     <div id="stars-container" class="stars-container"></div>
+    
     <div id="photon-bg" class="photon-bg"><div class="photon-grid"></div></div>
 
     <div id="diagnostics-overlay" class="hidden">
@@ -136,8 +137,8 @@
 
     <div class="fixed top-0 left-0 w-full p-4 z-40 flex justify-between items-center bg-opacity-95 backdrop-blur-xl border-b shadow-sm transition-colors duration-300" style="background-color: var(--bg-primary); border-color: var(--border-color);">
         <div class="flex items-center gap-3 cursor-pointer group" onclick="window.app.nav('home')">
-            <div class="w-10 h-10 border flex items-center justify-center rotate-45 transition-all group-hover:rotate-0 shrink-0" style="border-color: var(--border-color); background: var(--bg-secondary);">
-                <span class="cinzel font-bold text-lg -rotate-45 group-hover:rotate-0" style="color: var(--purple);">HM</span>
+            <div class="w-10 h-10 border flex items-center justify-center rotate-45 transition-all group-hover:rotate-0 shrink-0 overflow-hidden" style="border-color: var(--border-color); background: var(--bg-secondary);">
+                <img src="bill_profile.jpg" class="w-full h-full object-cover -rotate-45 group-hover:rotate-0 transition-transform duration-500" alt="Bill Donahue">
             </div>
             <div>
                 <h1 class="cinzel font-bold text-xs md:text-sm tracking-widest uppercase leading-tight" style="color: var(--text-primary);">Hidden<br>Meanings</h1>
@@ -194,12 +195,8 @@
                            onkeydown="if(event.key === 'Enter') window.app.askTheTeacher()"
                            oninput="window.app.toggleClearButton()">
                     
-                    <button id="clear-teacher-btn" onclick="window.app.resetHome()" class="absolute right-16 top-1/2 -translate-y-1/2 text-xs hover:scale-110 transition-transform hidden" style="color: var(--text-secondary);">
+                    <button id="clear-teacher-btn" onclick="window.app.resetHome()" class="absolute right-6 top-1/2 -translate-y-1/2 text-xs hover:scale-110 transition-transform hidden" style="color: var(--text-secondary);">
                         <i class="fa-solid fa-xmark"></i>
-                    </button>
-
-                    <button onclick="window.app.askTheTeacher()" class="absolute right-6 top-2 bottom-2 w-10 rounded-full flex items-center justify-center hover:bg-white hover:text-black transition-colors shadow-lg" style="background-color: var(--purple); color: white;">
-                        <i class="fa-solid fa-paper-plane"></i>
                     </button>
                 </div>
 
@@ -560,7 +557,7 @@
             createTagButton: function(topic) {
                 if(!topic || topic === "General") return `<span class="text-[9px] font-mono uppercase tracking-widest block py-1.5 opacity-30">Uncatalogued</span>`;
                 const safeTopic = topic.replace(/'/g, "\\'").replace(/"/g, '&quot;');
-                // FIXED: Now calls selectLibraryTopic which handles the clearing
+                // FIXED: Direct call to label click logic
                 return `<button class="inline-flex items-center gap-2 text-[9px] font-bold uppercase tracking-widest px-3 py-1.5 rounded transition-all justify-center cursor-pointer relative z-20" style="background: var(--input-bg); color: var(--purple); border: 1px solid var(--border-color);" onclick="event.stopPropagation(); window.app.selectLibraryTopic('${safeTopic}')"><i class="fa-solid fa-tag"></i> ${topic}</button>`;
             },
 
@@ -601,7 +598,6 @@
                     document.getElementById('meditation-quote').innerText = `"${this.quotes[Math.floor(Math.random() * this.quotes.length)]}"`;
                     this.renderMeditationLectures();
                 }
-                // FIXED: RENDER LIBRARY EVEN IF NO TOPICS SELECTED (Shows All)
                 if (id === 'library') {
                     this.renderLibraryInterface();
                 }
@@ -698,11 +694,12 @@
             },
 
             // --- LIBRARY FEATURE ---
-            // UPDATED: Now clears filters before setting new one to allow "Jump to Topic" behavior
             selectLibraryTopic: function(topic) {
                 this.selectedLibraryTopics.clear(); // Clear existing filters
                 this.selectedLibraryTopics.add(topic); // Add new filter
-                this.nav('library'); // Go to library and render
+                this.nav('library'); // Go to library
+                // FORCE RE-RENDER
+                setTimeout(() => this.renderLibraryInterface(), 50);
             },
             renderLibraryInterface: function() {
                 const topics = [...new Set(this.data.map(i => i.TOPIC).filter(t => t))].sort((a, b) => a.localeCompare(b)); 
@@ -714,6 +711,7 @@
                 container.innerHTML = topics.map(t => {
                     const isActive = this.selectedLibraryTopics.has(t);
                     const count = this.data.filter(r => r.TOPIC === t).length;
+                    // Fixed onclick escaping
                     return `<div class="topic-chip ${isActive ? 'active' : ''}" onclick="window.app.toggleLibraryTopic('${t.replace(/'/g, "\\'")}')">
                         ${t} <span class="chip-count">(${count})</span>
                     </div>`;
@@ -732,7 +730,9 @@
             },
             renderLibraryResults: function() {
                 const grid = document.getElementById('library-grid');
-                document.getElementById('library-placeholder').classList.add('hidden');
+                // Ensure hidden elements are reset
+                const placeholder = document.getElementById('library-placeholder');
+                if(placeholder) placeholder.classList.add('hidden');
                 grid.classList.remove('hidden');
                 
                 const showYT = document.getElementById('filter-yt').checked;
@@ -890,7 +890,8 @@
                 grid.innerHTML = videos.map(v => this.renderCard(v, isArchive)).join("");
             },
             youtube: {
-                apiKey: "AIzaSyCZfKNXHgjZG1h13QhDH5-ubtVC0xDPfe4", uploadsPlaylistId: "UUinvwSeMdmuuzyMWrS0tGTg", videos: [], nextPageToken: null, loading: false,
+                apiKey: "AIzaSyCZfKNXHgjZG1h13QhDH5-ubtVC0xDPfe4", 
+                uploadsPlaylistId: "UUinvwSeMdmuuzyMWrS0tGTg", videos: [], nextPageToken: null, loading: false,
                 fetchVideos: async function () {
                     if (this.loading) return; this.loading = true;
                     document.getElementById('video-loader').classList.remove('hidden');
@@ -900,6 +901,8 @@
                         const res = await fetch(url); const data = await res.json();
                         this.nextPageToken = data.nextPageToken || null;
                         this.videos.push(...data.items.map(item => ({ id: item.snippet.resourceId.videoId, title: item.snippet.title, thumbnail: item.snippet.thumbnails.high.url })));
+                        
+                        // FIXED: WAIT FOR DATA TO LOAD BEFORE RENDERING
                         if (window.app.currentVideoSource === 'youtube') window.app.renderMergedGrid();
                     } catch (e) { console.error("YT Error", e); }
                     this.loading = false; document.getElementById('video-loader').classList.add('hidden');
