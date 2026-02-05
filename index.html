@@ -13,7 +13,6 @@
     <style>
         /* --- THEME VARIABLES --- */
         :root {
-            /* DARK MODE (Default) */
             --bg-primary: #050505;
             --bg-secondary: #0f0f0f;
             --bg-tertiary: #1a1a1a;
@@ -27,7 +26,6 @@
             --dock-bg: rgba(10, 10, 10, 0.90);
         }
 
-        /* LIGHT MODE (Photon / Electric) */
         body.light-mode {
             --bg-primary: #f8fafc;
             --bg-secondary: #ffffff;
@@ -42,102 +40,33 @@
             --dock-bg: rgba(255, 255, 255, 0.90);
         }
 
-        /* BASE CSS */
         body { font-family: 'Inter', sans-serif; background-color: var(--bg-primary); color: var(--text-primary); transition: background-color 0.5s ease, color 0.5s ease; overflow-x: hidden; height: 100vh; }
         .cinzel { font-family: 'Cinzel', serif; }
         .mono { font-family: 'Space Grotesk', monospace; }
         
-        /* --- BACKGROUNDS --- */
-        .stars-container {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: -1; pointer-events: none;
-            background: radial-gradient(circle at bottom center, #11001c 0%, #000000 80%);
-            transition: opacity 0.8s; opacity: 1;
-        }
-        .planet {
-            position: absolute; border-radius: 50%; opacity: 0.3;
-            background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.1), transparent);
-            box-shadow: 0 0 20px rgba(216, 180, 254, 0.05);
-            animation: floatPlanet 120s linear infinite;
-        }
-        .star {
-            position: absolute; border-radius: 50%;
-            animation: twinkle var(--duration) ease-in-out infinite;
-            opacity: 0;
-        }
+        /* BACKGROUNDS */
+        .stars-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; background: radial-gradient(circle at bottom center, #11001c 0%, #000000 80%); transition: opacity 0.8s; opacity: 1; }
+        .photon-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; opacity: 0; transition: opacity 0.8s; background-color: #ffffff; background-image: radial-gradient(at 0% 0%, hsla(253,16%,90%,1) 0, transparent 50%), radial-gradient(at 50% 100%, hsla(225,39%,95%,1) 0, transparent 50%); }
+        .photon-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px); background-size: 40px 40px; }
+        body.light-mode .stars-container { opacity: 0; } body.light-mode .photon-bg { opacity: 1; }
         
-        .photon-bg {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: -1; pointer-events: none; opacity: 0; transition: opacity 0.8s;
-            background-color: #ffffff;
-            background-image: 
-                radial-gradient(at 0% 0%, hsla(253,16%,90%,1) 0, transparent 50%), 
-                radial-gradient(at 50% 100%, hsla(225,39%,95%,1) 0, transparent 50%), 
-                radial-gradient(at 100% 0%, hsla(339,49%,95%,1) 0, transparent 50%);
-        }
-        .photon-grid {
-            position: absolute; inset: 0;
-            background-image: linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
-            background-size: 40px 40px;
-        }
-        
-        body.light-mode .stars-container { opacity: 0; }
-        body.light-mode .photon-bg { opacity: 1; }
-
+        .planet { position: absolute; border-radius: 50%; opacity: 0.3; background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.1), transparent); box-shadow: 0 0 20px rgba(216, 180, 254, 0.05); animation: floatPlanet 120s linear infinite; }
+        .star { position: absolute; border-radius: 50%; animation: twinkle var(--duration) ease-in-out infinite; opacity: 0; }
         @keyframes twinkle { 0%, 100% { opacity: 0; transform: scale(0.5); } 50% { opacity: var(--opacity); transform: scale(1); } }
         @keyframes floatPlanet { from { transform: translateX(-100px) rotate(0deg); } to { transform: translateX(110vw) rotate(20deg); } }
 
-        /* --- CARDS & GRID --- */
+        /* CARDS */
         .masonry-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; padding-bottom: 140px; }
         @media (max-width: 640px) { .masonry-grid { grid-template-columns: 1fr; } }
+        .cosmos-card { background-color: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 12px; transition: all 0.3s; cursor: pointer; position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; min-height: 200px; z-index: 10; }
+        .cosmos-card:hover { border-color: var(--gold); transform: translateY(-4px); box-shadow: 0 10px 40px -10px var(--accent-glow); }
 
-        .cosmos-card {
-            background-color: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 12px;
-            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94); cursor: pointer; position: relative; overflow: hidden;
-            display: flex; flex-direction: column; justify-content: space-between; min-height: 200px; z-index: 10;
-        }
-        .cosmos-card:hover {
-            border-color: var(--gold); 
-            transform: translateY(-4px);
-            box-shadow: 0 10px 40px -10px var(--accent-glow);
-        }
-
-        /* --- UI COMPONENTS --- */
+        /* UI */
         .dock-container { position: fixed; bottom: 20px; left: 0; width: 100%; display: flex; justify-content: center; z-index: 50; padding: 0 20px; }
-        .dock {
-            background: var(--dock-bg); backdrop-filter: blur(20px); border: 1px solid var(--border-color);
-            padding: 8px; border-radius: 20px; display: flex; gap: 4px; box-shadow: 0 20px 40px -10px rgba(0,0,0,0.3);
-            max-width: 100%; overflow-x: auto; scrollbar-width: none; 
-        }
-        .dock-btn {
-            padding: 10px 16px; border-radius: 12px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;
-            color: var(--text-secondary); transition: all 0.2s; cursor: pointer; border: 1px solid transparent; white-space: nowrap; flex-shrink: 0;
-        }
+        .dock { background: var(--dock-bg); backdrop-filter: blur(20px); border: 1px solid var(--border-color); padding: 8px; border-radius: 20px; display: flex; gap: 4px; box-shadow: 0 20px 40px -10px rgba(0,0,0,0.3); max-width: 100%; overflow-x: auto; scrollbar-width: none; }
+        .dock-btn { padding: 10px 16px; border-radius: 12px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-secondary); transition: all 0.2s; cursor: pointer; border: 1px solid transparent; white-space: nowrap; flex-shrink: 0; }
         .dock-btn:hover { color: var(--text-primary); background: var(--bg-tertiary); }
         .dock-btn.active { background: var(--text-primary); color: var(--bg-primary); }
-
-        .search-input {
-            background: var(--input-bg); backdrop-filter: blur(10px); border: 1px solid var(--border-color); color: var(--text-primary);
-            padding: 10px 20px; border-radius: 99px; font-size: 12px; width: 100%; outline: none; transition: all 0.3s;
-        }
-        .search-input:focus { border-color: var(--purple); box-shadow: 0 0 15px rgba(216, 180, 254, 0.1); }
-
-        /* CHIPS (With Counts) */
-        .topic-chip {
-            padding: 6px 12px; border-radius: 99px; font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.05em;
-            cursor: pointer; border: 1px solid var(--border-color); color: var(--text-secondary); background: var(--bg-secondary);
-            transition: all 0.2s; user-select: none; display: inline-flex; align-items: center; gap: 6px;
-        }
-        .topic-chip:hover { border-color: var(--purple); color: var(--text-primary); }
-        .topic-chip.active { background: var(--purple); color: white; border-color: var(--purple); }
-        .chip-count { opacity: 0.5; font-size: 9px; }
-
-        /* DIAGNOSTICS OVERLAY (SCANNER) */
-        #diagnostics-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 100; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
-        .diag-box { width: 90%; max-width: 500px; background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 30px; border-radius: 16px; text-align: center; box-shadow: 0 0 50px rgba(0,0,0,0.5); }
-        .progress-bar { height: 4px; background: var(--bg-tertiary); width: 100%; border-radius: 2px; overflow: hidden; margin: 20px 0; }
-        .progress-fill { height: 100%; background: var(--gold); width: 0%; transition: width 0.3s; }
 
         /* SEARCH OVERLAY */
         #search-overlay { position: fixed; inset: 0; background: rgba(5, 5, 5, 0.95); backdrop-filter: blur(20px); z-index: 90; display: flex; flex-direction: column; align-items: center; padding-top: 100px; transition: opacity 0.3s; opacity: 0; pointer-events: none; }
@@ -145,38 +74,42 @@
         .big-search-input { width: 90%; max-width: 600px; background: transparent; border: none; border-bottom: 2px solid var(--gold); font-size: 2rem; color: var(--text-primary); padding: 10px; text-align: center; outline: none; font-family: 'Cinzel', serif; }
         .big-search-input::placeholder { color: var(--text-secondary); opacity: 0.5; }
 
+        /* DIAGNOSTICS OVERLAY */
+        #diagnostics-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 100; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
+        .diag-box { width: 90%; max-width: 500px; background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 30px; border-radius: 16px; text-align: center; box-shadow: 0 0 50px rgba(0,0,0,0.5); }
+        .progress-bar { height: 4px; background: var(--bg-tertiary); width: 100%; border-radius: 2px; overflow: hidden; margin: 20px 0; }
+        .progress-fill { height: 100%; background: var(--gold); width: 0%; transition: width 0.3s; }
+
         /* ANATOMY */
-        .anatomy-wrapper {
-            position: relative; width: 300px; height: 650px; border: 1px solid var(--border-color); border-radius: 999px;
-            background: var(--bg-secondary); box-shadow: 0 0 80px -20px var(--accent-glow);
-        }
+        .anatomy-wrapper { position: relative; width: 300px; height: 650px; border: 1px solid var(--border-color); border-radius: 999px; background: var(--bg-secondary); box-shadow: 0 0 80px -20px var(--accent-glow); }
         @media (max-width: 768px) { .anatomy-scale-container { transform: scale(0.75); transform-origin: top center; height: 500px; } }
-        .anatomy-dot {
-            width: 24px; height: 24px; border-radius: 50%; position: absolute; left: 50%; transform: translateX(-50%);
-            cursor: pointer; transition: all 0.3s ease; border: 2px solid rgba(255,255,255,0.5); z-index: 20;
-        }
+        .anatomy-dot { width: 24px; height: 24px; border-radius: 50%; position: absolute; left: 50%; transform: translateX(-50%); cursor: pointer; transition: all 0.3s ease; border: 2px solid rgba(255,255,255,0.5); z-index: 20; }
         .anatomy-dot:hover { transform: translateX(-50%) scale(1.5); border-color: white; }
 
-        /* SECTIONS */
         .view-section { display: none; padding-top: 140px; padding-bottom: 150px; width: 100%; min-height: 100vh; animation: fadeIn 0.4s ease; }
         .view-section.active { display: block; }
         #view-home.active { display: flex; flex-direction: column; justify-content: center; align-items: center; padding-top: 0; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
+        
         .hidden { display: none !important; }
-        .highlight { background: var(--gold); color: black; padding: 0 2px; border-radius: 2px; }
         .profile-img { box-shadow: 0 0 50px var(--accent-glow); transition: 0.5s; border-color: var(--border-color); }
         
-        /* SCROLLBAR */
+        /* CHIPS */
+        .topic-chip { padding: 6px 12px; border-radius: 99px; font-size: 10px; font-weight: bold; text-transform: uppercase; cursor: pointer; border: 1px solid var(--border-color); color: var(--text-secondary); background: var(--bg-secondary); transition: all 0.2s; user-select: none; display: inline-flex; align-items: center; gap: 6px; }
+        .topic-chip:hover { border-color: var(--purple); color: var(--text-primary); }
+        .topic-chip.active { background: var(--purple); color: white; border-color: var(--purple); }
+        .chip-count { opacity: 0.5; font-size: 9px; }
+
+        .search-input { background: var(--input-bg); backdrop-filter: blur(10px); border: 1px solid var(--border-color); color: var(--text-primary); padding: 10px 20px; border-radius: 99px; font-size: 12px; width: 100%; outline: none; transition: all 0.3s; }
+        .search-input:focus { border-color: var(--purple); box-shadow: 0 0 15px rgba(216, 180, 254, 0.1); }
+
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: var(--bg-primary); }
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--purple); }
     </style>
 </head>
 <body class="flex flex-col min-h-screen">
     <div id="stars-container" class="stars-container"></div>
-    
     <div id="photon-bg" class="photon-bg"><div class="photon-grid"></div></div>
 
     <div id="diagnostics-overlay" class="hidden">
@@ -239,17 +172,20 @@
     <div class="h-screen overflow-y-auto custom-scrollbar" id="scroll-wrapper">
        
         <section id="view-home" class="view-section active">
-            <div class="relative z-10 max-w-5xl text-center fade-in pt-10 px-4">
+            <div class="relative z-10 max-w-[1800px] mx-auto text-center fade-in pt-10 px-4">
+                
                 <div class="mb-8 flex justify-center">
                     <div class="relative w-32 h-32 md:w-40 md:h-40 rounded-full p-1 border-2 profile-img" style="background: var(--bg-secondary);">
                         <img src="bill_profile.jpg" class="w-full h-full object-cover rounded-full opacity-90 transition-opacity grayscale hover:grayscale-0"
                              onerror="this.src='https://ui-avatars.com/api/?name=Bill+Donahue&background=000&color=d8b4fe&size=160'">
                     </div>
                 </div>
+                
                 <div class="mb-6 inline-flex items-center gap-3 border px-4 py-2 rounded-full" style="border-color: var(--border-color); background: var(--input-bg);">
                     <span class="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></span>
                     <span class="text-[10px] uppercase tracking-[0.2em] font-bold" style="color: var(--text-secondary);">System Online</span>
                 </div>
+                
                 <h1 class="cinzel text-4xl md:text-8xl font-black mb-6 leading-none tracking-tight drop-shadow-2xl" style="color: var(--text-primary);">
                     HIDDEN<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400 italic">MEANINGS</span>
                 </h1>
@@ -270,9 +206,9 @@
                     </button>
                 </div>
 
-                <div id="teacher-response-box" class="max-w-2xl mx-auto text-left p-8 border-l-4 rounded-xl fade-in hidden mt-10" style="background: var(--bg-secondary); border-color: var(--border-color); border-left-color: var(--purple);">
+                <div id="teacher-response-box" class="w-full text-left p-8 border-l-4 rounded-xl fade-in hidden mt-10" style="background: var(--bg-secondary); border-color: var(--border-color); border-left-color: var(--purple);">
                     <span class="font-mono text-[10px] uppercase tracking-widest block mb-4" style="color: var(--purple);">The Teacher's Response</span>
-                    <div id="teacher-text" class="text-lg md:text-xl leading-relaxed italic font-light font-serif mb-6" style="color: var(--text-primary);"></div>
+                    <div id="teacher-text" class="text-lg md:text-2xl leading-relaxed italic font-light font-serif mb-8" style="color: var(--text-primary);"></div>
                     <div class="border-t pt-4" style="border-color: var(--border-color);">
                         <span class="text-[9px] uppercase font-bold tracking-widest block mb-3" style="color: var(--text-secondary);">Related Materials</span>
                         <div id="teacher-related-grid" class="masonry-grid"></div>
@@ -627,6 +563,7 @@
             createTagButton: function(topic) {
                 if(!topic || topic === "General") return `<span class="text-[9px] font-mono uppercase tracking-widest block py-1.5 opacity-30">Uncatalogued</span>`;
                 const safeTopic = topic.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                // FIXED: Now calls selectLibraryTopic which handles the clearing
                 return `<button class="inline-flex items-center gap-2 text-[9px] font-bold uppercase tracking-widest px-3 py-1.5 rounded transition-all justify-center cursor-pointer relative z-20" style="background: var(--input-bg); color: var(--purple); border: 1px solid var(--border-color);" onclick="event.stopPropagation(); window.app.selectLibraryTopic('${safeTopic}')"><i class="fa-solid fa-tag"></i> ${topic}</button>`;
             },
 
@@ -667,7 +604,10 @@
                     document.getElementById('meditation-quote').innerText = `"${this.quotes[Math.floor(Math.random() * this.quotes.length)]}"`;
                     this.renderMeditationLectures();
                 }
-                if (id === 'library') this.renderLibraryInterface();
+                // FIXED: RENDER LIBRARY EVEN IF NO TOPICS SELECTED (Shows All)
+                if (id === 'library') {
+                    this.renderLibraryInterface();
+                }
                 window.scrollTo(0,0); 
             },
             
@@ -761,9 +701,11 @@
             },
 
             // --- LIBRARY FEATURE ---
+            // UPDATED: Now clears filters before setting new one to allow "Jump to Topic" behavior
             selectLibraryTopic: function(topic) {
-                if (!document.getElementById('view-library').classList.contains('active')) this.nav('library');
-                this.toggleLibraryTopic(topic);
+                this.selectedLibraryTopics.clear(); // Clear existing filters
+                this.selectedLibraryTopics.add(topic); // Add new filter
+                this.nav('library'); // Go to library and render
             },
             renderLibraryInterface: function() {
                 const topics = [...new Set(this.data.map(i => i.TOPIC).filter(t => t))].sort((a, b) => a.localeCompare(b)); 
@@ -951,9 +893,7 @@
                 grid.innerHTML = videos.map(v => this.renderCard(v, isArchive)).join("");
             },
             youtube: {
-                // IMPORTANT: Replace this with your NEW RESTRICTED API KEY from Google Cloud Console
-                apiKey: "AIzaSyCZfKNXHgjZG1h13QhDH5-ubtVC0xDPfe4", 
-                uploadsPlaylistId: "UUinvwSeMdmuuzyMWrS0tGTg", videos: [], nextPageToken: null, loading: false,
+                apiKey: "YOUR_NEW_RESTRICTED_API_KEY_HERE", uploadsPlaylistId: "UUinvwSeMdmuuzyMWrS0tGTg", videos: [], nextPageToken: null, loading: false,
                 fetchVideos: async function () {
                     if (this.loading) return; this.loading = true;
                     document.getElementById('video-loader').classList.remove('hidden');
@@ -976,7 +916,7 @@
                 this.fetchArchiveVideos(); 
                 Papa.parse('catalog.csv', { download: true, header: true, skipEmptyLines: true, complete: (results) => {
                     this.data = results.data.filter(row => row['TITLE OF VIDEO']).map(row => { row.TOPIC = (row.TOPIC || "").replace(/^and\s+/i, '').trim(); return row; });
-                    this.renderLibraryInterface(); // Render Library immediately (Shows All by default)
+                    this.renderLibraryInterface(); 
                 }});
                 
                 const wrapper = document.getElementById('scroll-wrapper');
