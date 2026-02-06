@@ -46,7 +46,7 @@
         
         /* BACKGROUNDS */
         .stars-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; background: radial-gradient(circle at bottom center, #11001c 0%, #000000 80%); transition: opacity 0.8s; opacity: 1; }
-        .photon-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; opacity: 0; transition: opacity 0.8s; background-color: #ffffff; background-image: radial-gradient(at 0% 0%, hsla(253,16%,90%,1) 0, transparent 50%), radial-gradient(at 50% 100%, hsla(225,39%,95%,1) 0, transparent 50%); }
+        .photon-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; opacity: 0; transition: opacity 0.8s; background-color: #ffffff; background-image: radial-gradient(at 0% 0%, hsla(253,16%,90%,1) 0, transparent 50%), radial-gradient(at 50% 100%, hsla(225,39%,95%,1) 0, transparent 50%), radial-gradient(at 100% 0%, hsla(339,49%,95%,1) 0, transparent 50%); }
         .photon-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px); background-size: 40px 40px; }
         body.light-mode .stars-container { opacity: 0; } body.light-mode .photon-bg { opacity: 1; }
         
@@ -562,11 +562,26 @@
 
             getTopicByVideoID: function(vidId, vidTitle) {
                 if (!this.data || this.data.length === 0) return null;
-                const matchById = this.data.find(row => { const csvId = this.getVideoID(row.URL); return csvId === vidId; });
+                
+                // 1. Strict ID Match first
+                const matchById = this.data.find(row => { 
+                    const csvId = this.getVideoID(row.URL); 
+                    return csvId && csvId === vidId; 
+                });
                 if (matchById) return matchById.TOPIC;
-                if (vidTitle) {
+
+                // 2. Strict Title Match (Ignore short/empty titles)
+                if (vidTitle && vidTitle.length > 5) {
                     const cleanVidTitle = vidTitle.toLowerCase().replace(/[^a-z0-9]/g, '');
-                    const matchByTitle = this.data.find(row => { const cleanRowTitle = row['TITLE OF VIDEO'].toLowerCase().replace(/[^a-z0-9]/g, ''); return cleanRowTitle.includes(cleanVidTitle) || cleanVidTitle.includes(cleanRowTitle); });
+                    
+                    const matchByTitle = this.data.find(row => { 
+                        const rowTitle = row['TITLE OF VIDEO'];
+                        if(!rowTitle || rowTitle.length < 5) return false; // SKIP BAD ROWS
+                        
+                        const cleanRowTitle = rowTitle.toLowerCase().replace(/[^a-z0-9]/g, '');
+                        return cleanRowTitle.includes(cleanVidTitle) || cleanVidTitle.includes(cleanRowTitle); 
+                    });
+                    
                     if (matchByTitle) return matchByTitle.TOPIC;
                 }
                 return null;
@@ -597,7 +612,6 @@
                     document.getElementById('meditation-quote').innerText = `"${this.quotes[Math.floor(Math.random() * this.quotes.length)]}"`;
                     this.renderMeditationLectures();
                 }
-                // FIXED: RENDER LIBRARY EVEN IF NO TOPICS SELECTED (Shows All)
                 if (id === 'library') {
                     this.renderLibraryInterface();
                 }
@@ -694,7 +708,6 @@
             },
 
             // --- LIBRARY FEATURE ---
-            // UPDATED: Now clears filters before setting new one to allow "Jump to Topic" behavior
             selectLibraryTopic: function(topic) {
                 this.selectedLibraryTopics.clear(); // Clear existing filters
                 this.selectedLibraryTopics.add(topic); // Add new filter
@@ -731,7 +744,7 @@
             },
             renderLibraryResults: function() {
                 const grid = document.getElementById('library-grid');
-                // Ensure hidden elements are reset
+                if(!grid) return;
                 const placeholder = document.getElementById('library-placeholder');
                 if(placeholder) placeholder.classList.add('hidden');
                 grid.classList.remove('hidden');
@@ -872,7 +885,6 @@
                 if (this.archiveLoading || !this.archiveHasMore) return;
                 this.archiveLoading = true;
                 document.getElementById('video-loader').classList.remove('hidden');
-                // FIXED: Updated query to search by SUBJECT not UPLOADER
                 const query = 'subject:"bill_donahue" AND mediatype:"movies"';
                 const url = `https://archive.org/advancedsearch.php?q=${encodeURIComponent(query)}&fl[]=identifier&fl[]=title&fl[]=description&fl[]=external-identifier&fl[]=downloads&sort[]=-addeddate&output=json&rows=50&page=${this.archivePage}`;
                 try {
@@ -888,7 +900,18 @@
                 grid.innerHTML = '';
                 const isArchive = (this.currentVideoSource === 'archive');
                 const videos = isArchive ? this.archiveVideos : this.youtube.videos;
-                if (videos.length === 0 && !this.archiveLoading && isArchive) { grid.innerHTML = '<div class="col-span-full text-center py-20 text-stone-500">No Restored Videos Found Yet.<br><span class="text-xs">Uploads take ~24hrs to appear in search.</span></div>'; return; }
+                
+                // --- FIXED: BETTER EMPTY STATE HANDLING ---
+                if (videos.length === 0 && !this.archiveLoading) {
+                    if (isArchive) {
+                         grid.innerHTML = '<div class="col-span-full text-center py-20 text-stone-500">No Restored Videos Found Yet.<br><span class="text-xs">Uploads take ~24hrs to appear in search.</span></div>';
+                    } else {
+                         // YouTube fetch might have failed or key is invalid
+                         grid.innerHTML = '<div class="col-span-full text-center py-20 text-red-400">Error loading from YouTube.<br><span class="text-xs">Check API Key restrictions.</span></div>';
+                    }
+                    return;
+                }
+                
                 grid.innerHTML = videos.map(v => this.renderCard(v, isArchive)).join("");
             },
             youtube: {
@@ -903,6 +926,8 @@
                         const res = await fetch(url); const data = await res.json();
                         this.nextPageToken = data.nextPageToken || null;
                         this.videos.push(...data.items.map(item => ({ id: item.snippet.resourceId.videoId, title: item.snippet.title, thumbnail: item.snippet.thumbnails.high.url })));
+                        
+                        // FIXED: WAIT FOR DATA TO LOAD BEFORE RENDERING
                         if (window.app.currentVideoSource === 'youtube') window.app.renderMergedGrid();
                     } catch (e) { console.error("YT Error", e); }
                     this.loading = false; document.getElementById('video-loader').classList.add('hidden');
