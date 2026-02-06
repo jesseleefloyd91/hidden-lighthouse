@@ -872,7 +872,7 @@
                 if (this.archiveLoading || !this.archiveHasMore) return;
                 this.archiveLoading = true;
                 document.getElementById('video-loader').classList.remove('hidden');
-                const query = 'uploader:jesse_floyd405 AND mediatype:movies';
+                const query = creator:'Bill Donahue Restoration Project AND mediatype:movies';
                 const url = `https://archive.org/advancedsearch.php?q=${encodeURIComponent(query)}&fl[]=identifier&fl[]=title&fl[]=description&fl[]=external-identifier&fl[]=downloads&sort[]=-addeddate&output=json&rows=50&page=${this.archivePage}`;
                 try {
                     const res = await fetch(url); const data = await res.json();
