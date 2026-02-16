@@ -192,12 +192,8 @@
                            onkeydown="if(event.key === 'Enter') window.app.askTheTeacher()"
                            oninput="window.app.toggleClearButton()">
                     
-                    <button id="clear-teacher-btn" onclick="window.app.resetHome()" class="absolute right-16 top-1/2 -translate-y-1/2 text-xs hover:scale-110 transition-transform hidden" style="color: var(--text-secondary);">
+                    <button id="clear-teacher-btn" onclick="window.app.resetHome()" class="absolute right-6 top-1/2 -translate-y-1/2 text-xs hover:scale-110 transition-transform hidden" style="color: var(--text-secondary);">
                         <i class="fa-solid fa-xmark"></i>
-                    </button>
-
-                    <button onclick="window.app.askTheTeacher()" class="absolute right-6 top-2 bottom-2 w-10 rounded-full flex items-center justify-center hover:bg-white hover:text-black transition-colors shadow-lg" style="background-color: var(--purple); color: white;">
-                        <i class="fa-solid fa-paper-plane"></i>
                     </button>
                 </div>
 
@@ -244,6 +240,10 @@
                 </div>
                 <div id="library-results-area">
                     <div id="library-grid" class="masonry-grid"></div>
+                    <div id="video-loader" class="text-center py-8 hidden">
+                        <i class="fa-solid fa-circle-notch fa-spin text-2xl" style="color: var(--purple);"></i>
+                        <p class="mt-2 text-[10px] font-mono uppercase" style="color: var(--text-secondary);">Loading Data...</p>
+                    </div>
                 </div>
             </div>
         </section>
@@ -299,30 +299,6 @@
             </div>
         </section>
 
-        <section id="view-videos" class="view-section px-6">
-              <div class="max-w-[1800px] mx-auto w-full">
-                <div class="mb-10 pb-8 border-b flex flex-col md:flex-row justify-between items-start md:items-end gap-6" style="border-color: var(--border-color);">
-                    <div>
-                        <h2 class="cinzel text-3xl md:text-5xl font-bold mb-2" style="color: var(--text-primary);">The Archive</h2>
-                        <p class="font-mono text-xs uppercase tracking-[0.2em]" style="color: var(--purple);">Video Collection</p>
-                    </div>
-                    <div class="flex gap-2">
-                        <button id="toggle-yt" class="px-4 py-2 border rounded text-xs font-bold uppercase tracking-widest" style="background: #DC2626; color: white; border-color: #DC2626;" onclick="window.app.setVideoSource('youtube')">
-                            <i class="fa-brands fa-youtube mr-2"></i> YouTube
-                        </button>
-                        <button id="toggle-arc" class="px-4 py-2 border rounded text-xs font-bold uppercase tracking-widest" style="color: var(--text-secondary); border-color: var(--border-color);" onclick="window.app.setVideoSource('archive')">
-                            <i class="fa-solid fa-film mr-2"></i> HD Restored
-                        </button>
-                    </div>
-                </div>
-                <div id="video-grid" class="masonry-grid"></div>
-                <div id="video-loader" class="text-center py-8 hidden">
-                    <i class="fa-solid fa-circle-notch fa-spin text-2xl" style="color: var(--purple);"></i>
-                    <p class="mt-2 text-[10px] font-mono uppercase" style="color: var(--text-secondary);">Loading Data...</p>
-                </div>
-              </div>
-        </section>
-
         <section id="view-resources" class="view-section px-6 max-w-[1800px] mx-auto">
             <h2 class="cinzel text-3xl md:text-4xl font-bold mb-16 text-center uppercase tracking-widest" style="color: var(--text-primary);">Primary Sources</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -342,7 +318,7 @@
                     <h3 class="cinzel text-2xl mb-2 group-hover:text-purple-400 transition-colors" style="color: var(--text-primary);">HiddenMeanings.com</h3>
                     <p class="font-mono text-xs uppercase tracking-widest" style="color: var(--text-secondary);">Main Portal</p>
                 </a>
-                 <a href="https://lifestyleluminaries.blogspot.com/p/bill-donahue.html" target="_blank" class="cosmos-card p-8 group block">
+                <a href="https://lifestyleluminaries.blogspot.com/p/bill-donahue.html" target="_blank" class="cosmos-card p-8 group block">
                     <div class="flex justify-between items-start mb-6">
                         <div class="w-10 h-10 rounded-full flex items-center justify-center font-serif" style="background: var(--bg-tertiary); color: var(--text-primary);">L</div>
                         <span class="group-hover:text-purple-400 transition-colors" style="color: var(--text-secondary);">↗</span>
@@ -374,7 +350,6 @@
         <div class="dock">
             <button class="dock-btn active" id="btn-home" onclick="window.app.nav('home')">Home</button>
             <button class="dock-btn" id="btn-library" onclick="window.app.nav('library')">Library</button>
-            <button class="dock-btn" id="btn-videos" onclick="window.app.nav('videos')">Videos</button>
             <button class="dock-btn" style="color: var(--gold);" onclick="window.app.openSearchOverlay()">
                 <i class="fa-solid fa-magnifying-glass text-lg"></i>
             </button>
@@ -415,13 +390,13 @@
             // Colors: White, Dark Red, Dark Purple, Dark Blue
             const colors = ['255,255,255', '185,28,28', '126,34,206', '29,78,216']; 
             
-            // 800 Particles is visually dense but uses almost 0% CPU on a Canvas
-            for(let i=0; i<800; i++) { 
+            // 6000 Particles for HEAVY DUST
+            for(let i=0; i<6000; i++) { 
                 particles.push({
                     x: Math.random() * w,
                     y: Math.random() * h,
-                    r: Math.random() * 1.5 + 0.2,
-                    dy: Math.random() * 0.4 + 0.1, // Drifting speed
+                    r: Math.random() * 1.0 + 0.1, // Small specs
+                    dy: Math.random() * 0.3 + 0.05, // Drifting speed
                     color: colors[Math.floor(Math.random() * colors.length)],
                     alpha: Math.random(),
                     fadeDir: Math.random() > 0.5 ? 1 : -1,
@@ -432,9 +407,12 @@
             function animateDust() {
                 ctx.clearRect(0, 0, w, h);
                 particles.forEach(p => {
-                    // Drift Upward
+                    // Drift Upward + Wiggle
                     p.y -= p.dy;
+                    p.x += Math.sin(p.y * 0.01) * 0.2; // Wavy motion
                     if (p.y < 0) p.y = h;
+                    if (p.x > w) p.x = 0;
+                    if (p.x < 0) p.x = w;
                     
                     // Pulse/Twinkle
                     p.alpha += (p.fadeSpeed * p.fadeDir);
@@ -450,7 +428,7 @@
             }
             animateDust();
 
-            // 2. DOM PLANETS (Kept for visual depth)
+            // 2. DOM PLANETS (Visual depth)
             for(let i=0; i<3; i++) {
                 const planet = document.createElement('div');
                 planet.className = 'planet';
@@ -554,6 +532,7 @@
                 "crown": { title: "Crown", name: "Sahasrara", color: "#a855f7", freq: "789+ THz", biblical: "Peniel", church: "Laodicea", desc: "The Pineal Gland. Face to Face." }
             },
            
+            // --- CORE RENDERER ---
             renderCard: function(videoObj, isArchive = false) {
                 let id = isArchive ? videoObj.identifier : videoObj.id;
                 let title = isArchive ? videoObj.title : videoObj.title;
@@ -590,6 +569,7 @@
                 </div>`;
             },
 
+            // --- UTILS ---
             getVideoID: function(url) {
                 if (!url) return null;
                 const str = url.toString().trim();
@@ -602,25 +582,17 @@
             createTagButton: function(topic) {
                 if(!topic || topic === "General") return `<span class="text-[9px] font-mono uppercase tracking-widest block py-1.5 opacity-30">Uncatalogued</span>`;
                 const safeTopic = topic.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                // FIXED: Direct call to label click logic
                 return `<button class="inline-flex items-center gap-2 text-[9px] font-bold uppercase tracking-widest px-3 py-1.5 rounded transition-all justify-center cursor-pointer relative z-20" style="background: var(--input-bg); color: var(--purple); border: 1px solid var(--border-color);" onclick="event.stopPropagation(); window.app.selectLibraryTopic('${safeTopic}')"><i class="fa-solid fa-tag"></i> ${topic}</button>`;
             },
 
             getTopicByVideoID: function(vidId, vidTitle) {
                 if (!this.data || this.data.length === 0) return null;
-                const matchById = this.data.find(row => { 
-                    const csvId = this.getVideoID(row.URL); 
-                    return csvId && csvId === vidId; 
-                });
+                const matchById = this.data.find(row => { const csvId = this.getVideoID(row.URL); return csvId === vidId; });
                 if (matchById) return matchById.TOPIC;
-
-                if (vidTitle && vidTitle.length > 5) {
+                if (vidTitle) {
                     const cleanVidTitle = vidTitle.toLowerCase().replace(/[^a-z0-9]/g, '');
-                    const matchByTitle = this.data.find(row => { 
-                        const rowTitle = row['TITLE OF VIDEO'];
-                        if(!rowTitle || rowTitle.length < 5) return false;
-                        const cleanRowTitle = rowTitle.toLowerCase().replace(/[^a-z0-9]/g, '');
-                        return cleanRowTitle === cleanVidTitle || (cleanRowTitle.includes(cleanVidTitle) && cleanVidTitle.length > 10); 
-                    });
+                    const matchByTitle = this.data.find(row => { const cleanRowTitle = row['TITLE OF VIDEO'].toLowerCase().replace(/[^a-z0-9]/g, ''); return cleanRowTitle.includes(cleanVidTitle) || cleanVidTitle.includes(cleanRowTitle); });
                     if (matchByTitle) return matchByTitle.TOPIC;
                 }
                 return null;
@@ -641,7 +613,7 @@
                     this.resetHome();
                     document.getElementById('btn-home').classList.add('active');
                 } else if (id === 'search') {
-                    const btn = document.querySelectorAll('.dock-btn')[3]; 
+                    const btn = document.querySelectorAll('.dock-btn')[2]; 
                     if(btn) btn.classList.add('active');
                 } else {
                     document.getElementById('btn-' + id)?.classList.add('active'); 
@@ -684,6 +656,7 @@
             },
             closeVideo: function() { document.getElementById('video-frame-container').innerHTML = ''; document.getElementById('video-modal').classList.add('hidden'); },
 
+            // --- BROKEN LINK SCANNER ---
             scanForBrokenLinks: async function() {
                 const overlay = document.getElementById('diagnostics-overlay');
                 const status = document.getElementById('diag-status');
@@ -745,10 +718,12 @@
                 document.getElementById('diagnostics-overlay').classList.add('hidden');
             },
 
+            // --- LIBRARY FEATURE ---
             selectLibraryTopic: function(topic) {
-                this.selectedLibraryTopics.clear();
-                this.selectedLibraryTopics.add(topic);
-                this.nav('library');
+                this.selectedLibraryTopics.clear(); // Clear existing filters
+                this.selectedLibraryTopics.add(topic); // Add new filter
+                this.nav('library'); // Go to library
+                // FORCE RE-RENDER
                 setTimeout(() => this.renderLibraryInterface(), 50);
             },
             renderLibraryInterface: function() {
@@ -761,6 +736,7 @@
                 container.innerHTML = topics.map(t => {
                     const isActive = this.selectedLibraryTopics.has(t);
                     const count = this.data.filter(r => r.TOPIC === t).length;
+                    // Fixed onclick escaping
                     return `<div class="topic-chip ${isActive ? 'active' : ''}" onclick="window.app.toggleLibraryTopic('${t.replace(/'/g, "\\'")}')">
                         ${t} <span class="chip-count">(${count})</span>
                     </div>`;
@@ -822,10 +798,14 @@
                     return; 
                 }
                 
-                const displaySet = results.length > 100 ? results.slice(0, 100) : results;
-                grid.innerHTML = displaySet.map(v => this.renderCard(v, v.type === 'archive')).join('');
+                // --- FIXED: DISPLAY ALL, NOT JUST 100 ---
+                // Removed the slice(0, 100) limit to allow infinite scrolling logic to handle it if needed, 
+                // or just render all since user requested removing the "Videos" tab which implies they want to see everything here.
+                // However, for performance with 900 videos, we might want to lazy load, but for now let's render all.
+                grid.innerHTML = results.map(v => this.renderCard(v, v.type === 'archive')).join('');
             },
 
+            // --- SEARCH OVERLAY LOGIC ---
             openSearchOverlay: function() {
                 const overlay = document.getElementById('search-overlay');
                 overlay.classList.add('active');
@@ -856,6 +836,7 @@
                 list.innerHTML = combinedResults.length === 0 ? '<div class="p-8 text-center text-stone-500">No matches found.</div>' : combinedResults.map(r => this.renderCard(r, false)).join('');
             },
 
+            // --- ASK THE TEACHER ---
             askTheTeacher: function() {
                 const input = document.getElementById('teacher-input');
                 let q = input.value.trim().toLowerCase();
@@ -917,7 +898,7 @@
                 if (this.archiveLoading || !this.archiveHasMore) return;
                 this.archiveLoading = true;
                 document.getElementById('video-loader').classList.remove('hidden');
-                const query = 'subject:"bill_donahue" AND mediatype:"movies"';
+                const query = 'uploader:jesse_floyd405 AND mediatype:movies';
                 const url = `https://archive.org/advancedsearch.php?q=${encodeURIComponent(query)}&fl[]=identifier&fl[]=title&fl[]=description&fl[]=external-identifier&fl[]=downloads&sort[]=-addeddate&output=json&rows=50&page=${this.archivePage}`;
                 try {
                     const res = await fetch(url); const data = await res.json();
@@ -932,11 +913,7 @@
                 grid.innerHTML = '';
                 const isArchive = (this.currentVideoSource === 'archive');
                 const videos = isArchive ? this.archiveVideos : this.youtube.videos;
-                if (videos.length === 0 && !this.archiveLoading) {
-                    if (isArchive) grid.innerHTML = '<div class="col-span-full text-center py-20 text-stone-500">No Restored Videos Found Yet.<br><span class="text-xs">Uploads take ~24hrs to appear in search.</span></div>';
-                    else grid.innerHTML = '<div class="col-span-full text-center py-20 text-red-400">Error loading from YouTube.<br><span class="text-xs">Check API Key restrictions.</span></div>';
-                    return;
-                }
+                if (videos.length === 0 && !this.archiveLoading && isArchive) { grid.innerHTML = '<div class="col-span-full text-center py-20 text-stone-500">No Restored Videos Found Yet.<br><span class="text-xs">Uploads take ~30mins to appear.</span></div>'; return; }
                 grid.innerHTML = videos.map(v => this.renderCard(v, isArchive)).join("");
             },
             youtube: {
@@ -950,9 +927,7 @@
                     try {
                         const res = await fetch(url); const data = await res.json();
                         this.nextPageToken = data.nextPageToken || null;
-                        if(data.items) {
-                            this.videos.push(...data.items.map(item => ({ id: item.snippet.resourceId.videoId, title: item.snippet.title, thumbnail: item.snippet.thumbnails.high.url })));
-                        }
+                        this.videos.push(...data.items.map(item => ({ id: item.snippet.resourceId.videoId, title: item.snippet.title, thumbnail: item.snippet.thumbnails.high.url })));
                         if (window.app.currentVideoSource === 'youtube') window.app.renderMergedGrid();
                     } catch (e) { console.error("YT Error", e); }
                     this.loading = false; document.getElementById('video-loader').classList.add('hidden');
