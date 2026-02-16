@@ -45,42 +45,13 @@
         .mono { font-family: 'Space Grotesk', monospace; }
         
         /* BACKGROUNDS */
-        /* Changed background base to be slightly lighter to show dust better */
         .stars-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; background: radial-gradient(circle at bottom center, #1a0f2e 0%, #050505 80%); transition: opacity 0.8s; opacity: 1; }
         .photon-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; opacity: 0; transition: opacity 0.8s; background-color: #ffffff; background-image: radial-gradient(at 0% 0%, hsla(253,16%,90%,1) 0, transparent 50%), radial-gradient(at 50% 100%, hsla(225,39%,95%,1) 0, transparent 50%), radial-gradient(at 100% 0%, hsla(339,49%,95%,1) 0, transparent 50%); }
         .photon-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px); background-size: 40px 40px; }
         body.light-mode .stars-container { opacity: 0; } body.light-mode .photon-bg { opacity: 1; }
         
         .planet { position: absolute; border-radius: 50%; opacity: 0.3; background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.1), transparent); box-shadow: 0 0 20px rgba(216, 180, 254, 0.05); animation: floatPlanet 120s linear infinite; }
-        
-        /* COSMIC DUST EFFECT */
-        .dust-particle { 
-            position: absolute; 
-            border-radius: 50%; 
-            /* Two animations: Dust Flow (drifting up) and Dust Cycle (changing color) */
-            animation: dust-flow var(--duration) linear infinite, dust-cycle 25s infinite linear; 
-            opacity: 0;
-            mix-blend-mode: screen; /* Helps them glow against dark bg */
-        }
-
-        /* Particles drift slowly upward and fade in/out */
-        @keyframes dust-flow { 
-            0% { opacity: 0; transform: translateY(0) scale(0.5); } 
-            20% { opacity: 0.8; }
-            80% { opacity: 0.6; }
-            100% { opacity: 0; transform: translateY(-150px) scale(1); } 
-        }
-
         @keyframes floatPlanet { from { transform: translateX(-100px) rotate(0deg); } to { transform: translateX(110vw) rotate(20deg); } }
-        
-        /* COLOR CYCLING ANIMATION (Softened glow for dust) */
-        @keyframes dust-cycle {
-            0%   { background-color: rgba(255,255,255,0.8); box-shadow: 0 0 3px rgba(255,255,255,0.5); } /* White */
-            25%  { background-color: rgba(220, 38, 38, 0.8); box-shadow: 0 0 3px rgba(220, 38, 38, 0.5); } /* Dark Red */
-            50%  { background-color: rgba(147, 51, 234, 0.8); box-shadow: 0 0 3px rgba(147, 51, 234, 0.5); } /* Dark Purple */
-            75%  { background-color: rgba(37, 99, 235, 0.8); box-shadow: 0 0 3px rgba(37, 99, 235, 0.5); } /* Dark Blue */
-            100% { background-color: rgba(255,255,255,0.8); box-shadow: 0 0 3px rgba(255,255,255,0.5); } /* White */
-        }
 
         /* CARDS */
         .masonry-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; padding-bottom: 140px; }
@@ -211,7 +182,7 @@
                     <span class="text-[10px] uppercase tracking-[0.2em] font-bold" style="color: var(--text-secondary);">System Online</span>
                 </div>
                 <h1 class="cinzel text-4xl md:text-8xl font-black mb-6 leading-none tracking-tight drop-shadow-2xl" style="color: var(--text-primary);">
-                    HIDDEN<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400 italic">MEANINGS</span>
+                    HIDDEN<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400 italic pr-2">MEANINGS</span>
                 </h1>
                 
                 <div class="max-w-lg mx-auto relative group w-full mb-8 px-4">
@@ -221,8 +192,12 @@
                            onkeydown="if(event.key === 'Enter') window.app.askTheTeacher()"
                            oninput="window.app.toggleClearButton()">
                     
-                    <button id="clear-teacher-btn" onclick="window.app.resetHome()" class="absolute right-6 top-1/2 -translate-y-1/2 text-xs hover:scale-110 transition-transform hidden" style="color: var(--text-secondary);">
+                    <button id="clear-teacher-btn" onclick="window.app.resetHome()" class="absolute right-16 top-1/2 -translate-y-1/2 text-xs hover:scale-110 transition-transform hidden" style="color: var(--text-secondary);">
                         <i class="fa-solid fa-xmark"></i>
+                    </button>
+
+                    <button onclick="window.app.askTheTeacher()" class="absolute right-6 top-2 bottom-2 w-10 rounded-full flex items-center justify-center hover:bg-white hover:text-black transition-colors shadow-lg" style="background-color: var(--purple); color: white;">
+                        <i class="fa-solid fa-paper-plane"></i>
                     </button>
                 </div>
 
@@ -416,23 +391,66 @@
             const container = document.getElementById('stars-container');
             if(!container) return;
             container.innerHTML = '';
-            // 2500 Dust particles for heavy fill
-            for(let i=0; i<2500; i++) {
-                const dust = document.createElement('div');
-                dust.className = 'dust-particle';
-                dust.style.left = `${Math.random() * 100}%`;
-                dust.style.top = `${Math.random() * 100}%`;
-                // Finer size for dust vs stars
-                const size = Math.random() * 1.5 + 0.2;
-                dust.style.width = `${size}px`;
-                dust.style.height = `${size}px`;
-                // Long durations for slow drift
-                dust.style.setProperty('--duration', `${Math.random() * 60 + 40}s`);
-                // Random delays for organic feel
-                dust.style.animationDelay = `-${Math.random() * 60}s, -${Math.random() * 30}s`;
-                container.appendChild(dust);
+            
+            // 1. HIGH PERFORMANCE CANVAS DUST ENGINE
+            const canvas = document.createElement('canvas');
+            canvas.style.position = 'absolute';
+            canvas.style.top = '0';
+            canvas.style.left = '0';
+            canvas.style.width = '100%';
+            canvas.style.height = '100%';
+            canvas.style.pointerEvents = 'none';
+            container.appendChild(canvas);
+
+            const ctx = canvas.getContext('2d');
+            let w = canvas.width = window.innerWidth;
+            let h = canvas.height = window.innerHeight;
+
+            window.addEventListener('resize', () => {
+                w = canvas.width = window.innerWidth;
+                h = canvas.height = window.innerHeight;
+            });
+
+            const particles = [];
+            // Colors: White, Dark Red, Dark Purple, Dark Blue
+            const colors = ['255,255,255', '185,28,28', '126,34,206', '29,78,216']; 
+            
+            // 800 Particles is visually dense but uses almost 0% CPU on a Canvas
+            for(let i=0; i<800; i++) { 
+                particles.push({
+                    x: Math.random() * w,
+                    y: Math.random() * h,
+                    r: Math.random() * 1.5 + 0.2,
+                    dy: Math.random() * 0.4 + 0.1, // Drifting speed
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    alpha: Math.random(),
+                    fadeDir: Math.random() > 0.5 ? 1 : -1,
+                    fadeSpeed: Math.random() * 0.01 + 0.002
+                });
             }
-            // Planets for depth
+
+            function animateDust() {
+                ctx.clearRect(0, 0, w, h);
+                particles.forEach(p => {
+                    // Drift Upward
+                    p.y -= p.dy;
+                    if (p.y < 0) p.y = h;
+                    
+                    // Pulse/Twinkle
+                    p.alpha += (p.fadeSpeed * p.fadeDir);
+                    if (p.alpha >= 0.8) { p.alpha = 0.8; p.fadeDir = -1; }
+                    if (p.alpha <= 0.1) { p.alpha = 0.1; p.fadeDir = 1; }
+
+                    ctx.fillStyle = `rgba(${p.color}, ${p.alpha})`;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+                requestAnimationFrame(animateDust);
+            }
+            animateDust();
+
+            // 2. DOM PLANETS (Kept for visual depth)
             for(let i=0; i<3; i++) {
                 const planet = document.createElement('div');
                 planet.className = 'planet';
@@ -536,7 +554,6 @@
                 "crown": { title: "Crown", name: "Sahasrara", color: "#a855f7", freq: "789+ THz", biblical: "Peniel", church: "Laodicea", desc: "The Pineal Gland. Face to Face." }
             },
            
-            // --- CORE RENDERER ---
             renderCard: function(videoObj, isArchive = false) {
                 let id = isArchive ? videoObj.identifier : videoObj.id;
                 let title = isArchive ? videoObj.title : videoObj.title;
@@ -573,7 +590,6 @@
                 </div>`;
             },
 
-            // --- UTILS ---
             getVideoID: function(url) {
                 if (!url) return null;
                 const str = url.toString().trim();
@@ -586,33 +602,25 @@
             createTagButton: function(topic) {
                 if(!topic || topic === "General") return `<span class="text-[9px] font-mono uppercase tracking-widest block py-1.5 opacity-30">Uncatalogued</span>`;
                 const safeTopic = topic.replace(/'/g, "\\'").replace(/"/g, '&quot;');
-                // FIXED: Direct call to label click logic
                 return `<button class="inline-flex items-center gap-2 text-[9px] font-bold uppercase tracking-widest px-3 py-1.5 rounded transition-all justify-center cursor-pointer relative z-20" style="background: var(--input-bg); color: var(--purple); border: 1px solid var(--border-color);" onclick="event.stopPropagation(); window.app.selectLibraryTopic('${safeTopic}')"><i class="fa-solid fa-tag"></i> ${topic}</button>`;
             },
 
             getTopicByVideoID: function(vidId, vidTitle) {
                 if (!this.data || this.data.length === 0) return null;
-                
-                // 1. Strict ID Match first
                 const matchById = this.data.find(row => { 
                     const csvId = this.getVideoID(row.URL); 
                     return csvId && csvId === vidId; 
                 });
                 if (matchById) return matchById.TOPIC;
 
-                // 2. Strict Title Match (Ignore short/empty titles)
                 if (vidTitle && vidTitle.length > 5) {
                     const cleanVidTitle = vidTitle.toLowerCase().replace(/[^a-z0-9]/g, '');
-                    
                     const matchByTitle = this.data.find(row => { 
                         const rowTitle = row['TITLE OF VIDEO'];
-                        if(!rowTitle || rowTitle.length < 5) return false; // SKIP BAD ROWS
-                        
+                        if(!rowTitle || rowTitle.length < 5) return false;
                         const cleanRowTitle = rowTitle.toLowerCase().replace(/[^a-z0-9]/g, '');
-                        // Force exact match or strong containment
                         return cleanRowTitle === cleanVidTitle || (cleanRowTitle.includes(cleanVidTitle) && cleanVidTitle.length > 10); 
                     });
-                    
                     if (matchByTitle) return matchByTitle.TOPIC;
                 }
                 return null;
@@ -643,7 +651,6 @@
                     document.getElementById('meditation-quote').innerText = `"${this.quotes[Math.floor(Math.random() * this.quotes.length)]}"`;
                     this.renderMeditationLectures();
                 }
-                // FIXED: RENDER LIBRARY EVEN IF NO TOPICS SELECTED (Shows All)
                 if (id === 'library') {
                     this.renderLibraryInterface();
                 }
@@ -677,7 +684,6 @@
             },
             closeVideo: function() { document.getElementById('video-frame-container').innerHTML = ''; document.getElementById('video-modal').classList.add('hidden'); },
 
-            // --- BROKEN LINK SCANNER ---
             scanForBrokenLinks: async function() {
                 const overlay = document.getElementById('diagnostics-overlay');
                 const status = document.getElementById('diag-status');
@@ -739,13 +745,10 @@
                 document.getElementById('diagnostics-overlay').classList.add('hidden');
             },
 
-            // --- LIBRARY FEATURE ---
-            // UPDATED: Now clears filters before setting new one to allow "Jump to Topic" behavior
             selectLibraryTopic: function(topic) {
-                this.selectedLibraryTopics.clear(); // Clear existing filters
-                this.selectedLibraryTopics.add(topic); // Add new filter
-                this.nav('library'); // Go to library
-                // FORCE RE-RENDER
+                this.selectedLibraryTopics.clear();
+                this.selectedLibraryTopics.add(topic);
+                this.nav('library');
                 setTimeout(() => this.renderLibraryInterface(), 50);
             },
             renderLibraryInterface: function() {
@@ -758,7 +761,6 @@
                 container.innerHTML = topics.map(t => {
                     const isActive = this.selectedLibraryTopics.has(t);
                     const count = this.data.filter(r => r.TOPIC === t).length;
-                    // Fixed onclick escaping
                     return `<div class="topic-chip ${isActive ? 'active' : ''}" onclick="window.app.toggleLibraryTopic('${t.replace(/'/g, "\\'")}')">
                         ${t} <span class="chip-count">(${count})</span>
                     </div>`;
@@ -821,11 +823,9 @@
                 }
                 
                 const displaySet = results.length > 100 ? results.slice(0, 100) : results;
-                
                 grid.innerHTML = displaySet.map(v => this.renderCard(v, v.type === 'archive')).join('');
             },
 
-            // --- SEARCH OVERLAY LOGIC ---
             openSearchOverlay: function() {
                 const overlay = document.getElementById('search-overlay');
                 overlay.classList.add('active');
@@ -856,7 +856,6 @@
                 list.innerHTML = combinedResults.length === 0 ? '<div class="p-8 text-center text-stone-500">No matches found.</div>' : combinedResults.map(r => this.renderCard(r, false)).join('');
             },
 
-            // --- ASK THE TEACHER ---
             askTheTeacher: function() {
                 const input = document.getElementById('teacher-input');
                 let q = input.value.trim().toLowerCase();
@@ -918,7 +917,7 @@
                 if (this.archiveLoading || !this.archiveHasMore) return;
                 this.archiveLoading = true;
                 document.getElementById('video-loader').classList.remove('hidden');
-                const query = 'uploader:jesse_floyd405 AND mediatype:movies';
+                const query = 'subject:"bill_donahue" AND mediatype:"movies"';
                 const url = `https://archive.org/advancedsearch.php?q=${encodeURIComponent(query)}&fl[]=identifier&fl[]=title&fl[]=description&fl[]=external-identifier&fl[]=downloads&sort[]=-addeddate&output=json&rows=50&page=${this.archivePage}`;
                 try {
                     const res = await fetch(url); const data = await res.json();
@@ -933,11 +932,16 @@
                 grid.innerHTML = '';
                 const isArchive = (this.currentVideoSource === 'archive');
                 const videos = isArchive ? this.archiveVideos : this.youtube.videos;
-                if (videos.length === 0 && !this.archiveLoading && isArchive) { grid.innerHTML = '<div class="col-span-full text-center py-20 text-stone-500">No Restored Videos Found Yet.<br><span class="text-xs">Uploads take ~30mins to appear.</span></div>'; return; }
+                if (videos.length === 0 && !this.archiveLoading) {
+                    if (isArchive) grid.innerHTML = '<div class="col-span-full text-center py-20 text-stone-500">No Restored Videos Found Yet.<br><span class="text-xs">Uploads take ~24hrs to appear in search.</span></div>';
+                    else grid.innerHTML = '<div class="col-span-full text-center py-20 text-red-400">Error loading from YouTube.<br><span class="text-xs">Check API Key restrictions.</span></div>';
+                    return;
+                }
                 grid.innerHTML = videos.map(v => this.renderCard(v, isArchive)).join("");
             },
             youtube: {
-                apiKey: "AIzaSyCZfKNXHgjZG1h13QhDH5-ubtVC0xDPfe4", uploadsPlaylistId: "UUinvwSeMdmuuzyMWrS0tGTg", videos: [], nextPageToken: null, loading: false,
+                apiKey: "AIzaSyCZfKNXHgjZG1h13QhDH5-ubtVC0xDPfe4", 
+                uploadsPlaylistId: "UUinvwSeMdmuuzyMWrS0tGTg", videos: [], nextPageToken: null, loading: false,
                 fetchVideos: async function () {
                     if (this.loading) return; this.loading = true;
                     document.getElementById('video-loader').classList.remove('hidden');
@@ -946,7 +950,9 @@
                     try {
                         const res = await fetch(url); const data = await res.json();
                         this.nextPageToken = data.nextPageToken || null;
-                        this.videos.push(...data.items.map(item => ({ id: item.snippet.resourceId.videoId, title: item.snippet.title, thumbnail: item.snippet.thumbnails.high.url })));
+                        if(data.items) {
+                            this.videos.push(...data.items.map(item => ({ id: item.snippet.resourceId.videoId, title: item.snippet.title, thumbnail: item.snippet.thumbnails.high.url })));
+                        }
                         if (window.app.currentVideoSource === 'youtube') window.app.renderMergedGrid();
                     } catch (e) { console.error("YT Error", e); }
                     this.loading = false; document.getElementById('video-loader').classList.add('hidden');
@@ -955,7 +961,6 @@
 
             init: function() {
                 setTimeout(() => document.getElementById('app-loader').classList.add('hidden'), 1000);
-                // UPDATED: CALLING CREATE DUST INSTEAD OF STARS
                 createDust();
                 this.youtube.fetchVideos(); 
                 this.fetchArchiveVideos(); 
