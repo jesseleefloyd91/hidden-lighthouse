@@ -45,32 +45,41 @@
         .mono { font-family: 'Space Grotesk', monospace; }
         
         /* BACKGROUNDS */
-        .stars-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; background: radial-gradient(circle at bottom center, #11001c 0%, #000000 80%); transition: opacity 0.8s; opacity: 1; }
+        /* Changed background base to be slightly lighter to show dust better */
+        .stars-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; background: radial-gradient(circle at bottom center, #1a0f2e 0%, #050505 80%); transition: opacity 0.8s; opacity: 1; }
         .photon-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; opacity: 0; transition: opacity 0.8s; background-color: #ffffff; background-image: radial-gradient(at 0% 0%, hsla(253,16%,90%,1) 0, transparent 50%), radial-gradient(at 50% 100%, hsla(225,39%,95%,1) 0, transparent 50%), radial-gradient(at 100% 0%, hsla(339,49%,95%,1) 0, transparent 50%); }
         .photon-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px); background-size: 40px 40px; }
         body.light-mode .stars-container { opacity: 0; } body.light-mode .photon-bg { opacity: 1; }
         
         .planet { position: absolute; border-radius: 50%; opacity: 0.3; background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.1), transparent); box-shadow: 0 0 20px rgba(216, 180, 254, 0.05); animation: floatPlanet 120s linear infinite; }
         
-        /* HEAVY STAR EFFECT */
-        .star { 
+        /* COSMIC DUST EFFECT */
+        .dust-particle { 
             position: absolute; 
             border-radius: 50%; 
-            /* Two animations: One for opacity (twinkle), One for color cycling */
-            animation: twinkle var(--duration) ease-in-out infinite, star-cycle 20s infinite linear; 
-            opacity: 0; 
+            /* Two animations: Dust Flow (drifting up) and Dust Cycle (changing color) */
+            animation: dust-flow var(--duration) linear infinite, dust-cycle 25s infinite linear; 
+            opacity: 0;
+            mix-blend-mode: screen; /* Helps them glow against dark bg */
         }
 
-        @keyframes twinkle { 0%, 100% { opacity: 0.2; transform: scale(0.5); } 50% { opacity: 1; transform: scale(1.2); } }
+        /* Particles drift slowly upward and fade in/out */
+        @keyframes dust-flow { 
+            0% { opacity: 0; transform: translateY(0) scale(0.5); } 
+            20% { opacity: 0.8; }
+            80% { opacity: 0.6; }
+            100% { opacity: 0; transform: translateY(-150px) scale(1); } 
+        }
+
         @keyframes floatPlanet { from { transform: translateX(-100px) rotate(0deg); } to { transform: translateX(110vw) rotate(20deg); } }
         
-        /* COLOR CYCLING ANIMATION */
-        @keyframes star-cycle {
-            0%   { background-color: #ffffff; box-shadow: 0 0 4px #ffffff; } /* White */
-            25%  { background-color: #dc2626; box-shadow: 0 0 4px #dc2626; } /* Dark Red */
-            50%  { background-color: #9333ea; box-shadow: 0 0 4px #9333ea; } /* Dark Purple */
-            75%  { background-color: #2563eb; box-shadow: 0 0 4px #2563eb; } /* Dark Blue */
-            100% { background-color: #ffffff; box-shadow: 0 0 4px #ffffff; } /* White */
+        /* COLOR CYCLING ANIMATION (Softened glow for dust) */
+        @keyframes dust-cycle {
+            0%   { background-color: rgba(255,255,255,0.8); box-shadow: 0 0 3px rgba(255,255,255,0.5); } /* White */
+            25%  { background-color: rgba(220, 38, 38, 0.8); box-shadow: 0 0 3px rgba(220, 38, 38, 0.5); } /* Dark Red */
+            50%  { background-color: rgba(147, 51, 234, 0.8); box-shadow: 0 0 3px rgba(147, 51, 234, 0.5); } /* Dark Purple */
+            75%  { background-color: rgba(37, 99, 235, 0.8); box-shadow: 0 0 3px rgba(37, 99, 235, 0.5); } /* Dark Blue */
+            100% { background-color: rgba(255,255,255,0.8); box-shadow: 0 0 3px rgba(255,255,255,0.5); } /* White */
         }
 
         /* CARDS */
@@ -403,26 +412,27 @@
     </div>
 
     <script>
-        function createStars() {
+        function createDust() {
             const container = document.getElementById('stars-container');
             if(!container) return;
             container.innerHTML = '';
-            // 500 Stars
-            for(let i=0; i<500; i++) {
-                const star = document.createElement('div');
-                star.className = 'star';
-                star.style.left = `${Math.random() * 100}%`;
-                star.style.top = `${Math.random() * 100}%`;
-                const size = Math.random() * 2 + 0.5;
-                star.style.width = `${size}px`;
-                star.style.height = `${size}px`;
-                star.style.backgroundColor = 'white'; // Base color, animation handles the rest
-                star.style.setProperty('--duration', `${Math.random() * 3 + 2}s`);
-                // Random delay for organic cycling
-                star.style.animationDelay = `${Math.random() * 20}s`;
-                container.appendChild(star);
+            // 2500 Dust particles for heavy fill
+            for(let i=0; i<2500; i++) {
+                const dust = document.createElement('div');
+                dust.className = 'dust-particle';
+                dust.style.left = `${Math.random() * 100}%`;
+                dust.style.top = `${Math.random() * 100}%`;
+                // Finer size for dust vs stars
+                const size = Math.random() * 1.5 + 0.2;
+                dust.style.width = `${size}px`;
+                dust.style.height = `${size}px`;
+                // Long durations for slow drift
+                dust.style.setProperty('--duration', `${Math.random() * 60 + 40}s`);
+                // Random delays for organic feel
+                dust.style.animationDelay = `-${Math.random() * 60}s, -${Math.random() * 30}s`;
+                container.appendChild(dust);
             }
-            // Planets
+            // Planets for depth
             for(let i=0; i<3; i++) {
                 const planet = document.createElement('div');
                 planet.className = 'planet';
@@ -908,8 +918,7 @@
                 if (this.archiveLoading || !this.archiveHasMore) return;
                 this.archiveLoading = true;
                 document.getElementById('video-loader').classList.remove('hidden');
-                // FIXED: Updated query to search by SUBJECT not UPLOADER
-                const query = 'subject:"bill_donahue" AND mediatype:"movies"';
+                const query = 'uploader:jesse_floyd405 AND mediatype:movies';
                 const url = `https://archive.org/advancedsearch.php?q=${encodeURIComponent(query)}&fl[]=identifier&fl[]=title&fl[]=description&fl[]=external-identifier&fl[]=downloads&sort[]=-addeddate&output=json&rows=50&page=${this.archivePage}`;
                 try {
                     const res = await fetch(url); const data = await res.json();
@@ -924,23 +933,11 @@
                 grid.innerHTML = '';
                 const isArchive = (this.currentVideoSource === 'archive');
                 const videos = isArchive ? this.archiveVideos : this.youtube.videos;
-                
-                // --- FIXED: BETTER EMPTY STATE HANDLING ---
-                if (videos.length === 0 && !this.archiveLoading) {
-                    if (isArchive) {
-                         grid.innerHTML = '<div class="col-span-full text-center py-20 text-stone-500">No Restored Videos Found Yet.<br><span class="text-xs">Uploads take ~24hrs to appear in search.</span></div>';
-                    } else {
-                         // YouTube fetch might have failed or key is invalid
-                         grid.innerHTML = '<div class="col-span-full text-center py-20 text-red-400">Error loading from YouTube.<br><span class="text-xs">Check API Key restrictions.</span></div>';
-                    }
-                    return;
-                }
-                
+                if (videos.length === 0 && !this.archiveLoading && isArchive) { grid.innerHTML = '<div class="col-span-full text-center py-20 text-stone-500">No Restored Videos Found Yet.<br><span class="text-xs">Uploads take ~30mins to appear.</span></div>'; return; }
                 grid.innerHTML = videos.map(v => this.renderCard(v, isArchive)).join("");
             },
             youtube: {
-                apiKey: "AIzaSyCZfKNXHgjZG1h13QhDH5-ubtVC0xDPfe4", 
-                uploadsPlaylistId: "UUinvwSeMdmuuzyMWrS0tGTg", videos: [], nextPageToken: null, loading: false,
+                apiKey: "AIzaSyCZfKNXHgjZG1h13QhDH5-ubtVC0xDPfe4", uploadsPlaylistId: "UUinvwSeMdmuuzyMWrS0tGTg", videos: [], nextPageToken: null, loading: false,
                 fetchVideos: async function () {
                     if (this.loading) return; this.loading = true;
                     document.getElementById('video-loader').classList.remove('hidden');
@@ -950,8 +947,6 @@
                         const res = await fetch(url); const data = await res.json();
                         this.nextPageToken = data.nextPageToken || null;
                         this.videos.push(...data.items.map(item => ({ id: item.snippet.resourceId.videoId, title: item.snippet.title, thumbnail: item.snippet.thumbnails.high.url })));
-                        
-                        // FIXED: WAIT FOR DATA TO LOAD BEFORE RENDERING
                         if (window.app.currentVideoSource === 'youtube') window.app.renderMergedGrid();
                     } catch (e) { console.error("YT Error", e); }
                     this.loading = false; document.getElementById('video-loader').classList.add('hidden');
@@ -960,7 +955,8 @@
 
             init: function() {
                 setTimeout(() => document.getElementById('app-loader').classList.add('hidden'), 1000);
-                createStars();
+                // UPDATED: CALLING CREATE DUST INSTEAD OF STARS
+                createDust();
                 this.youtube.fetchVideos(); 
                 this.fetchArchiveVideos(); 
                 Papa.parse('catalog.csv', { download: true, header: true, skipEmptyLines: true, complete: (results) => {
