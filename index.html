@@ -391,7 +391,7 @@
             <button class="dock-btn active" id="btn-home" onclick="window.app.nav('home')">Home</button>
             <button class="dock-btn" id="btn-library" onclick="window.app.nav('library')">Library</button>
             <button class="dock-btn" id="btn-brain" onclick="window.app.nav('brain')">Brain</button> 
-            <button class="dock-btn justify-center min-w-[44px]" style="color: var(--gold);" onclick="window.app.openSearchOverlay()">
+            <button class="dock-btn justify-center min-w-[50px]" style="color: var(--gold);" onclick="window.app.openSearchOverlay()">
                 <i class="fa-solid fa-magnifying-glass text-lg"></i>
             </button>
             <button class="dock-btn" id="btn-anatomy" onclick="window.app.nav('anatomy')">Temple</button>
@@ -419,7 +419,10 @@
             let w = canvas.width = window.innerWidth;
             let h = canvas.height = window.innerHeight;
 
-            window.addEventListener('resize', () => { w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; });
+            window.addEventListener('resize', () => {
+                w = canvas.width = window.innerWidth;
+                h = canvas.height = window.innerHeight;
+            });
 
             const particles = [];
             // Dark Mode Colors
@@ -447,7 +450,7 @@
             }
             initParticles();
             
-            // Re-init on theme toggle
+            window.app = window.app || {};
             window.app.refreshDust = initParticles;
 
             function animateDust() {
