@@ -50,16 +50,8 @@
         .photon-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px); background-size: 40px 40px; }
         body.light-mode .stars-container { opacity: 0; } body.light-mode .photon-bg { opacity: 1; }
         
-        /* COSMIC DUST EFFECT */
-        .dust-particle { position: absolute; border-radius: 50%; animation: dust-flow var(--duration) linear infinite, dust-cycle 25s infinite linear; opacity: 0; mix-blend-mode: screen; }
-        @keyframes dust-flow { 0% { opacity: 0; transform: translateY(0) scale(0.5); } 20% { opacity: 0.8; } 80% { opacity: 0.6; } 100% { opacity: 0; transform: translateY(-150px) scale(1); } }
-        @keyframes dust-cycle {
-            0% { background-color: rgba(255,255,255,0.8); box-shadow: 0 0 3px rgba(255,255,255,0.5); }
-            25% { background-color: rgba(220, 38, 38, 0.8); box-shadow: 0 0 3px rgba(220, 38, 38, 0.5); }
-            50% { background-color: rgba(147, 51, 234, 0.8); box-shadow: 0 0 3px rgba(147, 51, 234, 0.5); }
-            75% { background-color: rgba(37, 99, 235, 0.8); box-shadow: 0 0 3px rgba(37, 99, 235, 0.5); }
-            100% { background-color: rgba(255,255,255,0.8); box-shadow: 0 0 3px rgba(255,255,255,0.5); }
-        }
+        .planet { position: absolute; border-radius: 50%; opacity: 0.3; background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.1), transparent); box-shadow: 0 0 20px rgba(216, 180, 254, 0.05); animation: floatPlanet 120s linear infinite; }
+        @keyframes floatPlanet { from { transform: translateX(-100px) rotate(0deg); } to { transform: translateX(110vw) rotate(20deg); } }
 
         /* CARDS */
         .masonry-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; padding-bottom: 140px; }
@@ -70,7 +62,7 @@
         /* UI */
         .dock-container { position: fixed; bottom: 20px; left: 0; width: 100%; display: flex; justify-content: center; z-index: 50; padding: 0 20px; }
         .dock { background: var(--dock-bg); backdrop-filter: blur(20px); border: 1px solid var(--border-color); padding: 8px; border-radius: 20px; display: flex; gap: 4px; box-shadow: 0 20px 40px -10px rgba(0,0,0,0.3); max-width: 100%; overflow-x: auto; scrollbar-width: none; }
-        .dock-btn { padding: 10px 16px; border-radius: 12px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-secondary); transition: all 0.2s; cursor: pointer; border: 1px solid transparent; white-space: nowrap; flex-shrink: 0; }
+        .dock-btn { display: flex; align-items: center; justify-content: center; padding: 10px 16px; border-radius: 12px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-secondary); transition: all 0.2s; cursor: pointer; border: 1px solid transparent; white-space: nowrap; flex-shrink: 0; min-width: 50px; }
         .dock-btn:hover { color: var(--text-primary); background: var(--bg-tertiary); }
         .dock-btn.active { background: var(--text-primary); color: var(--bg-primary); }
 
@@ -190,7 +182,7 @@
                     <span class="text-[10px] uppercase tracking-[0.2em] font-bold" style="color: var(--text-secondary);">System Online</span>
                 </div>
                 <h1 class="cinzel text-4xl md:text-8xl font-black mb-6 leading-none tracking-tight drop-shadow-2xl" style="color: var(--text-primary);">
-                    HIDDEN<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400 italic pr-2">MEANINGS</span>
+                    HIDDEN<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400 italic pr-4">MEANINGS</span>
                 </h1>
                 
                 <div class="max-w-lg mx-auto relative group w-full mb-8 px-4">
@@ -257,10 +249,10 @@
         </section>
 
         <section id="view-brain" class="view-section px-6">
-             <div class="max-w-[1800px] mx-auto grid lg:grid-cols-2 gap-16 items-center min-h-[70vh] w-full">
-                <div class="order-2 lg:order-1">
+             <div class="max-w-[1800px] mx-auto grid lg:grid-cols-2 gap-16 items-start pt-10 min-h-[70vh] w-full">
+                <div class="order-2 lg:order-1 sticky top-24">
                     <h2 class="cinzel text-4xl md:text-6xl font-bold mb-8 leading-none" style="color: var(--text-primary);">The Upper<br><span style="color: var(--gold);">Room</span></h2>
-                    <div class="p-8 border rounded-xl relative z-20" style="background: var(--bg-secondary); border-color: var(--border-color); border-left: 4px solid var(--gold);">
+                    <div class="p-8 border rounded-xl relative z-20 mb-8" style="background: var(--bg-secondary); border-color: var(--border-color); border-left: 4px solid var(--gold);">
                         <p class="text-lg leading-relaxed font-serif mb-6" style="color: var(--text-primary);">
                             "The Bible is not a book of history; it is a book of <span class="italic font-bold" style="color: var(--purple);">Anatomy</span>."
                         </p>
@@ -274,13 +266,14 @@
                             This is the physiological process of "Being Born Again" or realizing the "Kingdom of Heaven" within your own skull (Golgotha - The Place of the Skull).
                         </p>
                     </div>
-                    <div class="mt-8">
-                        <h3 class="font-mono text-xs uppercase tracking-[0.2em] mb-4" style="color: var(--purple);">Related Teachings</h3>
+                    
+                    <div class="border-t pt-8" style="border-color: var(--border-color);">
+                        <h3 class="font-mono text-xs uppercase tracking-[0.2em] mb-6" style="color: var(--purple);">Related Teachings</h3>
                         <div id="brain-lectures-grid" class="masonry-grid"></div>
                     </div>
                 </div>
                 
-                <div class="order-1 lg:order-2 flex justify-center">
+                 <div class="order-1 lg:order-2 flex justify-center lg:sticky lg:top-24">
                     <div class="relative w-full max-w-md aspect-square rounded-full border border-dashed animate-[spin_60s_linear_infinite]" style="border-color: var(--border-color);">
                          <div class="absolute inset-4 rounded-full border border-dotted opacity-50" style="border-color: var(--purple);"></div>
                          <div class="absolute inset-0 flex items-center justify-center">
@@ -359,20 +352,23 @@
                         <span class="group-hover:text-purple-400 transition-colors" style="color: var(--text-secondary);">↗</span>
                     </div>
                     <h3 class="cinzel text-2xl mb-2 group-hover:text-purple-400 transition-colors" style="color: var(--text-primary);">Facebook Community</h3>
+                    <p class="font-mono text-xs uppercase tracking-widest" style="color: var(--text-secondary);">Official Discussion Group</p>
                 </a>
                 <a href="https://www.hiddenmeanings.com/" target="_blank" class="cosmos-card p-8 group block">
-                     <div class="flex justify-between items-start mb-6">
+                    <div class="flex justify-between items-start mb-6">
                         <div class="w-10 h-10 rounded-full flex items-center justify-center font-serif" style="background: var(--bg-tertiary); color: var(--text-primary);">H</div>
                         <span class="group-hover:text-purple-400 transition-colors" style="color: var(--text-secondary);">↗</span>
                     </div>
                     <h3 class="cinzel text-2xl mb-2 group-hover:text-purple-400 transition-colors" style="color: var(--text-primary);">HiddenMeanings.com</h3>
+                    <p class="font-mono text-xs uppercase tracking-widest" style="color: var(--text-secondary);">Main Portal</p>
                 </a>
-                <a href="https://lifestyleluminaries.blogspot.com/p/bill-donahue.html" target="_blank" class="cosmos-card p-8 group block">
-                     <div class="flex justify-between items-start mb-6">
+                 <a href="https://lifestyleluminaries.blogspot.com/p/bill-donahue.html" target="_blank" class="cosmos-card p-8 group block">
+                    <div class="flex justify-between items-start mb-6">
                         <div class="w-10 h-10 rounded-full flex items-center justify-center font-serif" style="background: var(--bg-tertiary); color: var(--text-primary);">L</div>
                         <span class="group-hover:text-purple-400 transition-colors" style="color: var(--text-secondary);">↗</span>
                     </div>
                     <h3 class="cinzel text-2xl mb-2 group-hover:text-purple-400 transition-colors" style="color: var(--text-primary);">Lifestyle Luminaries</h3>
+                    <p class="font-mono text-xs uppercase tracking-widest" style="color: var(--text-secondary);">Video Archive</p>
                 </a>
                 <a href="https://thehiddenlighthouse.blogspot.com/2012/09/the-hidden-lighthouse.html?m=1" target="_blank" class="cosmos-card p-8 group block">
                     <div class="flex justify-between items-start mb-6">
@@ -380,6 +376,7 @@
                         <span class="group-hover:text-purple-400 transition-colors" style="color: var(--text-secondary);">↗</span>
                     </div>
                     <h3 class="cinzel text-2xl mb-2 group-hover:text-purple-400 transition-colors" style="color: var(--text-primary);">Lighthouse Blog</h3>
+                    <p class="font-mono text-xs uppercase tracking-widest" style="color: var(--text-secondary);">2012 Writings</p>
                 </a>
                 <a href="https://archive.org/details/1-revised-bill-donahue-speaks-book-of-secret-doctrines/page/18/mode/1up?ui=embed&wrapper=false" target="_blank" class="cosmos-card p-8 group block">
                     <div class="flex justify-between items-start mb-6">
@@ -387,6 +384,7 @@
                         <span class="group-hover:text-purple-400 transition-colors" style="color: var(--text-secondary);">↗</span>
                     </div>
                     <h3 class="cinzel text-2xl mb-2 group-hover:text-purple-400 transition-colors" style="color: var(--text-primary);">Secret Doctrines</h3>
+                    <p class="font-mono text-xs uppercase tracking-widest" style="color: var(--text-secondary);">PDF Book</p>
                 </a>
             </div>
         </section>
@@ -396,10 +394,10 @@
         <div class="dock">
             <button class="dock-btn active" id="btn-home" onclick="window.app.nav('home')">Home</button>
             <button class="dock-btn" id="btn-library" onclick="window.app.nav('library')">Library</button>
+            <button class="dock-btn" id="btn-brain" onclick="window.app.nav('brain')">Brain</button> 
             <button class="dock-btn" style="color: var(--gold);" onclick="window.app.openSearchOverlay()">
                 <i class="fa-solid fa-magnifying-glass text-lg"></i>
             </button>
-            <button class="dock-btn" id="btn-brain" onclick="window.app.nav('brain')">Brain</button> 
             <button class="dock-btn" id="btn-anatomy" onclick="window.app.nav('anatomy')">Temple</button>
             <button class="dock-btn" id="btn-meditation" onclick="window.app.nav('meditation')">Meditation</button> 
             <button class="dock-btn" id="btn-resources" onclick="window.app.nav('resources')">Links</button>
@@ -414,13 +412,10 @@
             if(!container) return;
             container.innerHTML = '';
             
-            // 1. HIGH PERFORMANCE CANVAS DUST ENGINE
             const canvas = document.createElement('canvas');
             canvas.style.position = 'absolute';
-            canvas.style.top = '0';
-            canvas.style.left = '0';
-            canvas.style.width = '100%';
-            canvas.style.height = '100%';
+            canvas.style.top = '0'; canvas.style.left = '0';
+            canvas.style.width = '100%'; canvas.style.height = '100%';
             canvas.style.pointerEvents = 'none';
             container.appendChild(canvas);
 
@@ -434,16 +429,14 @@
             });
 
             const particles = [];
-            // Colors: White, Dark Red, Dark Purple, Dark Blue
             const colors = ['255,255,255', '185,28,28', '126,34,206', '29,78,216']; 
             
-            // 6000 Particles for HEAVY DUST
-            for(let i=0; i<6000; i++) { 
+            for(let i=0; i<8000; i++) { 
                 particles.push({
                     x: Math.random() * w,
                     y: Math.random() * h,
-                    r: Math.random() * 1.0 + 0.1, // Small specs
-                    dy: Math.random() * 0.3 + 0.05, // Drifting speed
+                    r: Math.random() * 1.0 + 0.1,
+                    dy: Math.random() * 0.3 + 0.05,
                     color: colors[Math.floor(Math.random() * colors.length)],
                     alpha: Math.random(),
                     fadeDir: Math.random() > 0.5 ? 1 : -1,
@@ -454,14 +447,12 @@
             function animateDust() {
                 ctx.clearRect(0, 0, w, h);
                 particles.forEach(p => {
-                    // Drift Upward + Wiggle
                     p.y -= p.dy;
-                    p.x += Math.sin(p.y * 0.01) * 0.2; // Wavy motion
+                    p.x += Math.sin(p.y * 0.01) * 0.2;
                     if (p.y < 0) p.y = h;
                     if (p.x > w) p.x = 0;
                     if (p.x < 0) p.x = w;
                     
-                    // Pulse/Twinkle
                     p.alpha += (p.fadeSpeed * p.fadeDir);
                     if (p.alpha >= 0.8) { p.alpha = 0.8; p.fadeDir = -1; }
                     if (p.alpha <= 0.1) { p.alpha = 0.1; p.fadeDir = 1; }
@@ -474,19 +465,6 @@
                 requestAnimationFrame(animateDust);
             }
             animateDust();
-
-            // 2. DOM PLANETS (Visual depth)
-            for(let i=0; i<3; i++) {
-                const planet = document.createElement('div');
-                planet.className = 'planet';
-                const size = Math.random() * 80 + 40;
-                planet.style.width = `${size}px`;
-                planet.style.height = `${size}px`;
-                planet.style.top = `${Math.random() * 80}%`;
-                planet.style.left = `-${size}px`;
-                planet.style.animationDuration = `${Math.random() * 100 + 100}s`;
-                container.appendChild(planet);
-            }
         }
         
         window.app = {
@@ -579,20 +557,16 @@
                 "crown": { title: "Crown", name: "Sahasrara", color: "#a855f7", freq: "789+ THz", biblical: "Peniel", church: "Laodicea", desc: "The Pineal Gland. Face to Face." }
             },
            
-            // --- CORE RENDERER ---
             renderCard: function(videoObj, isArchive = false) {
                 let id = isArchive ? videoObj.identifier : videoObj.id;
                 let title = isArchive ? videoObj.title : videoObj.title;
                 let thumb = isArchive ? `https://archive.org/services/img/${id}` : videoObj.thumbnail;
                 let linkUrl = isArchive ? `https://archive.org/details/${id}` : `https://www.youtube.com/watch?v=${id}`;
                 
-                // --- FIXED: Smart Token Matching for Archive Videos ---
                 let topic = "General";
                 if (!isArchive && videoObj.id) {
-                    // Strict ID match for YouTube
                     topic = this.getTopicByVideoID(videoObj.id, title); 
                 } else {
-                    // Token Match for Archive
                     topic = this.getTopicByVideoID(null, title);
                 }
 
@@ -624,11 +598,9 @@
                 </div>`;
             },
             
-            // --- NEW SMART MATCHING LOGIC ---
             getTopicByVideoID: function(vidId, vidTitle) {
                 if (!this.data || this.data.length === 0) return "Uncatalogued";
                 
-                // 1. Strict ID Match (Best for YouTube)
                 if (vidId) {
                     const matchById = this.data.find(row => { 
                         const csvId = this.getVideoID(row.URL); 
@@ -637,11 +609,8 @@
                     if (matchById) return matchById.TOPIC;
                 }
 
-                // 2. Token Matching (Best for Archive)
                 if (vidTitle) {
-                    // Normalize the input title: lowercase, remove punctuation, split into words
                     const inputTokens = vidTitle.toLowerCase().replace(/[^a-z0-9\s]/g, '').split(/\s+/).filter(w => w.length > 3);
-                    
                     if (inputTokens.length === 0) return "General";
 
                     let bestMatch = null;
@@ -651,29 +620,23 @@
                         const rowTitle = row['TITLE OF VIDEO'];
                         if (!rowTitle) continue;
                         
-                        // Tokenize CSV title
                         const rowTokens = rowTitle.toLowerCase().replace(/[^a-z0-9\s]/g, '').split(/\s+/).filter(w => w.length > 3);
                         
-                        // Count matching words
                         let score = 0;
                         inputTokens.forEach(token => {
                             if (rowTokens.includes(token)) score++;
                         });
 
-                        // High confidence threshold (e.g., matching 3+ words or 75% of words)
                         if (score > maxScore && score >= 2) {
                             maxScore = score;
                             bestMatch = row;
                         }
                     }
-
                     if (bestMatch) return bestMatch.TOPIC;
                 }
                 return "General";
             },
 
-            // ... (Rest of Utils: getVideoID, createTagButton, toggleTheme, nav, showAnatomy, openVideo, closeVideo, scanForBrokenLinks, closeDiagnostics) ...
-            
             getVideoID: function(url) { if (!url) return null; const str = url.toString().trim(); if (/^[a-zA-Z0-9_-]{11}$/.test(str)) return str; const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/; const match = str.match(regExp); return (match && match[2].length === 11) ? match[2] : null; },
             createTagButton: function(topic) { return `<button class="inline-flex items-center gap-2 text-[9px] font-bold uppercase tracking-widest px-3 py-1.5 rounded transition-all justify-center cursor-pointer relative z-20" style="background: var(--input-bg); color: var(--purple); border: 1px solid var(--border-color);" onclick="event.stopPropagation(); window.app.selectLibraryTopic('${topic.replace(/'/g, "\\'")}')"><i class="fa-solid fa-tag"></i> ${topic}</button>`; },
             toggleTheme: function() { this.isLightMode = !this.isLightMode; document.body.classList.toggle('light-mode'); document.getElementById('theme-icon').className = this.isLightMode ? 'fa-solid fa-sun text-yellow-500' : 'fa-solid fa-moon'; },
@@ -695,63 +658,32 @@
             renderMeditationLectures: function() {
                 const grid = document.getElementById('meditation-lectures-grid');
                 if(!grid) return;
-                
                 const keywords = ['meditation', 'silence', 'pineal', 'upper room', 'watch', 'prayer'];
-                
-                // 1. Get YouTube Matches
-                const ytMatches = this.data.filter(row => {
-                    const t = (row.TOPIC + " " + row['TITLE OF VIDEO']).toLowerCase();
-                    return keywords.some(k => t.includes(k));
-                }).map(row => ({ 
-                    id: this.getVideoID(row.URL), 
-                    title: row['TITLE OF VIDEO'], 
-                    thumbnail: `https://img.youtube.com/vi/${this.getVideoID(row.URL)}/mqdefault.jpg`,
-                    type: 'youtube'
-                }));
-
-                // 2. Get Archive Matches (using title check)
-                const arcMatches = this.archiveVideos.filter(v => {
-                    const t = v.title.toLowerCase();
-                    return keywords.some(k => t.includes(k));
-                }).map(v => ({...v, type: 'archive'}));
-
-                // 3. Merge & Slice
+                const ytMatches = this.data.filter(row => { const t = (row.TOPIC + " " + row['TITLE OF VIDEO']).toLowerCase(); return keywords.some(k => t.includes(k)); }).map(row => ({ id: this.getVideoID(row.URL), title: row['TITLE OF VIDEO'], thumbnail: `https://img.youtube.com/vi/${this.getVideoID(row.URL)}/mqdefault.jpg`, type: 'youtube' }));
+                const arcMatches = this.archiveVideos.filter(v => { const t = v.title.toLowerCase(); return keywords.some(k => t.includes(k)); }).map(v => ({...v, type: 'archive'}));
                 const combined = [...ytMatches, ...arcMatches].slice(0, 12);
                 grid.innerHTML = combined.map(v => this.renderCard(v, v.type === 'archive')).join('');
                 
-                // Also render Brain Grid
                 const brainGrid = document.getElementById('brain-lectures-grid');
                 if(brainGrid) {
                      const brainKeys = ['brain', 'claustrum', 'mind', 'skull', 'anatomy'];
-                     const brainVideos = [...this.data, ...this.archiveVideos].filter(item => {
-                         const title = (item['TITLE OF VIDEO'] || item.title || "").toLowerCase();
-                         return brainKeys.some(k => title.includes(k));
-                     }).slice(0, 8);
-                     
-                     brainGrid.innerHTML = brainVideos.map(v => {
-                         if(v['TITLE OF VIDEO']) return this.renderCard({ id: this.getVideoID(v.URL), title: v['TITLE OF VIDEO'], thumbnail: `https://img.youtube.com/vi/${this.getVideoID(v.URL)}/mqdefault.jpg` }, false);
-                         return this.renderCard(v, true);
-                     }).join('');
+                     const brainVideos = [...this.data, ...this.archiveVideos].filter(item => { const title = (item['TITLE OF VIDEO'] || item.title || "").toLowerCase(); return brainKeys.some(k => title.includes(k)); }).slice(0, 8);
+                     brainGrid.innerHTML = brainVideos.map(v => { if(v['TITLE OF VIDEO']) return this.renderCard({ id: this.getVideoID(v.URL), title: v['TITLE OF VIDEO'], thumbnail: `https://img.youtube.com/vi/${this.getVideoID(v.URL)}/mqdefault.jpg` }, false); return this.renderCard(v, true); }).join('');
                 }
             },
             
             openVideo: function(id, type) { if(!id) return; if (!type) type = (this.currentVideoSource === 'archive' && !id.match(/^[a-zA-Z0-9_-]{11}$/)) ? 'archive' : 'youtube'; const container = document.getElementById('video-frame-container'); let src = type === 'archive' ? `https://archive.org/embed/${id}?autoplay=1` : `https://www.youtube.com/embed/${id}?autoplay=1&rel=0`; container.innerHTML = `<iframe src="${src}" class="w-full h-full" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`; document.getElementById('video-modal').classList.remove('hidden'); },
             closeVideo: function() { document.getElementById('video-frame-container').innerHTML = ''; document.getElementById('video-modal').classList.add('hidden'); },
-            scanForBrokenLinks: async function() { /* (Same as previous) */ const overlay=document.getElementById('diagnostics-overlay'); overlay.classList.remove('hidden'); document.getElementById('diag-status').innerText="Scanning..."; },
+            scanForBrokenLinks: async function() { const overlay=document.getElementById('diagnostics-overlay'); overlay.classList.remove('hidden'); document.getElementById('diag-status').innerText="Scanning..."; },
             closeDiagnostics: function() { document.getElementById('diagnostics-overlay').classList.add('hidden'); },
 
-            // --- LIBRARY ---
             selectLibraryTopic: function(topic) { this.selectedLibraryTopics.clear(); this.selectedLibraryTopics.add(topic); this.nav('library'); setTimeout(() => this.renderLibraryInterface(), 50); },
             renderLibraryInterface: function() {
                 const topics = [...new Set(this.data.map(i => i.TOPIC).filter(t => t))].sort((a, b) => a.localeCompare(b)); 
                 const container = document.getElementById('library-topics');
                 document.getElementById('count-yt').innerText = this.data.length;
                 document.getElementById('count-hd').innerText = this.archiveTotal;
-                container.innerHTML = topics.map(t => {
-                    const isActive = this.selectedLibraryTopics.has(t);
-                    const count = this.data.filter(r => r.TOPIC === t).length;
-                    return `<div class="topic-chip ${isActive ? 'active' : ''}" onclick="window.app.toggleLibraryTopic('${t.replace(/'/g, "\\'")}')">${t} <span class="chip-count">(${count})</span></div>`;
-                }).join('');
+                container.innerHTML = topics.map(t => { const isActive = this.selectedLibraryTopics.has(t); const count = this.data.filter(r => r.TOPIC === t).length; return `<div class="topic-chip ${isActive ? 'active' : ''}" onclick="window.app.toggleLibraryTopic('${t.replace(/'/g, "\\'")}')">${t} <span class="chip-count">(${count})</span></div>`; }).join('');
                 this.renderLibraryResults();
             },
             toggleLibraryTopic: function(topic) { if (this.selectedLibraryTopics.has(topic)) this.selectedLibraryTopics.delete(topic); else this.selectedLibraryTopics.add(topic); this.renderLibraryInterface(); },
@@ -771,7 +703,6 @@
 
                 if (showHD) {
                     let matches = this.archiveVideos;
-                    // FIXED: Filter Archive using Strict Matcher
                     if(this.selectedLibraryTopics.size > 0) {
                         matches = matches.filter(v => {
                              const topic = this.getTopicByVideoID(v.identifier, v.title);
@@ -780,12 +711,10 @@
                     }
                     results.push(...matches.map(v => ({...v, type: 'archive'})));
                 }
-
                 if (results.length === 0) { grid.innerHTML = '<div class="col-span-full text-center py-20 text-stone-500">No videos found.</div>'; return; }
                 grid.innerHTML = results.map(v => this.renderCard(v, v.type === 'archive')).join('');
             },
 
-            // --- REST OF APP (Search, etc.) ---
             openSearchOverlay: function() { document.getElementById('search-overlay').classList.add('active'); setTimeout(() => document.getElementById('overlay-search-input').focus(), 100); },
             closeSearchOverlay: function() { document.getElementById('search-overlay').classList.remove('active'); },
             performOverlaySearch: function() { const q = document.getElementById('overlay-search-input').value.trim(); if(!q) return; this.closeSearchOverlay(); this.nav('search'); document.getElementById('global-search').value = q; this.performGlobalSearch(); },
@@ -795,7 +724,6 @@
             resetHome: function() { const input = document.getElementById('teacher-input'); input.value = ''; document.getElementById('teacher-response-box').classList.add('hidden'); document.getElementById('clear-teacher-btn').classList.add('hidden'); },
             toggleClearButton: function() { const val = document.getElementById('teacher-input').value; const btn = document.getElementById('clear-teacher-btn'); if (val.length > 0) btn.classList.remove('hidden'); else btn.classList.add('hidden'); },
             
-            // --- API LOADERS ---
             fetchArchiveVideos: async function() {
                 if (this.archiveLoading || !this.archiveHasMore) return;
                 this.archiveLoading = true;
@@ -811,8 +739,7 @@
             },
             
             youtube: {
-                // IMPORTANT: PASTE YOUR NEW RESTRICTED API KEY HERE
-                apiKey: "PASTE_YOUR_NEW_KEY_HERE", 
+                apiKey: "AIzaSyCZfKNXHgjZG1h13QhDH5-ubtVC0xDPfe4", 
                 uploadsPlaylistId: "UUinvwSeMdmuuzyMWrS0tGTg", videos: [], nextPageToken: null, loading: false,
                 fetchVideos: async function () { 
                     if (this.loading) return; this.loading = true;
@@ -834,10 +761,14 @@
             init: function() {
                 setTimeout(() => document.getElementById('app-loader').classList.add('hidden'), 1000);
                 createDust();
-                this.youtube.fetchVideos(); 
-                this.fetchArchiveVideos(); 
+                // --- FIXED: WAIT FOR CSV BEFORE FETCHING ARCHIVE ---
                 Papa.parse('catalog.csv', { download: true, header: true, skipEmptyLines: true, complete: (results) => {
                     this.data = results.data.filter(row => row['TITLE OF VIDEO']).map(row => { row.TOPIC = (row.TOPIC || "").replace(/^and\s+/i, '').trim(); return row; });
+                    
+                    // NOW fetch videos, ensuring labels are ready
+                    this.youtube.fetchVideos(); 
+                    this.fetchArchiveVideos(); 
+                    
                     this.renderLibraryInterface(); 
                 }});
                 const tabs = ['home', 'library', 'brain', 'anatomy', 'meditation', 'resources'];
