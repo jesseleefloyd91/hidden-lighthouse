@@ -36,7 +36,7 @@
             --bg-secondary: #ffffff;
             --text-primary: #0f172a;
             --text-secondary: #475569;
-            --border-color: rgba(0,0,0,0.1);
+            --border-color: rgba(0,0,0,0.08);
             --purple: #4c1d95;
             --gold: #b45309;
             --accent-glow: rgba(76, 29, 149, 0.1);
@@ -491,7 +491,7 @@
                 let thumb = isArchive ? `https://archive.org/services/img/${id}` : videoObj.thumbnail;
                 let linkUrl = isArchive ? `https://archive.org/details/${id}` : `https://www.youtube.com/watch?v=${id}`;
                 
-                // BRIDGE: Get correct topic using the Bridge Logic
+                // Get topic using simplified title matching
                 let topic = this.getTopicByVideoObj(videoObj, isArchive);
 
                 let crossRefBtn = '';
@@ -503,36 +503,33 @@
                 return `<div class="cosmos-card group"><div class="relative aspect-video overflow-hidden cursor-pointer bg-black" onclick="window.app.openVideo('${id}', '${isArchive ? 'archive' : 'youtube'}')"><img src="${thumb}" class="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" onerror="this.src='https://archive.org/images/not_found.png'" /><div class="absolute inset-0 flex items-center justify-center"><i class="fa-solid ${isArchive ? 'fa-film text-cyan-400' : 'fa-play text-white'} text-4xl opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-lg"></i></div>${isArchive ? '<div class="absolute top-2 right-2 bg-black/80 text-cyan-400 text-[9px] px-2 py-1 rounded font-mono uppercase tracking-widest border border-cyan-900/50">Restored</div>' : ''}</div><div class="p-4 flex flex-col flex-1" style="background: var(--bg-secondary); border-top: 1px solid var(--border-color);"><h3 class="text-sm font-medium line-clamp-2 mb-3" style="color: var(--text-primary);">${title}</h3><div class="mt-auto pt-2 flex flex-wrap gap-2 justify-between items-center" style="border-top: 1px solid var(--border-color);">${this.createTagButton(topic)}${crossRefBtn}</div><div class="mt-3 pt-2 text-right" style="border-top: 1px solid var(--border-color);"><a href="${linkUrl}" target="_blank" onclick="event.stopPropagation();" class="text-[9px] font-mono transition-colors" style="color: var(--text-secondary);">ID: ${id} <i class="fa-solid fa-arrow-up-right-from-square ml-1 text-[8px]"></i></a></div></div></div>`;
             },
             
-            // --- THE BRIDGE (Fixing Labels) ---
+            // --- SIMPLIFIED TOPIC MATCHER ---
             getTopicByVideoObj: function(videoObj, isArchive) {
                 if (!this.data || this.data.length === 0) return "Uncatalogued";
                 
-                let searchId = null;
-
-                // 1. If YouTube, use the ID directly
-                if (!isArchive) {
-                    searchId = videoObj.id;
-                } 
-                // 2. If Archive, try to extract the YouTube ID from metadata
-                else if (videoObj['external-identifier']) {
-                     const match = videoObj['external-identifier'].match(/urn:youtube:([a-zA-Z0-9_-]{11})/);
-                     if (match) searchId = match[1];
+                // 1. YouTube ID Match (YouTube Videos)
+                if (!isArchive && videoObj.id) {
+                    const matchById = this.data.find(row => { 
+                        const csvId = this.getVideoID(row.URL); 
+                        return csvId && csvId === videoObj.id; 
+                    });
+                    if (matchById) return matchById.TOPIC;
                 }
 
-                // 3. Try to match by ID first (Precise)
-                if (searchId) {
-                    const row = this.data.find(r => this.getVideoID(r.URL) === searchId);
-                    if (row) return row.TOPIC;
-                }
-
-                // 4. Fallback: Strict Title Matching (No fuzzy guessing)
-                // Remove all punctuation and lowercase. "The Matrix." == "the matrix"
+                // 2. Title Match (Archive & Fallback)
+                // Normalize titles by removing everything except letters and numbers
                 const clean = (str) => str ? str.toLowerCase().replace(/[^a-z0-9]/g, '') : '';
-                const videoTitleClean = clean(isArchive ? videoObj.title : videoObj.snippet.title);
                 
+                const titleToMatch = isArchive ? videoObj.title : videoObj.snippet.title;
+                const cleanInput = clean(titleToMatch);
+                
+                if (cleanInput.length < 5) return "General"; // Avoid matching short junk
+
+                // Find the best match in the CSV
                 const row = this.data.find(r => {
-                    const rowTitleClean = clean(r['TITLE OF VIDEO']);
-                    return rowTitleClean === videoTitleClean;
+                    const cleanRowTitle = clean(r['TITLE OF VIDEO']);
+                    // Check if one contains the other. This handles "The Matrix" matching "The Matrix (1999)"
+                    return cleanRowTitle && (cleanRowTitle.includes(cleanInput) || cleanInput.includes(cleanRowTitle));
                 });
                 
                 return row ? row.TOPIC : "General";
@@ -559,9 +556,14 @@
                 else { document.getElementById('btn-' + id)?.classList.add('active'); }
                 
                 if(id === 'meditation') {
-                    // Fix Quote Loading
-                    const quote = this.quotes[Math.floor(Math.random() * this.quotes.length)];
-                    document.getElementById('meditation-quote').innerText = `"${quote}"`;
+                    // Fix Quote Loading: Wait for element to exist
+                    setTimeout(() => {
+                        const quoteElement = document.getElementById('meditation-quote');
+                        if (quoteElement) {
+                            const quote = this.quotes[Math.floor(Math.random() * this.quotes.length)];
+                            quoteElement.innerText = `"${quote}"`;
+                        }
+                    }, 100);
                     this.renderMeditationLectures();
                 }
                 if(id === 'brain') this.renderMeditationLectures(); // Reuse renderer for brain
@@ -569,27 +571,68 @@
                 window.scrollTo(0,0); 
             },
 
-            // --- SCANNER FIX ---
+            // --- SCANNER FIX (Uses For...Of) ---
             scanForBrokenLinks: async function() {
                 const overlay = document.getElementById('diagnostics-overlay');
                 overlay.classList.remove('hidden');
-                document.getElementById('diag-status').innerText = "Initializing Scanner...";
-                document.getElementById('diag-progress').style.width = "10%";
+                const status = document.getElementById('diag-status');
+                const progressFill = document.getElementById('diag-progress');
+                const resultsBox = document.getElementById('diag-results');
                 
-                // Map from CSV data correctly
+                status.innerText = "Initializing Scanner...";
+                progressFill.style.width = "5%";
+                
+                // Get valid entries from CSV
                 const entries = this.data.map(row => ({
                     id: this.getVideoID(row.URL),
                     title: row['TITLE OF VIDEO'],
                     url: row.URL
-                })).filter(e => e.id); // Only valid IDs
+                })).filter(e => e.id); 
 
-                // Mock scan logic for UI demo (Real scan requires batching)
-                setTimeout(() => {
-                    document.getElementById('diag-status').innerText = `Scanned ${entries.length} items. All Systems Nominal.`;
-                    document.getElementById('diag-progress').style.width = "100%";
-                    document.getElementById('diag-results').innerHTML = `<div class="text-green-400 p-4">No broken links found in current batch.</div>`;
-                    document.getElementById('diag-results').classList.remove('hidden');
-                }, 1500);
+                const total = entries.length;
+                let brokenLinks = [];
+                let processed = 0;
+                
+                // Batch processing to avoid rate limits
+                const batchSize = 50; 
+                for (let i = 0; i < total; i += batchSize) {
+                    const batch = entries.slice(i, i + batchSize);
+                    const batchIds = batch.map(item => item.id).join(',');
+                    const url = `https://www.googleapis.com/youtube/v3/videos?key=${this.youtube.apiKey}&part=id&id=${batchIds}`;
+                    
+                    try {
+                        const res = await fetch(url);
+                        const data = await res.json();
+                        
+                        if (data.items) {
+                            const foundIds = new Set(data.items.map(item => item.id));
+                            // Check which IDs from our batch are missing in the response
+                            for (const video of batch) {
+                                if (!foundIds.has(video.id)) {
+                                    brokenLinks.push({...video, reason: "Video Unavailable (Deleted/Private)"});
+                                }
+                            }
+                        }
+                    } catch (e) {
+                        console.error("Batch Check Failed", e);
+                    }
+                    
+                    processed += batch.length;
+                    const pct = Math.round((processed / total) * 100);
+                    progressFill.style.width = `${pct}%`;
+                    status.innerText = `Scanning... ${pct}% (${processed}/${total})`;
+                }
+
+                status.innerText = `Scan Complete. Found ${brokenLinks.length} Broken Links.`;
+                resultsBox.classList.remove('hidden');
+                
+                if (brokenLinks.length === 0) {
+                    resultsBox.innerHTML = '<div class="text-green-400 p-4">All systems operational. No broken links found.</div>';
+                } else {
+                    let csvContent = "data:text/csv;charset=utf-8,TITLE,ID,URL,REASON\n" + brokenLinks.map(e => `"${e.title.replace(/"/g, '""')}","${e.id}","${e.url}","${e.reason}"`).join("\n");
+                    const encodedUri = encodeURI(csvContent);
+                    resultsBox.innerHTML = `<div class="mb-4"><a href="${encodedUri}" download="broken_links_report.csv" class="text-red-400 border border-red-900 px-4 py-2 rounded uppercase font-bold text-[10px] hover:bg-red-900 hover:text-white transition-colors"><i class="fa-solid fa-download mr-2"></i> Download Report (.csv)</a></div><ul class="text-left text-[10px] font-mono text-stone-400 space-y-1">${brokenLinks.slice(0, 50).map(l => `<li><span class="text-red-500">X</span> ${l.title}</li>`).join('')}${brokenLinks.length > 50 ? `<li>...and ${brokenLinks.length - 50} more</li>` : ''}</ul>`;
+                }
             },
             closeDiagnostics: function() { document.getElementById('diagnostics-overlay').classList.add('hidden'); },
 
@@ -601,6 +644,7 @@
                 const all = [...this.data.map(r=>({...r, type:'youtube'})), ...this.archiveVideos.map(r=>({...r, type:'archive'}))];
                 const keywords = ['meditation', 'silence', 'pineal', 'upper room', 'watch', 'prayer'];
                 const matches = all.filter(v => {
+                    // Use getTopic logic or title check
                     const t = (v['TITLE OF VIDEO'] || v.title || "").toLowerCase();
                     return keywords.some(k => t.includes(k));
                 }).slice(0, 12);
@@ -628,13 +672,14 @@
             // --- LIBRARY ---
             selectLibraryTopic: function(topic) { this.selectedLibraryTopics.clear(); this.selectedLibraryTopics.add(topic); this.nav('library'); setTimeout(() => this.renderLibraryInterface(), 50); },
             renderLibraryInterface: function() {
-                const topics = [...new Set(this.data.map(i => i.TOPIC).filter(t => t))].sort(); 
+                const topics = [...new Set(this.data.map(i => i.TOPIC).filter(t => t))].sort((a, b) => a.localeCompare(b)); 
                 const container = document.getElementById('library-topics');
                 document.getElementById('count-yt').innerText = this.data.length;
                 document.getElementById('count-hd').innerText = this.archiveTotal;
                 container.innerHTML = topics.map(t => {
+                    const isActive = this.selectedLibraryTopics.has(t);
                     const count = this.data.filter(r => r.TOPIC === t).length;
-                    return `<div class="topic-chip" onclick="window.app.toggleLibraryTopic('${t.replace(/'/g, "\\'")}')">${t} <span class="chip-count">(${count})</span></div>`;
+                    return `<div class="topic-chip ${isActive ? 'active' : ''}" onclick="window.app.toggleLibraryTopic('${t.replace(/'/g, "\\'")}')">${t} <span class="chip-count">(${count})</span></div>`;
                 }).join('');
                 this.renderLibraryResults();
             },
@@ -658,7 +703,7 @@
                     let matches = this.archiveVideos;
                     if(this.selectedLibraryTopics.size > 0) {
                         matches = matches.filter(v => {
-                            // USE THE BRIDGE
+                            // Use the simplified Title Matcher
                             const topic = this.getTopicByVideoObj(v, true);
                             return this.selectedLibraryTopics.has(topic);
                         });
