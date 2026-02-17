@@ -53,6 +53,17 @@
         /* BACKGROUNDS */
         .stars-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; background: radial-gradient(circle at bottom center, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 80%); transition: opacity 0.8s; opacity: 1; }
         
+        /* COSMIC DUST */
+        .dust-particle { position: absolute; border-radius: 50%; animation: dust-flow var(--duration) linear infinite, dust-cycle 25s infinite linear; opacity: 0; mix-blend-mode: screen; }
+        @keyframes dust-flow { 0% { opacity: 0; transform: translateY(0) scale(0.5); } 20% { opacity: 0.8; } 80% { opacity: 0.6; } 100% { opacity: 0; transform: translateY(-150px) scale(1); } }
+        @keyframes dust-cycle {
+            0% { background-color: rgba(255,255,255,0.8); box-shadow: 0 0 3px rgba(255,255,255,0.5); }
+            25% { background-color: rgba(220, 38, 38, 0.8); box-shadow: 0 0 3px rgba(220, 38, 38, 0.5); }
+            50% { background-color: rgba(147, 51, 234, 0.8); box-shadow: 0 0 3px rgba(147, 51, 234, 0.5); }
+            75% { background-color: rgba(37, 99, 235, 0.8); box-shadow: 0 0 3px rgba(37, 99, 235, 0.5); }
+            100% { background-color: rgba(255,255,255,0.8); box-shadow: 0 0 3px rgba(255,255,255,0.5); }
+        }
+
         /* CARDS */
         .masonry-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; padding-bottom: 140px; }
         @media (max-width: 640px) { .masonry-grid { grid-template-columns: 1fr; } }
@@ -227,7 +238,7 @@
                             <button onclick="window.app.clearLibraryFilters()" class="text-[10px] uppercase font-bold text-red-400 hover:text-red-300 ml-4">Reset Filters</button>
                         </div>
                     </div>
-                    <div id="library-topics" class="flex flex-wrap gap-2 max-h-40 overflow-y-auto custom-scrollbar p-1"></div>
+                    <div id="library-topics" class="flex flex-wrap gap-2 max-h-40 overflow-y-auto custom-scrollbar p-1 min-h-[50px]"></div>
                 </div>
                 <div id="library-results-area">
                     <div id="library-grid" class="masonry-grid"></div>
@@ -272,6 +283,7 @@
                             </div>
                         </div>
                     </div>
+                    
                     <div class="border-t pt-8" style="border-color: var(--border-color);">
                         <h3 class="font-mono text-xs uppercase tracking-[0.2em] mb-6" style="color: var(--purple);">Related Teachings</h3>
                         <div id="brain-loader" class="text-center py-4 hidden"><i class="fa-solid fa-circle-notch fa-spin text-purple-400"></i></div>
@@ -413,35 +425,67 @@
             const container = document.getElementById('stars-container');
             if(!container) return;
             container.innerHTML = '';
+            
             const canvas = document.createElement('canvas');
-            canvas.style.position = 'absolute'; canvas.style.top = '0'; canvas.style.left = '0'; canvas.style.width = '100%'; canvas.style.height = '100%'; canvas.style.pointerEvents = 'none';
+            canvas.style.position = 'absolute';
+            canvas.style.top = '0'; canvas.style.left = '0';
+            canvas.style.width = '100%'; canvas.style.height = '100%';
+            canvas.style.pointerEvents = 'none';
             container.appendChild(canvas);
+
             const ctx = canvas.getContext('2d');
-            let w = canvas.width = window.innerWidth; let h = canvas.height = window.innerHeight;
-            window.addEventListener('resize', () => { w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; });
+            let w = canvas.width = window.innerWidth;
+            let h = canvas.height = window.innerHeight;
+
+            window.addEventListener('resize', () => {
+                w = canvas.width = window.innerWidth;
+                h = canvas.height = window.innerHeight;
+            });
+
             const particles = [];
             const darkColors = ['255,255,255', '185,28,28', '126,34,206', '29,78,216']; 
             const lightColors = ['0,0,0', '50,50,50', '30,30,30'];
+
             function initParticles() {
                 particles.length = 0;
                 const isLight = document.body.classList.contains('light-mode');
                 const colors = isLight ? lightColors : darkColors;
+                
                 for(let i=0; i<8000; i++) { 
                     particles.push({
-                        x: Math.random() * w, y: Math.random() * h, r: Math.random() * 1.0 + 0.1, dy: Math.random() * 0.3 + 0.05,
-                        color: colors[Math.floor(Math.random() * colors.length)], alpha: Math.random(), fadeDir: Math.random() > 0.5 ? 1 : -1, fadeSpeed: Math.random() * 0.01 + 0.002
+                        x: Math.random() * w,
+                        y: Math.random() * h,
+                        r: Math.random() * 1.0 + 0.1,
+                        dy: Math.random() * 0.3 + 0.05,
+                        color: colors[Math.floor(Math.random() * colors.length)],
+                        alpha: Math.random(),
+                        fadeDir: Math.random() > 0.5 ? 1 : -1,
+                        fadeSpeed: Math.random() * 0.01 + 0.002
                     });
                 }
             }
             initParticles();
-            window.app = window.app || {}; window.app.refreshDust = initParticles;
+            
+            window.app = window.app || {};
+            window.app.refreshDust = initParticles;
+
             function animateDust() {
                 ctx.clearRect(0, 0, w, h);
                 particles.forEach(p => {
-                    p.y -= p.dy; p.x += Math.sin(p.y * 0.01) * 0.2;
-                    if (p.y < 0) p.y = h; if (p.x > w) p.x = 0; if (p.x < 0) p.x = w;
-                    p.alpha += (p.fadeSpeed * p.fadeDir); if (p.alpha >= 0.8) { p.alpha = 0.8; p.fadeDir = -1; } if (p.alpha <= 0.1) { p.alpha = 0.1; p.fadeDir = 1; }
-                    ctx.fillStyle = `rgba(${p.color}, ${p.alpha})`; ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill();
+                    p.y -= p.dy;
+                    p.x += Math.sin(p.y * 0.01) * 0.2;
+                    if (p.y < 0) p.y = h;
+                    if (p.x > w) p.x = 0;
+                    if (p.x < 0) p.x = w;
+                    
+                    p.alpha += (p.fadeSpeed * p.fadeDir);
+                    if (p.alpha >= 0.8) { p.alpha = 0.8; p.fadeDir = -1; }
+                    if (p.alpha <= 0.1) { p.alpha = 0.1; p.fadeDir = 1; }
+
+                    ctx.fillStyle = `rgba(${p.color}, ${p.alpha})`;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                    ctx.fill();
                 });
                 requestAnimationFrame(animateDust);
             }
@@ -449,7 +493,11 @@
         }
         
         window.app = {
-            data: [], archiveVideos: [], archivePage: 1, archiveLoading: false, archiveHasMore: true, archiveTotal: '...', isLightMode: false, selectedLibraryTopics: new Set(),
+            data: [], 
+            archiveVideos: [], archivePage: 1, archiveLoading: false, archiveHasMore: true, archiveTotal: '...', 
+            catalogLoaded: false, // FLAG TO PREVENT PREMATURE RENDERING
+            isLightMode: false, selectedLibraryTopics: new Set(),
+            
             synthBrain: { "pineal": "The Single Eye.", "default": "Look within." },
             anatomyData: { "root": { title: "Root", name: "Muladhara", color: "#ef4444", freq: "400 THz", biblical: "Egypt", church: "Ephesus", desc: "Physical bondage." }, "crown": { title: "Crown", name: "Sahasrara", color: "#a855f7", freq: "789+ THz", biblical: "Peniel", church: "Laodicea", desc: "Face to Face." } },
             quotes: ["Be still.", "The Kingdom is within.", "As above, so below."],
@@ -459,33 +507,34 @@
                 let title = videoObj.title;
                 let thumb = `https://archive.org/services/img/${id}`;
                 let linkUrl = `https://archive.org/details/${id}`;
+                
                 let topic = this.getTopicByVideoObj(videoObj);
+
                 let crossRefBtn = '';
                 if (videoObj['external-identifier'] && videoObj['external-identifier'].includes('urn:youtube:')) {
                     const ytId = videoObj['external-identifier'].replace('urn:youtube:', '');
                     crossRefBtn = `<button onclick="event.stopPropagation(); window.open('https://youtube.com/watch?v=${ytId}', '_blank')" class="text-[9px] border px-2 py-1 rounded transition-colors uppercase font-bold tracking-widest" style="border-color: #7f1d1d; color: #f87171;"><i class="fa-brands fa-youtube mr-1"></i> Source</button>`;
                 }
+
                 return `<div class="cosmos-card group"><div class="relative aspect-video overflow-hidden cursor-pointer bg-black" onclick="window.app.openVideo('${id}')"><img src="${thumb}" class="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" onerror="this.src='https://archive.org/images/not_found.png'" /><div class="absolute inset-0 flex items-center justify-center"><i class="fa-solid fa-film text-cyan-400 text-4xl opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-lg"></i></div><div class="absolute top-2 right-2 bg-black/80 text-cyan-400 text-[9px] px-2 py-1 rounded font-mono uppercase tracking-widest border border-cyan-900/50">Restored</div></div><div class="p-4 flex flex-col flex-1" style="background: var(--bg-secondary); border-top: 1px solid var(--border-color);"><h3 class="text-sm font-medium line-clamp-2 mb-3" style="color: var(--text-primary);">${title}</h3><div class="mt-auto pt-2 flex flex-wrap gap-2 justify-between items-center" style="border-top: 1px solid var(--border-color);">${this.createTagButton(topic)}${crossRefBtn}</div><div class="mt-3 pt-2 text-right" style="border-top: 1px solid var(--border-color);"><a href="${linkUrl}" target="_blank" onclick="event.stopPropagation();" class="text-[9px] font-mono transition-colors" style="color: var(--text-secondary);">ID: ${id} <i class="fa-solid fa-arrow-up-right-from-square ml-1 text-[8px]"></i></a></div></div></div>`;
             },
             
             getTopicByVideoObj: function(videoObj) {
-                if (!this.data || this.data.length === 0) return "Uncatalogued";
+                // IMPORTANT: If CSV hasn't loaded yet, we can't label anything.
+                if (!this.catalogLoaded || this.data.length === 0) return "General";
+                
                 let searchId = null;
                 if (videoObj['external-identifier']) {
                      const match = videoObj['external-identifier'].match(/urn:youtube:([a-zA-Z0-9_-]{11})/);
                      if (match) searchId = match[1];
                 }
+
                 if (searchId) {
                     const row = this.data.find(r => this.getVideoID(r.URL) === searchId);
                     if (row) return row.TOPIC;
                 }
-                const clean = (str) => str ? str.toLowerCase().replace(/[^a-z0-9]/g, '') : '';
-                const videoTitleClean = clean(videoObj.title);
-                const row = this.data.find(r => {
-                    const rowTitleClean = clean(r['TITLE OF VIDEO']);
-                    return rowTitleClean === videoTitleClean;
-                });
-                return row ? row.TOPIC : "General";
+                
+                return "Uncatalogued";
             },
 
             getVideoID: function(url) { if (!url) return null; const str = url.toString().trim(); const match = str.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/); return (match && match[2].length === 11) ? match[2] : null; },
@@ -517,7 +566,7 @@
                 document.getElementById('diag-status').innerText = "Analyzing Archive Metadata..."; document.getElementById('diag-progress').style.width = "20%";
                 
                 if (this.archiveVideos.length === 0) {
-                     document.getElementById('diag-results').innerHTML = '<div class="text-red-400 p-4">No videos loaded to scan. Please check internet connection.</div>';
+                     document.getElementById('diag-results').innerHTML = '<div class="text-red-400 p-4">No videos loaded to scan. Please wait for library to populate.</div>';
                      document.getElementById('diag-results').classList.remove('hidden');
                      return;
                 }
@@ -552,12 +601,14 @@
 
             selectLibraryTopic: function(topic) { this.selectedLibraryTopics.clear(); this.selectedLibraryTopics.add(topic); this.nav('library'); setTimeout(() => this.renderLibraryInterface(), 50); },
             renderLibraryInterface: function() {
-                // FIXED: RENDER TOPICS IMMEDIATELY FROM CSV (this.data)
+                // Wait for CSV first!
+                if (!this.catalogLoaded) return;
+
                 const topics = [...new Set(this.data.map(i => i.TOPIC).filter(t => t))].sort(); 
                 if (!topics.includes("Uncatalogued")) topics.push("Uncatalogued");
+
                 const container = document.getElementById('library-topics');
-                // Use archiveVideos.length if available, else '...'
-                document.getElementById('count-hd').innerText = this.archiveVideos.length > 0 ? this.archiveTotal : "...";
+                document.getElementById('count-hd').innerText = this.archiveTotal;
                 container.innerHTML = topics.map(t => {
                     const isActive = this.selectedLibraryTopics.has(t);
                     let count = 0;
@@ -575,14 +626,15 @@
             renderLibraryResults: function() {
                 const grid = document.getElementById('library-grid');
                 if(!grid) return;
-                // --- FIXED: HANDLE LOADING STATES ---
+                
                 if (this.archiveVideos.length === 0) {
                      if (this.archiveLoading) {
                          document.getElementById('video-loader').classList.remove('hidden');
                          grid.innerHTML = '';
                      } else {
                          document.getElementById('video-loader').classList.add('hidden');
-                         grid.innerHTML = '<div class="col-span-full text-center py-20 text-stone-500">No videos found. Check connection.</div>';
+                         // Only show empty message if we actually tried and failed
+                         grid.innerHTML = '<div class="col-span-full text-center py-20 text-stone-500">No videos found.</div>';
                      }
                      return;
                 }
@@ -602,7 +654,6 @@
             closeSearchOverlay: function() { document.getElementById('search-overlay').classList.remove('active'); },
             performOverlaySearch: function() { const q = document.getElementById('overlay-search-input').value.trim(); if(!q) return; this.closeSearchOverlay(); this.nav('search'); document.getElementById('global-search').value = q; this.performGlobalSearch(); },
             performGlobalSearch: function() { const input = document.getElementById('global-search'); let q = input.value.trim().toLowerCase(); if (!q) return; this.nav('search'); const list = document.getElementById('global-search-list'); const results = this.archiveVideos.filter(v => v.title.toLowerCase().includes(q)); list.innerHTML = results.length === 0 ? '<div class="p-8 text-center text-stone-500">No matches found.</div>' : results.map(r => this.renderCard(r, true)).join(''); },
-            
             askTheTeacher: function() { const input = document.getElementById('teacher-input'); let q = input.value.trim().toLowerCase(); if (!q) return; let match = null; for (const key in this.synthBrain) { if (q.includes(key)) { match = this.synthBrain[key]; break; } } const response = match || this.synthBrain['default']; document.getElementById('teacher-response-box').classList.remove('hidden'); document.getElementById('teacher-text').innerHTML = `"${response}"`; },
             resetHome: function() { const input = document.getElementById('teacher-input'); input.value = ''; document.getElementById('teacher-response-box').classList.add('hidden'); document.getElementById('clear-teacher-btn').classList.add('hidden'); },
             toggleClearButton: function() { const val = document.getElementById('teacher-input').value; const btn = document.getElementById('clear-teacher-btn'); if (val.length > 0) btn.classList.remove('hidden'); else btn.classList.add('hidden'); },
@@ -620,28 +671,28 @@
                     if(data.response.numFound) this.archiveTotal = data.response.numFound;
                     if (data.response && data.response.docs && data.response.docs.length > 0) { 
                         this.archiveVideos.push(...data.response.docs); 
-                        // RE-RENDER UI UPON SUCCESSFUL DATA
+                        // IMPORTANT: Force re-render of chips now that we have data for counts
                         this.renderLibraryInterface(); 
                     } else { this.archiveHasMore = false; }
                 } catch (e) { console.error("Archive Error", e); }
                 this.archiveLoading = false;
-                // Force Update Loader
-                this.renderLibraryResults();
             },
-
+            
             init: function() {
-                // FAIL SAFE: Force loader off after 3s
                 setTimeout(() => { document.getElementById('app-loader').classList.add('hidden'); }, 3000);
                 createDust();
-                // 1. Fetch CSV (Parallel)
+                
+                // 1. Fetch CSV
                 Papa.parse('catalog.csv', { download: true, header: true, skipEmptyLines: true, complete: (results) => {
                     this.data = results.data.filter(row => row['TITLE OF VIDEO']).map(row => { row.TOPIC = (row.TOPIC || "").replace(/^and\s+/i, '').trim(); return row; });
-                    // RENDER TOPICS IMMEDIATELY (Even if 0 count)
-                    this.renderLibraryInterface(); 
+                    this.catalogLoaded = true; // FLAG SET
+                    
+                    // Render Chips Immediately (will show 0 counts initially)
+                    this.renderLibraryInterface();
+                    
+                    // 2. Fetch Archive (Updates counts when done)
+                    this.fetchArchiveVideos(); 
                 }});
-                // 2. Fetch Archive (Parallel)
-                this.fetchArchiveVideos(); 
-                
                 const tabs = ['home', 'library', 'brain', 'anatomy', 'meditation', 'resources'];
                 this.nav('home');
             }
