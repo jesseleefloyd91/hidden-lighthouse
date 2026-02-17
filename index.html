@@ -53,17 +53,6 @@
         /* BACKGROUNDS */
         .stars-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; background: radial-gradient(circle at bottom center, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 80%); transition: opacity 0.8s; opacity: 1; }
         
-        /* COSMIC DUST */
-        .dust-particle { position: absolute; border-radius: 50%; animation: dust-flow var(--duration) linear infinite, dust-cycle 25s infinite linear; opacity: 0; mix-blend-mode: screen; }
-        @keyframes dust-flow { 0% { opacity: 0; transform: translateY(0) scale(0.5); } 20% { opacity: 0.8; } 80% { opacity: 0.6; } 100% { opacity: 0; transform: translateY(-150px) scale(1); } }
-        @keyframes dust-cycle {
-            0% { background-color: rgba(255,255,255,0.8); box-shadow: 0 0 3px rgba(255,255,255,0.5); }
-            25% { background-color: rgba(220, 38, 38, 0.8); box-shadow: 0 0 3px rgba(220, 38, 38, 0.5); }
-            50% { background-color: rgba(147, 51, 234, 0.8); box-shadow: 0 0 3px rgba(147, 51, 234, 0.5); }
-            75% { background-color: rgba(37, 99, 235, 0.8); box-shadow: 0 0 3px rgba(37, 99, 235, 0.5); }
-            100% { background-color: rgba(255,255,255,0.8); box-shadow: 0 0 3px rgba(255,255,255,0.5); }
-        }
-
         /* CARDS */
         .masonry-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; padding-bottom: 140px; }
         @media (max-width: 640px) { .masonry-grid { grid-template-columns: 1fr; } }
@@ -494,9 +483,7 @@
         
         window.app = {
             data: [], 
-            archiveVideos: [], archivePage: 1, archiveLoading: false, archiveHasMore: true, archiveTotal: '...', 
-            catalogLoaded: false, // FLAG TO PREVENT PREMATURE RENDERING
-            isLightMode: false, selectedLibraryTopics: new Set(),
+            archiveVideos: [], archivePage: 1, archiveLoading: false, archiveHasMore: true, archiveTotal: '...', isLightMode: false, selectedLibraryTopics: new Set(),
             
             synthBrain: { "pineal": "The Single Eye.", "default": "Look within." },
             anatomyData: { "root": { title: "Root", name: "Muladhara", color: "#ef4444", freq: "400 THz", biblical: "Egypt", church: "Ephesus", desc: "Physical bondage." }, "crown": { title: "Crown", name: "Sahasrara", color: "#a855f7", freq: "789+ THz", biblical: "Peniel", church: "Laodicea", desc: "Face to Face." } },
@@ -508,6 +495,7 @@
                 let thumb = `https://archive.org/services/img/${id}`;
                 let linkUrl = `https://archive.org/details/${id}`;
                 
+                // Get topic using strict bridge logic
                 let topic = this.getTopicByVideoObj(videoObj);
 
                 let crossRefBtn = '';
@@ -521,7 +509,7 @@
             
             getTopicByVideoObj: function(videoObj) {
                 // IMPORTANT: If CSV hasn't loaded yet, we can't label anything.
-                if (!this.catalogLoaded || this.data.length === 0) return "General";
+                if (this.data.length === 0) return "General";
                 
                 let searchId = null;
                 if (videoObj['external-identifier']) {
@@ -539,12 +527,19 @@
 
             getVideoID: function(url) { if (!url) return null; const str = url.toString().trim(); const match = str.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/); return (match && match[2].length === 11) ? match[2] : null; },
             createTagButton: function(topic) { return `<button class="inline-flex items-center gap-2 text-[9px] font-bold uppercase tracking-widest px-3 py-1.5 rounded transition-all justify-center cursor-pointer relative z-20" style="background: var(--input-bg); color: var(--purple); border: 1px solid var(--border-color);" onclick="event.stopPropagation(); window.app.selectLibraryTopic('${topic.replace(/'/g, "\\'")}')"><i class="fa-solid fa-tag"></i> ${topic}</button>`; },
-            toggleTheme: function() { this.isLightMode = !this.isLightMode; document.body.classList.toggle('light-mode'); document.getElementById('theme-icon').className = this.isLightMode ? 'fa-solid fa-sun text-yellow-500' : 'fa-solid fa-moon'; if(this.refreshDust) this.refreshDust(); },
             
+            toggleTheme: function() { 
+                this.isLightMode = !this.isLightMode; 
+                document.body.classList.toggle('light-mode'); 
+                document.getElementById('theme-icon').className = this.isLightMode ? 'fa-solid fa-sun text-yellow-500' : 'fa-solid fa-moon';
+                if(this.refreshDust) this.refreshDust();
+            },
+
             nav: function(id) { 
                 document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active')); 
                 document.querySelectorAll('.dock-btn').forEach(b => b.classList.remove('active')); 
                 document.getElementById('view-' + id).classList.add('active'); 
+                
                 if(id==='home'){ this.resetHome(); document.getElementById('btn-home').classList.add('active'); }
                 else if(id==='search'){ document.querySelectorAll('.dock-btn')[3].classList.add('active'); } 
                 else { document.getElementById('btn-' + id)?.classList.add('active'); }
@@ -552,7 +547,10 @@
                 if(id === 'meditation') {
                     setTimeout(() => {
                         const quoteElement = document.getElementById('meditation-quote');
-                        if (quoteElement) { const quote = this.quotes[Math.floor(Math.random() * this.quotes.length)]; quoteElement.innerText = `"${quote}"`; }
+                        if (quoteElement) {
+                            const quote = this.quotes[Math.floor(Math.random() * this.quotes.length)];
+                            quoteElement.innerText = `"${quote}"`;
+                        }
                     }, 100);
                     this.renderMeditationLectures();
                 }
@@ -590,51 +588,65 @@
                 const brainGrid = document.getElementById('brain-lectures-grid');
                 document.getElementById('med-loader')?.classList.add('hidden');
                 document.getElementById('brain-loader')?.classList.add('hidden');
+                
                 if (this.archiveVideos.length === 0) return;
+
                 const medKeywords = ['meditation', 'silence', 'pineal', 'upper room', 'watch', 'prayer'];
-                const medMatches = this.archiveVideos.filter(v => { const t = v.title.toLowerCase(); return medKeywords.some(k => t.includes(k)); }).slice(0, 12);
+                const medMatches = this.archiveVideos.filter(v => {
+                    const t = v.title.toLowerCase();
+                    return medKeywords.some(k => t.includes(k));
+                }).slice(0, 12);
+                
                 if(grid) grid.innerHTML = medMatches.map(v => this.renderCard(v, true)).join('');
+
                 const brainKeywords = ['brain', 'claustrum', 'mind', 'skull', 'anatomy', 'oil'];
-                const brainMatches = this.archiveVideos.filter(v => { const t = v.title.toLowerCase(); return brainKeywords.some(k => t.includes(k)); }).slice(0, 12);
+                const brainMatches = this.archiveVideos.filter(v => {
+                    const t = v.title.toLowerCase();
+                    return brainKeywords.some(k => t.includes(k));
+                }).slice(0, 12);
+
                 if(brainGrid) brainGrid.innerHTML = brainMatches.map(v => this.renderCard(v, true)).join('');
             },
 
             selectLibraryTopic: function(topic) { this.selectedLibraryTopics.clear(); this.selectedLibraryTopics.add(topic); this.nav('library'); setTimeout(() => this.renderLibraryInterface(), 50); },
             renderLibraryInterface: function() {
-                // Wait for CSV first!
-                if (!this.catalogLoaded) return;
-
+                // FIXED: RENDER TOPICS IMMEDIATELY FROM CSV (this.data)
+                // This ensures chips appear even if Archive videos are slow
                 const topics = [...new Set(this.data.map(i => i.TOPIC).filter(t => t))].sort(); 
                 if (!topics.includes("Uncatalogued")) topics.push("Uncatalogued");
 
                 const container = document.getElementById('library-topics');
-                document.getElementById('count-hd').innerText = this.archiveTotal;
+                document.getElementById('count-hd').innerText = this.archiveTotal; // Still shows full count
                 container.innerHTML = topics.map(t => {
                     const isActive = this.selectedLibraryTopics.has(t);
                     let count = 0;
                     if(this.archiveVideos.length > 0) {
                         if (t === "Uncatalogued") count = this.archiveVideos.filter(v => this.getTopicByVideoObj(v) === "Uncatalogued").length;
                         else count = this.archiveVideos.filter(v => this.getTopicByVideoObj(v) === t).length;
+                    } else {
+                        // Fallback count from CSV while loading Archive
+                         if(t !== "Uncatalogued") count = this.data.filter(r => r.TOPIC === t).length;
                     }
                     return `<div class="topic-chip ${isActive ? 'active' : ''}" onclick="window.app.toggleLibraryTopic('${t.replace(/'/g, "\\'")}')">${t} <span class="chip-count">(${count})</span></div>`;
                 }).join('');
-                this.renderLibraryResults();
+                // Note: We don't call renderLibraryResults here immediately to avoid clearing the loader
+                // renderLibraryResults is called by fetchArchiveVideos when data arrives.
             },
-            toggleLibraryTopic: function(topic) { if (this.selectedLibraryTopics.has(topic)) this.selectedLibraryTopics.delete(topic); else this.selectedLibraryTopics.add(topic); this.renderLibraryInterface(); },
-            clearLibraryFilters: function() { this.selectedLibraryTopics.clear(); this.renderLibraryInterface(); },
+            toggleLibraryTopic: function(topic) { if (this.selectedLibraryTopics.has(topic)) this.selectedLibraryTopics.delete(topic); else this.selectedLibraryTopics.add(topic); this.renderLibraryInterface(); this.renderLibraryResults(); },
+            clearLibraryFilters: function() { this.selectedLibraryTopics.clear(); this.renderLibraryInterface(); this.renderLibraryResults(); },
             
             renderLibraryResults: function() {
                 const grid = document.getElementById('library-grid');
                 if(!grid) return;
                 
                 if (this.archiveVideos.length === 0) {
+                     // Check if loading or truly empty
                      if (this.archiveLoading) {
                          document.getElementById('video-loader').classList.remove('hidden');
                          grid.innerHTML = '';
                      } else {
                          document.getElementById('video-loader').classList.add('hidden');
-                         // Only show empty message if we actually tried and failed
-                         grid.innerHTML = '<div class="col-span-full text-center py-20 text-stone-500">No videos found.</div>';
+                         grid.innerHTML = '<div class="col-span-full text-center py-20 text-stone-500">No videos found in Archive. Check connection.</div>';
                      }
                      return;
                 }
@@ -665,34 +677,38 @@
                 if (this.archiveLoading || !this.archiveHasMore) return;
                 this.archiveLoading = true;
                 const query = 'subject:"bill_donahue" AND mediatype:"movies"';
+                // Requesting external-identifier to check bridge status
                 const url = `https://archive.org/advancedsearch.php?q=${encodeURIComponent(query)}&fl[]=identifier&fl[]=title&fl[]=description&fl[]=external-identifier&fl[]=downloads&sort[]=-addeddate&output=json&rows=500&page=${this.archivePage}`;
                 try {
                     const res = await fetch(url); const data = await res.json();
                     if(data.response.numFound) this.archiveTotal = data.response.numFound;
                     if (data.response && data.response.docs && data.response.docs.length > 0) { 
                         this.archiveVideos.push(...data.response.docs); 
-                        // IMPORTANT: Force re-render of chips now that we have data for counts
+                        // IMMEDIATE RENDER UPON SUCCESS
                         this.renderLibraryInterface(); 
+                        this.renderLibraryResults(); // Ensure grid updates too
                     } else { this.archiveHasMore = false; }
                 } catch (e) { console.error("Archive Error", e); }
                 this.archiveLoading = false;
+                // Force Update Loader status
+                this.renderLibraryResults();
             },
             
             init: function() {
+                // FAIL SAFE: Force loader off after 3s
                 setTimeout(() => { document.getElementById('app-loader').classList.add('hidden'); }, 3000);
                 createDust();
                 
-                // 1. Fetch CSV
+                // 1. Fetch CSV (Parallel)
                 Papa.parse('catalog.csv', { download: true, header: true, skipEmptyLines: true, complete: (results) => {
                     this.data = results.data.filter(row => row['TITLE OF VIDEO']).map(row => { row.TOPIC = (row.TOPIC || "").replace(/^and\s+/i, '').trim(); return row; });
-                    this.catalogLoaded = true; // FLAG SET
-                    
-                    // Render Chips Immediately (will show 0 counts initially)
+                    // RENDER TOPICS IMMEDIATELY (Even if 0 count)
                     this.renderLibraryInterface();
-                    
-                    // 2. Fetch Archive (Updates counts when done)
-                    this.fetchArchiveVideos(); 
                 }});
+                
+                // 2. Fetch Archive (Parallel)
+                this.fetchArchiveVideos(); 
+                
                 const tabs = ['home', 'library', 'brain', 'anatomy', 'meditation', 'resources'];
                 this.nav('home');
             }
