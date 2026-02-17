@@ -25,6 +25,8 @@
             --accent-glow: rgba(212, 175, 55, 0.25);
             --input-bg: rgba(255,255,255,0.07);
             --dock-bg: rgba(10, 10, 10, 0.90);
+            --btn-active-bg: #EAEAEA;
+            --btn-active-text: #050505;
         }
 
         body.light-mode {
@@ -39,53 +41,37 @@
             --gold: #b45309;
             --accent-glow: rgba(76, 29, 149, 0.1);
             --input-bg: rgba(0,0,0,0.04);
-            --dock-bg: rgba(255, 255, 255, 0.90);
+            --dock-bg: rgba(255, 255, 255, 0.95);
+            --btn-active-bg: #4c1d95;
+            --btn-active-text: #ffffff;
         }
 
         body { font-family: 'Inter', sans-serif; background-color: var(--bg-base); color: var(--text-primary); transition: background-color 0.5s ease, color 0.5s ease; overflow-x: hidden; height: 100vh; }
         .cinzel { font-family: 'Cinzel', serif; }
         .mono { font-family: 'Space Grotesk', monospace; }
         
-        /* BACKGROUNDS */
         .stars-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; background: radial-gradient(circle at bottom center, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 80%); transition: opacity 0.8s; opacity: 1; }
         
-        /* COSMIC DUST EFFECT */
-        .dust-particle { position: absolute; border-radius: 50%; animation: dust-flow var(--duration) linear infinite, dust-cycle 25s infinite linear; opacity: 0; mix-blend-mode: screen; }
-        @keyframes dust-flow { 0% { opacity: 0; transform: translateY(0) scale(0.5); } 20% { opacity: 0.8; } 80% { opacity: 0.6; } 100% { opacity: 0; transform: translateY(-150px) scale(1); } }
-        @keyframes dust-cycle {
-            0% { background-color: rgba(255,255,255,0.8); box-shadow: 0 0 3px rgba(255,255,255,0.5); }
-            25% { background-color: rgba(220, 38, 38, 0.8); box-shadow: 0 0 3px rgba(220, 38, 38, 0.5); }
-            50% { background-color: rgba(147, 51, 234, 0.8); box-shadow: 0 0 3px rgba(147, 51, 234, 0.5); }
-            75% { background-color: rgba(37, 99, 235, 0.8); box-shadow: 0 0 3px rgba(37, 99, 235, 0.5); }
-            100% { background-color: rgba(255,255,255,0.8); box-shadow: 0 0 3px rgba(255,255,255,0.5); }
-        }
-
-        /* CARDS */
         .masonry-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; padding-bottom: 140px; }
         @media (max-width: 640px) { .masonry-grid { grid-template-columns: 1fr; } }
         .cosmos-card { background-color: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 12px; transition: all 0.3s; cursor: pointer; position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; min-height: 200px; z-index: 10; }
         .cosmos-card:hover { border-color: var(--gold); transform: translateY(-4px); box-shadow: 0 10px 40px -10px var(--accent-glow); }
 
-        /* UI */
         .dock-container { position: fixed; bottom: 20px; left: 0; width: 100%; display: flex; justify-content: center; z-index: 50; padding: 0 20px; }
         .dock { background: var(--dock-bg); backdrop-filter: blur(20px); border: 1px solid var(--border-color); padding: 8px; border-radius: 20px; display: flex; gap: 4px; box-shadow: 0 20px 40px -10px rgba(0,0,0,0.3); max-width: 100%; overflow-x: auto; scrollbar-width: none; }
         .dock-btn { display: flex; align-items: center; justify-content: center; padding: 10px 16px; border-radius: 12px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-secondary); transition: all 0.2s; cursor: pointer; border: 1px solid transparent; white-space: nowrap; flex-shrink: 0; min-width: 50px; }
         .dock-btn:hover { color: var(--text-primary); background: var(--bg-tertiary); }
-        .dock-btn.active { background: var(--text-primary); color: var(--bg-primary); }
+        .dock-btn.active { background: var(--btn-active-bg); color: var(--btn-active-text); }
 
-        /* SEARCH OVERLAY */
         #search-overlay { position: fixed; inset: 0; background: rgba(5, 5, 5, 0.95); backdrop-filter: blur(20px); z-index: 90; display: flex; flex-direction: column; align-items: center; padding-top: 100px; transition: opacity 0.3s; opacity: 0; pointer-events: none; }
         #search-overlay.active { opacity: 1; pointer-events: auto; }
         .big-search-input { width: 90%; max-width: 600px; background: transparent; border: none; border-bottom: 2px solid var(--gold); font-size: 2rem; color: var(--text-primary); padding: 10px; text-align: center; outline: none; font-family: 'Cinzel', serif; }
-        .big-search-input::placeholder { color: var(--text-secondary); opacity: 0.5; }
 
-        /* DIAGNOSTICS OVERLAY */
         #diagnostics-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 100; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
-        .diag-box { width: 90%; max-width: 800px; background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 30px; border-radius: 16px; text-align: center; box-shadow: 0 0 50px rgba(0,0,0,0.5); max-height: 80vh; display: flex; flex-direction: column; }
-        .progress-bar { height: 4px; background: var(--bg-tertiary); width: 100%; border-radius: 2px; overflow: hidden; margin: 20px 0; flex-shrink: 0; }
+        .diag-box { width: 90%; max-width: 500px; background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 30px; border-radius: 16px; text-align: center; box-shadow: 0 0 50px rgba(0,0,0,0.5); }
+        .progress-bar { height: 4px; background: var(--bg-tertiary); width: 100%; border-radius: 2px; overflow: hidden; margin: 20px 0; }
         .progress-fill { height: 100%; background: var(--gold); width: 0%; transition: width 0.3s; }
 
-        /* ANATOMY */
         .anatomy-wrapper { position: relative; width: 300px; height: 650px; border: 1px solid var(--border-color); border-radius: 999px; background: var(--bg-secondary); box-shadow: 0 0 80px -20px var(--accent-glow); }
         @media (max-width: 768px) { .anatomy-scale-container { transform: scale(0.75); transform-origin: top center; height: 500px; } }
         .anatomy-dot { width: 24px; height: 24px; border-radius: 50%; position: absolute; left: 50%; transform: translateX(-50%); cursor: pointer; transition: all 0.3s ease; border: 2px solid rgba(255,255,255,0.5); z-index: 20; }
@@ -99,11 +85,10 @@
         .hidden { display: none !important; }
         .profile-img { box-shadow: 0 0 50px var(--accent-glow); transition: 0.5s; border-color: var(--border-color); }
         
-        /* CHIPS */
         .topic-chip { padding: 6px 12px; border-radius: 99px; font-size: 10px; font-weight: bold; text-transform: uppercase; cursor: pointer; border: 1px solid var(--border-color); color: var(--text-secondary); background: var(--bg-secondary); transition: all 0.2s; user-select: none; display: inline-flex; align-items: center; gap: 6px; }
         .topic-chip:hover { border-color: var(--purple); color: var(--text-primary); }
         .topic-chip.active { background: var(--purple); color: white; border-color: var(--purple); }
-        .chip-count { opacity: 0.5; font-size: 9px; }
+        .chip-count { opacity: 0.5; font-size: 9px; margin-left: 4px; }
 
         .search-input { background: var(--input-bg); backdrop-filter: blur(10px); border: 1px solid var(--border-color); color: var(--text-primary); padding: 10px 20px; border-radius: 99px; font-size: 12px; width: 100%; outline: none; transition: all 0.3s; }
         .search-input:focus { border-color: var(--purple); box-shadow: 0 0 15px rgba(216, 180, 254, 0.1); }
@@ -122,8 +107,7 @@
             <h3 class="cinzel text-xl font-bold mb-2" style="color: var(--text-primary);">Archive Health Check</h3>
             <p id="diag-status" class="text-xs font-mono uppercase tracking-widest mb-4" style="color: var(--text-secondary);">Initializing...</p>
             <div class="progress-bar"><div id="diag-progress" class="progress-fill"></div></div>
-            <div id="diag-results" class="hidden text-left mt-4 overflow-y-auto custom-scrollbar text-xs font-mono flex-1" style="color: var(--text-secondary);"></div>
-            <button onclick="window.app.closeDiagnostics()" class="mt-6 px-6 py-2 rounded-full font-bold uppercase tracking-widest text-xs border transition-all shrink-0" style="border-color: var(--border-color); color: var(--text-primary);">Close</button>
+            <button onclick="window.app.closeDiagnostics()" class="mt-6 px-6 py-2 rounded-full font-bold uppercase tracking-widest text-xs border transition-all shrink-0" style="border-color: var(--border-color); color: var(--text-primary);">Close Scanner</button>
         </div>
     </div>
 
@@ -228,12 +212,9 @@
                     <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-6">
                         <div>
                             <h2 class="cinzel text-3xl md:text-5xl font-bold mb-2 tracking-tight" style="color: var(--text-primary);">The Catalog</h2>
-                            <p class="font-mono text-xs uppercase tracking-[0.2em]" style="color: var(--purple);">Filter by Topic</p>
+                            <p class="font-mono text-xs uppercase tracking-[0.2em]" style="color: var(--purple);">HD Remastered Collection</p>
                         </div>
                         <div class="flex flex-wrap gap-4 items-center">
-                            <span class="text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded border" style="border-color: var(--border-color); color: var(--text-secondary);">
-                                <i class="fa-solid fa-film mr-2"></i> Archive.org Database (Total: <span id="count-hd">...</span>)
-                            </span>
                             <button onclick="window.app.clearLibraryFilters()" class="text-[10px] uppercase font-bold text-red-400 hover:text-red-300 ml-4">Clear All</button>
                         </div>
                     </div>
@@ -250,10 +231,10 @@
         </section>
 
         <section id="view-brain" class="view-section px-6">
-             <div class="max-w-[1800px] mx-auto min-h-[70vh] w-full flex flex-col items-center">
-                <div class="text-center mb-16 w-full max-w-4xl mx-auto">
+             <div class="max-w-[1800px] mx-auto grid lg:grid-cols-2 gap-16 items-start pt-10 min-h-[70vh] w-full">
+                <div class="order-2 lg:order-1 sticky top-24">
                     <h2 class="cinzel text-4xl md:text-6xl font-bold mb-8 leading-none" style="color: var(--text-primary);">The Upper<br><span style="color: var(--gold);">Room</span></h2>
-                    <div class="p-8 border rounded-xl relative z-20 mb-8 text-left" style="background: var(--bg-secondary); border-color: var(--border-color); border-left: 4px solid var(--gold);">
+                    <div class="p-8 border rounded-xl relative z-20 mb-8" style="background: var(--bg-secondary); border-color: var(--border-color); border-left: 4px solid var(--gold);">
                         <p class="text-lg leading-relaxed font-serif mb-6" style="color: var(--text-primary);">
                             "The Bible is not a book of history; it is a book of <span class="italic font-bold" style="color: var(--purple);">Anatomy</span>."
                         </p>
@@ -284,11 +265,28 @@
                     </div>
                 </div>
                 
-                <div class="w-full">
-                    <h3 class="font-mono text-xs uppercase tracking-[0.2em] mb-6 text-center" style="color: var(--purple);">Related Teachings</h3>
-                    <div id="brain-loader" class="text-center py-4 hidden"><i class="fa-solid fa-circle-notch fa-spin text-purple-400"></i></div>
-                    <div id="brain-lectures-grid" class="masonry-grid"></div>
+                 <div class="order-1 lg:order-2 flex justify-center lg:sticky lg:top-24">
+                    <div class="relative w-full max-w-md aspect-square rounded-full border border-dashed animate-[spin_60s_linear_infinite]" style="border-color: var(--border-color);">
+                         <div class="absolute inset-4 rounded-full border border-dotted opacity-50" style="border-color: var(--purple);"></div>
+                         <div class="absolute inset-0 flex items-center justify-center">
+                             <div class="text-center">
+                                 <i class="fa-solid fa-brain text-6xl mb-4" style="color: var(--text-primary);"></i>
+                                 <p class="cinzel font-bold text-xl" style="color: var(--gold);">Golgotha</p>
+                                 <p class="font-mono text-[10px] uppercase tracking-widest" style="color: var(--text-secondary);">Place of the Skull</p>
+                             </div>
+                         </div>
+                         <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-3"><span class="text-[10px] font-mono" style="color: var(--text-secondary);">ARIES</span></div>
+                         <div class="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-3"><span class="text-[10px] font-mono" style="color: var(--text-secondary);">LIBRA</span></div>
+                         <div class="absolute left-0 top-1/2 -translate-x-3 -translate-y-1/2"><span class="text-[10px] font-mono" style="color: var(--text-secondary);">CAPRICORN</span></div>
+                         <div class="absolute right-0 top-1/2 translate-x-3 -translate-y-1/2"><span class="text-[10px] font-mono" style="color: var(--text-secondary);">CANCER</span></div>
+                    </div>
                 </div>
+             </div>
+             
+             <div class="max-w-[1800px] mx-auto mt-16 border-t pt-8 w-full" style="border-color: var(--border-color);">
+                 <h3 class="font-mono text-xs uppercase tracking-[0.2em] mb-6 text-center" style="color: var(--purple);">Related Teachings</h3>
+                 <div id="brain-loader" class="text-center py-4 hidden"><i class="fa-solid fa-circle-notch fa-spin text-purple-400"></i></div>
+                 <div id="brain-lectures-grid" class="masonry-grid"></div>
              </div>
         </section>
 
@@ -488,8 +486,8 @@
                 let thumb = `https://archive.org/services/img/${id}`;
                 let linkUrl = `https://archive.org/details/${id}`;
                 
-                // Get topic using strict bridge logic
-                let topic = this.getTopicByVideoObj(videoObj);
+                // Get topic using simplified title matching
+                let topic = this.getTopicByVideoObj(videoObj, isArchive);
 
                 let crossRefBtn = '';
                 if (videoObj['external-identifier'] && videoObj['external-identifier'].includes('urn:youtube:')) {
@@ -500,7 +498,7 @@
                 return `<div class="cosmos-card group"><div class="relative aspect-video overflow-hidden cursor-pointer bg-black" onclick="window.app.openVideo('${id}')"><img src="${thumb}" class="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" onerror="this.src='https://archive.org/images/not_found.png'" /><div class="absolute inset-0 flex items-center justify-center"><i class="fa-solid fa-film text-cyan-400 text-4xl opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-lg"></i></div><div class="absolute top-2 right-2 bg-black/80 text-cyan-400 text-[9px] px-2 py-1 rounded font-mono uppercase tracking-widest border border-cyan-900/50">Restored</div></div><div class="p-4 flex flex-col flex-1" style="background: var(--bg-secondary); border-top: 1px solid var(--border-color);"><h3 class="text-sm font-medium line-clamp-2 mb-3" style="color: var(--text-primary);">${title}</h3><div class="mt-auto pt-2 flex flex-wrap gap-2 justify-between items-center" style="border-top: 1px solid var(--border-color);">${this.createTagButton(topic)}${crossRefBtn}</div><div class="mt-3 pt-2 text-right" style="border-top: 1px solid var(--border-color);"><a href="${linkUrl}" target="_blank" onclick="event.stopPropagation();" class="text-[9px] font-mono transition-colors" style="color: var(--text-secondary);">ID: ${id} <i class="fa-solid fa-arrow-up-right-from-square ml-1 text-[8px]"></i></a></div></div></div>`;
             },
             
-            // --- STRICT BRIDGE MATCHING ---
+            // --- SIMPLIFIED TOPIC MATCHER (WORD OVERLAP) ---
             getTopicByVideoObj: function(videoObj) {
                 if (!this.data || this.data.length === 0) return "Uncatalogued";
                 
@@ -520,6 +518,7 @@
                 return "Uncatalogued"; // If no ID link found, flag it
             },
 
+            // --- UTILS ---
             getVideoID: function(url) { if (!url) return null; const str = url.toString().trim(); const match = str.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/); return (match && match[2].length === 11) ? match[2] : null; },
             createTagButton: function(topic) { return `<button class="inline-flex items-center gap-2 text-[9px] font-bold uppercase tracking-widest px-3 py-1.5 rounded transition-all justify-center cursor-pointer relative z-20" style="background: var(--input-bg); color: var(--purple); border: 1px solid var(--border-color);" onclick="event.stopPropagation(); window.app.selectLibraryTopic('${topic.replace(/'/g, "\\'")}')"><i class="fa-solid fa-tag"></i> ${topic}</button>`; },
             
@@ -536,10 +535,11 @@
                 document.getElementById('view-' + id).classList.add('active'); 
                 
                 if(id==='home'){ this.resetHome(); document.getElementById('btn-home').classList.add('active'); }
-                else if(id==='search'){ document.querySelectorAll('.dock-btn')[3].classList.add('active'); } 
+                else if(id==='search'){ document.querySelectorAll('.dock-btn')[3].classList.add('active'); } // Index 3 is search
                 else { document.getElementById('btn-' + id)?.classList.add('active'); }
                 
                 if(id === 'meditation') {
+                    // Fix Quote Loading
                     setTimeout(() => {
                         const quoteElement = document.getElementById('meditation-quote');
                         if (quoteElement) {
@@ -549,51 +549,91 @@
                     }, 100);
                     this.renderMeditationLectures();
                 }
-                if(id === 'brain') this.renderMeditationLectures(); 
+                if(id === 'brain') this.renderMeditationLectures(); // Reuse renderer for brain
                 if(id === 'library') this.renderLibraryInterface();
                 window.scrollTo(0,0); 
             },
 
-            // --- SCANNER UPGRADE ---
+            // --- SCANNER UPGRADE: HTML REPORT + 2 CATEGORIES ---
             scanForBrokenLinks: async function() {
                 const overlay = document.getElementById('diagnostics-overlay');
                 overlay.classList.remove('hidden');
                 document.getElementById('diag-status').innerText = "Analyzing Archive Metadata...";
                 document.getElementById('diag-progress').style.width = "20%";
                 
-                let issues = [];
+                let missingBridge = [];
+                let uncatalogued = [];
                 let checkedCount = 0;
 
                 // Check loaded archive videos against CSV
                 this.archiveVideos.forEach(v => {
                      checkedCount++;
-                     // 1. Check Bridge
+                     
+                     // 1. Check for Missing YouTube ID (Broken Bridge)
                      if (!v['external-identifier'] || !v['external-identifier'].includes('urn:youtube:')) {
-                         issues.push({ title: v.title, id: v.identifier, reason: "Missing YouTube Link (Bridge Broken)" });
+                         missingBridge.push({ title: v.title, id: v.identifier });
                      }
                      
-                     // 2. Check Catalog Match
+                     // 2. Check for Uncatalogued (No CSV Match via ID)
                      const topic = this.getTopicByVideoObj(v);
-                     if (topic === "Uncatalogued") {
-                         issues.push({ title: v.title, id: v.identifier, reason: "Uncatalogued (No Matching ID in CSV)" });
+                     if (topic === "Uncatalogued" || topic === "General") {
+                         uncatalogued.push({ title: v.title, id: v.identifier });
                      }
                 });
-                
-                // Also Check CSV for Missing Archive Counterparts (Reverse Check)
-                // This would be complex to do fully client side without fetching all archive pages, 
-                // so we stick to checking what we have loaded for now.
 
                 document.getElementById('diag-progress').style.width = "100%";
                 document.getElementById('diag-status').innerText = `Scan Complete. Checked ${checkedCount} items.`;
-                document.getElementById('diag-results').classList.remove('hidden');
                 
-                if (issues.length === 0) {
-                    document.getElementById('diag-results').innerHTML = '<div class="text-green-400 p-4">All loaded videos have valid bridges and catalog entries.</div>';
-                } else {
-                    let csvContent = "data:text/csv;charset=utf-8,TITLE,ID,REASON\n" + issues.map(e => `"${e.title.replace(/"/g, '""')}","${e.id}","${e.reason}"`).join("\n");
-                    const encodedUri = encodeURI(csvContent);
-                    document.getElementById('diag-results').innerHTML = `<div class="mb-4"><a href="${encodedUri}" download="archive_issues_report.csv" class="text-red-400 border border-red-900 px-4 py-2 rounded uppercase font-bold text-[10px] hover:bg-red-900 hover:text-white transition-colors"><i class="fa-solid fa-download mr-2"></i> Download Report (.csv)</a></div><ul class="text-left text-[10px] font-mono text-stone-400 space-y-1">${issues.slice(0, 50).map(l => `<li><span class="text-red-500">X</span> ${l.title} <span class="opacity-50">(${l.reason})</span></li>`).join('')}${issues.length > 50 ? `<li>...and ${issues.length - 50} more</li>` : ''}</ul>`;
-                }
+                // --- GENERATE HTML REPORT ---
+                const reportHTML = `
+                <html>
+                <head>
+                    <title>Archive Health Report</title>
+                    <style>
+                        body { font-family: monospace; background: #111; color: #ddd; padding: 40px; }
+                        h1 { color: #d4af37; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 2px; }
+                        h2 { color: #a855f7; margin-top: 40px; border-bottom: 1px solid #333; padding-bottom: 10px; }
+                        table { width: 100%; border-collapse: collapse; margin-bottom: 40px; font-size: 12px; }
+                        th { text-align: left; border-bottom: 2px solid #333; padding: 10px; color: #888; }
+                        td { border-bottom: 1px solid #222; padding: 10px; }
+                        tr:hover { background: #1a1a1a; }
+                        .error-count { color: #f87171; font-weight: bold; }
+                        .id-col { color: #555; }
+                        .btn { padding: 10px 20px; background: #333; color: white; border: none; cursor: pointer; border-radius: 4px; }
+                        .btn:hover { background: #555; }
+                    </style>
+                </head>
+                <body>
+                    <h1>Archive Health Report</h1>
+                    <p>Generated: ${new Date().toLocaleString()}</p>
+                    <p>Total Videos Scanned: <strong>${checkedCount}</strong></p>
+                    <button class="btn" onclick="window.print()">Print / Save PDF</button>
+
+                    <h2>1. Missing Bridge (No YouTube ID in Metadata) <span class="error-count">(${missingBridge.length})</span></h2>
+                    <p>These videos exist on Archive.org but do not have a <code>urn:youtube:ID</code> tag in their metadata, so they cannot link to the CSV catalog.</p>
+                    <table>
+                        <tr><th>Archive Title</th><th>Identifier</th></tr>
+                        ${missingBridge.map(v => `<tr><td>${v.title}</td><td class="id-col">${v.id}</td></tr>`).join('')}
+                    </table>
+
+                    <h2>2. Uncatalogued (No CSV Match) <span class="error-count">(${uncatalogued.length})</span></h2>
+                    <p>These videos have a YouTube ID, but that ID was not found in your <code>catalog.csv</code> file.</p>
+                    <table>
+                        <tr><th>Archive Title</th><th>Identifier</th></tr>
+                        ${uncatalogued.map(v => `<tr><td>${v.title}</td><td class="id-col">${v.id}</td></tr>`).join('')}
+                    </table>
+                </body>
+                </html>`;
+
+                // Create Blob and Open Window
+                const blob = new Blob([reportHTML], { type: 'text/html' });
+                const url = URL.createObjectURL(blob);
+                window.open(url, '_blank');
+                
+                // Close the overlay after generating
+                setTimeout(() => {
+                    this.closeDiagnostics();
+                }, 1000);
             },
             closeDiagnostics: function() { document.getElementById('diagnostics-overlay').classList.add('hidden'); },
 
@@ -626,13 +666,27 @@
             // --- LIBRARY ---
             selectLibraryTopic: function(topic) { this.selectedLibraryTopics.clear(); this.selectedLibraryTopics.add(topic); this.nav('library'); setTimeout(() => this.renderLibraryInterface(), 50); },
             renderLibraryInterface: function() {
+                // Get topics from CSV data
                 const topics = [...new Set(this.data.map(i => i.TOPIC).filter(t => t))].sort(); 
+                
+                // Add "Uncatalogued" manually to the list
+                if (!topics.includes("Uncatalogued")) topics.push("Uncatalogued");
+
                 const container = document.getElementById('library-topics');
-                document.getElementById('count-hd').innerText = this.archiveTotal;
+                
                 container.innerHTML = topics.map(t => {
                     const isActive = this.selectedLibraryTopics.has(t);
-                    // Simplified count logic for performance
-                    return `<div class="topic-chip ${isActive ? 'active' : ''}" onclick="window.app.toggleLibraryTopic('${t.replace(/'/g, "\\'")}')">${t}</div>`;
+                    
+                    // Count logic: Iterate over Archive videos and check their computed topic
+                    let count = 0;
+                    if (t === "Uncatalogued") {
+                         count = this.archiveVideos.filter(v => this.getTopicByVideoObj(v) === "Uncatalogued").length;
+                    } else {
+                         // For normal topics, count how many archive videos map to this topic
+                         count = this.archiveVideos.filter(v => this.getTopicByVideoObj(v) === t).length;
+                    }
+
+                    return `<div class="topic-chip ${isActive ? 'active' : ''}" onclick="window.app.toggleLibraryTopic('${t.replace(/'/g, "\\'")}')">${t} <span class="chip-count">(${count})</span></div>`;
                 }).join('');
                 this.renderLibraryResults();
             },
@@ -678,9 +732,10 @@
             fetchArchiveVideos: async function() {
                 if (this.archiveLoading || !this.archiveHasMore) return;
                 this.archiveLoading = true;
+                // NOTE: removed &sort[]=-addeddate as it sometimes causes issues with archive API on large datasets. Default sort is fine.
                 const query = 'subject:"bill_donahue" AND mediatype:"movies"';
-                // Fetch 500 rows to ensure we have a good dataset for matching
-                const url = `https://archive.org/advancedsearch.php?q=${encodeURIComponent(query)}&fl[]=identifier&fl[]=title&fl[]=description&fl[]=external-identifier&fl[]=downloads&sort[]=-addeddate&output=json&rows=500&page=${this.archivePage}`;
+                // Increased row limit to 1000 to grab as much as possible at once for accurate counting
+                const url = `https://archive.org/advancedsearch.php?q=${encodeURIComponent(query)}&fl[]=identifier&fl[]=title&fl[]=description&fl[]=external-identifier&fl[]=downloads&output=json&rows=1000&page=${this.archivePage}`;
                 try {
                     const res = await fetch(url); const data = await res.json();
                     if(data.response.numFound) this.archiveTotal = data.response.numFound;
@@ -691,7 +746,7 @@
                 } catch (e) { console.error("Archive Error", e); }
                 this.archiveLoading = false;
             },
-
+            
             init: function() {
                 setTimeout(() => document.getElementById('app-loader').classList.add('hidden'), 1000);
                 createDust();
