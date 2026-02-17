@@ -51,7 +51,18 @@
         body.light-mode .stars-container { opacity: 0; } body.light-mode .photon-bg { opacity: 1; }
         
         .planet { position: absolute; border-radius: 50%; opacity: 0.3; background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.1), transparent); box-shadow: 0 0 20px rgba(216, 180, 254, 0.05); animation: floatPlanet 120s linear infinite; }
+        
+        /* COSMIC DUST EFFECT */
+        .dust-particle { position: absolute; border-radius: 50%; animation: dust-flow var(--duration) linear infinite, dust-cycle 25s infinite linear; opacity: 0; mix-blend-mode: screen; }
+        @keyframes dust-flow { 0% { opacity: 0; transform: translateY(0) scale(0.5); } 20% { opacity: 0.8; } 80% { opacity: 0.6; } 100% { opacity: 0; transform: translateY(-150px) scale(1); } }
         @keyframes floatPlanet { from { transform: translateX(-100px) rotate(0deg); } to { transform: translateX(110vw) rotate(20deg); } }
+        @keyframes dust-cycle {
+            0% { background-color: rgba(255,255,255,0.8); box-shadow: 0 0 3px rgba(255,255,255,0.5); }
+            25% { background-color: rgba(220, 38, 38, 0.8); box-shadow: 0 0 3px rgba(220, 38, 38, 0.5); }
+            50% { background-color: rgba(147, 51, 234, 0.8); box-shadow: 0 0 3px rgba(147, 51, 234, 0.5); }
+            75% { background-color: rgba(37, 99, 235, 0.8); box-shadow: 0 0 3px rgba(37, 99, 235, 0.5); }
+            100% { background-color: rgba(255,255,255,0.8); box-shadow: 0 0 3px rgba(255,255,255,0.5); }
+        }
 
         /* CARDS */
         .masonry-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; padding-bottom: 140px; }
@@ -318,7 +329,7 @@
                     <h3 class="cinzel text-2xl mb-2 group-hover:text-purple-400 transition-colors" style="color: var(--text-primary);">HiddenMeanings.com</h3>
                     <p class="font-mono text-xs uppercase tracking-widest" style="color: var(--text-secondary);">Main Portal</p>
                 </a>
-                <a href="https://lifestyleluminaries.blogspot.com/p/bill-donahue.html" target="_blank" class="cosmos-card p-8 group block">
+                 <a href="https://lifestyleluminaries.blogspot.com/p/bill-donahue.html" target="_blank" class="cosmos-card p-8 group block">
                     <div class="flex justify-between items-start mb-6">
                         <div class="w-10 h-10 rounded-full flex items-center justify-center font-serif" style="background: var(--bg-tertiary); color: var(--text-primary);">L</div>
                         <span class="group-hover:text-purple-400 transition-colors" style="color: var(--text-secondary);">↗</span>
@@ -588,11 +599,27 @@
 
             getTopicByVideoID: function(vidId, vidTitle) {
                 if (!this.data || this.data.length === 0) return null;
-                const matchById = this.data.find(row => { const csvId = this.getVideoID(row.URL); return csvId === vidId; });
+                
+                // 1. Strict ID Match first
+                const matchById = this.data.find(row => { 
+                    const csvId = this.getVideoID(row.URL); 
+                    return csvId && csvId === vidId; 
+                });
                 if (matchById) return matchById.TOPIC;
-                if (vidTitle) {
+
+                // 2. Strict Title Match (Ignore short/empty titles)
+                if (vidTitle && vidTitle.length > 5) {
                     const cleanVidTitle = vidTitle.toLowerCase().replace(/[^a-z0-9]/g, '');
-                    const matchByTitle = this.data.find(row => { const cleanRowTitle = row['TITLE OF VIDEO'].toLowerCase().replace(/[^a-z0-9]/g, ''); return cleanRowTitle.includes(cleanVidTitle) || cleanVidTitle.includes(cleanRowTitle); });
+                    
+                    const matchByTitle = this.data.find(row => { 
+                        const rowTitle = row['TITLE OF VIDEO'];
+                        if(!rowTitle || rowTitle.length < 5) return false; // SKIP BAD ROWS
+                        
+                        const cleanRowTitle = rowTitle.toLowerCase().replace(/[^a-z0-9]/g, '');
+                        // Force exact match or strong containment
+                        return cleanRowTitle === cleanVidTitle || (cleanRowTitle.includes(cleanVidTitle) && cleanVidTitle.length > 10); 
+                    });
+                    
                     if (matchByTitle) return matchByTitle.TOPIC;
                 }
                 return null;
@@ -719,6 +746,7 @@
             },
 
             // --- LIBRARY FEATURE ---
+            // UPDATED: Now clears filters before setting new one to allow "Jump to Topic" behavior
             selectLibraryTopic: function(topic) {
                 this.selectedLibraryTopics.clear(); // Clear existing filters
                 this.selectedLibraryTopics.add(topic); // Add new filter
@@ -756,6 +784,7 @@
             renderLibraryResults: function() {
                 const grid = document.getElementById('library-grid');
                 if(!grid) return;
+                // Ensure hidden elements are reset
                 const placeholder = document.getElementById('library-placeholder');
                 if(placeholder) placeholder.classList.add('hidden');
                 grid.classList.remove('hidden');
@@ -798,11 +827,9 @@
                     return; 
                 }
                 
-                // --- FIXED: DISPLAY ALL, NOT JUST 100 ---
-                // Removed the slice(0, 100) limit to allow infinite scrolling logic to handle it if needed, 
-                // or just render all since user requested removing the "Videos" tab which implies they want to see everything here.
-                // However, for performance with 900 videos, we might want to lazy load, but for now let's render all.
-                grid.innerHTML = results.map(v => this.renderCard(v, v.type === 'archive')).join('');
+                const displaySet = results.length > 100 ? results.slice(0, 100) : results;
+                
+                grid.innerHTML = displaySet.map(v => this.renderCard(v, v.type === 'archive')).join('');
             },
 
             // --- SEARCH OVERLAY LOGIC ---
@@ -898,7 +925,7 @@
                 if (this.archiveLoading || !this.archiveHasMore) return;
                 this.archiveLoading = true;
                 document.getElementById('video-loader').classList.remove('hidden');
-                const query = 'uploader:jesse_floyd405 AND mediatype:movies';
+                const query = 'subject:"bill_donahue" AND mediatype:"movies"';
                 const url = `https://archive.org/advancedsearch.php?q=${encodeURIComponent(query)}&fl[]=identifier&fl[]=title&fl[]=description&fl[]=external-identifier&fl[]=downloads&sort[]=-addeddate&output=json&rows=50&page=${this.archivePage}`;
                 try {
                     const res = await fetch(url); const data = await res.json();
@@ -913,10 +940,15 @@
                 grid.innerHTML = '';
                 const isArchive = (this.currentVideoSource === 'archive');
                 const videos = isArchive ? this.archiveVideos : this.youtube.videos;
-                if (videos.length === 0 && !this.archiveLoading && isArchive) { grid.innerHTML = '<div class="col-span-full text-center py-20 text-stone-500">No Restored Videos Found Yet.<br><span class="text-xs">Uploads take ~30mins to appear.</span></div>'; return; }
+                if (videos.length === 0 && !this.archiveLoading) {
+                    if (isArchive) grid.innerHTML = '<div class="col-span-full text-center py-20 text-stone-500">No Restored Videos Found Yet.<br><span class="text-xs">Uploads take ~24hrs to appear in search.</span></div>';
+                    else grid.innerHTML = '<div class="col-span-full text-center py-20 text-red-400">Error loading from YouTube.<br><span class="text-xs">Check API Key restrictions.</span></div>';
+                    return;
+                }
                 grid.innerHTML = videos.map(v => this.renderCard(v, isArchive)).join("");
             },
             youtube: {
+                // IMPORTANT: PASTE YOUR NEW RESTRICTED API KEY HERE
                 apiKey: "AIzaSyCZfKNXHgjZG1h13QhDH5-ubtVC0xDPfe4", 
                 uploadsPlaylistId: "UUinvwSeMdmuuzyMWrS0tGTg", videos: [], nextPageToken: null, loading: false,
                 fetchVideos: async function () {
@@ -928,6 +960,8 @@
                         const res = await fetch(url); const data = await res.json();
                         this.nextPageToken = data.nextPageToken || null;
                         this.videos.push(...data.items.map(item => ({ id: item.snippet.resourceId.videoId, title: item.snippet.title, thumbnail: item.snippet.thumbnails.high.url })));
+                        
+                        // FIXED: WAIT FOR DATA TO LOAD BEFORE RENDERING
                         if (window.app.currentVideoSource === 'youtube') window.app.renderMergedGrid();
                     } catch (e) { console.error("YT Error", e); }
                     this.loading = false; document.getElementById('video-loader').classList.add('hidden');
