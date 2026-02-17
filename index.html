@@ -50,35 +50,32 @@
         .cinzel { font-family: 'Cinzel', serif; }
         .mono { font-family: 'Space Grotesk', monospace; }
         
-        /* BACKGROUNDS */
         .stars-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; background: radial-gradient(circle at bottom center, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 80%); transition: opacity 0.8s; opacity: 1; }
         
-        /* CARDS */
+        .dust-particle { position: absolute; border-radius: 50%; animation: dust-flow var(--duration) linear infinite, dust-cycle 25s infinite linear; opacity: 0; mix-blend-mode: screen; }
+        @keyframes dust-flow { 0% { opacity: 0; transform: translateY(0) scale(0.5); } 20% { opacity: 0.8; } 80% { opacity: 0.6; } 100% { opacity: 0; transform: translateY(-150px) scale(1); } }
+        @keyframes dust-cycle { 0% { background-color: rgba(255,255,255,0.8); box-shadow: 0 0 3px rgba(255,255,255,0.5); } 50% { background-color: rgba(147, 51, 234, 0.8); box-shadow: 0 0 3px rgba(147, 51, 234, 0.5); } 100% { background-color: rgba(255,255,255,0.8); box-shadow: 0 0 3px rgba(255,255,255,0.5); } }
+
         .masonry-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; padding-bottom: 140px; }
         @media (max-width: 640px) { .masonry-grid { grid-template-columns: 1fr; } }
         .cosmos-card { background-color: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 12px; transition: all 0.3s; cursor: pointer; position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; min-height: 200px; z-index: 10; }
         .cosmos-card:hover { border-color: var(--gold); transform: translateY(-4px); box-shadow: 0 10px 40px -10px var(--accent-glow); }
 
-        /* UI */
         .dock-container { position: fixed; bottom: 20px; left: 0; width: 100%; display: flex; justify-content: center; z-index: 50; padding: 0 20px; }
         .dock { background: var(--dock-bg); backdrop-filter: blur(20px); border: 1px solid var(--border-color); padding: 8px; border-radius: 20px; display: flex; gap: 4px; box-shadow: 0 20px 40px -10px rgba(0,0,0,0.3); max-width: 100%; overflow-x: auto; scrollbar-width: none; }
         .dock-btn { display: flex; align-items: center; justify-content: center; padding: 10px 16px; border-radius: 12px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-secondary); transition: all 0.2s; cursor: pointer; border: 1px solid transparent; white-space: nowrap; flex-shrink: 0; min-width: 50px; }
         .dock-btn:hover { color: var(--text-primary); background: var(--bg-tertiary); }
         .dock-btn.active { background: var(--btn-active-bg) !important; color: var(--btn-active-text) !important; }
 
-        /* SEARCH OVERLAY */
         #search-overlay { position: fixed; inset: 0; background: rgba(5, 5, 5, 0.95); backdrop-filter: blur(20px); z-index: 90; display: flex; flex-direction: column; align-items: center; padding-top: 100px; transition: opacity 0.3s; opacity: 0; pointer-events: none; }
         #search-overlay.active { opacity: 1; pointer-events: auto; }
         .big-search-input { width: 90%; max-width: 600px; background: transparent; border: none; border-bottom: 2px solid var(--gold); font-size: 2rem; color: var(--text-primary); padding: 10px; text-align: center; outline: none; font-family: 'Cinzel', serif; }
-        .big-search-input::placeholder { color: var(--text-secondary); opacity: 0.5; }
 
-        /* DIAGNOSTICS OVERLAY */
         #diagnostics-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 100; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
         .diag-box { width: 90%; max-width: 800px; background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 30px; border-radius: 16px; text-align: center; box-shadow: 0 0 50px rgba(0,0,0,0.5); max-height: 80vh; display: flex; flex-direction: column; }
         .progress-bar { height: 4px; background: var(--bg-tertiary); width: 100%; border-radius: 2px; overflow: hidden; margin: 20px 0; flex-shrink: 0; }
         .progress-fill { height: 100%; background: var(--gold); width: 0%; transition: width 0.3s; }
 
-        /* ANATOMY */
         .anatomy-wrapper { position: relative; width: 300px; height: 650px; border: 1px solid var(--border-color); border-radius: 999px; background: var(--bg-secondary); box-shadow: 0 0 80px -20px var(--accent-glow); }
         @media (max-width: 768px) { .anatomy-scale-container { transform: scale(0.75); transform-origin: top center; height: 500px; } }
         .anatomy-dot { width: 24px; height: 24px; border-radius: 50%; position: absolute; left: 50%; transform: translateX(-50%); cursor: pointer; transition: all 0.3s ease; border: 2px solid rgba(255,255,255,0.5); z-index: 20; }
@@ -92,7 +89,6 @@
         .hidden { display: none !important; }
         .profile-img { box-shadow: 0 0 50px var(--accent-glow); transition: 0.5s; border-color: var(--border-color); }
         
-        /* CHIPS */
         .topic-chip { padding: 6px 12px; border-radius: 99px; font-size: 10px; font-weight: bold; text-transform: uppercase; cursor: pointer; border: 1px solid var(--border-color); color: var(--text-secondary); background: var(--bg-secondary); transition: all 0.2s; user-select: none; display: inline-flex; align-items: center; gap: 6px; }
         .topic-chip:hover { border-color: var(--purple); color: var(--text-primary); }
         .topic-chip.active { background: var(--purple); color: white; border-color: var(--purple); }
@@ -495,7 +491,6 @@
                 let thumb = `https://archive.org/services/img/${id}`;
                 let linkUrl = `https://archive.org/details/${id}`;
                 
-                // Get topic using strict bridge logic
                 let topic = this.getTopicByVideoObj(videoObj);
 
                 let crossRefBtn = '';
@@ -508,8 +503,8 @@
             },
             
             getTopicByVideoObj: function(videoObj) {
-                // IMPORTANT: If CSV hasn't loaded yet, we can't label anything.
-                if (this.data.length === 0) return "General";
+                // If CSV data is missing, we can't match, but allow Uncatalogued
+                if (!this.data || this.data.length === 0) return "Uncatalogued";
                 
                 let searchId = null;
                 if (videoObj['external-identifier']) {
@@ -517,29 +512,32 @@
                      if (match) searchId = match[1];
                 }
 
+                // 1. Strict ID Match
                 if (searchId) {
                     const row = this.data.find(r => this.getVideoID(r.URL) === searchId);
                     if (row) return row.TOPIC;
                 }
+
+                // 2. Strict Title Match (Fallback)
+                const clean = (str) => str ? str.toLowerCase().replace(/[^a-z0-9]/g, '') : '';
+                const videoTitleClean = clean(videoObj.title);
                 
-                return "Uncatalogued";
+                const row = this.data.find(r => {
+                    const rowTitleClean = clean(r['TITLE OF VIDEO']);
+                    return rowTitleClean === videoTitleClean;
+                });
+                
+                return row ? row.TOPIC : "Uncatalogued";
             },
 
             getVideoID: function(url) { if (!url) return null; const str = url.toString().trim(); const match = str.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/); return (match && match[2].length === 11) ? match[2] : null; },
             createTagButton: function(topic) { return `<button class="inline-flex items-center gap-2 text-[9px] font-bold uppercase tracking-widest px-3 py-1.5 rounded transition-all justify-center cursor-pointer relative z-20" style="background: var(--input-bg); color: var(--purple); border: 1px solid var(--border-color);" onclick="event.stopPropagation(); window.app.selectLibraryTopic('${topic.replace(/'/g, "\\'")}')"><i class="fa-solid fa-tag"></i> ${topic}</button>`; },
+            toggleTheme: function() { this.isLightMode = !this.isLightMode; document.body.classList.toggle('light-mode'); document.getElementById('theme-icon').className = this.isLightMode ? 'fa-solid fa-sun text-yellow-500' : 'fa-solid fa-moon'; if(this.refreshDust) this.refreshDust(); },
             
-            toggleTheme: function() { 
-                this.isLightMode = !this.isLightMode; 
-                document.body.classList.toggle('light-mode'); 
-                document.getElementById('theme-icon').className = this.isLightMode ? 'fa-solid fa-sun text-yellow-500' : 'fa-solid fa-moon';
-                if(this.refreshDust) this.refreshDust();
-            },
-
             nav: function(id) { 
                 document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active')); 
                 document.querySelectorAll('.dock-btn').forEach(b => b.classList.remove('active')); 
                 document.getElementById('view-' + id).classList.add('active'); 
-                
                 if(id==='home'){ this.resetHome(); document.getElementById('btn-home').classList.add('active'); }
                 else if(id==='search'){ document.querySelectorAll('.dock-btn')[3].classList.add('active'); } 
                 else { document.getElementById('btn-' + id)?.classList.add('active'); }
@@ -547,10 +545,7 @@
                 if(id === 'meditation') {
                     setTimeout(() => {
                         const quoteElement = document.getElementById('meditation-quote');
-                        if (quoteElement) {
-                            const quote = this.quotes[Math.floor(Math.random() * this.quotes.length)];
-                            quoteElement.innerText = `"${quote}"`;
-                        }
+                        if (quoteElement) { const quote = this.quotes[Math.floor(Math.random() * this.quotes.length)]; quoteElement.innerText = `"${quote}"`; }
                     }, 100);
                     this.renderMeditationLectures();
                 }
@@ -588,23 +583,12 @@
                 const brainGrid = document.getElementById('brain-lectures-grid');
                 document.getElementById('med-loader')?.classList.add('hidden');
                 document.getElementById('brain-loader')?.classList.add('hidden');
-                
                 if (this.archiveVideos.length === 0) return;
-
                 const medKeywords = ['meditation', 'silence', 'pineal', 'upper room', 'watch', 'prayer'];
-                const medMatches = this.archiveVideos.filter(v => {
-                    const t = v.title.toLowerCase();
-                    return medKeywords.some(k => t.includes(k));
-                }).slice(0, 12);
-                
+                const medMatches = this.archiveVideos.filter(v => { const t = v.title.toLowerCase(); return medKeywords.some(k => t.includes(k)); }).slice(0, 12);
                 if(grid) grid.innerHTML = medMatches.map(v => this.renderCard(v, true)).join('');
-
                 const brainKeywords = ['brain', 'claustrum', 'mind', 'skull', 'anatomy', 'oil'];
-                const brainMatches = this.archiveVideos.filter(v => {
-                    const t = v.title.toLowerCase();
-                    return brainKeywords.some(k => t.includes(k));
-                }).slice(0, 12);
-
+                const brainMatches = this.archiveVideos.filter(v => { const t = v.title.toLowerCase(); return brainKeywords.some(k => t.includes(k)); }).slice(0, 12);
                 if(brainGrid) brainGrid.innerHTML = brainMatches.map(v => this.renderCard(v, true)).join('');
             },
 
@@ -646,6 +630,7 @@
                          grid.innerHTML = '';
                      } else {
                          document.getElementById('video-loader').classList.add('hidden');
+                         // Only show empty message if we actually tried and failed
                          grid.innerHTML = '<div class="col-span-full text-center py-20 text-stone-500">No videos found in Archive. Check connection.</div>';
                      }
                      return;
@@ -690,7 +675,7 @@
                     } else { this.archiveHasMore = false; }
                 } catch (e) { console.error("Archive Error", e); }
                 this.archiveLoading = false;
-                // Force Update Loader status
+                // Force Update Loader
                 this.renderLibraryResults();
             },
             
@@ -703,6 +688,10 @@
                 Papa.parse('catalog.csv', { download: true, header: true, skipEmptyLines: true, complete: (results) => {
                     this.data = results.data.filter(row => row['TITLE OF VIDEO']).map(row => { row.TOPIC = (row.TOPIC || "").replace(/^and\s+/i, '').trim(); return row; });
                     // RENDER TOPICS IMMEDIATELY (Even if 0 count)
+                    this.renderLibraryInterface();
+                }, error: (err) => {
+                    console.error("CSV Failed", err);
+                    // Render "Uncatalogued" if CSV fails so menu isn't empty
                     this.renderLibraryInterface();
                 }});
                 
