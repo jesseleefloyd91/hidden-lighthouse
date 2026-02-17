@@ -11,7 +11,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
    
     <style>
-        /* --- THEME VARIABLES --- */
         :root {
             --bg-base: #050505;
             --bg-gradient-start: #1a0f2e;
@@ -46,57 +45,38 @@
         .cinzel { font-family: 'Cinzel', serif; }
         .mono { font-family: 'Space Grotesk', monospace; }
         
-        /* BACKGROUNDS */
         .stars-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; background: radial-gradient(circle at bottom center, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 80%); transition: opacity 0.8s; opacity: 1; }
-        
-        /* CARDS */
         .masonry-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; padding-bottom: 140px; }
         @media (max-width: 640px) { .masonry-grid { grid-template-columns: 1fr; } }
         .cosmos-card { background-color: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 12px; transition: all 0.3s; cursor: pointer; position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; min-height: 200px; z-index: 10; }
         .cosmos-card:hover { border-color: var(--gold); transform: translateY(-4px); box-shadow: 0 10px 40px -10px var(--accent-glow); }
-
-        /* UI */
         .dock-container { position: fixed; bottom: 20px; left: 0; width: 100%; display: flex; justify-content: center; z-index: 50; padding: 0 20px; }
         .dock { background: var(--dock-bg); backdrop-filter: blur(20px); border: 1px solid var(--border-color); padding: 8px; border-radius: 20px; display: flex; gap: 4px; box-shadow: 0 20px 40px -10px rgba(0,0,0,0.3); max-width: 100%; overflow-x: auto; scrollbar-width: none; }
         .dock-btn { display: flex; align-items: center; justify-content: center; padding: 10px 16px; border-radius: 12px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-secondary); transition: all 0.2s; cursor: pointer; border: 1px solid transparent; white-space: nowrap; flex-shrink: 0; min-width: 50px; }
         .dock-btn:hover { color: var(--text-primary); background: var(--bg-tertiary); }
         .dock-btn.active { background: var(--text-primary); color: var(--bg-primary); }
-
-        /* SEARCH OVERLAY */
         #search-overlay { position: fixed; inset: 0; background: rgba(5, 5, 5, 0.95); backdrop-filter: blur(20px); z-index: 90; display: flex; flex-direction: column; align-items: center; padding-top: 100px; transition: opacity 0.3s; opacity: 0; pointer-events: none; }
         #search-overlay.active { opacity: 1; pointer-events: auto; }
         .big-search-input { width: 90%; max-width: 600px; background: transparent; border: none; border-bottom: 2px solid var(--gold); font-size: 2rem; color: var(--text-primary); padding: 10px; text-align: center; outline: none; font-family: 'Cinzel', serif; }
-        .big-search-input::placeholder { color: var(--text-secondary); opacity: 0.5; }
-
-        /* DIAGNOSTICS OVERLAY */
         #diagnostics-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 100; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
         .diag-box { width: 90%; max-width: 500px; background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 30px; border-radius: 16px; text-align: center; box-shadow: 0 0 50px rgba(0,0,0,0.5); }
         .progress-bar { height: 4px; background: var(--bg-tertiary); width: 100%; border-radius: 2px; overflow: hidden; margin: 20px 0; }
         .progress-fill { height: 100%; background: var(--gold); width: 0%; transition: width 0.3s; }
-
-        /* ANATOMY */
         .anatomy-wrapper { position: relative; width: 300px; height: 650px; border: 1px solid var(--border-color); border-radius: 999px; background: var(--bg-secondary); box-shadow: 0 0 80px -20px var(--accent-glow); }
         @media (max-width: 768px) { .anatomy-scale-container { transform: scale(0.75); transform-origin: top center; height: 500px; } }
         .anatomy-dot { width: 24px; height: 24px; border-radius: 50%; position: absolute; left: 50%; transform: translateX(-50%); cursor: pointer; transition: all 0.3s ease; border: 2px solid rgba(255,255,255,0.5); z-index: 20; }
         .anatomy-dot:hover { transform: translateX(-50%) scale(1.5); border-color: white; }
-
         .view-section { display: none; padding-top: 140px; padding-bottom: 150px; width: 100%; min-height: 100vh; animation: fadeIn 0.4s ease; }
         .view-section.active { display: block; }
         #view-home.active { display: flex; flex-direction: column; justify-content: center; align-items: center; padding-top: 0; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
         .hidden { display: none !important; }
         .profile-img { box-shadow: 0 0 50px var(--accent-glow); transition: 0.5s; border-color: var(--border-color); }
-        
-        /* CHIPS */
         .topic-chip { padding: 6px 12px; border-radius: 99px; font-size: 10px; font-weight: bold; text-transform: uppercase; cursor: pointer; border: 1px solid var(--border-color); color: var(--text-secondary); background: var(--bg-secondary); transition: all 0.2s; user-select: none; display: inline-flex; align-items: center; gap: 6px; }
         .topic-chip:hover { border-color: var(--purple); color: var(--text-primary); }
         .topic-chip.active { background: var(--purple); color: white; border-color: var(--purple); }
-        .chip-count { opacity: 0.5; font-size: 9px; }
-
         .search-input { background: var(--input-bg); backdrop-filter: blur(10px); border: 1px solid var(--border-color); color: var(--text-primary); padding: 10px 20px; border-radius: 99px; font-size: 12px; width: 100%; outline: none; transition: all 0.3s; }
         .search-input:focus { border-color: var(--purple); box-shadow: 0 0 15px rgba(216, 180, 254, 0.1); }
-
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: var(--bg-primary); }
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
@@ -104,7 +84,6 @@
 </head>
 <body class="flex flex-col min-h-screen">
     <div id="stars-container" class="stars-container"></div>
-    
     <div id="diagnostics-overlay" class="hidden">
         <div class="diag-box">
             <i class="fa-solid fa-stethoscope text-4xl mb-4" style="color: var(--gold);"></i>
@@ -115,7 +94,6 @@
             <button onclick="window.app.closeDiagnostics()" class="mt-6 px-6 py-2 rounded-full font-bold uppercase tracking-widest text-xs border transition-all" style="border-color: var(--border-color); color: var(--text-primary);">Close</button>
         </div>
     </div>
-
     <div id="search-overlay">
         <button onclick="window.app.closeSearchOverlay()" class="absolute top-10 right-10 text-4xl" style="color: var(--text-secondary);"><i class="fa-solid fa-xmark"></i></button>
         <div class="text-center w-full px-6">
@@ -126,7 +104,6 @@
             </div>
         </div>
     </div>
-
     <div class="fixed top-0 left-0 w-full p-4 z-40 flex justify-between items-center bg-opacity-95 backdrop-blur-xl border-b shadow-sm transition-colors duration-300" style="background-color: var(--bg-primary); border-color: var(--border-color);">
         <div class="flex items-center gap-3 cursor-pointer group" onclick="window.app.nav('home')">
             <div class="w-10 h-10 border flex items-center justify-center rotate-45 transition-all group-hover:rotate-0 shrink-0 overflow-hidden" style="border-color: var(--border-color); background: var(--bg-secondary);">
@@ -136,7 +113,6 @@
                 <h1 class="cinzel font-bold text-xs md:text-sm tracking-widest uppercase leading-tight" style="color: var(--text-primary);">Hidden<br>Meanings</h1>
             </div>
         </div>
-        
         <div class="flex items-center gap-4">
             <div class="relative group hidden md:block w-64">
                 <input type="text" id="global-search" oninput="window.app.performGlobalSearch()" placeholder="SEARCH LIBRARY..." class="search-input font-mono uppercase">
@@ -147,12 +123,10 @@
             </button>
         </div>
     </div>
-
     <div id="app-loader" class="fixed inset-0 z-[100] flex flex-col items-center justify-center transition-opacity duration-500" style="background-color: var(--bg-primary);">
         <div class="w-12 h-12 border-2 border-t-purple-400 rounded-full animate-spin mb-4" style="border-color: var(--border-color); border-top-color: var(--purple);"></div>
         <p class="text-xs uppercase tracking-[0.3em] font-bold animate-pulse" style="color: var(--purple);">Initializing...</p>
     </div>
-
     <div id="video-modal" class="fixed inset-0 z-[60] bg-black/95 backdrop-blur-xl hidden flex items-center justify-center p-4 transition-all duration-300" onclick="if(event.target === this) window.app.closeVideo()">
         <div class="relative w-full max-w-6xl aspect-video bg-black border border-white/10 rounded-2xl overflow-hidden shadow-2xl flex flex-col">
             <button onclick="window.app.closeVideo()" class="absolute top-4 right-4 z-50 w-10 h-10 bg-black/50 text-white rounded-full hover:bg-red-600 transition-colors flex items-center justify-center border border-white/20 backdrop-blur-md">
@@ -161,9 +135,7 @@
             <div id="video-frame-container" class="w-full h-full bg-black"></div>
         </div>
     </div>
-
     <div class="h-screen overflow-y-auto custom-scrollbar" id="scroll-wrapper">
-       
         <section id="view-home" class="view-section active">
             <div class="relative z-10 max-w-[1800px] mx-auto text-center fade-in pt-10 px-4">
                 <div class="mb-8 flex justify-center">
@@ -179,19 +151,16 @@
                 <h1 class="cinzel text-4xl md:text-8xl font-black mb-6 leading-none tracking-tight drop-shadow-2xl" style="color: var(--text-primary);">
                     HIDDEN<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400 italic pr-4">MEANINGS</span>
                 </h1>
-                
                 <div class="max-w-lg mx-auto relative group w-full mb-8 px-4">
                     <input type="text" id="teacher-input" placeholder="Ask the Teacher (e.g. 'What is the Pineal?')..."
                            class="w-full rounded-full py-4 pl-8 pr-16 text-sm font-mono transition-all backdrop-blur-md search-input"
                            style="border-color: var(--purple);"
                            onkeydown="if(event.key === 'Enter') window.app.askTheTeacher()"
                            oninput="window.app.toggleClearButton()">
-                    
                     <button id="clear-teacher-btn" onclick="window.app.resetHome()" class="absolute right-6 top-1/2 -translate-y-1/2 text-xs hover:scale-110 transition-transform hidden" style="color: var(--text-secondary);">
                         <i class="fa-solid fa-xmark"></i>
                     </button>
                 </div>
-
                 <div id="teacher-response-box" class="w-full text-left p-8 border-l-4 rounded-xl fade-in hidden mt-10" style="background: var(--bg-secondary); border-color: var(--border-color); border-left-color: var(--purple);">
                     <span class="font-mono text-[10px] uppercase tracking-widest block mb-4" style="color: var(--purple);">The Teacher's Response</span>
                     <div id="teacher-text" class="text-lg md:text-2xl leading-relaxed italic font-light font-serif mb-8" style="color: var(--text-primary);"></div>
@@ -202,7 +171,6 @@
                 </div>
             </div>
         </section>
-
         <section id="view-search" class="view-section px-6 max-w-[1800px] mx-auto">
             <div class="flex justify-between items-end mb-8 border-b pb-4" style="border-color: var(--border-color);">
                 <h2 class="cinzel text-2xl font-bold" style="color: var(--text-primary);">Library Search Results</h2>
@@ -210,7 +178,6 @@
             </div>
             <div id="global-search-list" class="masonry-grid pb-20"></div>
         </section>
-
         <section id="view-library" class="view-section px-6">
             <div class="max-w-[1800px] mx-auto w-full">
                 <div class="mb-10 pb-8 border-b" style="border-color: var(--border-color);">
@@ -242,7 +209,6 @@
                 </div>
             </div>
         </section>
-
         <section id="view-brain" class="view-section px-6">
              <div class="max-w-[1800px] mx-auto grid lg:grid-cols-2 gap-16 items-start pt-10 min-h-[70vh] w-full">
                 <div class="order-2 lg:order-1 sticky top-24">
@@ -261,14 +227,11 @@
                             This is the physiological process of "Being Born Again" or realizing the "Kingdom of Heaven" within your own skull (Golgotha - The Place of the Skull).
                         </p>
                     </div>
-                    
                     <div class="border-t pt-8" style="border-color: var(--border-color);">
                         <h3 class="font-mono text-xs uppercase tracking-[0.2em] mb-6" style="color: var(--purple);">Related Teachings</h3>
-                        <div id="brain-loader" class="text-center py-4 hidden"><i class="fa-solid fa-circle-notch fa-spin text-purple-400"></i></div>
                         <div id="brain-lectures-grid" class="masonry-grid"></div>
                     </div>
                 </div>
-                
                  <div class="order-1 lg:order-2 flex justify-center lg:sticky lg:top-24">
                     <div class="relative w-full max-w-md aspect-square rounded-full border border-dashed animate-[spin_60s_linear_infinite]" style="border-color: var(--border-color);">
                          <div class="absolute inset-4 rounded-full border border-dotted opacity-50" style="border-color: var(--purple);"></div>
@@ -287,7 +250,6 @@
                 </div>
              </div>
         </section>
-
         <section id="view-anatomy" class="view-section px-6">
             <div class="max-w-[1800px] mx-auto grid lg:grid-cols-2 gap-10 items-center min-h-[70vh] w-full">
                 <div class="relative flex justify-center order-2 lg:order-1 anatomy-scale-container">
@@ -324,7 +286,6 @@
                 </div>
             </div>
         </section>
-
         <section id="view-meditation" class="view-section px-6">
             <div class="max-w-[1800px] mx-auto text-center pt-10">
                  <div class="mb-16">
@@ -334,12 +295,10 @@
                  </div>
                  <div class="border-t pt-12 text-left" style="border-color: var(--border-color);">
                      <h2 class="cinzel text-2xl mb-8" style="color: var(--text-primary);">Meditative Lectures</h2>
-                     <div id="med-loader" class="text-center py-4 hidden"><i class="fa-solid fa-circle-notch fa-spin text-purple-400"></i></div>
                      <div id="meditation-lectures-grid" class="masonry-grid"></div>
                  </div>
             </div>
         </section>
-
         <section id="view-resources" class="view-section px-6 max-w-[1800px] mx-auto">
             <h2 class="cinzel text-3xl md:text-4xl font-bold mb-16 text-center uppercase tracking-widest" style="color: var(--text-primary);">Primary Sources</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -381,7 +340,6 @@
             </div>
         </section>
     </div>
-
     <div class="dock-container">
         <div class="dock">
             <button class="dock-btn active" id="btn-home" onclick="window.app.nav('home')">Home</button>
@@ -397,7 +355,6 @@
             <button class="dock-btn text-red-400 hover:text-red-300" onclick="window.app.scanForBrokenLinks()" title="Scan for Bad Links"><i class="fa-solid fa-stethoscope"></i></button>
         </div>
     </div>
-
     <script>
         function createDust() {
             const container = document.getElementById('stars-container');
@@ -421,20 +378,31 @@
             });
 
             const particles = [];
-            const colors = ['255,255,255', '185,28,28', '126,34,206', '29,78,216']; 
-            
-            for(let i=0; i<8000; i++) { 
-                particles.push({
-                    x: Math.random() * w,
-                    y: Math.random() * h,
-                    r: Math.random() * 1.0 + 0.1,
-                    dy: Math.random() * 0.3 + 0.05,
-                    color: colors[Math.floor(Math.random() * colors.length)],
-                    alpha: Math.random(),
-                    fadeDir: Math.random() > 0.5 ? 1 : -1,
-                    fadeSpeed: Math.random() * 0.01 + 0.002
-                });
+            const darkColors = ['255,255,255', '185,28,28', '126,34,206', '29,78,216']; 
+            const lightColors = ['0,0,0', '50,50,50', '30,30,30'];
+
+            function initParticles() {
+                particles.length = 0;
+                const isLight = document.body.classList.contains('light-mode');
+                const colors = isLight ? lightColors : darkColors;
+                
+                for(let i=0; i<8000; i++) { 
+                    particles.push({
+                        x: Math.random() * w,
+                        y: Math.random() * h,
+                        r: Math.random() * 1.0 + 0.1,
+                        dy: Math.random() * 0.3 + 0.05,
+                        color: colors[Math.floor(Math.random() * colors.length)],
+                        alpha: Math.random(),
+                        fadeDir: Math.random() > 0.5 ? 1 : -1,
+                        fadeSpeed: Math.random() * 0.01 + 0.002
+                    });
+                }
             }
+            initParticles();
+            
+            window.app = window.app || {};
+            window.app.refreshDust = initParticles;
 
             function animateDust() {
                 ctx.clearRect(0, 0, w, h);
@@ -461,14 +429,13 @@
         
         window.app = {
             data: [], 
-            // Unified "allVideos" to store everything
             allVideos: [],
             currentVideoSource: 'youtube', 
             archiveVideos: [], archivePage: 1, archiveLoading: false, archiveHasMore: true, archiveTotal: '...', isLightMode: false, selectedLibraryTopics: new Set(),
             
-            synthBrain: { "pineal": "The Single Eye.", "default": "Look within." }, 
+            synthBrain: { "pineal": "The Single Eye.", "default": "Look within." },
             anatomyData: { "root": { title: "Root", name: "Muladhara", color: "#ef4444", freq: "400 THz", biblical: "Egypt", church: "Ephesus", desc: "Physical bondage." }, "crown": { title: "Crown", name: "Sahasrara", color: "#a855f7", freq: "789+ THz", biblical: "Peniel", church: "Laodicea", desc: "Face to Face." } },
-            quotes: ["Be still.", "The Kingdom is within.", "As above, so below."], 
+            quotes: ["Be still.", "The Kingdom is within.", "As above, so below."],
 
             renderCard: function(videoObj, isArchive = false) {
                 let id = isArchive ? videoObj.identifier : videoObj.id;
@@ -476,7 +443,6 @@
                 let thumb = isArchive ? `https://archive.org/services/img/${id}` : videoObj.thumbnail;
                 let linkUrl = isArchive ? `https://archive.org/details/${id}` : `https://www.youtube.com/watch?v=${id}`;
                 
-                // Get topic using simplified title matching
                 let topic = this.getTopicByVideoObj(videoObj, isArchive);
 
                 let crossRefBtn = '';
@@ -488,51 +454,35 @@
                 return `<div class="cosmos-card group"><div class="relative aspect-video overflow-hidden cursor-pointer bg-black" onclick="window.app.openVideo('${id}', '${isArchive ? 'archive' : 'youtube'}')"><img src="${thumb}" class="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" onerror="this.src='https://archive.org/images/not_found.png'" /><div class="absolute inset-0 flex items-center justify-center"><i class="fa-solid ${isArchive ? 'fa-film text-cyan-400' : 'fa-play text-white'} text-4xl opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-lg"></i></div>${isArchive ? '<div class="absolute top-2 right-2 bg-black/80 text-cyan-400 text-[9px] px-2 py-1 rounded font-mono uppercase tracking-widest border border-cyan-900/50">Restored</div>' : ''}</div><div class="p-4 flex flex-col flex-1" style="background: var(--bg-secondary); border-top: 1px solid var(--border-color);"><h3 class="text-sm font-medium line-clamp-2 mb-3" style="color: var(--text-primary);">${title}</h3><div class="mt-auto pt-2 flex flex-wrap gap-2 justify-between items-center" style="border-top: 1px solid var(--border-color);">${this.createTagButton(topic)}${crossRefBtn}</div><div class="mt-3 pt-2 text-right" style="border-top: 1px solid var(--border-color);"><a href="${linkUrl}" target="_blank" onclick="event.stopPropagation();" class="text-[9px] font-mono transition-colors" style="color: var(--text-secondary);">ID: ${id} <i class="fa-solid fa-arrow-up-right-from-square ml-1 text-[8px]"></i></a></div></div></div>`;
             },
             
-            // --- SIMPLIFIED TOPIC MATCHER (WORD OVERLAP) ---
             getTopicByVideoObj: function(videoObj, isArchive) {
                 if (!this.data || this.data.length === 0) return "Uncatalogued";
                 
-                // 1. YouTube ID Match
-                if (!isArchive && videoObj.id) {
-                    const matchById = this.data.find(row => { 
-                        const csvId = this.getVideoID(row.URL); 
-                        return csvId && csvId === videoObj.id; 
-                    });
-                    if (matchById) return matchById.TOPIC;
+                let searchId = null;
+
+                if (!isArchive) {
+                    searchId = videoObj.id;
+                } 
+                else if (videoObj['external-identifier']) {
+                     const match = videoObj['external-identifier'].match(/urn:youtube:([a-zA-Z0-9_-]{11})/);
+                     if (match) searchId = match[1];
                 }
 
-                // 2. Word Overlap Matcher (For Archive)
-                const clean = (str) => str ? str.toLowerCase().replace(/[^a-z0-9\s]/g, '').split(/\s+/).filter(w => w.length > 3) : [];
-                
-                const titleToMatch = isArchive ? videoObj.title : videoObj.snippet.title;
-                const inputWords = clean(titleToMatch);
-                
-                if (inputWords.length === 0) return "General";
-
-                let bestMatch = null;
-                let maxMatches = 0;
-
-                for (const row of this.data) {
-                    const rowTitle = row['TITLE OF VIDEO'];
-                    if (!rowTitle) continue;
-                    
-                    const rowWords = clean(rowTitle);
-                    // Count how many words match
-                    const intersection = rowWords.filter(w => inputWords.includes(w));
-                    
-                    if (intersection.length > maxMatches) {
-                        maxMatches = intersection.length;
-                        bestMatch = row;
-                    }
+                if (searchId) {
+                    const row = this.data.find(r => this.getVideoID(r.URL) === searchId);
+                    if (row) return row.TOPIC;
                 }
 
-                // Require at least 2 matching significant words to be confident
-                if (bestMatch && maxMatches >= 2) return bestMatch.TOPIC;
+                const clean = (str) => str ? str.toLowerCase().replace(/[^a-z0-9]/g, '') : '';
+                const videoTitleClean = clean(isArchive ? videoObj.title : videoObj.snippet.title);
                 
-                return "General";
+                const row = this.data.find(r => {
+                    const rowTitleClean = clean(r['TITLE OF VIDEO']);
+                    return rowTitleClean === videoTitleClean;
+                });
+                
+                return row ? row.TOPIC : "General";
             },
 
-            // --- UTILS ---
             getVideoID: function(url) { if (!url) return null; const str = url.toString().trim(); const match = str.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/); return (match && match[2].length === 11) ? match[2] : null; },
             createTagButton: function(topic) { return `<button class="inline-flex items-center gap-2 text-[9px] font-bold uppercase tracking-widest px-3 py-1.5 rounded transition-all justify-center cursor-pointer relative z-20" style="background: var(--input-bg); color: var(--purple); border: 1px solid var(--border-color);" onclick="event.stopPropagation(); window.app.selectLibraryTopic('${topic.replace(/'/g, "\\'")}')"><i class="fa-solid fa-tag"></i> ${topic}</button>`; },
             
@@ -552,34 +502,21 @@
                 else if(id==='search'){ document.querySelectorAll('.dock-btn')[3].classList.add('active'); }
                 else { document.getElementById('btn-' + id)?.classList.add('active'); }
                 
-                if(id === 'meditation' || id === 'brain') {
-                    // Retry logic for empty tabs
-                    const targetGrid = id === 'meditation' ? 'meditation-lectures-grid' : 'brain-lectures-grid';
-                    const grid = document.getElementById(targetGrid);
-                    const loader = id === 'meditation' ? 'med-loader' : 'brain-loader';
-                    
-                    if(grid && grid.children.length === 0) {
-                        document.getElementById(loader).classList.remove('hidden');
-                        setTimeout(() => this.renderMeditationLectures(), 1500); // Retry after 1.5s
-                    }
-                }
-                
                 if(id === 'meditation') {
-                     const quote = this.quotes[Math.floor(Math.random() * this.quotes.length)];
-                     const qEl = document.getElementById('meditation-quote');
-                     if(qEl) qEl.innerText = `"${quote}"`;
+                    const quote = this.quotes[Math.floor(Math.random() * this.quotes.length)];
+                    document.getElementById('meditation-quote').innerText = `"${quote}"`;
+                    this.renderMeditationLectures();
                 }
-
+                if(id === 'brain') this.renderMeditationLectures();
                 if(id === 'library') this.renderLibraryInterface();
                 window.scrollTo(0,0); 
             },
 
-            // --- SCANNER ---
             scanForBrokenLinks: async function() {
                 const overlay = document.getElementById('diagnostics-overlay');
                 overlay.classList.remove('hidden');
                 document.getElementById('diag-status').innerText = "Initializing Scanner...";
-                document.getElementById('diag-progress').style.width = "5%";
+                document.getElementById('diag-progress').style.width = "10%";
                 
                 const entries = this.data.map(row => ({
                     id: this.getVideoID(row.URL),
@@ -600,6 +537,7 @@
                     try {
                         const res = await fetch(url);
                         const data = await res.json();
+                        
                         if (data.items) {
                             const foundIds = new Set(data.items.map(item => item.id));
                             for (const video of batch) {
@@ -608,7 +546,9 @@
                                 }
                             }
                         }
-                    } catch (e) { console.error("Batch Check Failed", e); }
+                    } catch (e) {
+                        console.error("Batch Check Failed", e);
+                    }
                     
                     processed += batch.length;
                     const pct = Math.round((processed / total) * 100);
@@ -629,27 +569,21 @@
             },
             closeDiagnostics: function() { document.getElementById('diagnostics-overlay').classList.add('hidden'); },
 
-            // --- UPDATE MASTER LIST ---
             updateMasterList: function() {
-                // Combine YouTube & Archive into one flattened list for easy filtering
                 const yt = this.youtube.videos.map(v => ({...v, type: 'youtube'}));
                 const arc = this.archiveVideos.map(v => ({...v, type: 'archive'}));
                 this.allVideos = [...yt, ...arc];
-                
-                // Trigger re-renders if active
                 if(document.getElementById('view-library').classList.contains('active')) this.renderLibraryResults();
             },
 
-            // --- LECTURE RENDERERS (UNIFIED) ---
             renderMeditationLectures: function() {
                 const grid = document.getElementById('meditation-lectures-grid');
                 const brainGrid = document.getElementById('brain-lectures-grid');
                 document.getElementById('med-loader')?.classList.add('hidden');
                 document.getElementById('brain-loader')?.classList.add('hidden');
                 
-                if (this.allVideos.length === 0) return; // Wait for data
+                if (this.allVideos.length === 0) return;
 
-                // MEDITATION FILTER
                 const medKeywords = ['meditation', 'silence', 'pineal', 'upper room', 'watch', 'prayer'];
                 const medMatches = this.allVideos.filter(v => {
                     const t = (v.title || v.snippet?.title || "").toLowerCase();
@@ -658,7 +592,6 @@
                 
                 if(grid) grid.innerHTML = medMatches.map(v => this.renderCard(v, v.type === 'archive')).join('');
 
-                // BRAIN FILTER
                 const brainKeywords = ['brain', 'claustrum', 'mind', 'skull', 'anatomy', 'oil'];
                 const brainMatches = this.allVideos.filter(v => {
                     const t = (v.title || v.snippet?.title || "").toLowerCase();
@@ -668,10 +601,9 @@
                 if(brainGrid) brainGrid.innerHTML = brainMatches.map(v => this.renderCard(v, v.type === 'archive')).join('');
             },
 
-            // --- LIBRARY ---
             selectLibraryTopic: function(topic) { this.selectedLibraryTopics.clear(); this.selectedLibraryTopics.add(topic); this.nav('library'); setTimeout(() => this.renderLibraryInterface(), 50); },
             renderLibraryInterface: function() {
-                const topics = [...new Set(this.data.map(i => i.TOPIC).filter(t => t))].sort(); 
+                const topics = [...new Set(this.data.map(i => i.TOPIC).filter(t => t))].sort((a, b) => a.localeCompare(b)); 
                 const container = document.getElementById('library-topics');
                 document.getElementById('count-yt').innerText = this.youtube.videos.length;
                 document.getElementById('count-hd').innerText = this.archiveTotal;
@@ -714,14 +646,10 @@
                     results.push(...matches);
                 }
                 
-                // Sort by Title (Optional) or mix
-                // results.sort((a,b) => (a.title || a.snippet.title).localeCompare(b.title || b.snippet.title));
-
                 if (results.length === 0) { grid.innerHTML = '<div class="col-span-full text-center py-20 text-stone-500">No videos found.</div>'; return; }
                 grid.innerHTML = results.map(v => this.renderCard(v, v.type === 'archive')).join('');
             },
 
-            // --- STANDARD UTILS ---
             openSearchOverlay: function() { document.getElementById('search-overlay').classList.add('active'); setTimeout(() => document.getElementById('overlay-search-input').focus(), 100); },
             closeSearchOverlay: function() { document.getElementById('search-overlay').classList.remove('active'); },
             performOverlaySearch: function() { const q = document.getElementById('overlay-search-input').value.trim(); if(!q) return; this.closeSearchOverlay(); this.nav('search'); document.getElementById('global-search').value = q; this.performGlobalSearch(); },
@@ -733,7 +661,6 @@
             openVideo: function(id, type) { if(!id) return; if (!type) type = (this.currentVideoSource === 'archive' && !id.match(/^[a-zA-Z0-9_-]{11}$/)) ? 'archive' : 'youtube'; const container = document.getElementById('video-frame-container'); let src = type === 'archive' ? `https://archive.org/embed/${id}?autoplay=1` : `https://www.youtube.com/embed/${id}?autoplay=1&rel=0`; container.innerHTML = `<iframe src="${src}" class="w-full h-full" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`; document.getElementById('video-modal').classList.remove('hidden'); },
             closeVideo: function() { document.getElementById('video-frame-container').innerHTML = ''; document.getElementById('video-modal').classList.add('hidden'); },
 
-            // --- API LOADERS ---
             fetchArchiveVideos: async function() {
                 if (this.archiveLoading || !this.archiveHasMore) return;
                 this.archiveLoading = true;
@@ -775,16 +702,42 @@
                 setTimeout(() => document.getElementById('app-loader').classList.add('hidden'), 1000);
                 createDust();
                 
-                // IMPORTANT: Fetch CSV First
                 Papa.parse('catalog.csv', { download: true, header: true, skipEmptyLines: true, complete: (results) => {
                     this.data = results.data.filter(row => row['TITLE OF VIDEO']).map(row => { row.TOPIC = (row.TOPIC || "").replace(/^and\s+/i, '').trim(); return row; });
                     
-                    // Trigger APIs
                     this.youtube.fetchVideos(); 
                     this.fetchArchiveVideos(); 
+                    
+                    this.renderLibraryInterface(); 
                 }});
+                
+                const wrapper = document.getElementById('scroll-wrapper');
                 const tabs = ['home', 'library', 'brain', 'anatomy', 'meditation', 'resources'];
-                // ... (Scroll logic)
+                let scrollTimeout;
+
+                wrapper.addEventListener("scroll", () => {
+                    if (wrapper.scrollTop + wrapper.clientHeight >= wrapper.scrollHeight - 100) {
+                        if (window.app.currentVideoSource === 'youtube') window.app.youtube.fetchVideos(); else window.app.fetchArchiveVideos();
+                    }
+                });
+
+                wrapper.addEventListener("wheel", (e) => {
+                    clearTimeout(scrollTimeout);
+                    scrollTimeout = setTimeout(() => {
+                        const currentView = document.querySelector('.view-section.active');
+                        if(!currentView) return;
+                        const currentId = currentView.id.replace('view-', '');
+                        const index = tabs.indexOf(currentId);
+                        
+                        if (e.deltaY > 0 && Math.ceil(wrapper.scrollTop + wrapper.clientHeight) >= wrapper.scrollHeight) {
+                            if (index < tabs.length - 1) window.app.nav(tabs[index + 1]);
+                        }
+                        else if (e.deltaY < 0 && wrapper.scrollTop === 0) {
+                            if (index > 0) window.app.nav(tabs[index - 1]);
+                        }
+                    }, 50); 
+                });
+                
                 this.nav('home');
             }
         };
