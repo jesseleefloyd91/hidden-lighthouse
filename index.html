@@ -25,22 +25,24 @@
             --dock-bg: rgba(10, 10, 10, 0.95);
             --btn-active-bg: #EAEAEA;
             --btn-active-text: #050505;
+            --card-text: #ffffff;
         }
 
         body.light-mode {
             --bg-base: #ffffff;
-            --bg-gradient-start: #f1f5f9;
+            --bg-gradient-start: #f8fafc;
             --bg-gradient-end: #ffffff;
-            --bg-secondary: #ffffff;
+            --bg-secondary: #f1f5f9;
             --text-primary: #0f172a;
-            --text-secondary: #475569;
+            --text-secondary: #334155;
             --border-color: rgba(0,0,0,0.1);
-            --purple: #4c1d95;
+            --purple: #6d28d9;
             --gold: #b45309;
-            --accent-glow: rgba(76, 29, 149, 0.1);
+            --accent-glow: rgba(109, 40, 217, 0.1);
             --dock-bg: rgba(255, 255, 255, 0.98);
-            --btn-active-bg: #4c1d95;
+            --btn-active-bg: #6d28d9;
             --btn-active-text: #ffffff;
+            --card-text: #0f172a;
         }
 
         body { font-family: 'Inter', sans-serif; background-color: var(--bg-base); color: var(--text-primary); transition: background-color 0.5s ease; overflow-x: hidden; }
@@ -51,7 +53,7 @@
         .masonry-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; padding-bottom: 40px; }
         @media (max-width: 640px) { .masonry-grid { grid-template-columns: 1fr; } }
         
-        .cosmos-card { background-color: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 16px; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); cursor: pointer; position: relative; overflow: hidden; display: flex; flex-direction: column; min-height: 220px; }
+        .cosmos-card { background-color: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 16px; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); cursor: pointer; position: relative; overflow: hidden; display: flex; flex-direction: column; min-height: 220px; color: var(--card-text); }
         .cosmos-card:hover { border-color: var(--gold); transform: translateY(-8px); box-shadow: 0 20px 40px -10px var(--accent-glow); }
 
         .dock-container { position: fixed; bottom: 20px; left: 0; width: 100%; display: flex; justify-content: center; z-index: 50; padding: 0 20px; }
@@ -62,16 +64,18 @@
         #app-loader { position: fixed; inset: 0; z-index: 100; background: #050505; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.5s; }
         #app-loader.hidden { opacity: 0; pointer-events: none; }
 
+        #search-overlay { position: fixed; inset: 0; background: rgba(5,5,5,0.98); z-index: 90; display: none; flex-direction: column; align-items: center; padding-top: 100px; backdrop-filter: blur(20px); }
+        #search-overlay.active { display: flex; }
+
         .view-section { display: none; padding-top: 120px; padding-bottom: 150px; width: 100%; min-height: 100vh; animation: fadeIn 0.5s ease; }
         .view-section.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .topic-chip { padding: 8px 16px; border-radius: 99px; font-size: 10px; font-weight: 700; text-transform: uppercase; cursor: pointer; border: 1px solid var(--border-color); background: var(--bg-secondary); transition: all 0.2s; white-space: nowrap; }
+        .topic-chip { padding: 8px 16px; border-radius: 99px; font-size: 10px; font-weight: 700; text-transform: uppercase; cursor: pointer; border: 1px solid var(--border-color); background: var(--bg-secondary); transition: all 0.2s; white-space: nowrap; color: var(--text-primary); }
         .topic-chip.active { background: var(--purple); color: white; border-color: var(--purple); }
 
-        /* Anatomy Style */
         .anatomy-wrapper { position: relative; width: 300px; height: 600px; border: 1px solid var(--border-color); border-radius: 999px; background: var(--bg-secondary); box-shadow: 0 0 50px -20px var(--accent-glow); margin: 0 auto; }
-        .anatomy-dot { width: 24px; height: 24px; border-radius: 50%; position: absolute; left: 50%; transform: translateX(-50%); cursor: pointer; transition: all 0.3s ease; border: 2px solid rgba(255,255,255,0.5); z-index: 20; }
+        .anatomy-dot { width: 26px; height: 26px; border-radius: 50%; position: absolute; left: 50%; transform: translateX(-50%); cursor: pointer; transition: all 0.3s ease; border: 3px solid rgba(255,255,255,0.4); z-index: 20; }
         .anatomy-dot:hover { transform: translateX(-50%) scale(1.4); border-color: white; }
     </style>
 </head>
@@ -80,34 +84,46 @@
     
     <div id="app-loader">
         <div class="w-12 h-12 border-4 border-t-purple-400 border-white/10 rounded-full animate-spin mb-4"></div>
-        <p class="cinzel text-xs tracking-widest animate-pulse text-white">Raising the Serpent...</p>
+        <p class="cinzel text-xs tracking-widest animate-pulse text-white uppercase">Deciphering the Ancient Script...</p>
     </div>
 
-    <div class="fixed top-0 left-0 w-full p-4 z-40 flex justify-between items-center backdrop-blur-xl border-b bg-black/40" style="border-color: var(--border-color);">
+    <div id="search-overlay">
+        <button onclick="window.app.closeSearchOverlay()" class="absolute top-10 right-10 text-white text-3xl"><i class="fa-solid fa-xmark"></i></button>
+        <div class="w-full max-w-4xl px-6">
+            <input type="text" id="overlay-search-input" placeholder="Ask for Insight..." class="w-full bg-transparent border-b-2 border-gold text-white text-4xl cinzel outline-none py-4 text-center" onkeydown="if(event.key === 'Enter') window.app.performOverlaySearch()">
+            <div id="overlay-insight-box" class="hidden mt-10 p-6 border-l-4 border-gold bg-white/5 rounded-xl text-left">
+                <h4 class="text-gold text-[10px] uppercase font-bold mb-2">The Teacher's Insight</h4>
+                <p id="overlay-insight-text" class="text-white italic font-light text-xl"></p>
+            </div>
+            <div id="overlay-results" class="masonry-grid mt-12 overflow-y-auto max-h-[50vh] p-4"></div>
+        </div>
+    </div>
+
+    <div class="fixed top-0 left-0 w-full p-4 z-40 flex justify-between items-center backdrop-blur-xl border-b bg-black/10" style="border-color: var(--border-color);">
         <div class="flex items-center gap-3 cursor-pointer" onclick="window.app.nav('home')">
             <div class="w-10 h-10 border flex items-center justify-center rotate-45 shrink-0 overflow-hidden bg-white/5" style="border-color: var(--border-color);">
                 <img src="bill_profile.jpg" class="w-full h-full object-cover -rotate-45" alt="Bill Donahue">
             </div>
-            <h1 class="cinzel font-bold text-xs md:text-sm tracking-[0.2em] text-white uppercase">Hidden Meanings</h1>
+            <h1 class="cinzel font-bold text-xs md:text-sm tracking-[0.2em] uppercase text-white">Hidden Meanings</h1>
         </div>
         <div class="flex items-center gap-4">
-            <div id="global-counter" class="hidden md:block text-[9px] font-mono text-gold uppercase tracking-tighter bg-gold/5 border border-gold/20 px-3 py-1 rounded-full">Archive Index: ...</div>
+            <div id="global-counter" class="hidden md:block text-[9px] font-mono text-gold uppercase tracking-tighter bg-gold/5 border border-gold/20 px-3 py-1 rounded-full">INDEX: ...</div>
             <button onclick="window.app.toggleTheme()" class="w-10 h-10 rounded-full flex items-center justify-center border border-white/10 text-white hover:bg-white/5 transition-all">
                 <i class="fa-solid fa-moon" id="theme-icon"></i>
             </button>
         </div>
     </div>
 
-    <div class="h-screen overflow-y-auto custom-scrollbar" id="scroll-wrapper">
+    <div id="main-content">
         
         <section id="view-home" class="view-section active px-4 text-center">
             <div class="max-w-4xl mx-auto flex flex-col items-center justify-center pt-10">
                 <h1 class="cinzel text-5xl md:text-8xl font-black mb-8 text-white">HIDDEN<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400 italic">MEANINGS</span></h1>
                 <div class="w-full max-w-lg mb-12">
-                    <input type="text" id="teacher-input" placeholder="Ask the Teacher..." class="w-full rounded-full py-4 px-8 bg-white/5 border border-purple-500/30 focus:border-purple-400 outline-none text-white text-sm" onkeydown="if(event.key === 'Enter') window.app.askTheTeacher()">
+                    <input type="text" id="teacher-input" placeholder="Ask for an esoteric insight..." class="w-full rounded-full py-4 px-8 bg-white/5 border border-purple-500/30 focus:border-purple-400 outline-none text-white text-sm" onkeydown="if(event.key === 'Enter') window.app.askTheTeacher()">
                 </div>
                 <div id="teacher-response-box" class="w-full text-left p-8 border-l-4 rounded-xl hidden bg-white/5 border-purple-500">
-                    <div id="teacher-text" class="text-lg italic font-light text-white mb-8"></div>
+                    <div id="teacher-text" class="text-lg italic font-light text-white mb-8 leading-relaxed"></div>
                     <div id="teacher-related-grid" class="masonry-grid"></div>
                 </div>
             </div>
@@ -125,22 +141,19 @@
 
         <section id="view-brain" class="view-section px-6 text-center">
             <div class="max-w-5xl mx-auto pt-10">
-                <h2 class="cinzel text-4xl md:text-6xl font-black mb-8 text-white uppercase">The Upper Room</h2>
+                <h2 class="cinzel text-4xl md:text-6xl font-black mb-4 text-white uppercase">THE UPPER ROOM</h2>
+                <div id="brain-quote" class="text-gold cinzel text-sm mb-12 italic tracking-widest min-h-[40px]"></div>
                 <div class="p-8 border rounded-2xl bg-white/5 border-white/10 mb-12 text-left relative overflow-hidden">
-                    <div class="absolute top-0 left-0 w-1 h-full bg-gold"></div>
-                    <p class="text-2xl font-serif italic mb-8 text-center text-white">"The brain is the Tabernacle."</p>
+                    <p class="text-2xl font-serif italic mb-8 text-center text-white">"The Bible is a book of Anatomy."</p>
                     <div class="grid md:grid-cols-2 gap-10">
-                        <div class="space-y-4 text-sm leading-relaxed text-stone-300">
-                            <p>According to Bill’s teachings, the **Claustrum** (Santa Claus) secretes a precious fluid that travels down the spinal cord (River Jordan). If preserved through meditation, this energy rises back up the 33 vertebrae (the 33 years of Jesus' life).</p>
-                            <p>Upon reaching the **Medulla Oblongata** (Golgotha/Place of the Skull), it crosses the cranial nerves (Crucifixion) and enters the **Pineal Gland**, activating the 90% of dormant brain cells. This is the biological "Second Coming."</p>
+                        <div class="space-y-4 text-sm leading-relaxed opacity-80">
+                            <p>The **Claustrum** (Santa Claus) secretes the sacred oil. It descends to the solar plexus (The Manger) and must be returned to the skull (Golgotha) to activate dormant neurons.</p>
+                            <p>This is the biological reality behind the esoteric myths of 12 disciples (cranial nerves) and the 33 vertebrae (years of life).</p>
                         </div>
-                        <div class="bg-black/40 p-6 rounded-xl border border-white/10">
-                            <h4 class="cinzel text-gold text-center text-xs mb-4">The Electromagnetics of Soul</h4>
-                            <ul class="text-[10px] space-y-2 text-stone-400">
-                                <li><span class="text-purple-400">PINEAL:</span> The "Light Receiver" (Positive Pole).</li>
-                                <li><span class="text-blue-400">PITUITARY:</span> The "Form Maker" (Negative Pole).</li>
-                                <li><span class="text-gold">FORNIX:</span> The bridge where the two become one.</li>
-                            </ul>
+                        <div class="bg-black/20 p-6 rounded-xl border border-white/5 flex items-center justify-around">
+                            <div class="text-center"><div class="w-8 h-8 rounded-full bg-purple-500 animate-pulse shadow-[0_0_20px_#a855f7] mb-2"></div><span class="text-[9px] font-bold text-white">PINEAL</span></div>
+                            <div class="h-px flex-1 bg-gradient-to-r from-purple-500 to-blue-500 mx-4"></div>
+                            <div class="text-center"><div class="w-8 h-8 rounded-full bg-blue-500 animate-pulse shadow-[0_0_20px_#3b82f6] mb-2"></div><span class="text-[9px] font-bold text-white">PITUITARY</span></div>
                         </div>
                     </div>
                 </div>
@@ -152,56 +165,57 @@
             <div class="max-w-6xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
                 <div class="anatomy-wrapper relative">
                     <div class="absolute top-[10%] bottom-[10%] w-px left-1/2 bg-white/10"></div>
-                    <div class="anatomy-dot" style="top: 10%; background: #a855f7;" onclick="window.app.showAnatomy('crown')"></div>
-                    <div class="anatomy-dot" style="top: 22%; background: #4f46e5;" onclick="window.app.showAnatomy('brow')"></div>
-                    <div class="anatomy-dot" style="top: 34%; background: #3b82f6;" onclick="window.app.showAnatomy('throat')"></div>
-                    <div class="anatomy-dot" style="top: 46%; background: #22c55e;" onclick="window.app.showAnatomy('heart')"></div>
-                    <div class="anatomy-dot" style="top: 58%; background: #eab308;" onclick="window.app.showAnatomy('solar')"></div>
-                    <div class="anatomy-dot" style="top: 70%; background: #f97316;" onclick="window.app.showAnatomy('sacral')"></div>
-                    <div class="anatomy-dot" style="top: 82%; background: #ef4444;" onclick="window.app.showAnatomy('root')"></div>
+                    <div class="anatomy-dot" style="top: 10%; background: #a855f7; box-shadow: 0 0 20px #a855f7;" onclick="window.app.showAnatomy('crown')"></div>
+                    <div class="anatomy-dot" style="top: 22%; background: #4f46e5; box-shadow: 0 0 20px #4f46e5;" onclick="window.app.showAnatomy('brow')"></div>
+                    <div class="anatomy-dot" style="top: 34%; background: #3b82f6; box-shadow: 0 0 20px #3b82f6;" onclick="window.app.showAnatomy('throat')"></div>
+                    <div class="anatomy-dot" style="top: 46%; background: #22c55e; box-shadow: 0 0 20px #22c55e;" onclick="window.app.showAnatomy('heart')"></div>
+                    <div class="anatomy-dot" style="top: 58%; background: #eab308; box-shadow: 0 0 20px #eab308;" onclick="window.app.showAnatomy('solar')"></div>
+                    <div class="anatomy-dot" style="top: 70%; background: #f97316; box-shadow: 0 0 20px #f97316;" onclick="window.app.showAnatomy('sacral')"></div>
+                    <div class="anatomy-dot" style="top: 82%; background: #ef4444; box-shadow: 0 0 20px #ef4444;" onclick="window.app.showAnatomy('root')"></div>
                 </div>
-                <div id="anatomy-info" class="p-8 border border-white/10 rounded-2xl bg-white/5 text-left min-h-[300px]">
-                    <h3 class="cinzel text-2xl mb-4 text-gold" id="ana-title">Click a Center</h3>
-                    <p class="text-stone-400 leading-relaxed italic" id="ana-desc">The human body is the Temple of God. Each energy center corresponds to a "Seal" in the Book of Revelation and a biological nerve plexus.</p>
+                <div id="anatomy-info" class="p-8 border border-white/10 rounded-2xl bg-white/5 text-left min-h-[350px] transition-all">
+                    <h3 class="cinzel text-3xl mb-4 text-gold" id="ana-title">The Seven Seals</h3>
+                    <p class="text-purple-400 font-mono text-xs mb-6 uppercase tracking-widest" id="ana-meta">Click a center to decode</p>
+                    <p class="leading-relaxed italic text-white text-lg" id="ana-desc">The human body is the Temple of God. Each center is a seal to be opened by the fire of meditation.</p>
                 </div>
             </div>
         </section>
 
         <section id="view-meditation" class="view-section px-6 text-center">
             <div class="max-w-4xl mx-auto">
-                <h1 id="meditation-quote" class="cinzel text-3xl italic mb-8 text-white px-4"></h1>
+                <h2 class="cinzel text-5xl mb-4 text-white">MEDITATION</h2>
+                <div id="med-quote" class="text-gold cinzel text-sm mb-12 italic tracking-widest min-h-[40px]"></div>
                 <div class="p-8 border border-white/10 rounded-2xl bg-white/5 mb-12 text-left">
-                    <h4 class="cinzel text-purple-400 text-sm mb-4">Technique: The Watchman</h4>
-                    <p class="text-sm text-stone-300 leading-relaxed">
-                        True meditation is the **absence of thought**. It is not visualization. It is watching the thoughts float by without joining them. By focusing on the inner silence, you allow the electrical charge (Christ) to rise to the higher centers of the brain.
-                    </p>
+                    <p class="text-sm leading-relaxed opacity-80 mb-4">True meditation is the **absence of thought**. It is being the observer, watching the mind without engaging it. This silence allows the brain to receive light at higher frequencies.</p>
                 </div>
                 <div id="meditation-lectures-grid" class="masonry-grid"></div>
             </div>
         </section>
 
-        <section id="view-resources" class="view-section px-6">
-            <div class="max-w-4xl mx-auto text-center">
-                <h2 class="cinzel text-4xl mb-12 text-white">PRIMARY LINKS</h2>
-                
+        <section id="view-resources" class="view-section px-6 text-center">
+            <div class="max-w-4xl mx-auto">
+                <h2 class="cinzel text-4xl mb-12 uppercase">PRIMARY LINKS</h2>
                 <div class="flex justify-center mb-12">
                     <a href="https://www.youtube.com/@bdona4556" target="_blank" class="cosmos-card p-10 w-full max-w-lg border-red-500/50 group">
                         <div class="flex flex-col items-center">
                             <i class="fa-brands fa-youtube text-5xl text-red-600 mb-4 animate-pulse"></i>
                             <h3 class="cinzel text-2xl text-white">Official YouTube</h3>
-                            <p class="text-[10px] text-stone-400 uppercase mt-2 font-bold tracking-widest">Original Teachings Channel</p>
+                            <p class="text-[10px] text-stone-400 uppercase mt-2 font-bold tracking-widest">Original HD Teachings</p>
                         </div>
                     </a>
                 </div>
-
-                <div class="grid md:grid-cols-2 gap-6" id="links-grid">
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6" id="links-grid">
                     <a href="https://www.hiddenmeanings.com" target="_blank" class="cosmos-card p-8 group text-left">
-                        <h3 class="cinzel text-gold text-xl mb-2">HiddenMeanings.com</h3>
-                        <p class="text-xs text-stone-400">The cornerstone of Bill's work, detailing the metaphysical decoding of the Bible.</p>
+                        <h3 class="cinzel text-gold text-lg mb-2">HiddenMeanings.com</h3>
+                        <p class="text-[10px] text-stone-400">Written transcripts and biblical decodings.</p>
                     </a>
                     <a href="https://www.facebook.com/groups/356472414984195" target="_blank" class="cosmos-card p-8 group text-left">
-                        <h3 class="cinzel text-gold text-xl mb-2">Facebook Community</h3>
-                        <p class="text-xs text-stone-400">A community of students sharing and discussing the science of the single eye.</p>
+                        <h3 class="cinzel text-gold text-lg mb-2">Facebook Group</h3>
+                        <p class="text-[10px] text-stone-400">Community discussions and live shares.</p>
+                    </a>
+                    <a href="https://thehiddenlighthouse.blogspot.com" target="_blank" class="cosmos-card p-8 group text-left">
+                        <h3 class="cinzel text-gold text-lg mb-2">Lighthouse Blog</h3>
+                        <p class="text-[10px] text-stone-400">Archived essays and esoteric updates.</p>
                     </a>
                 </div>
             </div>
@@ -210,13 +224,19 @@
 
     <div class="dock-container">
         <div class="dock">
-            <button class="dock-btn active" id="btn-home" onclick="window.app.nav('home')">Home</button>
-            <button class="dock-btn" id="btn-library" onclick="window.app.nav('library')">Library</button>
-            <button class="dock-btn" id="btn-brain" onclick="window.app.nav('brain')">Brain</button>
-            <button class="dock-btn" id="btn-anatomy" onclick="window.app.nav('anatomy')">Temple</button>
-            <button class="dock-btn" id="btn-meditation" onclick="window.app.nav('meditation')">Silence</button>
-            <button class="dock-btn" id="btn-resources" onclick="window.app.nav('resources')">Links</button>
-            <button class="dock-btn text-red-500" onclick="window.app.scanForBrokenLinks()"><i class="fa-solid fa-stethoscope"></i></button>
+            <button class="dock-btn active" onclick="window.app.nav('home')">Home</button>
+            <button class="dock-btn" onclick="window.app.nav('library')">Library</button>
+            <button class="dock-btn" onclick="window.app.nav('brain')">Brain</button>
+            <button class="dock-btn text-xl" style="color: var(--gold);" onclick="window.app.openSearchOverlay()"><i class="fa-solid fa-magnifying-glass"></i></button>
+            <button class="dock-btn" onclick="window.app.nav('anatomy')">Temple</button>
+            <button class="dock-btn" onclick="window.app.nav('meditation')">Meditation</button>
+            <button class="dock-btn" onclick="window.app.nav('resources')">Links</button>
+        </div>
+    </div>
+
+    <div id="video-modal" class="fixed inset-0 z-[60] bg-black/95 hidden flex items-center justify-center" onclick="if(event.target === this) window.app.closeVideo()">
+        <div class="relative w-full max-w-4xl aspect-video bg-black rounded-xl overflow-hidden shadow-2xl">
+            <div id="video-frame-container" class="w-full h-full"></div>
         </div>
     </div>
 
@@ -229,15 +249,24 @@
             container.appendChild(canvas);
             const ctx = canvas.getContext('2d');
             let w = canvas.width = window.innerWidth; let h = canvas.height = window.innerHeight;
+            let mouse = { x: w/2, y: h/2, active: false }; let warp = false;
+            window.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; mouse.active = true; });
+            window.addEventListener('mousedown', () => warp = true); window.addEventListener('mouseup', () => warp = false);
             const particles = [];
-            for(let i=0; i<5000; i++) {
-                particles.push({ x: Math.random()*w, y: Math.random()*h, r: Math.random()*1.1, dy: Math.random()*0.2+0.05, alpha: Math.random() });
+            for(let i=0; i<6000; i++) {
+                particles.push({ x: Math.random()*w, y: Math.random()*h, r: Math.random()*1.1, baseDy: Math.random()*0.3+0.05, alpha: Math.random() });
             }
             function animate() {
                 ctx.clearRect(0,0,w,h);
                 const isLight = document.body.classList.contains('light-mode');
                 particles.forEach(p => {
-                    p.y -= p.dy; if(p.y < 0) p.y = h;
+                    let dy = warp ? p.baseDy * 20 : p.baseDy;
+                    if(mouse.active) {
+                        let dx = mouse.x - p.x; let dy_m = mouse.y - p.y;
+                        let dist = Math.sqrt(dx*dx + dy_m*dy_m);
+                        if(dist < 150) { p.x -= dx*0.02; p.y -= dy_m*0.02; }
+                    }
+                    p.y -= dy; if(p.y < 0) p.y = h;
                     ctx.fillStyle = isLight ? `rgba(0,0,0,${p.alpha})` : `rgba(255,255,255,${p.alpha})`;
                     ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI*2); ctx.fill();
                 });
@@ -248,145 +277,138 @@
 
         window.app = {
             data: [], archiveVideos: [], selectedLibraryTopics: new Set(),
-            archiveTotal: 0,
-            quotes: ["The Kingdom of God is within you.", "Be still and know.", "The eye is the lamp of the body."],
+            quotes: [
+                "The Bible is a biological blueprint.",
+                "Turn off the thoughts and let the light enter the single eye.",
+                "The christ is not a man, it is an electrical charge.",
+                "Golgotha is the place of the skull, not a hill in Israel.",
+                "Meditation is the absence of thought."
+            ],
+            insights: {
+                "brain": "The Claustrum secretes the sacred fluid (Christos).",
+                "pineal": "The Pineal is the Single Eye that receives light frequencies.",
+                "meditation": "Silence is the door to the Kingdom within.",
+                "revelation": "The 7 Seals are the 7 main nerve plexuses in the body.",
+                "bible": "The Bible is an allegory for human anatomy and physiology.",
+                "default": "Everything in the physical is a shadow of the inner spiritual reality."
+            },
             anaMap: {
-                root: {t: "Root (Muladhara)", d: "Biblical Egypt. Bondage to the material world. Frequency: 400THz. Location: Base of Spine."},
-                sacral: {t: "Sacral (Svadhisthana)", d: "Biblical Sodom. Desires and emotions. Physical manifestation centers."},
-                solar: {t: "Solar Plexus (Manipura)", d: "The Manger. Where the fire is stored. Transformation of ego into spirit."},
-                heart: {t: "Heart (Anahata)", d: "Jerusalem. Center of Peace. Balancing the upper and lower natures."},
-                throat: {t: "Throat (Vishuddha)", d: "The Word. Expression of the truth found in silence."},
-                brow: {t: "Brow (Ajna)", d: "The Single Eye. Pineal Gland. Seeing beyond duality."},
-                crown: {t: "Crown (Sahasrara)", d: "Peniel. Face to Face with God. Full enlightenment and higher consciousness."}
+                root: {t: "Root (Egypt) | 400Hz", m: "Biological Base", d: "Biblical Egypt. The center of material bondage and survival. Resonates at 400 Terahertz."},
+                sacral: {t: "Sacral (Sodom) | 480Hz", m: "Emotional Center", d: "Biblical Sodom. The center of desires, physical reproduction, and base emotions."},
+                solar: {t: "Solar (Manger) | 520Hz", m: "Transformation", d: "The Manger where the fire (Christ) is born. The ego is transformed into spirit here."},
+                heart: {t: "Heart (Jerusalem) | 600Hz", m: "Balance", d: "Jerusalem, the city of peace. The bridge between the animal nature and the spirit."},
+                throat: {t: "Throat (Expression) | 670Hz", m: "The Word", d: "The center of expression. Turning the truth of the silence into the spoken word."},
+                brow: {t: "Brow (Peniel) | 750Hz", m: "Single Eye", d: "The Pineal Gland. Peniel, where Jacob saw God face to face. Seeing beyond duality."},
+                crown: {t: "Crown (Zion) | 789+Hz", m: "Enlightenment", d: "The thousand-petaled lotus. Full realization and connection to the Universal Light."}
             },
 
-            renderCard: function(v) {
-                const topic = this.getTopic(v);
-                let bridgeBtn = '';
-                if (v['external-identifier'] && v['external-identifier'].includes('urn:youtube:')) {
+            getTopic: (v) => {
+                if(!window.app.data.length) return "General";
+                let id = v['external-identifier']?.match(/urn:youtube:([a-zA-Z0-9_-]{11})/)?.[1];
+                if(id) { const m = window.app.data.find(r => r.url && r.url.includes(id)); if(m) return m.topic; }
+                return "Uncatalogued";
+            },
+
+            renderCard: (v) => {
+                const topic = window.app.getTopic(v);
+                let btn = '';
+                if(v['external-identifier']?.includes('urn:youtube:')) {
                     const id = v['external-identifier'].match(/urn:youtube:([a-zA-Z0-9_-]{11})/)[1];
-                    bridgeBtn = `<button onclick="event.stopPropagation(); window.open('https://youtube.com/watch?v=${id}', '_blank')" class="text-[8px] border px-2 py-0.5 rounded border-red-900 text-red-500 uppercase font-black hover:bg-red-900 hover:text-white transition-all ml-2">SOURCE</button>`;
+                    btn = `<button onclick="event.stopPropagation(); window.open('https://youtube.com/watch?v=${id}', '_blank')" class="text-[8px] border px-2 py-0.5 rounded border-red-900 text-red-500 font-bold uppercase ml-2">SOURCE</button>`;
                 }
-                return `
-                <div class="cosmos-card group" onclick="window.app.openVideo('${v.identifier}')">
-                    <img src="https://archive.org/services/img/${v.identifier}" class="aspect-video object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
+                return `<div class="cosmos-card group" onclick="window.app.openVideo('${v.identifier}')">
+                    <img src="https://archive.org/services/img/${v.identifier}" class="aspect-video object-cover opacity-70 group-hover:opacity-100 transition-opacity" />
                     <div class="p-4 flex flex-col flex-1">
-                        <h3 class="text-xs font-semibold line-clamp-2 mb-3 text-white">${v.title}</h3>
+                        <h3 class="text-[11px] font-semibold line-clamp-2 mb-3 leading-snug">${v.title}</h3>
                         <div class="mt-auto flex items-center justify-between">
-                            <span class="text-[9px] font-bold uppercase text-purple-400 bg-purple-500/10 px-2 py-1 rounded border border-purple-500/20">${topic}</span>
-                            ${bridgeBtn}
+                            <span class="text-[8px] font-bold uppercase text-purple-300 bg-purple-500/10 px-2 py-1 rounded border border-purple-500/20">${topic}</span>
+                            ${btn}
                         </div>
                     </div>
                 </div>`;
             },
 
-            getTopic: function(v) {
-                if (!window.app.data.length) return "Uncatalogued";
-                let ytId = v['external-identifier']?.match(/urn:youtube:([a-zA-Z0-9_-]{11})/)?.[1];
-                if (ytId) {
-                    const match = window.app.data.find(r => r.url && r.url.includes(ytId));
-                    if (match) return match.topic;
-                }
-                return "Uncatalogued";
-            },
-
-            renderLibraryInterface: function() {
-                const container = document.getElementById('library-topics');
-                if(!container) return;
-                const topics = [...new Set(window.app.data.map(r => r.topic))].sort();
-                if (!topics.includes("Uncatalogued")) topics.push("Uncatalogued");
-                
-                container.innerHTML = topics.map(t => {
-                    const count = window.app.archiveVideos.length ? window.app.archiveVideos.filter(v => window.app.getTopic(v) === t).length : '...';
-                    const active = window.app.selectedLibraryTopics.has(t) ? 'active' : '';
-                    return `<div class="topic-chip ${active} text-white" onclick="window.app.toggleTopic('${t.replace(/'/g, "\\'")}')">${t} <span class="chip-count text-white/50">(${count})</span></div>`;
-                }).join('');
-                this.renderGrids();
-            },
-
-            toggleTopic: function(t) {
-                if(window.app.selectedLibraryTopics.has(t)) window.app.selectedLibraryTopics.delete(t);
-                else window.app.selectedLibraryTopics.add(t);
-                this.renderLibraryInterface();
-            },
-
-            renderGrids: function() {
-                const libGrid = document.getElementById('library-grid');
-                if(libGrid) {
-                    let results = window.app.archiveVideos;
-                    if(this.selectedLibraryTopics.size > 0) results = results.filter(v => this.selectedLibraryTopics.has(this.getTopic(v)));
-                    libGrid.innerHTML = results.map(v => this.renderCard(v)).join('');
-                }
-                
-                const brainGrid = document.getElementById('brain-lectures-grid');
-                if(brainGrid) {
-                    const brainVids = window.app.archiveVideos.filter(v => v.title.toLowerCase().match(/brain|skull|anatomy|claustrum|pineal/)).slice(0, 12);
-                    brainGrid.innerHTML = brainVids.map(v => this.renderCard(v)).join('');
-                }
-
-                const medGrid = document.getElementById('meditation-lectures-grid');
-                if(medGrid) {
-                    const medVids = window.app.archiveVideos.filter(v => v.title.toLowerCase().match(/meditation|silence|watch|prayer/)).slice(0, 12);
-                    medGrid.innerHTML = medVids.map(v => this.renderCard(v)).join('');
-                }
-            },
-
-            showAnatomy: function(key) {
-                const data = this.anaMap[key];
-                document.getElementById('ana-title').innerText = data.t;
-                document.getElementById('ana-desc').innerText = data.d;
-            },
-
-            nav: function(id) {
-                document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
-                document.querySelectorAll('.dock-btn').forEach(b => b.classList.remove('active'));
-                document.getElementById('view-' + id).classList.add('active');
-                document.getElementById('btn-' + id)?.classList.add('active');
-                if(id==='meditation') document.getElementById('meditation-quote').innerText = `"${this.quotes[Math.floor(Math.random()*this.quotes.length)]}"`;
-                window.scrollTo(0,0);
-            },
-
-            scanForBrokenLinks: function() {
-                const missing = window.app.archiveVideos.filter(v => !v['external-identifier'] || !v['external-identifier'].includes('urn:youtube:'));
-                const uncat = window.app.archiveVideos.filter(v => window.app.getTopic(v) === "Uncatalogued");
-                const html = `<html><head><title>Health Report</title><style>body{font-family:monospace;background:#111;color:#fff;padding:40px;}h2{color:gold;margin-top:40px;border-bottom:1px solid #333;padding:10px;color:#888;}</style></head><body><h1>Health Check</h1><h2>Missing Bridge (No YT ID) - ${missing.length}</h2>${missing.map(m=>`<div>${m.title}</div>`).join('')}<h2>Uncatalogued (No CSV Match) - ${uncat.length}</h2>${uncat.map(u=>`<div>${u.title}</div>`).join('')}</body></html>`;
-                const blob = new Blob([html], {type:'text/html'}); window.open(URL.createObjectURL(blob), '_blank');
-            },
-
-            askTheTeacher: function() {
+            askTheTeacher: () => {
+                const q = document.getElementById('teacher-input').value.toLowerCase();
                 const box = document.getElementById('teacher-response-box');
                 const text = document.getElementById('teacher-text');
                 const grid = document.getElementById('teacher-related-grid');
                 box.classList.remove('hidden');
-                text.innerText = "The silence is the key. Move beyond thought into the frequency of the I AM.";
-                const related = window.app.archiveVideos.slice(0, 4);
-                grid.innerHTML = related.map(v => this.renderCard(v)).join('');
+                let found = window.app.insights['default'];
+                for(let k in window.app.insights) { if(q.includes(k)) found = window.app.insights[k]; }
+                text.innerText = `"${found}"`;
+                const rel = window.app.archiveVideos.filter(v => v.title.toLowerCase().includes(q.split(' ')[0])).slice(0, 4);
+                grid.innerHTML = rel.map(v => window.app.renderCard(v)).join('');
             },
 
-            openVideo: function(id) { document.getElementById('video-frame-container').innerHTML = `<iframe src="https://archive.org/embed/${id}?autoplay=1" class="w-full h-full" frameborder="0" allowfullscreen></iframe>`; document.getElementById('video-modal').classList.remove('hidden'); },
-            closeVideo: function() { document.getElementById('video-frame-container').innerHTML = ''; document.getElementById('video-modal').classList.add('hidden'); },
-            toggleTheme: function() { document.body.classList.toggle('light-mode'); },
+            performOverlaySearch: () => {
+                const q = document.getElementById('overlay-search-input').value.toLowerCase();
+                const box = document.getElementById('overlay-insight-box');
+                const text = document.getElementById('overlay-insight-text');
+                const grid = document.getElementById('overlay-results');
+                box.classList.remove('hidden');
+                let insight = window.app.insights['default'];
+                for(let k in window.app.insights) { if(q.includes(k)) insight = window.app.insights[k]; }
+                text.innerText = insight;
+                const results = window.app.archiveVideos.filter(v => v.title.toLowerCase().includes(q));
+                grid.innerHTML = results.map(v => window.app.renderCard(v)).join('');
+            },
 
-            init: function() {
+            showAnatomy: (k) => {
+                const d = window.app.anaMap[k];
+                document.getElementById('ana-title').innerText = d.t;
+                document.getElementById('ana-meta').innerText = d.m;
+                document.getElementById('ana-desc').innerText = d.d;
+            },
+
+            nav: (id) => {
+                document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
+                document.getElementById('view-' + id).classList.add('active');
+                if(id==='brain' || id==='meditation') {
+                    const q = window.app.quotes[Math.floor(Math.random()*window.app.quotes.length)];
+                    document.getElementById(id + '-quote').innerText = q;
+                }
+                if(id==='library') window.app.renderLibraryInterface();
+                window.scrollTo(0,0);
+            },
+
+            renderLibraryInterface: () => {
+                const container = document.getElementById('library-topics');
+                const topics = [...new Set(window.app.data.map(r => r.topic))].sort();
+                if(!topics.includes("Uncatalogued")) topics.push("Uncatalogued");
+                container.innerHTML = topics.map(t => {
+                    const count = window.app.archiveVideos.filter(v => window.app.getTopic(v) === t).length;
+                    return `<div class="topic-chip" onclick="window.app.toggleTopic('${t}')">${t} <span class="chip-count opacity-50">(${count})</span></div>`;
+                }).join('');
+                window.app.renderGrid();
+            },
+
+            renderGrid: () => {
+                const grid = document.getElementById('library-grid');
+                grid.innerHTML = window.app.archiveVideos.map(v => window.app.renderCard(v)).join('');
+                const brainGrid = document.getElementById('brain-lectures-grid');
+                if(brainGrid) brainGrid.innerHTML = window.app.archiveVideos.filter(v => v.title.toLowerCase().match(/brain|skull|claustrum|anatomy/)).slice(0, 8).map(v => window.app.renderCard(v)).join('');
+                const medGrid = document.getElementById('meditation-lectures-grid');
+                if(medGrid) medGrid.innerHTML = window.app.archiveVideos.filter(v => v.title.toLowerCase().match(/meditation|silence/)).slice(0, 8).map(v => window.app.renderCard(v)).join('');
+            },
+
+            openSearchOverlay: () => document.getElementById('search-overlay').classList.add('active'),
+            closeSearchOverlay: () => document.getElementById('search-overlay').classList.remove('active'),
+            openVideo: (id) => { document.getElementById('video-frame-container').innerHTML = `<iframe src="https://archive.org/embed/${id}?autoplay=1" class="w-full h-full" frameborder="0" allowfullscreen></iframe>`; document.getElementById('video-modal').classList.remove('hidden'); },
+            closeVideo: () => { document.getElementById('video-frame-container').innerHTML = ''; document.getElementById('video-modal').classList.add('hidden'); },
+            toggleTheme: () => document.body.classList.toggle('light-mode'),
+
+            init: () => {
                 createDust();
-                // Safe Loader Timeout
-                setTimeout(() => document.getElementById('app-loader').classList.add('hidden'), 3500);
-
+                setTimeout(() => document.getElementById('app-loader').classList.add('hidden'), 3000);
                 Papa.parse('catalog.csv', { download: true, header: true, complete: (res) => {
-                    const keys = Object.keys(res.data[0] || {});
-                    const topK = keys.find(k => k.toLowerCase().includes('topic'));
-                    const urlK = keys.find(k => k.toLowerCase().includes('url'));
-                    window.app.data = res.data.map(r => ({ topic: r[topK] || "General", url: r[urlK] || "" }));
-                    window.app.renderLibraryInterface();
+                    window.app.data = res.data.map(r => ({ topic: r['TOPIC'] || "General", url: r['URL'] || "" }));
                 }});
-
                 fetch(`https://archive.org/advancedsearch.php?q=${encodeURIComponent('subject:"bill_donahue" AND mediatype:"movies"')}&fl[]=identifier,title,external-identifier&output=json&rows=1000`)
                 .then(r => r.json()).then(d => {
                     window.app.archiveVideos = d.response.docs;
                     window.app.archiveTotal = d.response.numFound;
-                    document.getElementById('global-counter').innerText = `Archive Index: ${window.app.archiveTotal}`;
-                    document.getElementById('global-counter').classList.remove('hidden');
-                    document.getElementById('app-loader').classList.add('hidden');
+                    document.getElementById('global-counter').innerText = `INDEX: ${window.app.archiveTotal}`;
                     window.app.renderLibraryInterface();
                 });
             }
