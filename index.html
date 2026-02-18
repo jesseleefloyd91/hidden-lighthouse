@@ -11,7 +11,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
    
     <style>
-        /* --- THEME VARIABLES --- */
         :root {
             --bg-base: #050505;
             --bg-gradient-start: #1a0f2e;
@@ -50,25 +49,23 @@
 
         body { font-family: 'Inter', sans-serif; background-color: var(--bg-base); color: var(--text-primary); transition: background-color 0.5s ease; overflow-x: hidden; height: 100vh; }
         .cinzel { font-family: 'Cinzel', serif; }
-        .mono { font-family: 'Space Grotesk', monospace; }
         
-        .stars-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; background: radial-gradient(circle at bottom center, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 80%); transition: opacity 0.8s; }
+        .stars-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; background: radial-gradient(circle at bottom center, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 80%); }
         
         .masonry-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; padding-bottom: 140px; }
         @media (max-width: 640px) { .masonry-grid { grid-template-columns: 1fr; } }
-        .cosmos-card { background-color: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 16px; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); cursor: pointer; position: relative; overflow: hidden; display: flex; flex-direction: column; min-height: 200px; z-index: 10; }
+        .cosmos-card { background-color: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 16px; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); cursor: pointer; position: relative; overflow: hidden; display: flex; flex-direction: column; min-height: 220px; z-index: 10; }
         .cosmos-card:hover { border-color: var(--gold); transform: translateY(-8px); box-shadow: 0 20px 40px -10px var(--accent-glow); }
 
         .dock-container { position: fixed; bottom: 20px; left: 0; width: 100%; display: flex; justify-content: center; z-index: 50; padding: 0 20px; }
-        .dock { background: var(--dock-bg); backdrop-filter: blur(20px); border: 1px solid var(--border-color); padding: 10px; border-radius: 24px; display: flex; gap: 6px; box-shadow: 0 20px 40px -10px rgba(0,0,0,0.3); max-width: 100%; overflow-x: auto; scrollbar-width: none; }
-        .dock-btn { display: flex; align-items: center; justify-content: center; padding: 10px 18px; border-radius: 14px; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-secondary); transition: all 0.2s; cursor: pointer; white-space: nowrap; }
-        .dock-btn:hover { color: var(--text-primary); background: var(--bg-tertiary); }
+        .dock { background: var(--dock-bg); backdrop-filter: blur(20px); border: 1px solid var(--border-color); padding: 10px; border-radius: 24px; display: flex; gap: 6px; box-shadow: 0 20px 40px -10px rgba(0,0,0,0.3); }
+        .dock-btn { display: flex; align-items: center; justify-content: center; padding: 10px 18px; border-radius: 14px; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-secondary); transition: all 0.2s; cursor: pointer; }
         .dock-btn.active { background: var(--btn-active-bg) !important; color: var(--btn-active-text) !important; }
 
         .topic-chip { padding: 8px 16px; border-radius: 99px; font-size: 10px; font-weight: 700; text-transform: uppercase; cursor: pointer; border: 1px solid var(--border-color); background: var(--bg-secondary); transition: all 0.2s; white-space: nowrap; }
-        .topic-chip.active { background: var(--purple); color: white; border-color: var(--purple); box-shadow: 0 0 15px rgba(216, 180, 254, 0.3); }
+        .topic-chip.active { background: var(--purple); color: white; border-color: var(--purple); }
 
-        #app-loader { position: fixed; inset: 0; z-index: 100; background: var(--bg-base); display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        #app-loader { position: fixed; inset: 0; z-index: 100; background: #050505; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .view-section { display: none; padding-top: 120px; padding-bottom: 120px; width: 100%; min-height: 100vh; animation: fadeIn 0.5s ease; }
         .view-section.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -79,42 +76,31 @@
     
     <div id="app-loader">
         <div class="w-12 h-12 border-4 border-t-purple-400 border-white/10 rounded-full animate-spin mb-4"></div>
-        <p class="cinzel text-xs tracking-widest animate-pulse">Initializing Archive...</p>
+        <p class="cinzel text-xs tracking-widest animate-pulse text-white">Opening the Seals...</p>
     </div>
 
     <div class="fixed top-0 left-0 w-full p-4 z-40 flex justify-between items-center backdrop-blur-xl border-b bg-black/40" style="border-color: var(--border-color);">
-        <div class="flex items-center gap-3 cursor-pointer group" onclick="window.app.nav('home')">
+        <div class="flex items-center gap-3 cursor-pointer" onclick="window.app.nav('home')">
             <div class="w-10 h-10 border flex items-center justify-center rotate-45 shrink-0 overflow-hidden bg-white/5" style="border-color: var(--border-color);">
                 <img src="bill_profile.jpg" class="w-full h-full object-cover -rotate-45" alt="Bill Donahue">
             </div>
             <h1 class="cinzel font-bold text-xs md:text-sm tracking-[0.2em] leading-tight">Hidden<br>Meanings</h1>
         </div>
-        <div class="flex items-center gap-4">
-            <div class="relative group hidden md:block w-64">
-                <input type="text" id="global-search" oninput="window.app.performGlobalSearch()" placeholder="SEARCH ARCHIVE..." class="search-input w-full bg-white/5 border border-white/10 rounded-full px-4 py-2 text-[10px] focus:border-purple-400 outline-none">
-            </div>
-            <button onclick="window.app.toggleTheme()" class="w-10 h-10 rounded-full flex items-center justify-center border border-white/10 hover:bg-white/5 transition-all">
-                <i class="fa-solid fa-moon" id="theme-icon"></i>
-            </button>
-        </div>
+        <button onclick="window.app.toggleTheme()" class="w-10 h-10 rounded-full flex items-center justify-center border border-white/10 hover:bg-white/5">
+            <i class="fa-solid fa-moon" id="theme-icon"></i>
+        </button>
     </div>
 
     <div class="h-screen overflow-y-auto" id="scroll-wrapper">
         
         <section id="view-home" class="view-section active px-4">
             <div class="max-w-4xl mx-auto text-center flex flex-col items-center justify-center min-h-[60vh]">
-                <div class="mb-8 relative">
-                    <div class="w-32 h-32 md:w-40 md:h-40 rounded-full p-1 border-2 profile-img overflow-hidden">
-                        <img src="bill_profile.jpg" class="w-full h-full object-cover rounded-full">
-                    </div>
-                </div>
-                <h1 class="cinzel text-5xl md:text-8xl font-black mb-8 tracking-tighter">HIDDEN<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400 italic">MEANINGS</span></h1>
-                <div class="w-full max-w-lg relative group">
-                    <input type="text" id="teacher-input" placeholder="Ask the Teacher..." class="w-full rounded-full py-4 px-8 bg-white/5 border border-purple-500/30 focus:border-purple-400 outline-none text-sm transition-all" onkeydown="if(event.key === 'Enter') window.app.askTheTeacher()">
-                    <button onclick="window.app.askTheTeacher()" class="absolute right-4 top-1/2 -translate-y-1/2 text-purple-400"><i class="fa-solid fa-paper-plane"></i></button>
+                <h1 class="cinzel text-5xl md:text-8xl font-black mb-8">HIDDEN<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400 italic">MEANINGS</span></h1>
+                <div class="w-full max-w-lg">
+                    <input type="text" id="teacher-input" placeholder="Search a concept..." class="w-full rounded-full py-4 px-8 bg-white/5 border border-purple-500/30 focus:border-purple-400 outline-none text-sm" onkeydown="if(event.key === 'Enter') window.app.askTheTeacher()">
                 </div>
                 <div id="teacher-response-box" class="w-full text-left p-8 border-l-4 rounded-xl hidden mt-10 bg-white/5 border-purple-500">
-                    <div id="teacher-text" class="text-lg md:text-xl italic font-light mb-8"></div>
+                    <div id="teacher-text" class="text-lg italic font-light mb-8"></div>
                     <div id="teacher-related-grid" class="masonry-grid"></div>
                 </div>
             </div>
@@ -123,43 +109,43 @@
         <section id="view-library" class="view-section px-6">
             <div class="max-w-[1800px] mx-auto w-full">
                 <div class="mb-10 pb-8 border-b border-white/10">
-                    <div class="flex flex-col md:flex-row justify-between items-center gap-6 mb-6">
-                        <h2 class="cinzel text-3xl font-bold">The Catalog</h2>
-                        <button onclick="window.app.clearLibraryFilters()" class="text-[10px] uppercase font-bold text-red-400 hover:text-red-300">Reset Filters</button>
-                    </div>
-                    <div id="library-topics" class="flex flex-wrap gap-2 justify-center"></div>
+                    <h2 class="cinzel text-3xl font-bold mb-6">Remastered Archive</h2>
+                    <div id="library-topics" class="flex flex-wrap gap-2 justify-center min-h-[40px]"></div>
                 </div>
                 <div id="library-grid" class="masonry-grid"></div>
-                <div id="video-loader" class="text-center py-20 hidden"><i class="fa-solid fa-circle-notch fa-spin text-4xl text-purple-400"></i></div>
             </div>
         </section>
 
         <section id="view-brain" class="view-section px-6 text-center">
             <div class="max-w-5xl mx-auto pt-10">
-                <h2 class="cinzel text-4xl md:text-6xl font-black mb-8">THE UPPER ROOM</h2>
+                <h2 class="cinzel text-4xl md:text-6xl font-black mb-8 text-white">THE UPPER ROOM</h2>
                 <div class="p-8 border rounded-2xl bg-white/5 border-white/10 mb-12 text-left relative overflow-hidden">
-                    <div class="absolute top-0 left-0 w-1 h-full bg-gold"></div>
-                    <p class="text-xl font-serif italic mb-6 text-center">"The Bible is a book of Anatomy."</p>
+                    <p class="text-xl font-serif italic mb-6 text-center text-white">"The Bible is not a book of history; it is a book of Anatomy."</p>
                     <div class="grid md:grid-cols-2 gap-10 items-center">
                         <div class="text-sm leading-relaxed text-stone-300">
-                            The brain contains the **Claustrum**, the **Pineal Gland**, and the **Pituitary**. In esoteric study, this is the "Upper Room" where the 12 cranial nerves (disciples) meet. 
-                            The sacred oil descends to the solar plexus and must be returned to the skull (Golgotha) to activate dormant neurons.
+                            The brain contains the **Claustrum**, the **Pineal Gland**, and the **Pituitary**. Raised up the 33 vertebrae, the sacred secretion enters the Pineal Gland.
                         </div>
                         <div class="bg-black/40 p-6 rounded-xl border border-white/5 flex items-center justify-around">
-                            <div class="text-center"><div class="w-8 h-8 rounded-full bg-purple-500 animate-pulse shadow-[0_0_20px_#a855f7] mb-2"></div><span class="text-[10px] font-bold">PINEAL</span></div>
+                            <div class="text-center"><div class="w-8 h-8 rounded-full bg-purple-500 animate-pulse mb-2 mx-auto"></div><span class="text-[9px] font-bold text-white">PINEAL</span></div>
                             <div class="h-px flex-1 bg-gradient-to-r from-purple-500 to-blue-500 mx-4"></div>
-                            <div class="text-center"><div class="w-8 h-8 rounded-full bg-blue-500 animate-pulse shadow-[0_0_20px_#3b82f6] mb-2"></div><span class="text-[10px] font-bold">PITUITARY</span></div>
+                            <div class="text-center"><div class="w-8 h-8 rounded-full bg-blue-500 animate-pulse mb-2 mx-auto"></div><span class="text-[9px] font-bold text-white">PITUITARY</span></div>
                         </div>
                     </div>
                 </div>
-                <h3 class="cinzel text-xl mb-8 text-purple-400 tracking-widest">BIOLOGICAL DECODINGS</h3>
                 <div id="brain-lectures-grid" class="masonry-grid"></div>
             </div>
         </section>
 
-        <section id="view-search" class="view-section px-6 max-w-[1800px] mx-auto"><div id="global-search-list" class="masonry-grid"></div></section>
-        <section id="view-anatomy" class="view-section px-6 text-center"><h2 class="cinzel text-5xl mb-10">THE TEMPLE</h2><div id="anatomy-diagram" class="anatomy-wrapper mx-auto"></div></section>
-        <section id="view-meditation" class="view-section px-6 text-center"><h1 id="meditation-quote" class="cinzel text-3xl italic mb-12"></h1><div id="meditation-lectures-grid" class="masonry-grid"></div></section>
+        <section id="view-anatomy" class="view-section px-6 text-center">
+            <h2 class="cinzel text-5xl mb-10 text-white">THE TEMPLE</h2>
+            <div id="anatomy-diagram" class="anatomy-wrapper mx-auto"></div>
+        </section>
+        
+        <section id="view-meditation" class="view-section px-6 text-center">
+            <h1 id="meditation-quote" class="cinzel text-3xl italic mb-12 text-white"></h1>
+            <div id="meditation-lectures-grid" class="masonry-grid"></div>
+        </section>
+
         <section id="view-resources" class="view-section px-6 max-w-4xl mx-auto" id="links-grid"></section>
     </div>
 
@@ -168,11 +154,15 @@
             <button class="dock-btn active" id="btn-home" onclick="window.app.nav('home')">Home</button>
             <button class="dock-btn" id="btn-library" onclick="window.app.nav('library')">Library</button>
             <button class="dock-btn" id="btn-brain" onclick="window.app.nav('brain')">Brain</button>
-            <button class="dock-btn text-lg" style="color: var(--gold);" onclick="window.app.openSearchOverlay()"><i class="fa-solid fa-magnifying-glass"></i></button>
             <button class="dock-btn" id="btn-anatomy" onclick="window.app.nav('anatomy')">Temple</button>
             <button class="dock-btn" id="btn-meditation" onclick="window.app.nav('meditation')">Meditation</button>
-            <button class="dock-btn" id="btn-resources" onclick="window.app.nav('resources')">Links</button>
             <button class="dock-btn text-red-500" onclick="window.app.scanForBrokenLinks()"><i class="fa-solid fa-stethoscope"></i></button>
+        </div>
+    </div>
+
+    <div id="video-modal" class="fixed inset-0 z-[60] bg-black/95 hidden flex items-center justify-center" onclick="if(event.target === this) window.app.closeVideo()">
+        <div class="relative w-full max-w-4xl aspect-video bg-black rounded-xl overflow-hidden shadow-2xl">
+            <div id="video-frame-container" class="w-full h-full"></div>
         </div>
     </div>
 
@@ -186,8 +176,8 @@
             const ctx = canvas.getContext('2d');
             let w = canvas.width = window.innerWidth; let h = canvas.height = window.innerHeight;
             const particles = [];
-            for(let i=0; i<5000; i++) {
-                particles.push({ x: Math.random()*w, y: Math.random()*h, r: Math.random()*1.2, dy: Math.random()*0.3+0.05, alpha: Math.random() });
+            for(let i=0; i<3000; i++) {
+                particles.push({ x: Math.random()*w, y: Math.random()*h, r: Math.random()*1.1, dy: Math.random()*0.2+0.05, alpha: Math.random() });
             }
             function animate() {
                 ctx.clearRect(0,0,w,h);
@@ -204,7 +194,7 @@
 
         window.app = {
             data: [], archiveVideos: [], selectedLibraryTopics: new Set(),
-            quotes: ["The Kingdom of God is within you.", "Know ye not that ye are the temple of God?", "Be still, and know that I am God."],
+            quotes: ["Be still and know.", "The Kingdom of God is within you.", "If thine eye be single, thy whole body shall be full of light."],
 
             renderCard: function(v) {
                 const topic = this.getTopic(v);
@@ -213,8 +203,7 @@
                     const id = v['external-identifier'].match(/urn:youtube:([a-zA-Z0-9_-]{11})/)[1];
                     bridge = `<button onclick="event.stopPropagation(); window.open('https://youtube.com/watch?v=${id}', '_blank')" class="text-[8px] border px-1.5 py-0.5 rounded border-red-500/50 text-red-400 font-bold hover:bg-red-500 hover:text-white transition-all">SOURCE</button>`;
                 }
-                return `
-                <div class="cosmos-card group" onclick="window.app.openVideo('${v.identifier}')">
+                return `<div class="cosmos-card group" onclick="window.app.openVideo('${v.identifier}')">
                     <img src="https://archive.org/services/img/${v.identifier}" class="aspect-video object-cover opacity-70 group-hover:opacity-100 transition-opacity" />
                     <div class="p-4 flex flex-col flex-1">
                         <h3 class="text-[11px] font-semibold line-clamp-2 mb-3 leading-snug">${v.title}</h3>
@@ -238,12 +227,12 @@
 
             renderLibraryInterface: function() {
                 const container = document.getElementById('library-topics');
-                const topics = [...new Set(this.data.map(r => r.topic))].sort();
+                const topics = [...new Set(window.app.data.map(r => r.topic))].sort();
                 if (!topics.includes("Uncatalogued")) topics.push("Uncatalogued");
                 
                 container.innerHTML = topics.map(t => {
-                    const count = this.archiveVideos.filter(v => this.getTopic(v) === t).length;
-                    const active = this.selectedLibraryTopics.has(t) ? 'active' : '';
+                    const count = window.app.archiveVideos.length ? window.app.archiveVideos.filter(v => window.app.getTopic(v) === t).length : '...';
+                    const active = window.app.selectedLibraryTopics.has(t) ? 'active' : '';
                     return `<div class="topic-chip ${active}" onclick="window.app.toggleTopic('${t.replace(/'/g, "\\'")}')">${t} <span class="chip-count">(${count})</span></div>`;
                 }).join('');
                 this.renderGrid();
@@ -258,17 +247,14 @@
             renderGrid: function() {
                 const grid = document.getElementById('library-grid');
                 if(!grid) return;
-                let results = this.archiveVideos;
+                let results = window.app.archiveVideos;
                 if(this.selectedLibraryTopics.size > 0) results = results.filter(v => this.selectedLibraryTopics.has(this.getTopic(v)));
                 grid.innerHTML = results.map(v => this.renderCard(v)).join('');
                 
-                // Also update Brain/Meditation
+                // Update Brain/Meditation
                 const brainGrid = document.getElementById('brain-lectures-grid');
                 if (brainGrid) {
-                    const brainVids = this.archiveVideos.filter(v => {
-                        const t = v.title.toLowerCase();
-                        return t.includes('brain') || t.includes('skull') || t.includes('claustrum') || t.includes('anatomy');
-                    }).slice(0, 12);
+                    const brainVids = window.app.archiveVideos.filter(v => v.title.toLowerCase().match(/brain|skull|claustrum|anatomy/)).slice(0, 8);
                     brainGrid.innerHTML = brainVids.map(v => this.renderCard(v)).join('');
                 }
             },
@@ -278,12 +264,12 @@
                 document.querySelectorAll('.dock-btn').forEach(b => b.classList.remove('active'));
                 document.getElementById('view-' + id).classList.add('active');
                 document.getElementById('btn-' + id)?.classList.add('active');
-                if(id==='library') this.renderLibraryInterface();
+                if(id==='meditation') document.getElementById('meditation-quote').innerText = `"${this.quotes[Math.floor(Math.random()*this.quotes.length)]}"`;
             },
 
             scanForBrokenLinks: function() {
-                const missing = this.archiveVideos.filter(v => !v['external-identifier'] || !v['external-identifier'].includes('urn:youtube:'));
-                const uncat = this.archiveVideos.filter(v => this.getTopic(v) === "Uncatalogued");
+                const missing = window.app.archiveVideos.filter(v => !v['external-identifier'] || !v['external-identifier'].includes('urn:youtube:'));
+                const uncat = window.app.archiveVideos.filter(v => window.app.getTopic(v) === "Uncatalogued");
                 const html = `<html><body style="font-family:monospace;background:#000;color:#fff;padding:50px;"><h1>Health Report</h1><h2>Missing Bridges (${missing.length})</h2>${missing.map(m=>`<div>${m.title}</div>`).join('')}<h2>Uncatalogued (${uncat.length})</h2>${uncat.map(u=>`<div>${u.title}</div>`).join('')}</body></html>`;
                 const blob = new Blob([html], {type:'text/html'}); window.open(URL.createObjectURL(blob), '_blank');
             },
@@ -291,17 +277,21 @@
             openVideo: function(id) { document.getElementById('video-frame-container').innerHTML = `<iframe src="https://archive.org/embed/${id}?autoplay=1" class="w-full h-full" frameborder="0" allowfullscreen></iframe>`; document.getElementById('video-modal').classList.remove('hidden'); },
             closeVideo: function() { document.getElementById('video-frame-container').innerHTML = ''; document.getElementById('video-modal').classList.add('hidden'); },
             toggleTheme: function() { document.body.classList.toggle('light-mode'); },
-            askTheTeacher: function() { /* restored teacher logic */ document.getElementById('teacher-response-box').classList.remove('hidden'); document.getElementById('teacher-text').innerText = "Seek the Silence within the Upper Room of your own mind."; },
+            askTheTeacher: function() { document.getElementById('teacher-response-box').classList.remove('hidden'); document.getElementById('teacher-text').innerText = "Seek the silence within the Upper Room."; },
 
             init: function() {
                 createDust();
-                Papa.parse('catalog.csv', { download: true, header: true, complete: (results) => {
-                    const keys = Object.keys(results.data[0] || {});
+                // FAIL SAFE: Loader disappears after 4s
+                setTimeout(() => document.getElementById('app-loader').classList.add('hidden'), 4000);
+
+                Papa.parse('catalog.csv', { download: true, header: true, complete: (res) => {
+                    const keys = Object.keys(res.data[0] || {});
                     const topK = keys.find(k => k.toLowerCase().includes('topic'));
                     const urlK = keys.find(k => k.toLowerCase().includes('url'));
-                    window.app.data = results.data.map(r => ({ topic: r[topK] || "General", url: r[urlK] || "" }));
+                    window.app.data = res.data.map(r => ({ topic: r[topK] || "General", url: r[urlK] || "" }));
                     window.app.renderLibraryInterface();
                 }});
+
                 fetch(`https://archive.org/advancedsearch.php?q=${encodeURIComponent('subject:"bill_donahue" AND mediatype:"movies"')}&fl[]=identifier,title,external-identifier&output=json&rows=1000`)
                 .then(r => r.json()).then(d => {
                     window.app.archiveVideos = d.response.docs;
