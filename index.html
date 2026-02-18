@@ -53,11 +53,7 @@
         
         .dust-particle { position: absolute; border-radius: 50%; animation: dust-flow var(--duration) linear infinite, dust-cycle 25s infinite linear; opacity: 0; mix-blend-mode: screen; }
         @keyframes dust-flow { 0% { opacity: 0; transform: translateY(0) scale(0.5); } 20% { opacity: 0.8; } 80% { opacity: 0.6; } 100% { opacity: 0; transform: translateY(-150px) scale(1); } }
-        @keyframes dust-cycle { 
-            0% { background-color: rgba(255,255,255,0.8); box-shadow: 0 0 3px rgba(255,255,255,0.5); } 
-            50% { background-color: rgba(147, 51, 234, 0.8); box-shadow: 0 0 3px rgba(147, 51, 234, 0.5); } 
-            100% { background-color: rgba(255,255,255,0.8); box-shadow: 0 0 3px rgba(255,255,255,0.5); } 
-        }
+        @keyframes dust-cycle { 0% { background-color: rgba(255,255,255,0.8); box-shadow: 0 0 3px rgba(255,255,255,0.5); } 50% { background-color: rgba(147, 51, 234, 0.8); box-shadow: 0 0 3px rgba(147, 51, 234, 0.5); } 100% { background-color: rgba(255,255,255,0.8); box-shadow: 0 0 3px rgba(255,255,255,0.5); } }
 
         .masonry-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; padding-bottom: 140px; }
         @media (max-width: 640px) { .masonry-grid { grid-template-columns: 1fr; } }
@@ -498,7 +494,7 @@
                 }
 
                 if (searchId) {
-                    const row = this.data.find(r => this.getVideoID(r.raw['URL']) === searchId);
+                    const row = this.data.find(r => this.getVideoID(r.URL) === searchId);
                     if (row) return row.topic; 
                 }
 
@@ -648,17 +644,20 @@
                 if (this.archiveLoading || !this.archiveHasMore) return;
                 this.archiveLoading = true;
                 const query = 'subject:"bill_donahue" AND mediatype:"movies"';
+                // Requesting external-identifier to check bridge status
                 const url = `https://archive.org/advancedsearch.php?q=${encodeURIComponent(query)}&fl[]=identifier&fl[]=title&fl[]=description&fl[]=external-identifier&fl[]=downloads&sort[]=-addeddate&output=json&rows=500&page=${this.archivePage}`;
                 try {
                     const res = await fetch(url); const data = await res.json();
                     if(data.response.numFound) this.archiveTotal = data.response.numFound;
                     if (data.response && data.response.docs && data.response.docs.length > 0) { 
                         this.archiveVideos.push(...data.response.docs); 
+                        // IMMEDIATE RENDER UPON SUCCESS
                         this.renderLibraryInterface(); 
-                        this.renderLibraryResults(); 
+                        this.renderLibraryResults(); // Ensure grid updates too
                     } else { this.archiveHasMore = false; }
                 } catch (e) { console.error("Archive Error", e); }
                 this.archiveLoading = false;
+                // Force Update Loader
                 this.renderLibraryResults();
             },
             
