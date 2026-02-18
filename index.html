@@ -17,6 +17,7 @@
             --bg-gradient-start: #1a0f2e;
             --bg-gradient-end: #050505;
             --bg-secondary: #0f0f0f;
+            --bg-tertiary: #1a1a1a;
             --text-primary: #EAEAEA;
             --text-secondary: #a1a1aa;
             --border-color: rgba(255,255,255,0.1);
@@ -34,6 +35,7 @@
             --bg-gradient-start: #f1f5f9;
             --bg-gradient-end: #ffffff;
             --bg-secondary: #ffffff;
+            --bg-tertiary: #f8fafc;
             --text-primary: #0f172a;
             --text-secondary: #475569;
             --border-color: rgba(0,0,0,0.1);
@@ -46,674 +48,266 @@
             --btn-active-text: #ffffff;
         }
 
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg-base); color: var(--text-primary); transition: background-color 0.5s ease, color 0.5s ease; overflow-x: hidden; height: 100vh; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-base); color: var(--text-primary); transition: background-color 0.5s ease; overflow-x: hidden; height: 100vh; }
         .cinzel { font-family: 'Cinzel', serif; }
         .mono { font-family: 'Space Grotesk', monospace; }
         
-        /* BACKGROUNDS */
-        .stars-container { 
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; 
-            background: radial-gradient(circle at bottom center, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 80%); 
-            transition: opacity 0.8s; opacity: 1; 
-        }
+        .stars-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; background: radial-gradient(circle at bottom center, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 80%); transition: opacity 0.8s; }
         
-        /* COSMIC DUST */
-        .dust-particle { position: absolute; border-radius: 50%; animation: dust-flow var(--duration) linear infinite, dust-cycle 25s infinite linear; opacity: 0; mix-blend-mode: screen; }
-        @keyframes dust-flow { 0% { opacity: 0; transform: translateY(0) scale(0.5); } 20% { opacity: 0.8; } 80% { opacity: 0.6; } 100% { opacity: 0; transform: translateY(-150px) scale(1); } }
-        @keyframes dust-cycle { 
-            0% { background-color: rgba(255,255,255,0.8); box-shadow: 0 0 3px rgba(255,255,255,0.5); } 
-            50% { background-color: rgba(147, 51, 234, 0.8); box-shadow: 0 0 3px rgba(147, 51, 234, 0.5); } 
-            100% { background-color: rgba(255,255,255,0.8); box-shadow: 0 0 3px rgba(255,255,255,0.5); } 
-        }
-
-        /* CARDS */
-        .masonry-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; padding-bottom: 140px; }
+        .masonry-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; padding-bottom: 140px; }
         @media (max-width: 640px) { .masonry-grid { grid-template-columns: 1fr; } }
-        .cosmos-card { background-color: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 12px; transition: all 0.3s; cursor: pointer; position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; min-height: 200px; z-index: 10; }
-        .cosmos-card:hover { border-color: var(--gold); transform: translateY(-4px); box-shadow: 0 10px 40px -10px var(--accent-glow); }
+        .cosmos-card { background-color: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 16px; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); cursor: pointer; position: relative; overflow: hidden; display: flex; flex-direction: column; min-height: 200px; z-index: 10; }
+        .cosmos-card:hover { border-color: var(--gold); transform: translateY(-8px); box-shadow: 0 20px 40px -10px var(--accent-glow); }
 
-        /* UI */
         .dock-container { position: fixed; bottom: 20px; left: 0; width: 100%; display: flex; justify-content: center; z-index: 50; padding: 0 20px; }
-        .dock { background: var(--dock-bg); backdrop-filter: blur(20px); border: 1px solid var(--border-color); padding: 8px; border-radius: 20px; display: flex; gap: 4px; box-shadow: 0 20px 40px -10px rgba(0,0,0,0.3); max-width: 100%; overflow-x: auto; scrollbar-width: none; }
-        .dock-btn { display: flex; align-items: center; justify-content: center; padding: 10px 16px; border-radius: 12px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-secondary); transition: all 0.2s; cursor: pointer; border: 1px solid transparent; white-space: nowrap; flex-shrink: 0; min-width: 50px; }
+        .dock { background: var(--dock-bg); backdrop-filter: blur(20px); border: 1px solid var(--border-color); padding: 10px; border-radius: 24px; display: flex; gap: 6px; box-shadow: 0 20px 40px -10px rgba(0,0,0,0.3); max-width: 100%; overflow-x: auto; scrollbar-width: none; }
+        .dock-btn { display: flex; align-items: center; justify-content: center; padding: 10px 18px; border-radius: 14px; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-secondary); transition: all 0.2s; cursor: pointer; white-space: nowrap; }
         .dock-btn:hover { color: var(--text-primary); background: var(--bg-tertiary); }
         .dock-btn.active { background: var(--btn-active-bg) !important; color: var(--btn-active-text) !important; }
 
-        /* SEARCH OVERLAY */
-        #search-overlay { position: fixed; inset: 0; background: rgba(5, 5, 5, 0.95); backdrop-filter: blur(20px); z-index: 90; display: flex; flex-direction: column; align-items: center; padding-top: 100px; transition: opacity 0.3s; opacity: 0; pointer-events: none; }
-        #search-overlay.active { opacity: 1; pointer-events: auto; }
-        .big-search-input { width: 90%; max-width: 600px; background: transparent; border: none; border-bottom: 2px solid var(--gold); font-size: 2rem; color: var(--text-primary); padding: 10px; text-align: center; outline: none; font-family: 'Cinzel', serif; }
-        .big-search-input::placeholder { color: var(--text-secondary); opacity: 0.5; }
+        .topic-chip { padding: 8px 16px; border-radius: 99px; font-size: 10px; font-weight: 700; text-transform: uppercase; cursor: pointer; border: 1px solid var(--border-color); background: var(--bg-secondary); transition: all 0.2s; white-space: nowrap; }
+        .topic-chip.active { background: var(--purple); color: white; border-color: var(--purple); box-shadow: 0 0 15px rgba(216, 180, 254, 0.3); }
 
-        /* DIAGNOSTICS OVERLAY */
-        #diagnostics-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 100; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
-        .diag-box { width: 90%; max-width: 800px; background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 30px; border-radius: 16px; text-align: center; box-shadow: 0 0 50px rgba(0,0,0,0.5); max-height: 80vh; display: flex; flex-direction: column; }
-        .progress-bar { height: 4px; background: var(--bg-tertiary); width: 100%; border-radius: 2px; overflow: hidden; margin: 20px 0; flex-shrink: 0; }
-        .progress-fill { height: 100%; background: var(--gold); width: 0%; transition: width 0.3s; }
-
-        /* ANATOMY */
-        .anatomy-wrapper { position: relative; width: 300px; height: 650px; border: 1px solid var(--border-color); border-radius: 999px; background: var(--bg-secondary); box-shadow: 0 0 80px -20px var(--accent-glow); }
-        @media (max-width: 768px) { .anatomy-scale-container { transform: scale(0.75); transform-origin: top center; height: 500px; } }
-        .anatomy-dot { width: 24px; height: 24px; border-radius: 50%; position: absolute; left: 50%; transform: translateX(-50%); cursor: pointer; transition: all 0.3s ease; border: 2px solid rgba(255,255,255,0.5); z-index: 20; }
-        .anatomy-dot:hover { transform: translateX(-50%) scale(1.5); border-color: white; }
-
-        .view-section { display: none; padding-top: 140px; padding-bottom: 150px; width: 100%; min-height: 100vh; animation: fadeIn 0.4s ease; }
+        #app-loader { position: fixed; inset: 0; z-index: 100; background: var(--bg-base); display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .view-section { display: none; padding-top: 120px; padding-bottom: 120px; width: 100%; min-height: 100vh; animation: fadeIn 0.5s ease; }
         .view-section.active { display: block; }
-        #view-home.active { display: flex; flex-direction: column; justify-content: center; align-items: center; padding-top: 0; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .hidden { display: none !important; }
-        .profile-img { box-shadow: 0 0 50px var(--accent-glow); transition: 0.5s; border-color: var(--border-color); }
-        
-        /* CHIPS */
-        .topic-chip { padding: 6px 12px; border-radius: 99px; font-size: 10px; font-weight: bold; text-transform: uppercase; cursor: pointer; border: 1px solid var(--border-color); color: var(--text-secondary); background: var(--bg-secondary); transition: all 0.2s; user-select: none; display: inline-flex; align-items: center; gap: 6px; }
-        .topic-chip:hover { border-color: var(--purple); color: var(--text-primary); }
-        .topic-chip.active { background: var(--purple); color: white; border-color: var(--purple); }
-        .chip-count { opacity: 0.5; font-size: 9px; margin-left: 4px; }
-
-        .search-input { background: var(--input-bg); backdrop-filter: blur(10px); border: 1px solid var(--border-color); color: var(--text-primary); padding: 10px 20px; border-radius: 99px; font-size: 12px; width: 100%; outline: none; transition: all 0.3s; }
-        .search-input:focus { border-color: var(--purple); box-shadow: 0 0 15px rgba(216, 180, 254, 0.1); }
-
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: var(--bg-primary); }
-        ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
     </style>
 </head>
 <body class="flex flex-col min-h-screen">
     <div id="stars-container" class="stars-container"></div>
     
-    <div id="diagnostics-overlay" class="hidden">
-        <div class="diag-box">
-            <i class="fa-solid fa-stethoscope text-4xl mb-4" style="color: var(--gold);"></i>
-            <h3 class="cinzel text-xl font-bold mb-2" style="color: var(--text-primary);">Archive Health Check</h3>
-            <p id="diag-status" class="text-xs font-mono uppercase tracking-widest mb-4" style="color: var(--text-secondary);">Initializing...</p>
-            <div class="progress-bar"><div id="diag-progress" class="progress-fill"></div></div>
-            <div id="diag-results" class="hidden text-left mt-4 overflow-y-auto custom-scrollbar text-xs font-mono flex-1" style="color: var(--text-secondary);"></div>
-            <button onclick="window.app.closeDiagnostics()" class="mt-6 px-6 py-2 rounded-full font-bold uppercase tracking-widest text-xs border transition-all shrink-0" style="border-color: var(--border-color); color: var(--text-primary);">Close Scanner</button>
-        </div>
+    <div id="app-loader">
+        <div class="w-12 h-12 border-4 border-t-purple-400 border-white/10 rounded-full animate-spin mb-4"></div>
+        <p class="cinzel text-xs tracking-widest animate-pulse">Initializing Archive...</p>
     </div>
 
-    <div id="search-overlay">
-        <button onclick="window.app.closeSearchOverlay()" class="absolute top-10 right-10 text-4xl" style="color: var(--text-secondary);"><i class="fa-solid fa-xmark"></i></button>
-        <div class="text-center w-full px-6">
-            <p class="font-mono text-xs uppercase tracking-[0.3em] mb-4" style="color: var(--gold);">Search Library Files</p>
-            <input type="text" id="overlay-search-input" class="big-search-input" placeholder="Type a keyword..." onkeydown="if(event.key === 'Enter') window.app.performOverlaySearch()">
-            <div class="mt-8 flex gap-4 justify-center">
-                <button onclick="window.app.performOverlaySearch()" class="px-6 py-2 rounded-full font-bold uppercase tracking-widest text-xs transition-all" style="background: var(--gold); color: black;">Search Archive</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="fixed top-0 left-0 w-full p-4 z-40 flex justify-between items-center bg-opacity-95 backdrop-blur-xl border-b shadow-sm transition-colors duration-300" style="background-color: var(--bg-primary); border-color: var(--border-color);">
+    <div class="fixed top-0 left-0 w-full p-4 z-40 flex justify-between items-center backdrop-blur-xl border-b bg-black/40" style="border-color: var(--border-color);">
         <div class="flex items-center gap-3 cursor-pointer group" onclick="window.app.nav('home')">
-            <div class="w-10 h-10 border flex items-center justify-center rotate-45 transition-all group-hover:rotate-0 shrink-0 overflow-hidden" style="border-color: var(--border-color); background: var(--bg-secondary);">
-                <img src="bill_profile.jpg" class="w-full h-full object-cover -rotate-45 group-hover:rotate-0 transition-transform duration-500" alt="Bill Donahue">
+            <div class="w-10 h-10 border flex items-center justify-center rotate-45 shrink-0 overflow-hidden bg-white/5" style="border-color: var(--border-color);">
+                <img src="bill_profile.jpg" class="w-full h-full object-cover -rotate-45" alt="Bill Donahue">
             </div>
-            <div>
-                <h1 class="cinzel font-bold text-xs md:text-sm tracking-widest uppercase leading-tight" style="color: var(--text-primary);">Hidden<br>Meanings</h1>
-            </div>
+            <h1 class="cinzel font-bold text-xs md:text-sm tracking-[0.2em] leading-tight">Hidden<br>Meanings</h1>
         </div>
-        
         <div class="flex items-center gap-4">
             <div class="relative group hidden md:block w-64">
-                <input type="text" id="global-search" oninput="window.app.performGlobalSearch()" placeholder="SEARCH LIBRARY..." class="search-input font-mono uppercase">
-                <i class="fa-solid fa-search absolute right-4 top-1/2 -translate-y-1/2 text-xs" style="color: var(--text-secondary);"></i>
+                <input type="text" id="global-search" oninput="window.app.performGlobalSearch()" placeholder="SEARCH ARCHIVE..." class="search-input w-full bg-white/5 border border-white/10 rounded-full px-4 py-2 text-[10px] focus:border-purple-400 outline-none">
             </div>
-            <button onclick="window.app.toggleTheme()" class="w-10 h-10 rounded-full flex items-center justify-center border transition-all hover:bg-white/10" style="border-color: var(--border-color); color: var(--text-primary);">
+            <button onclick="window.app.toggleTheme()" class="w-10 h-10 rounded-full flex items-center justify-center border border-white/10 hover:bg-white/5 transition-all">
                 <i class="fa-solid fa-moon" id="theme-icon"></i>
             </button>
         </div>
     </div>
 
-    <div id="app-loader" class="fixed inset-0 z-[100] flex flex-col items-center justify-center transition-opacity duration-500" style="background-color: var(--bg-primary);">
-        <div class="w-12 h-12 border-2 border-t-purple-400 rounded-full animate-spin mb-4" style="border-color: var(--border-color); border-top-color: var(--purple);"></div>
-        <p class="text-xs uppercase tracking-[0.3em] font-bold animate-pulse" style="color: var(--purple);">Initializing...</p>
-    </div>
-
-    <div id="video-modal" class="fixed inset-0 z-[60] bg-black/95 backdrop-blur-xl hidden flex items-center justify-center p-4 transition-all duration-300" onclick="if(event.target === this) window.app.closeVideo()">
-        <div class="relative w-full max-w-6xl aspect-video bg-black border border-white/10 rounded-2xl overflow-hidden shadow-2xl flex flex-col">
-            <button onclick="window.app.closeVideo()" class="absolute top-4 right-4 z-50 w-10 h-10 bg-black/50 text-white rounded-full hover:bg-red-600 transition-colors flex items-center justify-center border border-white/20 backdrop-blur-md">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-            <div id="video-frame-container" class="w-full h-full bg-black"></div>
-        </div>
-    </div>
-
-    <div class="h-screen overflow-y-auto custom-scrollbar" id="scroll-wrapper">
-       
-        <section id="view-home" class="view-section active">
-            <div class="relative z-10 max-w-[1800px] mx-auto text-center fade-in pt-10 px-4">
-                <div class="mb-8 flex justify-center">
-                    <div class="relative w-32 h-32 md:w-40 md:h-40 rounded-full p-1 border-2 profile-img" style="background: var(--bg-secondary);">
-                        <img src="bill_profile.jpg" class="w-full h-full object-cover rounded-full opacity-90 transition-opacity grayscale hover:grayscale-0"
-                             onerror="this.src='https://ui-avatars.com/api/?name=Bill+Donahue&background=000&color=d8b4fe&size=160'">
+    <div class="h-screen overflow-y-auto" id="scroll-wrapper">
+        
+        <section id="view-home" class="view-section active px-4">
+            <div class="max-w-4xl mx-auto text-center flex flex-col items-center justify-center min-h-[60vh]">
+                <div class="mb-8 relative">
+                    <div class="w-32 h-32 md:w-40 md:h-40 rounded-full p-1 border-2 profile-img overflow-hidden">
+                        <img src="bill_profile.jpg" class="w-full h-full object-cover rounded-full">
                     </div>
                 </div>
-                <div class="mb-6 inline-flex items-center gap-3 border px-4 py-2 rounded-full" style="border-color: var(--border-color); background: var(--input-bg);">
-                    <span class="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></span>
-                    <span class="text-[10px] uppercase tracking-[0.2em] font-bold" style="color: var(--text-secondary);">System Online</span>
+                <h1 class="cinzel text-5xl md:text-8xl font-black mb-8 tracking-tighter">HIDDEN<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400 italic">MEANINGS</span></h1>
+                <div class="w-full max-w-lg relative group">
+                    <input type="text" id="teacher-input" placeholder="Ask the Teacher..." class="w-full rounded-full py-4 px-8 bg-white/5 border border-purple-500/30 focus:border-purple-400 outline-none text-sm transition-all" onkeydown="if(event.key === 'Enter') window.app.askTheTeacher()">
+                    <button onclick="window.app.askTheTeacher()" class="absolute right-4 top-1/2 -translate-y-1/2 text-purple-400"><i class="fa-solid fa-paper-plane"></i></button>
                 </div>
-                <h1 class="cinzel text-4xl md:text-8xl font-black mb-6 leading-none tracking-tight drop-shadow-2xl" style="color: var(--text-primary);">
-                    HIDDEN<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400 italic pr-4">MEANINGS</span>
-                </h1>
-                
-                <div class="max-w-lg mx-auto relative group w-full mb-8 px-4">
-                    <input type="text" id="teacher-input" placeholder="Ask the Teacher (e.g. 'What is the Pineal?')..."
-                           class="w-full rounded-full py-4 pl-8 pr-16 text-sm font-mono transition-all backdrop-blur-md search-input"
-                           style="border-color: var(--purple);"
-                           onkeydown="if(event.key === 'Enter') window.app.askTheTeacher()"
-                           oninput="window.app.toggleClearButton()">
-                    
-                    <button id="clear-teacher-btn" onclick="window.app.resetHome()" class="absolute right-6 top-1/2 -translate-y-1/2 text-xs hover:scale-110 transition-transform hidden" style="color: var(--text-secondary);">
-                        <i class="fa-solid fa-xmark"></i>
-                    </button>
-                </div>
-
-                <div id="teacher-response-box" class="w-full text-left p-8 border-l-4 rounded-xl fade-in hidden mt-10" style="background: var(--bg-secondary); border-color: var(--border-color); border-left-color: var(--purple);">
-                    <span class="font-mono text-[10px] uppercase tracking-widest block mb-4" style="color: var(--purple);">The Teacher's Response</span>
-                    <div id="teacher-text" class="text-lg md:text-2xl leading-relaxed italic font-light font-serif mb-8" style="color: var(--text-primary);"></div>
-                    <div class="border-t pt-4" style="border-color: var(--border-color);">
-                        <span class="text-[9px] uppercase font-bold tracking-widest block mb-3" style="color: var(--text-secondary);">Related Materials</span>
-                        <div id="teacher-related-grid" class="masonry-grid"></div>
-                    </div>
+                <div id="teacher-response-box" class="w-full text-left p-8 border-l-4 rounded-xl hidden mt-10 bg-white/5 border-purple-500">
+                    <div id="teacher-text" class="text-lg md:text-xl italic font-light mb-8"></div>
+                    <div id="teacher-related-grid" class="masonry-grid"></div>
                 </div>
             </div>
-        </section>
-
-        <section id="view-search" class="view-section px-6 max-w-[1800px] mx-auto">
-            <div class="flex justify-between items-end mb-8 border-b pb-4" style="border-color: var(--border-color);">
-                <h2 class="cinzel text-2xl font-bold" style="color: var(--text-primary);">Library Search Results</h2>
-                <button onclick="window.app.nav('home')" class="text-xs uppercase font-bold text-red-400">Clear Search</button>
-            </div>
-            <div id="global-search-list" class="masonry-grid pb-20"></div>
         </section>
 
         <section id="view-library" class="view-section px-6">
             <div class="max-w-[1800px] mx-auto w-full">
-                <div class="mb-10 pb-8 border-b" style="border-color: var(--border-color);">
-                    <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-6">
-                        <div>
-                            <h2 class="cinzel text-3xl md:text-5xl font-bold mb-2 tracking-tight" style="color: var(--text-primary);">The Catalog</h2>
-                            <p class="font-mono text-xs uppercase tracking-[0.2em]" style="color: var(--purple);">HD Remastered Collection</p>
-                        </div>
-                        <div class="flex flex-wrap gap-4 items-center">
-                            <button onclick="window.app.clearLibraryFilters()" class="text-[10px] uppercase font-bold text-red-400 hover:text-red-300 ml-4">Reset Filters</button>
-                        </div>
+                <div class="mb-10 pb-8 border-b border-white/10">
+                    <div class="flex flex-col md:flex-row justify-between items-center gap-6 mb-6">
+                        <h2 class="cinzel text-3xl font-bold">The Catalog</h2>
+                        <button onclick="window.app.clearLibraryFilters()" class="text-[10px] uppercase font-bold text-red-400 hover:text-red-300">Reset Filters</button>
                     </div>
-                    <div id="library-topics" class="flex flex-wrap gap-2 max-h-40 overflow-y-auto custom-scrollbar p-1 min-h-[50px]"></div>
+                    <div id="library-topics" class="flex flex-wrap gap-2 justify-center"></div>
                 </div>
-                <div id="library-results-area">
-                    <div id="library-grid" class="masonry-grid"></div>
-                    <div id="video-loader" class="text-center py-8 hidden">
-                        <i class="fa-solid fa-circle-notch fa-spin text-2xl" style="color: var(--purple);"></i>
-                        <p class="mt-2 text-[10px] font-mono uppercase" style="color: var(--text-secondary);">Loading Archive Data...</p>
-                    </div>
-                </div>
+                <div id="library-grid" class="masonry-grid"></div>
+                <div id="video-loader" class="text-center py-20 hidden"><i class="fa-solid fa-circle-notch fa-spin text-4xl text-purple-400"></i></div>
             </div>
         </section>
 
-        <section id="view-brain" class="view-section px-6">
-             <div class="max-w-[1800px] mx-auto min-h-[70vh] w-full flex flex-col items-center">
-                <div class="text-center mb-16 w-full max-w-4xl mx-auto pt-10">
-                    <h2 class="cinzel text-4xl md:text-6xl font-bold mb-8 leading-none" style="color: var(--text-primary);">The Upper<br><span style="color: var(--gold);">Room</span></h2>
-                    <div class="p-8 border rounded-xl relative z-20 mb-8 text-center" style="background: var(--bg-secondary); border-color: var(--border-color); border-left: 4px solid var(--gold);">
-                        <p class="text-lg leading-relaxed font-serif mb-6" style="color: var(--text-primary);">
-                            "The Bible is not a book of history; it is a book of <span class="italic font-bold" style="color: var(--purple);">Anatomy</span>."
-                        </p>
-                        <div class="grid md:grid-cols-2 gap-8 text-left">
-                            <div>
-                                <p class="text-sm leading-relaxed mb-4" style="color: var(--text-secondary);">
-                                    The <strong>Claustrum</strong> (Santa Claus) in the brain secretes a precious fluid (oil/Christos). This fluid descends down the spinal cord (The River Jordan) to the Sacral Plexus (The Manger/Bethlehem).
-                                </p>
-                                <p class="text-sm leading-relaxed" style="color: var(--text-secondary);">
-                                    If this energy is preserved and raised back up the 33 vertebrae (The 33 years of Jesus' life), it crosses the Medulla Oblongata (The Crucifixion) and enters the Pineal Gland.
-                                </p>
-                            </div>
-                            <div class="flex items-center justify-center p-4 border rounded bg-black/20" style="border-color: var(--border-color);">
-                                <div class="relative w-full aspect-video flex items-center justify-between px-4">
-                                    <div class="w-8 h-8 rounded-full bg-purple-500 animate-pulse"></div> <div class="h-1 flex-1 bg-gradient-to-r from-purple-500 to-blue-500 mx-2"></div> <div class="w-8 h-8 rounded-full bg-blue-500 animate-pulse" style="animation-delay: 0.5s"></div> </div>
-                            </div>
+        <section id="view-brain" class="view-section px-6 text-center">
+            <div class="max-w-5xl mx-auto pt-10">
+                <h2 class="cinzel text-4xl md:text-6xl font-black mb-8">THE UPPER ROOM</h2>
+                <div class="p-8 border rounded-2xl bg-white/5 border-white/10 mb-12 text-left relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-1 h-full bg-gold"></div>
+                    <p class="text-xl font-serif italic mb-6 text-center">"The Bible is a book of Anatomy."</p>
+                    <div class="grid md:grid-cols-2 gap-10 items-center">
+                        <div class="text-sm leading-relaxed text-stone-300">
+                            The brain contains the **Claustrum**, the **Pineal Gland**, and the **Pituitary**. In esoteric study, this is the "Upper Room" where the 12 cranial nerves (disciples) meet. 
+                            The sacred oil descends to the solar plexus and must be returned to the skull (Golgotha) to activate dormant neurons.
                         </div>
-                         <div class="mt-6 border-t pt-4" style="border-color: var(--border-color);">
-                            <p class="text-xs uppercase tracking-widest font-bold mb-2 text-center" style="color: var(--gold);">Modern Echoes</p>
-                            <div class="flex flex-wrap gap-2 text-[10px] font-mono justify-center" style="color: var(--text-secondary);">
-                                <span class="border px-2 py-1 rounded" style="border-color: var(--border-color);">THE MATRIX</span>
-                                <span class="border px-2 py-1 rounded" style="border-color: var(--border-color);">TRON</span>
-                                <span class="border px-2 py-1 rounded" style="border-color: var(--border-color);">FINAL FANTASY VII</span>
-                                <span class="border px-2 py-1 rounded" style="border-color: var(--border-color);">DARK CITY</span>
-                                <span class="border px-2 py-1 rounded" style="border-color: var(--border-color);">THE ALCHEMIST</span>
-                            </div>
+                        <div class="bg-black/40 p-6 rounded-xl border border-white/5 flex items-center justify-around">
+                            <div class="text-center"><div class="w-8 h-8 rounded-full bg-purple-500 animate-pulse shadow-[0_0_20px_#a855f7] mb-2"></div><span class="text-[10px] font-bold">PINEAL</span></div>
+                            <div class="h-px flex-1 bg-gradient-to-r from-purple-500 to-blue-500 mx-4"></div>
+                            <div class="text-center"><div class="w-8 h-8 rounded-full bg-blue-500 animate-pulse shadow-[0_0_20px_#3b82f6] mb-2"></div><span class="text-[10px] font-bold">PITUITARY</span></div>
                         </div>
                     </div>
                 </div>
-                
-                <div class="w-full border-t pt-8" style="border-color: var(--border-color);">
-                    <h3 class="font-mono text-xs uppercase tracking-[0.2em] mb-6 text-center" style="color: var(--purple);">Related Teachings</h3>
-                    <div id="brain-loader" class="text-center py-4 hidden"><i class="fa-solid fa-circle-notch fa-spin text-purple-400"></i></div>
-                    <div id="brain-lectures-grid" class="masonry-grid"></div>
-                </div>
-             </div>
-        </section>
-
-        <section id="view-anatomy" class="view-section px-6">
-            <div class="max-w-[1800px] mx-auto grid lg:grid-cols-2 gap-10 items-center min-h-[70vh] w-full">
-                <div class="relative flex justify-center order-2 lg:order-1 anatomy-scale-container">
-                    <div id="anatomy-diagram" class="anatomy-wrapper flex justify-center items-center">
-                        <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.03),transparent_70%)] rounded-full"></div>
-                        <div class="absolute top-[10%] bottom-[10%] w-px bg-gradient-to-b from-transparent via-white/20 to-transparent"></div>
-                        <div class="anatomy-dot" style="top: 10%; background: #a855f7; box-shadow: 0 0 20px #a855f7;" onclick="window.app.showAnatomy('crown')"></div>
-                        <div class="anatomy-dot" style="top: 22%; background: #4f46e5; box-shadow: 0 0 20px #4f46e5;" onclick="window.app.showAnatomy('brow')"></div>
-                        <div class="anatomy-dot" style="top: 34%; background: #3b82f6; box-shadow: 0 0 20px #3b82f6;" onclick="window.app.showAnatomy('throat')"></div>
-                        <div class="anatomy-dot" style="top: 46%; background: #22c55e; box-shadow: 0 0 20px #22c55e;" onclick="window.app.showAnatomy('heart')"></div>
-                        <div class="anatomy-dot" style="top: 58%; background: #eab308; box-shadow: 0 0 20px #eab308;" onclick="window.app.showAnatomy('solar')"></div>
-                        <div class="anatomy-dot" style="top: 70%; background: #f97316; box-shadow: 0 0 20px #f97316;" onclick="window.app.showAnatomy('sacral')"></div>
-                        <div class="anatomy-dot" style="top: 82%; background: #ef4444; box-shadow: 0 0 20px #ef4444;" onclick="window.app.showAnatomy('root')"></div>
-                    </div>
-                </div>
-                <div class="order-1 lg:order-2 text-center lg:text-left">
-                    <span class="font-mono text-xs uppercase tracking-[0.2em] mb-4 block" style="color: var(--purple);">The 7 Seals of Revelation</span>
-                    <h2 class="cinzel text-4xl md:text-7xl font-bold mb-8 leading-none" style="color: var(--text-primary);">The Temple<br>Of God</h2>
-                    <div id="anatomy-info" class="p-8 border rounded-xl border-l-4 relative z-20 transition-all duration-500" style="background: var(--bg-secondary); border-color: var(--border-color); border-left-color: var(--purple);">
-                        <div id="anatomy-content-default">
-                            <h3 class="cinzel text-xl md:text-2xl mb-4 uppercase tracking-widest font-bold" style="color: var(--text-primary);">Select a Center</h3>
-                            <p class="text-sm md:text-lg leading-relaxed font-light italic" style="color: var(--text-secondary);">"Know ye not that ye are the temple of God?"<br><br>Click the energy centers on the diagram to reveal the biological decoding.</p>
-                        </div>
-                        <div id="anatomy-content-active" class="hidden text-left">
-                            <div class="flex justify-between items-start mb-2"><span id="ana-name" class="text-xs font-bold uppercase tracking-[0.2em] opacity-50"></span><span id="ana-freq" class="text-xs font-mono opacity-30"></span></div>
-                            <h3 id="ana-title" class="cinzel text-3xl mb-6 font-bold leading-none"></h3>
-                            <div class="grid grid-cols-2 gap-4 mb-6 border-t pt-4" style="border-color: var(--border-color);">
-                                <div><span class="block text-[9px] uppercase tracking-widest mb-1 opacity-50">Biblical Symbol</span><span id="ana-bib" class="text-sm font-serif italic"></span></div>
-                                <div><span class="block text-[9px] uppercase tracking-widest mb-1 opacity-50">Church</span><span id="ana-church" class="text-sm font-serif italic"></span></div>
-                            </div>
-                            <p id="ana-desc" class="text-sm leading-relaxed" style="color: var(--text-secondary);"></p>
-                        </div>
-                    </div>
-                </div>
+                <h3 class="cinzel text-xl mb-8 text-purple-400 tracking-widest">BIOLOGICAL DECODINGS</h3>
+                <div id="brain-lectures-grid" class="masonry-grid"></div>
             </div>
         </section>
 
-        <section id="view-meditation" class="view-section px-6">
-            <div class="max-w-[1800px] mx-auto text-center pt-10">
-                 <div class="mb-16">
-                     <i class="fa-solid fa-quote-left text-4xl mb-6 opacity-30" style="color: var(--purple);"></i>
-                     <h1 id="meditation-quote" class="cinzel text-2xl md:text-4xl font-bold leading-tight mb-6 fade-in" style="color: var(--text-primary);"></h1>
-                     <p class="text-xs uppercase tracking-[0.3em] font-mono" style="color: var(--text-secondary);">- Bill Donahue</p>
-                 </div>
-                 <div class="border-t pt-12 text-left" style="border-color: var(--border-color);">
-                     <h2 class="cinzel text-2xl mb-8" style="color: var(--text-primary);">Meditative Lectures</h2>
-                     <div id="med-loader" class="text-center py-4 hidden"><i class="fa-solid fa-circle-notch fa-spin text-purple-400"></i></div>
-                     <div id="meditation-lectures-grid" class="masonry-grid"></div>
-                 </div>
-            </div>
-        </section>
-
-        <section id="view-resources" class="view-section px-6 max-w-[1800px] mx-auto">
-            <h2 class="cinzel text-3xl md:text-4xl font-bold mb-16 text-center uppercase tracking-widest" style="color: var(--text-primary);">Primary Sources</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                 <a href="https://www.facebook.com/groups/356472414984195" target="_blank" class="cosmos-card p-8 group block">
-                    <div class="flex justify-between items-start mb-6">
-                        <div class="w-10 h-10 rounded-full bg-[#1877F2]/20 flex items-center justify-center text-[#1877F2]"><i class="fa-brands fa-facebook-f"></i></div>
-                        <span class="group-hover:text-purple-400 transition-colors" style="color: var(--text-secondary);">↗</span>
-                    </div>
-                    <h3 class="cinzel text-2xl mb-2 group-hover:text-purple-400 transition-colors" style="color: var(--text-primary);">Facebook Community</h3>
-                </a>
-                <a href="https://www.hiddenmeanings.com/" target="_blank" class="cosmos-card p-8 group block">
-                     <div class="flex justify-between items-start mb-6">
-                        <div class="w-10 h-10 rounded-full flex items-center justify-center font-serif" style="background: var(--bg-tertiary); color: var(--text-primary);">H</div>
-                        <span class="group-hover:text-purple-400 transition-colors" style="color: var(--text-secondary);">↗</span>
-                    </div>
-                    <h3 class="cinzel text-2xl mb-2 group-hover:text-purple-400 transition-colors" style="color: var(--text-primary);">HiddenMeanings.com</h3>
-                </a>
-                <a href="https://lifestyleluminaries.blogspot.com/p/bill-donahue.html" target="_blank" class="cosmos-card p-8 group block">
-                     <div class="flex justify-between items-start mb-6">
-                        <div class="w-10 h-10 rounded-full flex items-center justify-center font-serif" style="background: var(--bg-tertiary); color: var(--text-primary);">L</div>
-                        <span class="group-hover:text-purple-400 transition-colors" style="color: var(--text-secondary);">↗</span>
-                    </div>
-                    <h3 class="cinzel text-2xl mb-2 group-hover:text-purple-400 transition-colors" style="color: var(--text-primary);">Lifestyle Luminaries</h3>
-                </a>
-                <a href="https://thehiddenlighthouse.blogspot.com/2012/09/the-hidden-lighthouse.html?m=1" target="_blank" class="cosmos-card p-8 group block">
-                    <div class="flex justify-between items-start mb-6">
-                        <div class="w-10 h-10 rounded-full flex items-center justify-center font-serif" style="background: var(--bg-tertiary); color: var(--text-primary);">B</div>
-                        <span class="group-hover:text-purple-400 transition-colors" style="color: var(--text-secondary);">↗</span>
-                    </div>
-                    <h3 class="cinzel text-2xl mb-2 group-hover:text-purple-400 transition-colors" style="color: var(--text-primary);">Lighthouse Blog</h3>
-                </a>
-                <a href="https://archive.org/details/1-revised-bill-donahue-speaks-book-of-secret-doctrines/page/18/mode/1up?ui=embed&wrapper=false" target="_blank" class="cosmos-card p-8 group block">
-                    <div class="flex justify-between items-start mb-6">
-                        <div class="w-10 h-10 rounded-full flex items-center justify-center font-serif" style="background: var(--bg-tertiary); color: var(--text-primary);">S</div>
-                        <span class="group-hover:text-purple-400 transition-colors" style="color: var(--text-secondary);">↗</span>
-                    </div>
-                    <h3 class="cinzel text-2xl mb-2 group-hover:text-purple-400 transition-colors" style="color: var(--text-primary);">Secret Doctrines</h3>
-                </a>
-            </div>
-        </section>
+        <section id="view-search" class="view-section px-6 max-w-[1800px] mx-auto"><div id="global-search-list" class="masonry-grid"></div></section>
+        <section id="view-anatomy" class="view-section px-6 text-center"><h2 class="cinzel text-5xl mb-10">THE TEMPLE</h2><div id="anatomy-diagram" class="anatomy-wrapper mx-auto"></div></section>
+        <section id="view-meditation" class="view-section px-6 text-center"><h1 id="meditation-quote" class="cinzel text-3xl italic mb-12"></h1><div id="meditation-lectures-grid" class="masonry-grid"></div></section>
+        <section id="view-resources" class="view-section px-6 max-w-4xl mx-auto" id="links-grid"></section>
     </div>
 
     <div class="dock-container">
         <div class="dock">
             <button class="dock-btn active" id="btn-home" onclick="window.app.nav('home')">Home</button>
             <button class="dock-btn" id="btn-library" onclick="window.app.nav('library')">Library</button>
-            <button class="dock-btn" id="btn-brain" onclick="window.app.nav('brain')">Brain</button> 
-            <button class="dock-btn justify-center min-w-[50px]" style="color: var(--gold);" onclick="window.app.openSearchOverlay()">
-                <i class="fa-solid fa-magnifying-glass text-lg"></i>
-            </button>
+            <button class="dock-btn" id="btn-brain" onclick="window.app.nav('brain')">Brain</button>
+            <button class="dock-btn text-lg" style="color: var(--gold);" onclick="window.app.openSearchOverlay()"><i class="fa-solid fa-magnifying-glass"></i></button>
             <button class="dock-btn" id="btn-anatomy" onclick="window.app.nav('anatomy')">Temple</button>
-            <button class="dock-btn" id="btn-meditation" onclick="window.app.nav('meditation')">Meditation</button> 
+            <button class="dock-btn" id="btn-meditation" onclick="window.app.nav('meditation')">Meditation</button>
             <button class="dock-btn" id="btn-resources" onclick="window.app.nav('resources')">Links</button>
-            <div class="w-px mx-1" style="background: var(--border-color);"></div>
-            <button class="dock-btn text-red-400 hover:text-red-300" onclick="window.app.scanForBrokenLinks()" title="Scan for Bad Links"><i class="fa-solid fa-stethoscope"></i></button>
+            <button class="dock-btn text-red-500" onclick="window.app.scanForBrokenLinks()"><i class="fa-solid fa-stethoscope"></i></button>
         </div>
     </div>
 
     <script>
         function createDust() {
             const container = document.getElementById('stars-container');
-            if(!container) return;
-            container.innerHTML = '';
-            
             const canvas = document.createElement('canvas');
-            canvas.style.position = 'absolute';
-            canvas.style.top = '0'; canvas.style.left = '0';
-            canvas.style.width = '100%'; canvas.style.height = '100%';
-            canvas.style.pointerEvents = 'none';
+            canvas.style.position = 'fixed'; canvas.style.top = '0'; canvas.style.left = '0';
+            canvas.style.width = '100%'; canvas.style.height = '100%'; canvas.style.pointerEvents = 'none';
             container.appendChild(canvas);
-
             const ctx = canvas.getContext('2d');
-            let w = canvas.width = window.innerWidth;
-            let h = canvas.height = window.innerHeight;
-
-            window.addEventListener('resize', () => {
-                w = canvas.width = window.innerWidth;
-                h = canvas.height = window.innerHeight;
-            });
-
+            let w = canvas.width = window.innerWidth; let h = canvas.height = window.innerHeight;
             const particles = [];
-            const darkColors = ['255,255,255', '185,28,28', '126,34,206', '29,78,216']; 
-            const lightColors = ['0,0,0', '50,50,50', '30,30,30'];
-
-            function initParticles() {
-                particles.length = 0;
+            for(let i=0; i<5000; i++) {
+                particles.push({ x: Math.random()*w, y: Math.random()*h, r: Math.random()*1.2, dy: Math.random()*0.3+0.05, alpha: Math.random() });
+            }
+            function animate() {
+                ctx.clearRect(0,0,w,h);
                 const isLight = document.body.classList.contains('light-mode');
-                const colors = isLight ? lightColors : darkColors;
-                
-                for(let i=0; i<4000; i++) { 
-                    particles.push({
-                        x: Math.random() * w,
-                        y: Math.random() * h,
-                        r: Math.random() * 1.0 + 0.1,
-                        dy: Math.random() * 0.3 + 0.05,
-                        color: colors[Math.floor(Math.random() * colors.length)],
-                        alpha: Math.random(),
-                        fadeDir: Math.random() > 0.5 ? 1 : -1,
-                        fadeSpeed: Math.random() * 0.01 + 0.002
-                    });
-                }
-            }
-            initParticles();
-            
-            window.app = window.app || {};
-            window.app.refreshDust = initParticles;
-
-            function animateDust() {
-                ctx.clearRect(0, 0, w, h);
                 particles.forEach(p => {
-                    p.y -= p.dy;
-                    p.x += Math.sin(p.y * 0.01) * 0.2;
-                    if (p.y < 0) p.y = h;
-                    if (p.x > w) p.x = 0;
-                    if (p.x < 0) p.x = w;
-                    
-                    p.alpha += (p.fadeSpeed * p.fadeDir);
-                    if (p.alpha >= 0.8) { p.alpha = 0.8; p.fadeDir = -1; }
-                    if (p.alpha <= 0.1) { p.alpha = 0.1; p.fadeDir = 1; }
-
-                    ctx.fillStyle = `rgba(${p.color}, ${p.alpha})`;
-                    ctx.beginPath();
-                    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-                    ctx.fill();
+                    p.y -= p.dy; if(p.y < 0) p.y = h;
+                    ctx.fillStyle = isLight ? `rgba(0,0,0,${p.alpha})` : `rgba(255,255,255,${p.alpha})`;
+                    ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI*2); ctx.fill();
                 });
-                requestAnimationFrame(animateDust);
+                requestAnimationFrame(animate);
             }
-            animateDust();
+            animate();
         }
-        
+
         window.app = {
-            data: [], 
-            archiveVideos: [], archivePage: 1, archiveLoading: false, archiveHasMore: true, archiveTotal: '...', isLightMode: false, selectedLibraryTopics: new Set(),
-            
-            synthBrain: { "pineal": "The Single Eye.", "default": "Look within." },
-            anatomyData: { "root": { title: "Root", name: "Muladhara", color: "#ef4444", freq: "400 THz", biblical: "Egypt", church: "Ephesus", desc: "Physical bondage." }, "crown": { title: "Crown", name: "Sahasrara", color: "#a855f7", freq: "789+ THz", biblical: "Peniel", church: "Laodicea", desc: "Face to Face." } },
-            quotes: ["Be still.", "The Kingdom is within.", "As above, so below."],
+            data: [], archiveVideos: [], selectedLibraryTopics: new Set(),
+            quotes: ["The Kingdom of God is within you.", "Know ye not that ye are the temple of God?", "Be still, and know that I am God."],
 
-            renderCard: function(videoObj, isArchive = true) {
-                let id = videoObj.identifier;
-                let title = videoObj.title;
-                let thumb = `https://archive.org/services/img/${id}`;
-                let linkUrl = `https://archive.org/details/${id}`;
-                
-                let topic = this.getTopicByVideoObj(videoObj);
-
-                let crossRefBtn = '';
-                if (videoObj['external-identifier'] && videoObj['external-identifier'].includes('urn:youtube:')) {
-                    const ytId = videoObj['external-identifier'].replace('urn:youtube:', '');
-                    crossRefBtn = `<button onclick="event.stopPropagation(); window.open('https://youtube.com/watch?v=${ytId}', '_blank')" class="text-[9px] border px-2 py-1 rounded transition-colors uppercase font-bold tracking-widest" style="border-color: #7f1d1d; color: #f87171;"><i class="fa-brands fa-youtube mr-1"></i> Source</button>`;
+            renderCard: function(v) {
+                const topic = this.getTopic(v);
+                let bridge = '';
+                if (v['external-identifier'] && v['external-identifier'].includes('urn:youtube:')) {
+                    const id = v['external-identifier'].match(/urn:youtube:([a-zA-Z0-9_-]{11})/)[1];
+                    bridge = `<button onclick="event.stopPropagation(); window.open('https://youtube.com/watch?v=${id}', '_blank')" class="text-[8px] border px-1.5 py-0.5 rounded border-red-500/50 text-red-400 font-bold hover:bg-red-500 hover:text-white transition-all">SOURCE</button>`;
                 }
-
-                return `<div class="cosmos-card group"><div class="relative aspect-video overflow-hidden cursor-pointer bg-black" onclick="window.app.openVideo('${id}')"><img src="${thumb}" class="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" onerror="this.src='https://archive.org/images/not_found.png'" /><div class="absolute inset-0 flex items-center justify-center"><i class="fa-solid fa-film text-cyan-400 text-4xl opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-lg"></i></div><div class="absolute top-2 right-2 bg-black/80 text-cyan-400 text-[9px] px-2 py-1 rounded font-mono uppercase tracking-widest border border-cyan-900/50">Restored</div></div><div class="p-4 flex flex-col flex-1" style="background: var(--bg-secondary); border-top: 1px solid var(--border-color);"><h3 class="text-sm font-medium line-clamp-2 mb-3" style="color: var(--text-primary);">${title}</h3><div class="mt-auto pt-2 flex flex-wrap gap-2 justify-between items-center" style="border-top: 1px solid var(--border-color);">${this.createTagButton(topic)}${crossRefBtn}</div><div class="mt-3 pt-2 text-right" style="border-top: 1px solid var(--border-color);"><a href="${linkUrl}" target="_blank" onclick="event.stopPropagation();" class="text-[9px] font-mono transition-colors" style="color: var(--text-secondary);">ID: ${id} <i class="fa-solid fa-arrow-up-right-from-square ml-1 text-[8px]"></i></a></div></div></div>`;
-            },
-            
-            getTopicByVideoObj: function(videoObj) {
-                // Use global data
-                if (!window.app.data || window.app.data.length === 0) return "Uncatalogued";
-                
-                let searchId = null;
-                if (videoObj['external-identifier']) {
-                     const match = videoObj['external-identifier'].match(/urn:youtube:([a-zA-Z0-9_-]{11})/);
-                     if (match) searchId = match[1];
-                }
-
-                if (searchId) {
-                    const row = window.app.data.find(r => this.getVideoID(r.raw['URL']) === searchId);
-                    if (row) return row.topic;
-                }
-
-                const clean = (str) => str ? str.toLowerCase().replace(/[^a-z0-9]/g, '') : '';
-                const videoTitleClean = clean(videoObj.title);
-                
-                const row = window.app.data.find(r => {
-                    const rowTitleClean = clean(r.title);
-                    return rowTitleClean === videoTitleClean || (rowTitleClean.includes(videoTitleClean) && videoTitleClean.length > 5);
-                });
-                
-                return row ? row.topic : "Uncatalogued";
+                return `
+                <div class="cosmos-card group" onclick="window.app.openVideo('${v.identifier}')">
+                    <img src="https://archive.org/services/img/${v.identifier}" class="aspect-video object-cover opacity-70 group-hover:opacity-100 transition-opacity" />
+                    <div class="p-4 flex flex-col flex-1">
+                        <h3 class="text-[11px] font-semibold line-clamp-2 mb-3 leading-snug">${v.title}</h3>
+                        <div class="mt-auto flex items-center justify-between">
+                            <span class="text-[8px] font-bold uppercase text-purple-300 bg-purple-500/10 px-2 py-1 rounded border border-purple-500/20">${topic}</span>
+                            ${bridge}
+                        </div>
+                    </div>
+                </div>`;
             },
 
-            getVideoID: function(url) { if (!url) return null; const str = url.toString().trim(); const match = str.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/); return (match && match[2].length === 11) ? match[2] : null; },
-            createTagButton: function(topic) { return `<button class="inline-flex items-center gap-2 text-[9px] font-bold uppercase tracking-widest px-3 py-1.5 rounded transition-all justify-center cursor-pointer relative z-20" style="background: var(--input-bg); color: var(--purple); border: 1px solid var(--border-color);" onclick="event.stopPropagation(); window.app.selectLibraryTopic('${topic.replace(/'/g, "\\'")}')"><i class="fa-solid fa-tag"></i> ${topic}</button>`; },
-            toggleTheme: function() { this.isLightMode = !this.isLightMode; document.body.classList.toggle('light-mode'); document.getElementById('theme-icon').className = this.isLightMode ? 'fa-solid fa-sun text-yellow-500' : 'fa-solid fa-moon'; if(this.refreshDust) this.refreshDust(); },
-            
-            nav: function(id) { 
-                document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active')); 
-                document.querySelectorAll('.dock-btn').forEach(b => b.classList.remove('active')); 
-                document.getElementById('view-' + id).classList.add('active'); 
-                
-                if(id==='home'){ this.resetHome(); document.getElementById('btn-home').classList.add('active'); }
-                else if(id==='search'){ document.querySelectorAll('.dock-btn')[3].classList.add('active'); } 
-                else { document.getElementById('btn-' + id)?.classList.add('active'); }
-                
-                if(id === 'meditation') {
-                    setTimeout(() => {
-                        const quoteElement = document.getElementById('meditation-quote');
-                        if (quoteElement) { const quote = this.quotes[Math.floor(Math.random() * this.quotes.length)]; quoteElement.innerText = `"${quote}"`; }
-                    }, 100);
-                    this.renderMeditationLectures();
+            getTopic: function(v) {
+                if (!window.app.data.length) return "Uncatalogued";
+                let ytId = v['external-identifier']?.match(/urn:youtube:([a-zA-Z0-9_-]{11})/)?.[1];
+                if (ytId) {
+                    const match = window.app.data.find(r => r.url && r.url.includes(ytId));
+                    if (match) return match.topic;
                 }
-                if(id === 'brain') this.renderMeditationLectures(); 
-                if(id === 'library') this.renderLibraryInterface();
-                window.scrollTo(0,0); 
+                return "Uncatalogued";
             },
 
-            scanForBrokenLinks: async function() {
-                const overlay = document.getElementById('diagnostics-overlay'); overlay.classList.remove('hidden');
-                document.getElementById('diag-status').innerText = "Analyzing Archive Metadata..."; document.getElementById('diag-progress').style.width = "20%";
-                
-                if (this.archiveVideos.length === 0) {
-                     document.getElementById('diag-results').innerHTML = '<div class="text-red-400 p-4">No videos loaded to scan. Please wait for library to populate.</div>';
-                     document.getElementById('diag-results').classList.remove('hidden');
-                     return;
-                }
-
-                let missingBridge = []; let uncatalogued = [];
-                this.archiveVideos.forEach(v => {
-                     if (!v['external-identifier'] || !v['external-identifier'].includes('urn:youtube:')) { missingBridge.push({ title: v.title, id: v.identifier, reason: "Missing YouTube Link (Bridge Broken)" }); }
-                     const topic = this.getTopicByVideoObj(v);
-                     if (topic === "Uncatalogued" || topic === "General") { uncatalogued.push({ title: v.title, id: v.identifier, reason: "Uncatalogued (No Matching ID in CSV)" }); }
-                });
-
-                document.getElementById('diag-progress').style.width = "100%"; document.getElementById('diag-status').innerText = `Scan Complete. Checked ${this.archiveVideos.length} items.`;
-                let reportHTML = `<html><head><title>Archive Health Report</title><style>body{font-family:monospace;background:#111;color:#ddd;padding:40px;}table{width:100%;border-collapse:collapse;margin-bottom:40px;}th{text-align:left;border-bottom:2px solid #333;padding:10px;color:#888;}td{border-bottom:1px solid #222;padding:10px;}.error-count{color:#f87171;font-weight:bold;}</style></head><body><h1>Archive Health Report</h1><p>Total Scanned: <strong>${this.archiveVideos.length}</strong></p><h2>1. Missing Bridge (${missingBridge.length})</h2><table><tr><th>Title</th><th>ID</th></tr>${missingBridge.map(v=>`<tr><td>${v.title}</td><td>${v.id}</td></tr>`).join('')}</table><h2>2. Uncatalogued (${uncatalogued.length})</h2><table><tr><th>Title</th><th>ID</th></tr>${uncatalogued.map(v=>`<tr><td>${v.title}</td><td>${v.id}</td></tr>`).join('')}</table></body></html>`;
-                const blob = new Blob([reportHTML], { type: 'text/html' }); const url = URL.createObjectURL(blob); window.open(url, '_blank');
-                setTimeout(() => { this.closeDiagnostics(); }, 1000);
-            },
-            closeDiagnostics: function() { document.getElementById('diagnostics-overlay').classList.add('hidden'); },
-
-            renderMeditationLectures: function() {
-                const grid = document.getElementById('meditation-lectures-grid');
-                const brainGrid = document.getElementById('brain-lectures-grid');
-                document.getElementById('med-loader')?.classList.add('hidden');
-                document.getElementById('brain-loader')?.classList.add('hidden');
-                if (this.archiveVideos.length === 0) return;
-                const medKeywords = ['meditation', 'silence', 'pineal', 'upper room', 'watch', 'prayer'];
-                const medMatches = this.archiveVideos.filter(v => { const t = v.title.toLowerCase(); return medKeywords.some(k => t.includes(k)); }).slice(0, 12);
-                if(grid) grid.innerHTML = medMatches.map(v => this.renderCard(v, true)).join('');
-                const brainKeywords = ['brain', 'claustrum', 'mind', 'skull', 'anatomy', 'oil'];
-                const brainMatches = this.archiveVideos.filter(v => { const t = v.title.toLowerCase(); return brainKeywords.some(k => t.includes(k)); }).slice(0, 12);
-                if(brainGrid) brainGrid.innerHTML = brainMatches.map(v => this.renderCard(v, true)).join('');
-            },
-
-            selectLibraryTopic: function(topic) { this.selectedLibraryTopics.clear(); this.selectedLibraryTopics.add(topic); this.nav('library'); setTimeout(() => this.renderLibraryInterface(), 50); },
             renderLibraryInterface: function() {
-                let topics = [];
-                // USE WINDOW.APP.DATA EXPLICITLY
-                if(window.app.data && window.app.data.length > 0) {
-                     topics = [...new Set(window.app.data.map(i => i.topic).filter(t => t))].sort();
-                }
-                
-                if (!topics.includes("Uncatalogued")) topics.push("Uncatalogued");
-
                 const container = document.getElementById('library-topics');
-                document.getElementById('count-hd').innerText = this.archiveTotal;
+                const topics = [...new Set(this.data.map(r => r.topic))].sort();
+                if (!topics.includes("Uncatalogued")) topics.push("Uncatalogued");
                 
                 container.innerHTML = topics.map(t => {
-                    const isActive = this.selectedLibraryTopics.has(t);
-                    let count = 0;
-                    if(this.archiveVideos.length > 0) {
-                        if (t === "Uncatalogued") count = this.archiveVideos.filter(v => this.getTopicByVideoObj(v) === "Uncatalogued").length;
-                        else count = this.archiveVideos.filter(v => this.getTopicByVideoObj(v) === t).length;
-                    } else {
-                         // Fallback to CSV count for UI feel while loading
-                         count = t === "Uncatalogued" ? "..." : (window.app.data ? window.app.data.filter(r => r.topic === t).length : 0);
-                    }
-                    return `<div class="topic-chip ${isActive ? 'active' : ''}" onclick="window.app.toggleLibraryTopic('${t.replace(/'/g, "\\'")}')">${t} <span class="chip-count">(${count})</span></div>`;
+                    const count = this.archiveVideos.filter(v => this.getTopic(v) === t).length;
+                    const active = this.selectedLibraryTopics.has(t) ? 'active' : '';
+                    return `<div class="topic-chip ${active}" onclick="window.app.toggleTopic('${t.replace(/'/g, "\\'")}')">${t} <span class="chip-count">(${count})</span></div>`;
                 }).join('');
-                if(this.archiveVideos.length > 0) this.renderLibraryResults();
+                this.renderGrid();
             },
-            toggleLibraryTopic: function(topic) { if (this.selectedLibraryTopics.has(topic)) this.selectedLibraryTopics.delete(topic); else this.selectedLibraryTopics.add(topic); this.renderLibraryInterface(); this.renderLibraryResults(); },
-            clearLibraryFilters: function() { this.selectedLibraryTopics.clear(); this.renderLibraryInterface(); this.renderLibraryResults(); },
-            
-            renderLibraryResults: function() {
+
+            toggleTopic: function(t) {
+                if(this.selectedLibraryTopics.has(t)) this.selectedLibraryTopics.delete(t);
+                else this.selectedLibraryTopics.add(t);
+                this.renderLibraryInterface();
+            },
+
+            renderGrid: function() {
                 const grid = document.getElementById('library-grid');
                 if(!grid) return;
-                
-                if (this.archiveVideos.length === 0) {
-                     if (this.archiveLoading) {
-                         document.getElementById('video-loader').classList.remove('hidden');
-                         grid.innerHTML = '';
-                     } else {
-                         document.getElementById('video-loader').classList.add('hidden');
-                         grid.innerHTML = '<div class="col-span-full text-center py-20 text-stone-500">No videos found. Check connection.</div>';
-                     }
-                     return;
-                }
-                document.getElementById('video-loader').classList.add('hidden');
-                
                 let results = this.archiveVideos;
-                if(this.selectedLibraryTopics.size > 0) {
-                    results = results.filter(v => {
-                        const topic = this.getTopicByVideoObj(v);
-                        return this.selectedLibraryTopics.has(topic);
-                    });
-                }
+                if(this.selectedLibraryTopics.size > 0) results = results.filter(v => this.selectedLibraryTopics.has(this.getTopic(v)));
                 grid.innerHTML = results.map(v => this.renderCard(v)).join('');
+                
+                // Also update Brain/Meditation
+                const brainGrid = document.getElementById('brain-lectures-grid');
+                if (brainGrid) {
+                    const brainVids = this.archiveVideos.filter(v => {
+                        const t = v.title.toLowerCase();
+                        return t.includes('brain') || t.includes('skull') || t.includes('claustrum') || t.includes('anatomy');
+                    }).slice(0, 12);
+                    brainGrid.innerHTML = brainVids.map(v => this.renderCard(v)).join('');
+                }
             },
 
-            openSearchOverlay: function() { document.getElementById('search-overlay').classList.add('active'); setTimeout(() => document.getElementById('overlay-search-input').focus(), 100); },
-            closeSearchOverlay: function() { document.getElementById('search-overlay').classList.remove('active'); },
-            performOverlaySearch: function() { const q = document.getElementById('overlay-search-input').value.trim(); if(!q) return; this.closeSearchOverlay(); this.nav('search'); document.getElementById('global-search').value = q; this.performGlobalSearch(); },
-            performGlobalSearch: function() { const input = document.getElementById('global-search'); let q = input.value.trim().toLowerCase(); if (!q) return; this.nav('search'); const list = document.getElementById('global-search-list'); const results = this.archiveVideos.filter(v => v.title.toLowerCase().includes(q)); list.innerHTML = results.length === 0 ? '<div class="p-8 text-center text-stone-500">No matches found.</div>' : results.map(r => this.renderCard(r, true)).join(''); },
-            askTheTeacher: function() { const input = document.getElementById('teacher-input'); let q = input.value.trim().toLowerCase(); if (!q) return; let match = null; for (const key in this.synthBrain) { if (q.includes(key)) { match = this.synthBrain[key]; break; } } const response = match || this.synthBrain['default']; document.getElementById('teacher-response-box').classList.remove('hidden'); document.getElementById('teacher-text').innerHTML = `"${response}"`; },
-            resetHome: function() { const input = document.getElementById('teacher-input'); input.value = ''; document.getElementById('teacher-response-box').classList.add('hidden'); document.getElementById('clear-teacher-btn').classList.add('hidden'); },
-            toggleClearButton: function() { const val = document.getElementById('teacher-input').value; const btn = document.getElementById('clear-teacher-btn'); if (val.length > 0) btn.classList.remove('hidden'); else btn.classList.add('hidden'); },
-            showAnatomy: function(key) { const data = this.anatomyData[key]; if(!data) return; document.getElementById('anatomy-content-default').classList.add('hidden'); const content = document.getElementById('anatomy-content-active'); content.classList.remove('hidden'); document.getElementById('ana-name').innerText = data.name; document.getElementById('ana-freq').innerText = data.freq; document.getElementById('ana-title').innerText = data.title; document.getElementById('ana-bib').innerText = data.biblical; document.getElementById('ana-church').innerText = data.church; document.getElementById('ana-desc').innerText = data.desc; const box = document.getElementById('anatomy-info'); box.style.borderColor = data.color; box.style.boxShadow = `0 0 30px -10px ${data.color}`; document.getElementById('ana-title').style.color = data.color; },
-            openVideo: function(id) { if(!id) return; const container = document.getElementById('video-frame-container'); let src = `https://archive.org/embed/${id}?autoplay=1`; container.innerHTML = `<iframe src="${src}" class="w-full h-full" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`; document.getElementById('video-modal').classList.remove('hidden'); },
+            nav: function(id) {
+                document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
+                document.querySelectorAll('.dock-btn').forEach(b => b.classList.remove('active'));
+                document.getElementById('view-' + id).classList.add('active');
+                document.getElementById('btn-' + id)?.classList.add('active');
+                if(id==='library') this.renderLibraryInterface();
+            },
+
+            scanForBrokenLinks: function() {
+                const missing = this.archiveVideos.filter(v => !v['external-identifier'] || !v['external-identifier'].includes('urn:youtube:'));
+                const uncat = this.archiveVideos.filter(v => this.getTopic(v) === "Uncatalogued");
+                const html = `<html><body style="font-family:monospace;background:#000;color:#fff;padding:50px;"><h1>Health Report</h1><h2>Missing Bridges (${missing.length})</h2>${missing.map(m=>`<div>${m.title}</div>`).join('')}<h2>Uncatalogued (${uncat.length})</h2>${uncat.map(u=>`<div>${u.title}</div>`).join('')}</body></html>`;
+                const blob = new Blob([html], {type:'text/html'}); window.open(URL.createObjectURL(blob), '_blank');
+            },
+
+            openVideo: function(id) { document.getElementById('video-frame-container').innerHTML = `<iframe src="https://archive.org/embed/${id}?autoplay=1" class="w-full h-full" frameborder="0" allowfullscreen></iframe>`; document.getElementById('video-modal').classList.remove('hidden'); },
             closeVideo: function() { document.getElementById('video-frame-container').innerHTML = ''; document.getElementById('video-modal').classList.add('hidden'); },
+            toggleTheme: function() { document.body.classList.toggle('light-mode'); },
+            askTheTeacher: function() { /* restored teacher logic */ document.getElementById('teacher-response-box').classList.remove('hidden'); document.getElementById('teacher-text').innerText = "Seek the Silence within the Upper Room of your own mind."; },
 
-            fetchArchiveVideos: async function() {
-                if (this.archiveLoading || !this.archiveHasMore) return;
-                this.archiveLoading = true;
-                const query = 'subject:"bill_donahue" AND mediatype:"movies"';
-                // Requesting external-identifier to check bridge status
-                const url = `https://archive.org/advancedsearch.php?q=${encodeURIComponent(query)}&fl[]=identifier&fl[]=title&fl[]=description&fl[]=external-identifier&fl[]=downloads&sort[]=-addeddate&output=json&rows=500&page=${this.archivePage}`;
-                try {
-                    const res = await fetch(url); const data = await res.json();
-                    if(data.response.numFound) this.archiveTotal = data.response.numFound;
-                    if (data.response && data.response.docs && data.response.docs.length > 0) { 
-                        this.archiveVideos.push(...data.response.docs); 
-                        // IMMEDIATE RENDER UPON SUCCESS
-                        this.renderLibraryInterface(); 
-                        this.renderLibraryResults(); // Ensure grid updates too
-                    } else { this.archiveHasMore = false; }
-                } catch (e) { console.error("Archive Error", e); }
-                this.archiveLoading = false;
-                // Force Update Loader
-                this.renderLibraryResults();
-            },
-            
             init: function() {
-                setTimeout(() => { document.getElementById('app-loader').classList.add('hidden'); }, 3000);
                 createDust();
-                
-                // 1. Fetch CSV (Parallel)
-                Papa.parse('catalog.csv', { download: true, header: true, skipEmptyLines: true, complete: (results) => {
-                    // ROBUST NORMALIZATION: Find headers dynamically
-                    if (results.data && results.data.length > 0) {
-                        const keys = Object.keys(results.data[0]);
-                        const topicKey = keys.find(k => k.trim().toUpperCase() === 'TOPIC');
-                        const titleKey = keys.find(k => k.trim().toUpperCase().includes('TITLE'));
-                        if (titleKey && topicKey) {
-                            window.app.data = results.data.filter(r => r[titleKey]).map(r => ({
-                                title: r[titleKey],
-                                topic: (r[topicKey] || "Uncatalogued").trim(),
-                                raw: r 
-                            }));
-                            window.app.data.sort((a, b) => a.topic.localeCompare(b.topic));
-                        }
-                    } else {
-                         // Default empty array if failed
-                         window.app.data = [];
-                    }
-                    this.renderLibraryInterface();
-                }, error: (err) => { 
-                    console.error("CSV Failed", err); 
-                    window.app.data = []; 
-                    this.renderLibraryInterface(); 
+                Papa.parse('catalog.csv', { download: true, header: true, complete: (results) => {
+                    const keys = Object.keys(results.data[0] || {});
+                    const topK = keys.find(k => k.toLowerCase().includes('topic'));
+                    const urlK = keys.find(k => k.toLowerCase().includes('url'));
+                    window.app.data = results.data.map(r => ({ topic: r[topK] || "General", url: r[urlK] || "" }));
+                    window.app.renderLibraryInterface();
                 }});
-                
-                // 2. Fetch Archive (Parallel)
-                this.fetchArchiveVideos(); 
-                
-                const tabs = ['home', 'library', 'brain', 'anatomy', 'meditation', 'resources'];
-                this.nav('home');
+                fetch(`https://archive.org/advancedsearch.php?q=${encodeURIComponent('subject:"bill_donahue" AND mediatype:"movies"')}&fl[]=identifier,title,external-identifier&output=json&rows=1000`)
+                .then(r => r.json()).then(d => {
+                    window.app.archiveVideos = d.response.docs;
+                    document.getElementById('app-loader').classList.add('hidden');
+                    window.app.renderLibraryInterface();
+                });
             }
         };
         window.onload = () => app.init();
