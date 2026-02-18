@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
    
     <style>
+        /* --- THEME VARIABLES --- */
         :root {
             --bg-base: #050505;
             --bg-gradient-start: #1a0f2e;
@@ -49,32 +50,39 @@
         .cinzel { font-family: 'Cinzel', serif; }
         .mono { font-family: 'Space Grotesk', monospace; }
         
-        .stars-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; background: radial-gradient(circle at bottom center, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 80%); transition: opacity 0.8s; opacity: 1; }
-        
-        .dust-particle { position: absolute; border-radius: 50%; animation: dust-flow var(--duration) linear infinite, dust-cycle 25s infinite linear; opacity: 0; mix-blend-mode: screen; }
-        @keyframes dust-flow { 0% { opacity: 0; transform: translateY(0) scale(0.5); } 20% { opacity: 0.8; } 80% { opacity: 0.6; } 100% { opacity: 0; transform: translateY(-150px) scale(1); } }
-        @keyframes dust-cycle { 0% { background-color: rgba(255,255,255,0.8); box-shadow: 0 0 3px rgba(255,255,255,0.5); } 50% { background-color: rgba(147, 51, 234, 0.8); box-shadow: 0 0 3px rgba(147, 51, 234, 0.5); } 100% { background-color: rgba(255,255,255,0.8); box-shadow: 0 0 3px rgba(255,255,255,0.5); } }
+        /* BACKGROUNDS (FIXED POSITION) */
+        .stars-container { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; 
+            background: radial-gradient(circle at bottom center, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 80%); 
+            transition: opacity 0.8s; opacity: 1; 
+        }
 
+        /* CARDS */
         .masonry-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; padding-bottom: 140px; }
         @media (max-width: 640px) { .masonry-grid { grid-template-columns: 1fr; } }
         .cosmos-card { background-color: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 12px; transition: all 0.3s; cursor: pointer; position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; min-height: 200px; z-index: 10; }
         .cosmos-card:hover { border-color: var(--gold); transform: translateY(-4px); box-shadow: 0 10px 40px -10px var(--accent-glow); }
 
+        /* UI */
         .dock-container { position: fixed; bottom: 20px; left: 0; width: 100%; display: flex; justify-content: center; z-index: 50; padding: 0 20px; }
         .dock { background: var(--dock-bg); backdrop-filter: blur(20px); border: 1px solid var(--border-color); padding: 8px; border-radius: 20px; display: flex; gap: 4px; box-shadow: 0 20px 40px -10px rgba(0,0,0,0.3); max-width: 100%; overflow-x: auto; scrollbar-width: none; }
         .dock-btn { display: flex; align-items: center; justify-content: center; padding: 10px 16px; border-radius: 12px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-secondary); transition: all 0.2s; cursor: pointer; border: 1px solid transparent; white-space: nowrap; flex-shrink: 0; min-width: 50px; }
         .dock-btn:hover { color: var(--text-primary); background: var(--bg-tertiary); }
         .dock-btn.active { background: var(--btn-active-bg) !important; color: var(--btn-active-text) !important; }
 
+        /* SEARCH OVERLAY */
         #search-overlay { position: fixed; inset: 0; background: rgba(5, 5, 5, 0.95); backdrop-filter: blur(20px); z-index: 90; display: flex; flex-direction: column; align-items: center; padding-top: 100px; transition: opacity 0.3s; opacity: 0; pointer-events: none; }
         #search-overlay.active { opacity: 1; pointer-events: auto; }
         .big-search-input { width: 90%; max-width: 600px; background: transparent; border: none; border-bottom: 2px solid var(--gold); font-size: 2rem; color: var(--text-primary); padding: 10px; text-align: center; outline: none; font-family: 'Cinzel', serif; }
+        .big-search-input::placeholder { color: var(--text-secondary); opacity: 0.5; }
 
+        /* DIAGNOSTICS OVERLAY */
         #diagnostics-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 100; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
         .diag-box { width: 90%; max-width: 800px; background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 30px; border-radius: 16px; text-align: center; box-shadow: 0 0 50px rgba(0,0,0,0.5); max-height: 80vh; display: flex; flex-direction: column; }
         .progress-bar { height: 4px; background: var(--bg-tertiary); width: 100%; border-radius: 2px; overflow: hidden; margin: 20px 0; flex-shrink: 0; }
         .progress-fill { height: 100%; background: var(--gold); width: 0%; transition: width 0.3s; }
 
+        /* ANATOMY */
         .anatomy-wrapper { position: relative; width: 300px; height: 650px; border: 1px solid var(--border-color); border-radius: 999px; background: var(--bg-secondary); box-shadow: 0 0 80px -20px var(--accent-glow); }
         @media (max-width: 768px) { .anatomy-scale-container { transform: scale(0.75); transform-origin: top center; height: 500px; } }
         .anatomy-dot { width: 24px; height: 24px; border-radius: 50%; position: absolute; left: 50%; transform: translateX(-50%); cursor: pointer; transition: all 0.3s ease; border: 2px solid rgba(255,255,255,0.5); z-index: 20; }
@@ -88,6 +96,7 @@
         .hidden { display: none !important; }
         .profile-img { box-shadow: 0 0 50px var(--accent-glow); transition: 0.5s; border-color: var(--border-color); }
         
+        /* CHIPS */
         .topic-chip { padding: 6px 12px; border-radius: 99px; font-size: 10px; font-weight: bold; text-transform: uppercase; cursor: pointer; border: 1px solid var(--border-color); color: var(--text-secondary); background: var(--bg-secondary); transition: all 0.2s; user-select: none; display: inline-flex; align-items: center; gap: 6px; }
         .topic-chip:hover { border-color: var(--purple); color: var(--text-primary); }
         .topic-chip.active { background: var(--purple); color: white; border-color: var(--purple); }
@@ -418,7 +427,7 @@
                 const isLight = document.body.classList.contains('light-mode');
                 const colors = isLight ? lightColors : darkColors;
                 
-                for(let i=0; i<8000; i++) { 
+                for(let i=0; i<600; i++) { 
                     particles.push({
                         x: Math.random() * w,
                         y: Math.random() * h,
@@ -467,12 +476,13 @@
             anatomyData: { "root": { title: "Root", name: "Muladhara", color: "#ef4444", freq: "400 THz", biblical: "Egypt", church: "Ephesus", desc: "Physical bondage." }, "crown": { title: "Crown", name: "Sahasrara", color: "#a855f7", freq: "789+ THz", biblical: "Peniel", church: "Laodicea", desc: "Face to Face." } },
             quotes: ["Be still.", "The Kingdom is within.", "As above, so below."],
 
-            renderCard: function(videoObj, isArchive = true) {
+            renderCard: function(videoObj) {
                 let id = videoObj.identifier;
                 let title = videoObj.title;
                 let thumb = `https://archive.org/services/img/${id}`;
                 let linkUrl = `https://archive.org/details/${id}`;
                 
+                // Get topic using simplified title matching
                 let topic = this.getTopicByVideoObj(videoObj);
 
                 let crossRefBtn = '';
@@ -484,49 +494,75 @@
                 return `<div class="cosmos-card group"><div class="relative aspect-video overflow-hidden cursor-pointer bg-black" onclick="window.app.openVideo('${id}')"><img src="${thumb}" class="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" onerror="this.src='https://archive.org/images/not_found.png'" /><div class="absolute inset-0 flex items-center justify-center"><i class="fa-solid fa-film text-cyan-400 text-4xl opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-lg"></i></div><div class="absolute top-2 right-2 bg-black/80 text-cyan-400 text-[9px] px-2 py-1 rounded font-mono uppercase tracking-widest border border-cyan-900/50">Restored</div></div><div class="p-4 flex flex-col flex-1" style="background: var(--bg-secondary); border-top: 1px solid var(--border-color);"><h3 class="text-sm font-medium line-clamp-2 mb-3" style="color: var(--text-primary);">${title}</h3><div class="mt-auto pt-2 flex flex-wrap gap-2 justify-between items-center" style="border-top: 1px solid var(--border-color);">${this.createTagButton(topic)}${crossRefBtn}</div><div class="mt-3 pt-2 text-right" style="border-top: 1px solid var(--border-color);"><a href="${linkUrl}" target="_blank" onclick="event.stopPropagation();" class="text-[9px] font-mono transition-colors" style="color: var(--text-secondary);">ID: ${id} <i class="fa-solid fa-arrow-up-right-from-square ml-1 text-[8px]"></i></a></div></div></div>`;
             },
             
+            // --- SIMPLIFIED TOPIC MATCHER (WORD OVERLAP) ---
             getTopicByVideoObj: function(videoObj) {
-                // IMPORTANT: If CSV hasn't loaded yet, we can't label anything.
                 if (!window.app.data || window.app.data.length === 0) return "Uncatalogued";
                 
+                // 1. Try to find YouTube ID in metadata
                 let searchId = null;
                 if (videoObj['external-identifier']) {
                      const match = videoObj['external-identifier'].match(/urn:youtube:([a-zA-Z0-9_-]{11})/);
                      if (match) searchId = match[1];
                 }
 
+                // 2. Strict ID Match
                 if (searchId) {
                     const row = window.app.data.find(r => this.getVideoID(r.raw['URL']) === searchId);
                     if (row) return row.topic;
                 }
+
+                // 3. Word Overlap Matcher (Fallback)
+                const clean = (str) => str ? str.toLowerCase().replace(/[^a-z0-9\s]/g, '').split(/\s+/).filter(w => w.length > 3) : [];
+                const inputWords = clean(videoObj.title);
                 
-                // Fallback: Title matching
-                const clean = (str) => str ? str.toLowerCase().replace(/[^a-z0-9]/g, '') : '';
-                const videoTitleClean = clean(videoObj.title);
+                if (inputWords.length === 0) return "Uncatalogued";
+
+                let bestMatch = null;
+                let maxMatches = 0;
+
+                for (const row of window.app.data) {
+                    const rowWords = clean(row.title);
+                    const intersection = rowWords.filter(w => inputWords.includes(w));
+                    
+                    if (intersection.length > maxMatches) {
+                        maxMatches = intersection.length;
+                        bestMatch = row;
+                    }
+                }
+
+                if (bestMatch && maxMatches >= 2) return bestMatch.topic;
                 
-                const row = window.app.data.find(r => {
-                    const rowTitleClean = clean(r.title);
-                    return rowTitleClean === videoTitleClean || (rowTitleClean.includes(videoTitleClean) && videoTitleClean.length > 5);
-                });
-                
-                return row ? row.topic : "Uncatalogued";
+                return "Uncatalogued";
             },
 
+            // --- UTILS ---
             getVideoID: function(url) { if (!url) return null; const str = url.toString().trim(); const match = str.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/); return (match && match[2].length === 11) ? match[2] : null; },
             createTagButton: function(topic) { return `<button class="inline-flex items-center gap-2 text-[9px] font-bold uppercase tracking-widest px-3 py-1.5 rounded transition-all justify-center cursor-pointer relative z-20" style="background: var(--input-bg); color: var(--purple); border: 1px solid var(--border-color);" onclick="event.stopPropagation(); window.app.selectLibraryTopic('${topic.replace(/'/g, "\\'")}')"><i class="fa-solid fa-tag"></i> ${topic}</button>`; },
-            toggleTheme: function() { this.isLightMode = !this.isLightMode; document.body.classList.toggle('light-mode'); document.getElementById('theme-icon').className = this.isLightMode ? 'fa-solid fa-sun text-yellow-500' : 'fa-solid fa-moon'; if(this.refreshDust) this.refreshDust(); },
             
+            toggleTheme: function() { 
+                this.isLightMode = !this.isLightMode; 
+                document.body.classList.toggle('light-mode'); 
+                document.getElementById('theme-icon').className = this.isLightMode ? 'fa-solid fa-sun text-yellow-500' : 'fa-solid fa-moon';
+                if(this.refreshDust) this.refreshDust();
+            },
+
             nav: function(id) { 
                 document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active')); 
                 document.querySelectorAll('.dock-btn').forEach(b => b.classList.remove('active')); 
                 document.getElementById('view-' + id).classList.add('active'); 
+                
                 if(id==='home'){ this.resetHome(); document.getElementById('btn-home').classList.add('active'); }
-                else if(id==='search'){ document.querySelectorAll('.dock-btn')[3].classList.add('active'); } 
+                else if(id==='search'){ document.querySelectorAll('.dock-btn')[3].classList.add('active'); }
                 else { document.getElementById('btn-' + id)?.classList.add('active'); }
                 
                 if(id === 'meditation') {
+                    // Fix Quote Loading
                     setTimeout(() => {
                         const quoteElement = document.getElementById('meditation-quote');
-                        if (quoteElement) { const quote = this.quotes[Math.floor(Math.random() * this.quotes.length)]; quoteElement.innerText = `"${quote}"`; }
+                        if (quoteElement) {
+                            const quote = this.quotes[Math.floor(Math.random() * this.quotes.length)];
+                            quoteElement.innerText = `"${quote}"`;
+                        }
                     }, 100);
                     this.renderMeditationLectures();
                 }
@@ -535,48 +571,77 @@
                 window.scrollTo(0,0); 
             },
 
+            // --- SCANNER ---
             scanForBrokenLinks: async function() {
-                const overlay = document.getElementById('diagnostics-overlay'); overlay.classList.remove('hidden');
-                document.getElementById('diag-status').innerText = "Analyzing Archive Metadata..."; document.getElementById('diag-progress').style.width = "20%";
+                const overlay = document.getElementById('diagnostics-overlay');
+                overlay.classList.remove('hidden');
+                document.getElementById('diag-status').innerText = "Analyzing Archive Metadata...";
+                document.getElementById('diag-progress').style.width = "20%";
                 
-                if (this.archiveVideos.length === 0) {
-                     document.getElementById('diag-results').innerHTML = '<div class="text-red-400 p-4">No videos loaded to scan. Please wait for library to populate.</div>';
-                     document.getElementById('diag-results').classList.remove('hidden');
-                     return;
-                }
+                let issues = [];
+                let checkedCount = 0;
 
-                let missingBridge = []; let uncatalogued = [];
+                // Check loaded archive videos against CSV
                 this.archiveVideos.forEach(v => {
-                     if (!v['external-identifier'] || !v['external-identifier'].includes('urn:youtube:')) { missingBridge.push({ title: v.title, id: v.identifier, reason: "Missing YouTube Link (Bridge Broken)" }); }
+                     checkedCount++;
+                     // 1. Check for Missing YouTube ID in Metadata
+                     if (!v['external-identifier'] || !v['external-identifier'].includes('urn:youtube:')) {
+                         issues.push({ title: v.title, id: v.identifier, reason: "Missing YouTube Link (Bridge Broken)" });
+                     }
+                     // 2. Check for Uncatalogued (No CSV Match)
                      const topic = this.getTopicByVideoObj(v);
-                     if (topic === "Uncatalogued" || topic === "General") { uncatalogued.push({ title: v.title, id: v.identifier, reason: "Uncatalogued (No Matching ID in CSV)" }); }
+                     if (topic === "Uncatalogued" || topic === "General") {
+                         issues.push({ title: v.title, id: v.identifier, reason: "Uncatalogued (Title Mismatch)" });
+                     }
                 });
 
-                document.getElementById('diag-progress').style.width = "100%"; document.getElementById('diag-status').innerText = `Scan Complete. Checked ${this.archiveVideos.length} items.`;
-                let reportHTML = `<html><head><title>Archive Health Report</title><style>body{font-family:monospace;background:#111;color:#ddd;padding:40px;}table{width:100%;border-collapse:collapse;margin-bottom:40px;}th{text-align:left;border-bottom:2px solid #333;padding:10px;color:#888;}td{border-bottom:1px solid #222;padding:10px;}.error-count{color:#f87171;font-weight:bold;}</style></head><body><h1>Archive Health Report</h1><p>Total Scanned: <strong>${this.archiveVideos.length}</strong></p><h2>1. Missing Bridge (${missingBridge.length})</h2><table><tr><th>Title</th><th>ID</th></tr>${missingBridge.map(v=>`<tr><td>${v.title}</td><td>${v.id}</td></tr>`).join('')}</table><h2>2. Uncatalogued (${uncatalogued.length})</h2><table><tr><th>Title</th><th>ID</th></tr>${uncatalogued.map(v=>`<tr><td>${v.title}</td><td>${v.id}</td></tr>`).join('')}</table></body></html>`;
-                const blob = new Blob([reportHTML], { type: 'text/html' }); const url = URL.createObjectURL(blob); window.open(url, '_blank');
-                setTimeout(() => { this.closeDiagnostics(); }, 1000);
+                document.getElementById('diag-progress').style.width = "100%";
+                document.getElementById('diag-status').innerText = `Scan Complete. Checked ${checkedCount} items.`;
+                document.getElementById('diag-results').classList.remove('hidden');
+                
+                if (issues.length === 0) {
+                    document.getElementById('diag-results').innerHTML = '<div class="text-green-400 p-4">All Archive videos have valid bridges and catalog entries.</div>';
+                } else {
+                    let csvContent = "data:text/csv;charset=utf-8,TITLE,ID,REASON\n" + issues.map(e => `"${e.title.replace(/"/g, '""')}","${e.id}","${e.reason}"`).join("\n");
+                    const encodedUri = encodeURI(csvContent);
+                    document.getElementById('diag-results').innerHTML = `<div class="mb-4"><a href="${encodedUri}" download="archive_issues_report.csv" class="text-red-400 border border-red-900 px-4 py-2 rounded uppercase font-bold text-[10px] hover:bg-red-900 hover:text-white transition-colors"><i class="fa-solid fa-download mr-2"></i> Download Report (.csv)</a></div><ul class="text-left text-[10px] font-mono text-stone-400 space-y-1">${issues.slice(0, 50).map(l => `<li><span class="text-red-500">X</span> ${l.title} <span class="opacity-50">(${l.reason})</span></li>`).join('')}${issues.length > 50 ? `<li>...and ${issues.length - 50} more</li>` : ''}</ul>`;
+                }
             },
             closeDiagnostics: function() { document.getElementById('diagnostics-overlay').classList.add('hidden'); },
 
+            // --- LECTURE RENDERERS ---
             renderMeditationLectures: function() {
                 const grid = document.getElementById('meditation-lectures-grid');
                 const brainGrid = document.getElementById('brain-lectures-grid');
                 document.getElementById('med-loader')?.classList.add('hidden');
                 document.getElementById('brain-loader')?.classList.add('hidden');
+                
                 if (this.archiveVideos.length === 0) return;
+
+                // MEDITATION FILTER
                 const medKeywords = ['meditation', 'silence', 'pineal', 'upper room', 'watch', 'prayer'];
-                const medMatches = this.archiveVideos.filter(v => { const t = v.title.toLowerCase(); return medKeywords.some(k => t.includes(k)); }).slice(0, 12);
+                const medMatches = this.archiveVideos.filter(v => {
+                    const t = v.title.toLowerCase();
+                    return medKeywords.some(k => t.includes(k));
+                }).slice(0, 12);
+                
                 if(grid) grid.innerHTML = medMatches.map(v => this.renderCard(v, true)).join('');
+
+                // BRAIN FILTER
                 const brainKeywords = ['brain', 'claustrum', 'mind', 'skull', 'anatomy', 'oil'];
-                const brainMatches = this.archiveVideos.filter(v => { const t = v.title.toLowerCase(); return brainKeywords.some(k => t.includes(k)); }).slice(0, 12);
+                const brainMatches = this.archiveVideos.filter(v => {
+                    const t = v.title.toLowerCase();
+                    return brainKeywords.some(k => t.includes(k));
+                }).slice(0, 12);
+
                 if(brainGrid) brainGrid.innerHTML = brainMatches.map(v => this.renderCard(v, true)).join('');
             },
 
+            // --- LIBRARY ---
             selectLibraryTopic: function(topic) { this.selectedLibraryTopics.clear(); this.selectedLibraryTopics.add(topic); this.nav('library'); setTimeout(() => this.renderLibraryInterface(), 50); },
             renderLibraryInterface: function() {
-                // RENDER FROM CSV IMMEDIATELY. DO NOT WAIT FOR ARCHIVE.
                 let topics = [];
+                // Use GLOBAL data array
                 if(window.app.data && window.app.data.length > 0) {
                      topics = [...new Set(window.app.data.map(i => i.topic).filter(t => t))].sort();
                 }
@@ -584,8 +649,7 @@
                 if (!topics.includes("Uncatalogued")) topics.push("Uncatalogued");
 
                 const container = document.getElementById('library-topics');
-                // Use archiveTotal if available, else ...
-                document.getElementById('count-hd').innerText = this.archiveVideos.length > 0 ? this.archiveTotal : "...";
+                document.getElementById('count-hd').innerText = this.archiveTotal;
                 
                 container.innerHTML = topics.map(t => {
                     const isActive = this.selectedLibraryTopics.has(t);
@@ -594,13 +658,11 @@
                         if (t === "Uncatalogued") count = this.archiveVideos.filter(v => this.getTopicByVideoObj(v) === "Uncatalogued").length;
                         else count = this.archiveVideos.filter(v => this.getTopicByVideoObj(v) === t).length;
                     } else {
-                        // Show placeholder until loaded
-                         count = "...";
+                         // Fallback to CSV count for UI feel while loading
+                         count = t === "Uncatalogued" ? "..." : (window.app.data.filter(r => r.topic === t).length || 0);
                     }
                     return `<div class="topic-chip ${isActive ? 'active' : ''}" onclick="window.app.toggleLibraryTopic('${t.replace(/'/g, "\\'")}')">${t} <span class="chip-count">(${count})</span></div>`;
                 }).join('');
-                
-                // Only render grid if we have videos
                 if(this.archiveVideos.length > 0) this.renderLibraryResults();
             },
             toggleLibraryTopic: function(topic) { if (this.selectedLibraryTopics.has(topic)) this.selectedLibraryTopics.delete(topic); else this.selectedLibraryTopics.add(topic); this.renderLibraryInterface(); this.renderLibraryResults(); },
@@ -616,7 +678,6 @@
                          grid.innerHTML = '';
                      } else {
                          document.getElementById('video-loader').classList.add('hidden');
-                         // Only show empty message if we actually tried and failed
                          grid.innerHTML = '<div class="col-span-full text-center py-20 text-stone-500">No videos found. Check connection.</div>';
                      }
                      return;
@@ -630,7 +691,7 @@
                         return this.selectedLibraryTopics.has(topic);
                     });
                 }
-                grid.innerHTML = results.map(v => this.renderCard(v)).join('');
+                grid.innerHTML = results.map(v => this.renderCard(v, true)).join('');
             },
 
             openSearchOverlay: function() { document.getElementById('search-overlay').classList.add('active'); setTimeout(() => document.getElementById('overlay-search-input').focus(), 100); },
@@ -647,22 +708,20 @@
             fetchArchiveVideos: async function() {
                 if (this.archiveLoading || !this.archiveHasMore) return;
                 this.archiveLoading = true;
+                // NOTE: removed &sort[]=-addeddate as it sometimes causes issues with archive API on large datasets. Default sort is fine.
                 const query = 'subject:"bill_donahue" AND mediatype:"movies"';
-                // Requesting external-identifier to check bridge status
-                const url = `https://archive.org/advancedsearch.php?q=${encodeURIComponent(query)}&fl[]=identifier&fl[]=title&fl[]=description&fl[]=external-identifier&fl[]=downloads&sort[]=-addeddate&output=json&rows=500&page=${this.archivePage}`;
+                // Increased row limit to 1000 to grab as much as possible at once for accurate counting
+                const url = `https://archive.org/advancedsearch.php?q=${encodeURIComponent(query)}&fl[]=identifier&fl[]=title&fl[]=description&fl[]=external-identifier&fl[]=downloads&output=json&rows=1000&page=${this.archivePage}`;
                 try {
                     const res = await fetch(url); const data = await res.json();
                     if(data.response.numFound) this.archiveTotal = data.response.numFound;
                     if (data.response && data.response.docs && data.response.docs.length > 0) { 
                         this.archiveVideos.push(...data.response.docs); 
-                        // IMMEDIATE RENDER UPON SUCCESS
                         this.renderLibraryInterface(); 
-                        this.renderLibraryResults(); // Ensure grid updates too
+                        this.renderLibraryResults(); 
                     } else { this.archiveHasMore = false; }
                 } catch (e) { console.error("Archive Error", e); }
                 this.archiveLoading = false;
-                // Force Update Loader
-                this.renderLibraryResults();
             },
             
             init: function() {
