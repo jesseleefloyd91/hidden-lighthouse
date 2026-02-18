@@ -485,7 +485,8 @@
             },
             
             getTopicByVideoObj: function(videoObj) {
-                if (!this.data || this.data.length === 0) return "Uncatalogued";
+                // IMPORTANT: If CSV hasn't loaded yet, we can't label anything.
+                if (!window.app.data || window.app.data.length === 0) return "Uncatalogued";
                 
                 let searchId = null;
                 if (videoObj['external-identifier']) {
@@ -494,15 +495,15 @@
                 }
 
                 if (searchId) {
-                    const row = this.data.find(r => this.getVideoID(r.URL) === searchId);
-                    if (row) return row.topic; 
+                    const row = window.app.data.find(r => this.getVideoID(r.raw['URL']) === searchId);
+                    if (row) return row.topic;
                 }
-
+                
                 // Fallback: Title matching
                 const clean = (str) => str ? str.toLowerCase().replace(/[^a-z0-9]/g, '') : '';
                 const videoTitleClean = clean(videoObj.title);
                 
-                const row = this.data.find(r => {
+                const row = window.app.data.find(r => {
                     const rowTitleClean = clean(r.title);
                     return rowTitleClean === videoTitleClean || (rowTitleClean.includes(videoTitleClean) && videoTitleClean.length > 5);
                 });
@@ -518,7 +519,6 @@
                 document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active')); 
                 document.querySelectorAll('.dock-btn').forEach(b => b.classList.remove('active')); 
                 document.getElementById('view-' + id).classList.add('active'); 
-                
                 if(id==='home'){ this.resetHome(); document.getElementById('btn-home').classList.add('active'); }
                 else if(id==='search'){ document.querySelectorAll('.dock-btn')[3].classList.add('active'); } 
                 else { document.getElementById('btn-' + id)?.classList.add('active'); }
@@ -575,16 +575,17 @@
 
             selectLibraryTopic: function(topic) { this.selectedLibraryTopics.clear(); this.selectedLibraryTopics.add(topic); this.nav('library'); setTimeout(() => this.renderLibraryInterface(), 50); },
             renderLibraryInterface: function() {
-                // Render from CSV data immediately
+                // RENDER FROM CSV IMMEDIATELY. DO NOT WAIT FOR ARCHIVE.
                 let topics = [];
-                if(this.data && this.data.length > 0) {
-                     topics = [...new Set(this.data.map(i => i.topic).filter(t => t))].sort();
+                if(window.app.data && window.app.data.length > 0) {
+                     topics = [...new Set(window.app.data.map(i => i.topic).filter(t => t))].sort();
                 }
                 
                 if (!topics.includes("Uncatalogued")) topics.push("Uncatalogued");
 
                 const container = document.getElementById('library-topics');
-                document.getElementById('count-hd').innerText = this.archiveTotal;
+                // Use archiveTotal if available, else ...
+                document.getElementById('count-hd').innerText = this.archiveVideos.length > 0 ? this.archiveTotal : "...";
                 
                 container.innerHTML = topics.map(t => {
                     const isActive = this.selectedLibraryTopics.has(t);
@@ -593,11 +594,13 @@
                         if (t === "Uncatalogued") count = this.archiveVideos.filter(v => this.getTopicByVideoObj(v) === "Uncatalogued").length;
                         else count = this.archiveVideos.filter(v => this.getTopicByVideoObj(v) === t).length;
                     } else {
-                         // Fallback to CSV count for UI feel while loading
-                         count = t === "Uncatalogued" ? "..." : this.data.filter(r => r.topic === t).length;
+                        // Show placeholder until loaded
+                         count = "...";
                     }
                     return `<div class="topic-chip ${isActive ? 'active' : ''}" onclick="window.app.toggleLibraryTopic('${t.replace(/'/g, "\\'")}')">${t} <span class="chip-count">(${count})</span></div>`;
                 }).join('');
+                
+                // Only render grid if we have videos
                 if(this.archiveVideos.length > 0) this.renderLibraryResults();
             },
             toggleLibraryTopic: function(topic) { if (this.selectedLibraryTopics.has(topic)) this.selectedLibraryTopics.delete(topic); else this.selectedLibraryTopics.add(topic); this.renderLibraryInterface(); this.renderLibraryResults(); },
@@ -613,6 +616,7 @@
                          grid.innerHTML = '';
                      } else {
                          document.getElementById('video-loader').classList.add('hidden');
+                         // Only show empty message if we actually tried and failed
                          grid.innerHTML = '<div class="col-span-full text-center py-20 text-stone-500">No videos found. Check connection.</div>';
                      }
                      return;
@@ -626,7 +630,7 @@
                         return this.selectedLibraryTopics.has(topic);
                     });
                 }
-                grid.innerHTML = results.map(v => this.renderCard(v, true)).join('');
+                grid.innerHTML = results.map(v => this.renderCard(v)).join('');
             },
 
             openSearchOverlay: function() { document.getElementById('search-overlay').classList.add('active'); setTimeout(() => document.getElementById('overlay-search-input').focus(), 100); },
@@ -673,16 +677,23 @@
                         const topicKey = keys.find(k => k.trim().toUpperCase() === 'TOPIC');
                         const titleKey = keys.find(k => k.trim().toUpperCase().includes('TITLE'));
                         if (titleKey && topicKey) {
-                            this.data = results.data.filter(r => r[titleKey]).map(r => ({
+                            window.app.data = results.data.filter(r => r[titleKey]).map(r => ({
                                 title: r[titleKey],
                                 topic: (r[topicKey] || "Uncatalogued").trim(),
                                 raw: r 
                             }));
-                            this.data.sort((a, b) => a.topic.localeCompare(b.topic));
+                            window.app.data.sort((a, b) => a.topic.localeCompare(b.topic));
                         }
+                    } else {
+                         // Default empty array if failed
+                         window.app.data = [];
                     }
                     this.renderLibraryInterface();
-                }, error: (err) => { console.error("CSV Failed", err); this.renderLibraryInterface(); }});
+                }, error: (err) => { 
+                    console.error("CSV Failed", err); 
+                    window.app.data = []; 
+                    this.renderLibraryInterface(); 
+                }});
                 
                 // 2. Fetch Archive (Parallel)
                 this.fetchArchiveVideos(); 
