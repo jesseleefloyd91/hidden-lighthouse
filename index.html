@@ -50,14 +50,9 @@
         .mono { font-family: 'Space Grotesk', monospace; }
         
         .stars-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; background: radial-gradient(circle at bottom center, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 80%); transition: opacity 0.8s; opacity: 1; }
-        
         .dust-particle { position: absolute; border-radius: 50%; animation: dust-flow var(--duration) linear infinite, dust-cycle 25s infinite linear; opacity: 0; mix-blend-mode: screen; }
         @keyframes dust-flow { 0% { opacity: 0; transform: translateY(0) scale(0.5); } 20% { opacity: 0.8; } 80% { opacity: 0.6; } 100% { opacity: 0; transform: translateY(-150px) scale(1); } }
-        @keyframes dust-cycle { 
-            0% { background-color: rgba(255,255,255,0.8); box-shadow: 0 0 3px rgba(255,255,255,0.5); } 
-            50% { background-color: rgba(147, 51, 234, 0.8); box-shadow: 0 0 3px rgba(147, 51, 234, 0.5); } 
-            100% { background-color: rgba(255,255,255,0.8); box-shadow: 0 0 3px rgba(255,255,255,0.5); } 
-        }
+        @keyframes dust-cycle { 0% { background-color: rgba(255,255,255,0.8); box-shadow: 0 0 3px rgba(255,255,255,0.5); } 50% { background-color: rgba(147, 51, 234, 0.8); box-shadow: 0 0 3px rgba(147, 51, 234, 0.5); } 100% { background-color: rgba(255,255,255,0.8); box-shadow: 0 0 3px rgba(255,255,255,0.5); } }
 
         .masonry-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; padding-bottom: 140px; }
         @media (max-width: 640px) { .masonry-grid { grid-template-columns: 1fr; } }
@@ -471,12 +466,14 @@
             anatomyData: { "root": { title: "Root", name: "Muladhara", color: "#ef4444", freq: "400 THz", biblical: "Egypt", church: "Ephesus", desc: "Physical bondage." }, "crown": { title: "Crown", name: "Sahasrara", color: "#a855f7", freq: "789+ THz", biblical: "Peniel", church: "Laodicea", desc: "Face to Face." } },
             quotes: ["Be still.", "The Kingdom is within.", "As above, so below."],
 
-            renderCard: function(videoObj) {
+            renderCard: function(videoObj, isArchive = true) {
                 let id = videoObj.identifier;
                 let title = videoObj.title;
                 let thumb = `https://archive.org/services/img/${id}`;
                 let linkUrl = `https://archive.org/details/${id}`;
+                
                 let topic = this.getTopicByVideoObj(videoObj);
+
                 let crossRefBtn = '';
                 if (videoObj['external-identifier'] && videoObj['external-identifier'].includes('urn:youtube:')) {
                     const ytId = videoObj['external-identifier'].replace('urn:youtube:', '');
@@ -487,7 +484,7 @@
             },
             
             getTopicByVideoObj: function(videoObj) {
-                if (!this.data || this.data.length === 0) return "Uncatalogued";
+                if (!this.data || this.data.length === 0) return "General";
                 
                 let searchId = null;
                 if (videoObj['external-identifier']) {
@@ -497,17 +494,18 @@
 
                 if (searchId) {
                     const row = this.data.find(r => this.getVideoID(r.URL) === searchId);
-                    if (row) return row.TOPIC;
+                    if (row) return row.topic; // Normalized lowercase key
                 }
-                
-                // Fallback: Title matching
+
                 const clean = (str) => str ? str.toLowerCase().replace(/[^a-z0-9]/g, '') : '';
                 const videoTitleClean = clean(videoObj.title);
+                
                 const row = this.data.find(r => {
-                    const rowTitleClean = clean(r['TITLE OF VIDEO']);
-                    return rowTitleClean === videoTitleClean;
+                    const rowTitleClean = clean(r.title);
+                    return rowTitleClean === videoTitleClean || (rowTitleClean.includes(videoTitleClean) && videoTitleClean.length > 5);
                 });
-                return row ? row.TOPIC : "Uncatalogued";
+                
+                return row ? row.topic : "Uncatalogued";
             },
 
             getVideoID: function(url) { if (!url) return null; const str = url.toString().trim(); const match = str.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/); return (match && match[2].length === 11) ? match[2] : null; },
@@ -574,25 +572,16 @@
 
             selectLibraryTopic: function(topic) { this.selectedLibraryTopics.clear(); this.selectedLibraryTopics.add(topic); this.nav('library'); setTimeout(() => this.renderLibraryInterface(), 50); },
             renderLibraryInterface: function() {
-                // RENDER FROM CSV IMMEDIATELY. DO NOT WAIT FOR ARCHIVE.
+                // Render from CSV data immediately
                 let topics = [];
                 if(this.data && this.data.length > 0) {
-                    // Try to find TOPIC column case-insensitive
-                    const sample = this.data[0];
-                    const topicKey = Object.keys(sample).find(k => k.toUpperCase() === 'TOPIC');
-                    
-                    if(topicKey) {
-                        // Normalize keys for future use
-                        this.data = this.data.map(row => { row.TOPIC = row[topicKey]; return row; });
-                        topics = [...new Set(this.data.map(i => i.TOPIC).filter(t => t))].sort(); 
-                    }
+                     topics = [...new Set(this.data.map(i => i.topic).filter(t => t))].sort();
                 }
                 
                 if (!topics.includes("Uncatalogued")) topics.push("Uncatalogued");
 
                 const container = document.getElementById('library-topics');
-                // Use archiveTotal if available, else ...
-                document.getElementById('count-hd').innerText = this.archiveVideos.length > 0 ? this.archiveTotal : "...";
+                document.getElementById('count-hd').innerText = this.archiveTotal;
                 
                 container.innerHTML = topics.map(t => {
                     const isActive = this.selectedLibraryTopics.has(t);
@@ -601,17 +590,15 @@
                         if (t === "Uncatalogued") count = this.archiveVideos.filter(v => this.getTopicByVideoObj(v) === "Uncatalogued").length;
                         else count = this.archiveVideos.filter(v => this.getTopicByVideoObj(v) === t).length;
                     } else {
-                        // Show placeholder until loaded
-                         count = "...";
+                         // Fallback to CSV count for UI feel while loading
+                         count = t === "Uncatalogued" ? "..." : this.data.filter(r => r.topic === t).length;
                     }
                     return `<div class="topic-chip ${isActive ? 'active' : ''}" onclick="window.app.toggleLibraryTopic('${t.replace(/'/g, "\\'")}')">${t} <span class="chip-count">(${count})</span></div>`;
                 }).join('');
-                
-                // Only render grid if we have videos
                 if(this.archiveVideos.length > 0) this.renderLibraryResults();
             },
-            toggleLibraryTopic: function(topic) { if (this.selectedLibraryTopics.has(topic)) this.selectedLibraryTopics.delete(topic); else this.selectedLibraryTopics.add(topic); this.renderLibraryInterface(); },
-            clearLibraryFilters: function() { this.selectedLibraryTopics.clear(); this.renderLibraryInterface(); },
+            toggleLibraryTopic: function(topic) { if (this.selectedLibraryTopics.has(topic)) this.selectedLibraryTopics.delete(topic); else this.selectedLibraryTopics.add(topic); this.renderLibraryInterface(); this.renderLibraryResults(); },
+            clearLibraryFilters: function() { this.selectedLibraryTopics.clear(); this.renderLibraryInterface(); this.renderLibraryResults(); },
             
             renderLibraryResults: function() {
                 const grid = document.getElementById('library-grid');
@@ -636,7 +623,7 @@
                         return this.selectedLibraryTopics.has(topic);
                     });
                 }
-                grid.innerHTML = results.map(v => this.renderCard(v)).join('');
+                grid.innerHTML = results.map(v => this.renderCard(v, true)).join('');
             },
 
             openSearchOverlay: function() { document.getElementById('search-overlay').classList.add('active'); setTimeout(() => document.getElementById('overlay-search-input').focus(), 100); },
@@ -654,37 +641,44 @@
                 if (this.archiveLoading || !this.archiveHasMore) return;
                 this.archiveLoading = true;
                 const query = 'subject:"bill_donahue" AND mediatype:"movies"';
-                // Requesting external-identifier to check bridge status
                 const url = `https://archive.org/advancedsearch.php?q=${encodeURIComponent(query)}&fl[]=identifier&fl[]=title&fl[]=description&fl[]=external-identifier&fl[]=downloads&sort[]=-addeddate&output=json&rows=500&page=${this.archivePage}`;
                 try {
                     const res = await fetch(url); const data = await res.json();
                     if(data.response.numFound) this.archiveTotal = data.response.numFound;
                     if (data.response && data.response.docs && data.response.docs.length > 0) { 
                         this.archiveVideos.push(...data.response.docs); 
-                        // UPDATE UI
                         this.renderLibraryInterface(); 
+                        this.renderLibraryResults(); 
                     } else { this.archiveHasMore = false; }
                 } catch (e) { console.error("Archive Error", e); }
                 this.archiveLoading = false;
-                this.renderLibraryResults(); // Clear loader
+                this.renderLibraryResults();
             },
             
             init: function() {
                 setTimeout(() => { document.getElementById('app-loader').classList.add('hidden'); }, 3000);
                 createDust();
                 
-                // 1. Start CSV Parse (Fastest)
+                // 1. Fetch CSV (Parallel)
                 Papa.parse('catalog.csv', { download: true, header: true, skipEmptyLines: true, complete: (results) => {
-                    this.data = results.data; // Store raw data initially
-                    // RENDER CHIPS NOW
-                    this.renderLibraryInterface(); 
-                }, error: (e) => {
-                    console.error("CSV Error", e);
-                    // RENDER EMPTY INTERFACE SO PAGE ISN'T BLANK
+                    // ROBUST NORMALIZATION: Find headers dynamically
+                    if (results.data && results.data.length > 0) {
+                        const keys = Object.keys(results.data[0]);
+                        const topicKey = keys.find(k => k.trim().toUpperCase() === 'TOPIC');
+                        const titleKey = keys.find(k => k.trim().toUpperCase().includes('TITLE'));
+                        if (titleKey && topicKey) {
+                            this.data = results.data.filter(r => r[titleKey]).map(r => ({
+                                title: r[titleKey],
+                                topic: (r[topicKey] || "Uncatalogued").trim(),
+                                raw: r 
+                            }));
+                            this.data.sort((a, b) => a.topic.localeCompare(b.topic));
+                        }
+                    }
                     this.renderLibraryInterface();
-                }});
+                }, error: (err) => { console.error("CSV Failed", err); this.renderLibraryInterface(); }});
                 
-                // 2. Start Archive Fetch (Slow)
+                // 2. Fetch Archive (Parallel)
                 this.fetchArchiveVideos(); 
                 
                 const tabs = ['home', 'library', 'brain', 'anatomy', 'meditation', 'resources'];
