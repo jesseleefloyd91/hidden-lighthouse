@@ -49,8 +49,15 @@
         body { font-family: 'Inter', sans-serif; background-color: var(--bg-base); color: var(--text-primary); transition: background-color 0.5s ease, color 0.5s ease; overflow-x: hidden; height: 100vh; width: 100vw; }
         .cinzel { font-family: 'Cinzel', serif; }
         
+        /* Placeholder Adapters */
+        ::placeholder { color: var(--text-secondary); opacity: 0.6; }
+        :-ms-input-placeholder { color: var(--text-secondary); }
+        ::-ms-input-placeholder { color: var(--text-secondary); }
+        
+        /* BACKGROUND */
         .stars-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; background: radial-gradient(circle at bottom center, var(--bg-gradient-start) 0%, var(--bg-base) 80%); }
         
+        /* LAYOUT & GRIDS */
         .masonry-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; padding-bottom: 160px; }
         @media (max-width: 640px) { 
             .masonry-grid { grid-template-columns: 1fr; padding-bottom: 180px; } 
@@ -61,6 +68,7 @@
         .cosmos-card { background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 16px; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); cursor: pointer; position: relative; overflow: hidden; display: flex; flex-direction: column; min-height: 240px; box-shadow: 0 4px 6px var(--shadow-color); }
         .cosmos-card:hover { border-color: var(--gold); transform: translateY(-5px); box-shadow: 0 15px 30px var(--accent-glow); }
 
+        /* NAVIGATION DOCK */
         .dock-container { position: fixed; bottom: 20px; left: 0; width: 100%; display: flex; justify-content: center; z-index: 50; padding: 0 10px; pointer-events: none; }
         .dock { pointer-events: auto; background: var(--dock-bg); backdrop-filter: blur(20px); border: 1px solid var(--border-color); padding: 10px; border-radius: 24px; display: flex; gap: 8px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); max-width: 100%; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
         .dock-btn { display: flex; align-items: center; justify-content: center; padding: 10px 16px; border-radius: 14px; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-secondary); transition: all 0.2s; cursor: pointer; white-space: nowrap; flex-shrink: 0; }
@@ -116,14 +124,21 @@
     <div id="search-overlay">
         <button onclick="window.app.closeSearchOverlay()" class="absolute top-6 right-6 p-4 hover:scale-110 transition" style="color: var(--text-primary);"><i class="fa-solid fa-xmark text-3xl"></i></button>
         <div class="w-full max-w-4xl px-6 text-center">
-            <input type="text" id="overlay-search-input" placeholder="Type keyword or phrase..." class="w-full bg-transparent border-b-2 border-gold text-3xl md:text-4xl cinzel outline-none py-4 text-center" style="color: var(--text-primary);" onkeydown="if(event.key === 'Enter') window.app.performOverlaySearch(true)">
-            <div class="flex justify-center gap-4 mt-6">
-                <button onclick="window.app.performOverlaySearch(false)" class="px-6 py-2 border rounded-full text-[10px] font-bold uppercase transition" style="color: var(--text-primary); border-color: var(--border-color);">Video Search</button>
-                <button onclick="window.app.performOverlaySearch(true)" class="px-6 py-2 bg-gold rounded-full text-[10px] font-bold uppercase hover:scale-105 transition shadow-[0_0_15px_rgba(212,175,55,0.4)]" style="color: #111;"><i class="fa-solid fa-align-left mr-1"></i> Transcript Deep Search</button>
+            <input type="text" id="overlay-search-input" placeholder="Type keyword or phrase..." class="w-full bg-transparent border-b-2 cinzel outline-none py-4 text-center text-3xl md:text-4xl" style="color: var(--text-primary); border-color: var(--gold);" onkeydown="if(event.key === 'Enter') window.app.performOverlaySearch(true)">
+            
+            <div class="flex justify-center items-center gap-4 mt-8">
+                <button onclick="window.app.performOverlaySearch(false)" class="px-6 py-3 border rounded-full text-[10px] font-black uppercase tracking-widest transition hover:opacity-70" style="color: var(--text-primary); border-color: var(--text-primary);">
+                    Video Search
+                </button>
+                <button onclick="window.app.performOverlaySearch(true)" class="px-6 py-3 rounded-full text-[10px] font-black uppercase tracking-widest hover:scale-105 transition shadow-[0_0_15px_rgba(212,175,55,0.4)]" style="background-color: var(--gold); color: #050505;">
+                    <i class="fa-solid fa-align-left mr-1"></i> Transcript Deep Search
+                </button>
             </div>
+            
             <div id="overlay-insight-box" class="hidden mt-8 p-6 rounded-xl text-left border-l-4" style="background-color: var(--bg-secondary); border-color: var(--gold);">
                 <p id="overlay-insight-text" class="italic text-lg leading-relaxed" style="color: var(--text-primary);"></p>
             </div>
+            
             <div id="overlay-results" class="w-full mt-12 overflow-y-auto max-h-[50vh] p-4 custom-scrollbar text-left flex flex-col gap-4"></div>
         </div>
     </div>
@@ -149,8 +164,8 @@
             <div class="max-w-4xl mx-auto flex flex-col items-center justify-center pt-10 min-h-[60vh]">
                 <h1 class="cinzel text-4xl md:text-7xl font-black mb-8 leading-tight" style="color: var(--text-primary);">HIDDEN<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-blue-500 italic">MEANINGS</span></h1>
                 <div class="w-full max-w-lg mb-12 relative">
-                    <input type="text" id="teacher-input" placeholder="Deep Search Transcripts & Videos..." class="w-full rounded-full py-4 px-8 bg-white/5 border border-purple-500/30 focus:border-purple-400 outline-none text-sm transition-all" style="color: var(--text-primary);" onkeydown="if(event.key === 'Enter') { window.app.openSearchOverlay(); document.getElementById('overlay-search-input').value = this.value; window.app.performOverlaySearch(true); }">
-                    <button onclick="window.app.openSearchOverlay()" class="absolute right-4 top-1/2 -translate-y-1/2 text-gold opacity-50 hover:opacity-100"><i class="fa-solid fa-magnifying-glass"></i></button>
+                    <input type="text" id="teacher-input" placeholder="Deep Search Transcripts & Videos..." class="w-full rounded-full py-4 px-8 border outline-none text-sm transition-all shadow-lg" style="background-color: var(--bg-secondary); border-color: var(--border-color); color: var(--text-primary);" onkeydown="if(event.key === 'Enter') { window.app.openSearchOverlay(); document.getElementById('overlay-search-input').value = this.value; window.app.performOverlaySearch(true); }">
+                    <button onclick="window.app.openSearchOverlay()" class="absolute right-4 top-1/2 -translate-y-1/2 text-gold opacity-60 hover:opacity-100 transition-opacity"><i class="fa-solid fa-magnifying-glass text-lg"></i></button>
                 </div>
             </div>
         </section>
@@ -182,7 +197,7 @@
         <section id="view-anatomy" class="view-section px-4">
             <div class="max-w-6xl mx-auto grid lg:grid-cols-2 gap-10 items-center">
                 <div class="anatomy-wrapper relative flex items-center justify-center">
-                    <div class="absolute top-[10%] bottom-[10%] w-px left-1/2 bg-white/10" style="background-color: var(--border-color);"></div>
+                    <div class="absolute top-[10%] bottom-[10%] w-px left-1/2" style="background-color: var(--border-color);"></div>
                     <div class="anatomy-dot" style="top: 10%; background: #a855f7;" onclick="window.app.showAnatomy('crown')"></div>
                     <div class="anatomy-dot" style="top: 22%; background: #4f46e5;" onclick="window.app.showAnatomy('brow')"></div>
                     <div class="anatomy-dot" style="top: 34%; background: #3b82f6;" onclick="window.app.showAnatomy('throat')"></div>
@@ -382,8 +397,8 @@
                             if (hits.length > 0) {
                                 matchCount += hits.length;
                                 hits.forEach(hit => {
-                                    // Robust visual highlighting for the quote snippet
-                                    let snippet = hit.text.replace(new RegExp(`(${q})`, 'gi'), '<span style="color: var(--gold); background: rgba(212, 175, 55, 0.15); padding: 0 4px; border-radius: 4px; font-weight: 900;">$1</span>');
+                                    // Highlight exact word match
+                                    let snippet = hit.text.replace(new RegExp(`(${q})`, 'gi'), '<span style="color: #050505; background: var(--gold); padding: 0 4px; border-radius: 4px; font-weight: 900;">$1</span>');
                                     let timeS = Math.floor(hit.start || 0);
                                     let mins = Math.floor(timeS / 60);
                                     let secs = (timeS % 60).toString().padStart(2, '0');
