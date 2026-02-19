@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
    
     <style>
+        /* --- THEME VARIABLES --- */
         :root {
             --bg-base: #050505;
             --bg-gradient-start: #1a0f2e;
@@ -24,33 +25,39 @@
             --btn-active-bg: #EAEAEA;
             --btn-active-text: #050505;
             --card-bg: #0f0f0f;
+            --shadow-color: rgba(0,0,0,0.5);
         }
 
         body.light-mode {
-            --bg-base: #f4ead5; 
+            --bg-base: #f4ead5; /* Parchment */
             --bg-gradient-start: #e8dbbc;
             --bg-secondary: #fffcf5;
-            --text-primary: #2d241e;
+            --text-primary: #2d241e; /* Dark Charcoal */
             --text-secondary: #5d4d42;
-            --border-color: rgba(0,0,0,0.15);
-            --purple: #6d28d9;
-            --gold: #92400e;
+            --border-color: rgba(44, 36, 27, 0.15);
+            --purple: #6b21a8;
+            --gold: #9a3412;
             --dock-bg: rgba(244, 234, 213, 0.98);
             --btn-active-bg: #2d241e;
             --btn-active-text: #f4ead5;
             --card-bg: #fffefb;
+            --shadow-color: rgba(44, 36, 27, 0.1);
         }
 
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg-base); color: var(--text-primary); transition: background-color 0.5s ease; overflow-x: hidden; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-base); color: var(--text-primary); transition: background-color 0.5s ease, color 0.5s ease; overflow-x: hidden; height: 100vh; width: 100vw; }
         .cinzel { font-family: 'Cinzel', serif; }
         
         .stars-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; background: radial-gradient(circle at bottom center, var(--bg-gradient-start) 0%, var(--bg-base) 80%); }
         
-        .masonry-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; padding-bottom: 40px; }
-        @media (max-width: 640px) { .masonry-grid { grid-template-columns: 1fr; padding-bottom: 180px; } h1.cinzel { font-size: 2.5rem !important; } }
+        .masonry-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; padding-bottom: 160px; }
+        @media (max-width: 640px) { 
+            .masonry-grid { grid-template-columns: 1fr; padding-bottom: 180px; } 
+            h1.cinzel { font-size: 2.5rem !important; }
+            .view-section { padding-top: 100px !important; }
+        }
         
-        .cosmos-card { background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 16px; transition: all 0.3s ease; cursor: pointer; position: relative; overflow: hidden; display: flex; flex-direction: column; min-height: 240px; }
-        .cosmos-card:hover { border-color: var(--gold); transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.4); }
+        .cosmos-card { background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 16px; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); cursor: pointer; position: relative; overflow: hidden; display: flex; flex-direction: column; min-height: 240px; box-shadow: 0 4px 6px var(--shadow-color); }
+        .cosmos-card:hover { border-color: var(--gold); transform: translateY(-5px); box-shadow: 0 15px 30px var(--accent-glow); }
 
         .dock-container { position: fixed; bottom: 20px; left: 0; width: 100%; display: flex; justify-content: center; z-index: 50; padding: 0 10px; pointer-events: none; }
         .dock { pointer-events: auto; background: var(--dock-bg); backdrop-filter: blur(20px); border: 1px solid var(--border-color); padding: 10px; border-radius: 24px; display: flex; gap: 8px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); max-width: 100%; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
@@ -59,9 +66,16 @@
 
         #search-overlay { position: fixed; inset: 0; background: rgba(5,5,5,0.98); z-index: 90; display: none; flex-direction: column; align-items: center; padding-top: 80px; backdrop-filter: blur(20px); }
         #search-overlay.active { display: flex; }
-        .deep-result-card { background: rgba(255,255,255,0.05); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; margin-bottom: 15px; text-align: left; transition: 0.3s; cursor: pointer; }
-        .deep-result-card:hover { background: rgba(212, 175, 55, 0.1); border-color: var(--gold); }
+        
+        .deep-result-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; margin-bottom: 15px; text-align: left; transition: 0.3s; cursor: pointer; box-shadow: 0 4px 10px var(--shadow-color); }
+        .deep-result-card:hover { border-color: var(--gold); transform: scale(1.01); }
 
+        #diagnostics-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 100; display: none; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
+        #diagnostics-overlay.active { display: flex; }
+        .diag-box { width: 90%; max-width: 600px; background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 40px; border-radius: 16px; text-align: center; box-shadow: 0 0 50px rgba(0,0,0,0.5); }
+        .progress-bar { height: 4px; background: var(--border-color); width: 100%; border-radius: 2px; overflow: hidden; margin: 20px 0; }
+        .progress-fill { height: 100%; background: var(--gold); width: 0%; transition: width 0.3s ease; }
+        
         .topic-chip { padding: 6px 12px; border-radius: 99px; font-size: 9px; font-weight: 700; text-transform: uppercase; cursor: pointer; border: 1px solid var(--border-color); background: var(--bg-secondary); transition: all 0.2s; white-space: nowrap; color: var(--text-primary); z-index: 20; position: relative; }
         .topic-chip.active { background: var(--purple); color: white !important; border-color: var(--purple); }
 
@@ -75,18 +89,12 @@
 
         #app-loader { position: fixed; inset: 0; z-index: 100; background: #050505; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.5s; pointer-events: none; }
         #app-loader.hidden { opacity: 0; }
-        
-        #diagnostics-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 100; display: none; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
-        #diagnostics-overlay.active { display: flex; }
-        .diag-box { width: 90%; max-width: 600px; background: var(--bg-secondary); border: 1px solid var(--border-color); padding: 40px; border-radius: 16px; text-align: center; box-shadow: 0 0 50px rgba(0,0,0,0.5); }
-        .progress-bar { height: 4px; background: var(--border-color); width: 100%; border-radius: 2px; overflow: hidden; margin: 20px 0; }
-        .progress-fill { height: 100%; background: var(--gold); width: 0%; transition: width 0.3s ease; }
     </style>
 </head>
 <body class="flex flex-col min-h-screen">
     <div id="stars-container" class="stars-container"></div>
     
-    <div id="app-loader">
+    <div id="app-loader" class="fixed inset-0 z-[100] bg-black flex flex-col items-center justify-center transition-opacity duration-500">
         <div class="w-12 h-12 border-4 border-t-purple-500 border-white/10 rounded-full animate-spin mb-4"></div>
         <p class="cinzel text-xs tracking-widest animate-pulse text-white uppercase">Syncing Archive & Transcripts...</p>
     </div>
@@ -111,7 +119,7 @@
             <div id="overlay-insight-box" class="hidden mt-8 p-6 bg-white/5 border-l-4 border-gold rounded-xl text-left">
                 <p id="overlay-insight-text" class="text-white italic text-lg leading-relaxed"></p>
             </div>
-            <div id="overlay-results" class="masonry-grid mt-12 overflow-y-auto max-h-[50vh] p-4 custom-scrollbar"></div>
+            <div id="overlay-results" class="w-full mt-12 overflow-y-auto max-h-[50vh] p-4 custom-scrollbar text-left flex flex-col gap-4"></div>
         </div>
     </div>
 
@@ -253,12 +261,9 @@
             const particles = [];
             for(let i=0; i<4500; i++) {
                 particles.push({
-                    x: Math.random()*w, 
-                    y: Math.random()*h, 
-                    r: Math.random()*0.6 + 0.1, 
+                    x: Math.random()*w, y: Math.random()*h, r: Math.random()*0.6 + 0.1, 
                     dy: Math.random()*0.15 + 0.05, 
-                    color: colors[Math.floor(Math.random()*colors.length)],
-                    alpha: Math.random()
+                    color: colors[Math.floor(Math.random()*colors.length)], alpha: Math.random()
                 });
             }
 
@@ -278,8 +283,14 @@
         }
 
         window.app = {
-            data: [], archiveVideos: [], selectedTopics: new Set(), transcripts: {},
-            quotes: ["Everything in the Bible is Anatomy.", "Turn off the thoughts and let the light enter.", "The Christ is an electrical charge.", "Golgotha is the place of the skull.", "Meditation is the absence of thought."],
+            data: [], archiveVideos: [], selectedTopics: new Set(), transcripts: [],
+            quotes: [
+                "Everything in the Bible is Anatomy.",
+                "Turn off the thoughts and let the light enter the single eye.",
+                "The Christ is not a man, it is an electrical charge.",
+                "Golgotha is the place of the skull.",
+                "Meditation is the absence of thought."
+            ],
             anaMap: {
                 root: {t: "Root | 400Hz", d: "Egypt. Material bondage center."},
                 sacral: {t: "Sacral | 480Hz", d: "Sodom. Emotional fire and manifestation."},
@@ -299,19 +310,12 @@
 
             // HELPER: Fetch transcript segments for a video
             getTranscriptSegments: function(v) {
-                if(!this.transcripts) return null;
+                if(!this.transcripts || this.transcripts.length === 0) return null;
                 let ytId = v['external-identifier']?.match(/urn:youtube:([a-zA-Z0-9_-]{11})/)?.[1];
+                if(!ytId) return null;
                 
-                // Check dictionary by Archive ID or YouTube ID
-                if(this.transcripts[v.identifier]) return this.transcripts[v.identifier];
-                if(ytId && this.transcripts[ytId]) return this.transcripts[ytId];
-                
-                // If transcripts.json is an array of objects
-                if(Array.isArray(this.transcripts)) {
-                    let match = this.transcripts.find(item => item.id === v.identifier || item.id === ytId || item.video_id === ytId);
-                    if(match && match.segments) return match.segments;
-                }
-                return null;
+                let match = this.transcripts.find(item => item.id === ytId);
+                return match ? match.segments : null;
             },
 
             renderCard: (v) => {
@@ -354,7 +358,7 @@
                 window.scrollTo(0,0);
             },
 
-            // --- DEEP SEARCH WITH TIMESTAMPS ---
+            // --- THE NEW DEEP SEARCH TRANSCRIPT ENGINE ---
             performOverlaySearch: (isDeep) => {
                 const q = document.getElementById('overlay-search-input').value.trim().toLowerCase();
                 const grid = document.getElementById('overlay-results');
@@ -373,27 +377,27 @@
                     window.app.archiveVideos.forEach(v => {
                         let segments = window.app.getTranscriptSegments(v);
                         
-                        // IF WE HAVE A TRANSCRIPT OBJECT WITH TIMESTAMPS
                         if(segments && Array.isArray(segments)) {
+                            // Find all chunks where the text appears
                             let hits = segments.filter(s => s.text && s.text.toLowerCase().includes(q));
                             
                             if (hits.length > 0) {
                                 matchCount += hits.length;
+                                
                                 hits.forEach(hit => {
                                     // Highlight Text
                                     let snippet = hit.text.replace(new RegExp(`(${q})`, 'gi'), '<span class="bg-gold/30 text-gold font-bold px-1 rounded">$1</span>');
                                     
                                     // Format Time (Seconds to M:SS)
-                                    let timeS = Math.floor(hit.start || hit.time || 0);
+                                    let timeS = Math.floor(hit.start || 0);
                                     let mins = Math.floor(timeS / 60);
                                     let secs = (timeS % 60).toString().padStart(2, '0');
                                     
-                                    // Notice the openVideo call passes the timeS parameter!
                                     htmlOut += `
                                     <div class="deep-result-card hover:border-gold cursor-pointer" onclick="window.app.openVideo('${v.identifier}', ${timeS})">
                                         <div class="flex justify-between items-start mb-2">
                                             <span class="text-sm font-bold" style="color:var(--text-primary)">${v.title}</span>
-                                            <span class="text-[10px] font-mono text-gold border border-gold/30 px-2 py-0.5 rounded bg-gold/5">@ ${mins}:${secs}</span>
+                                            <span class="text-[10px] font-mono text-gold border border-gold/30 px-2 py-0.5 rounded bg-gold/5 whitespace-nowrap ml-2">@ ${mins}:${secs}</span>
                                         </div>
                                         <p class="italic leading-relaxed mt-2 text-sm" style="color:var(--text-primary)">"...${snippet}..."</p>
                                     </div>`;
@@ -407,15 +411,15 @@
                             <div class="deep-result-card hover:border-gold cursor-pointer" onclick="window.app.openVideo('${v.identifier}')">
                                 <div class="flex justify-between items-start mb-2">
                                     <span class="text-sm font-bold" style="color:var(--text-primary)">${v.title}</span>
-                                    <span class="text-[9px] uppercase tracking-widest text-stone-500 border border-white/20 px-1 rounded">Title Match</span>
+                                    <span class="text-[9px] uppercase tracking-widest text-stone-500 border border-white/20 px-1 rounded ml-2">Title Match</span>
                                 </div>
-                                <p class="text-gold italic mt-2 text-xs">Match found in video title.</p>
+                                <p class="text-gold italic mt-2 text-xs">Match found in video title metadata.</p>
                             </div>`;
                         }
                     });
 
                     if(matchCount === 0) {
-                        htmlOut = `<p style="color:var(--text-primary)">No transcript or title matches found for "${q}". Ensure transcripts.json is loaded.</p>`;
+                        htmlOut = `<p style="color:var(--text-primary)">No transcript or title matches found for "${q}". Ensure you have loaded the transcripts.json parts.</p>`;
                     }
                     
                     grid.style.display = 'flex';
@@ -463,7 +467,7 @@
             openSearchOverlay: () => { document.getElementById('search-overlay').classList.add('active'); document.getElementById('overlay-search-input').focus(); },
             closeSearchOverlay: () => { document.getElementById('search-overlay').classList.remove('active'); },
             
-            // MODIFIED TO ACCEPT START TIME
+            // MODIFIED TO ACCEPT START TIME AND JUMP TO IT
             openVideo: (id, startTime = 0) => { 
                 const container = document.getElementById('video-frame-container');
                 let srcUrl = `https://archive.org/embed/${id}?autoplay=1`;
@@ -499,9 +503,18 @@
             init: function() {
                 createDust();
                 window.onpopstate = (e) => { if(e.state && e.state.view) window.app.nav(e.state.view); };
-                
-                // FETCH TRANSCRIPTS.JSON
-                fetch('transcripts.json').then(r => r.json()).then(d => { window.app.transcripts = d; }).catch(e => console.log("No transcripts.json found yet."));
+
+                // FETCH MULTIPLE TRANSCRIPT CHUNKS SEAMLESSLY
+                Promise.all([
+                    fetch('transcripts_1.json').then(r => r.ok ? r.json() : []),
+                    fetch('transcripts_2.json').then(r => r.ok ? r.json() : []),
+                    fetch('transcripts_3.json').then(r => r.ok ? r.json() : []),
+                    fetch('transcripts_4.json').then(r => r.ok ? r.json() : []),
+                    fetch('transcripts_5.json').then(r => r.ok ? r.json() : [])
+                ]).then(results => {
+                    window.app.transcripts = results.flat();
+                    console.log("Deep Brain Loaded:", window.app.transcripts.length, "video transcripts.");
+                });
 
                 Papa.parse('catalog.csv', { download: true, header: true, complete: (res) => {
                     if (res.data && res.data.length > 0) {
