@@ -27,6 +27,7 @@
             --card-bg: #0f0f0f;
             --shadow-color: rgba(0,0,0,0.5);
             --overlay-bg: rgba(5, 5, 5, 0.98);
+            --hover-bg: rgba(255, 255, 255, 0.05);
         }
 
         body.light-mode {
@@ -44,11 +45,11 @@
             --card-bg: #fffefb;
             --shadow-color: rgba(44, 36, 27, 0.1);
             --overlay-bg: rgba(244, 234, 213, 0.98);
+            --hover-bg: rgba(44, 36, 27, 0.05);
         }
 
         body { font-family: 'Inter', sans-serif; background-color: var(--bg-base); color: var(--text-primary); transition: background-color 0.5s ease, color 0.5s ease; overflow-x: hidden; min-height: 100vh; width: 100vw; }
         .cinzel { font-family: 'Cinzel', serif; }
-        
         ::placeholder { color: var(--text-secondary); opacity: 0.6; }
         
         /* BACKGROUND */
@@ -56,10 +57,7 @@
         
         /* LAYOUT & GRIDS */
         .masonry-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; padding-bottom: 160px; }
-        @media (max-width: 640px) { 
-            .masonry-grid { grid-template-columns: 1fr; padding-bottom: 180px; } 
-            .view-section { padding-top: 100px !important; }
-        }
+        @media (max-width: 640px) { .masonry-grid { grid-template-columns: 1fr; padding-bottom: 180px; } .view-section { padding-top: 100px !important; } }
         
         .cosmos-card { background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 16px; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); cursor: pointer; position: relative; overflow: hidden; display: flex; flex-direction: column; min-height: 240px; box-shadow: 0 4px 6px var(--shadow-color); }
         .cosmos-card:hover { border-color: var(--gold); transform: translateY(-5px); box-shadow: 0 15px 30px var(--shadow-color); }
@@ -68,18 +66,16 @@
         .dock-container { position: fixed; bottom: 20px; left: 0; width: 100%; display: flex; justify-content: center; z-index: 50; padding: 0 10px; pointer-events: none; }
         .dock { pointer-events: auto; background: var(--dock-bg); backdrop-filter: blur(20px); border: 1px solid var(--border-color); padding: 8px; border-radius: 24px; display: flex; gap: 4px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); max-width: 100%; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
         .dock-btn { display: flex; align-items: center; justify-content: center; padding: 8px 10px; border-radius: 14px; font-size: 8px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-secondary); transition: all 0.2s; cursor: pointer; white-space: nowrap; flex-shrink: 0; }
-        @media (min-width: 768px) {
-            .dock { padding: 10px; gap: 8px; }
-            .dock-btn { padding: 10px 16px; font-size: 10px; }
-        }
+        @media (min-width: 768px) { .dock { padding: 10px; gap: 8px; } .dock-btn { padding: 10px 16px; font-size: 10px; } }
         .dock-btn.active { background: var(--btn-active-bg) !important; color: var(--btn-active-text) !important; }
 
         /* OVERLAYS */
         #search-overlay { position: fixed; inset: 0; background: var(--overlay-bg); z-index: 90; display: none; flex-direction: column; align-items: center; padding-top: 80px; backdrop-filter: blur(20px); transition: background-color 0.5s ease; overflow-y: auto; }
         #search-overlay.active { display: flex; }
         
-        .deep-result-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; margin-bottom: 15px; text-align: left; transition: 0.3s; cursor: pointer; box-shadow: 0 4px 10px var(--shadow-color); }
-        .deep-result-card:hover { border-color: var(--gold); transform: scale(1.01); }
+        .deep-result-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 15px; margin-bottom: 10px; text-align: left; transition: 0.3s; box-shadow: 0 4px 10px var(--shadow-color); }
+        .snippet-item { border-left: 2px solid transparent; transition: all 0.2s ease; }
+        .snippet-item:hover { border-color: var(--gold); background-color: var(--hover-bg); }
 
         #diagnostics-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 100; display: none; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
         #diagnostics-overlay.active { display: flex; }
@@ -417,6 +413,7 @@
                 window.scrollTo(0,0);
             },
 
+            // --- THE QUANTUM EXPAND SEARCH ENGINE ---
             performOverlaySearch: (isDeep) => {
                 const qRaw = document.getElementById('overlay-search-input').value.trim();
                 const grid = document.getElementById('overlay-results');
@@ -428,6 +425,7 @@
                 const escapeRegExp = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
                 const qEscaped = escapeRegExp(qRaw);
                 
+                // Regex Magic: If exact match, use boundaries (\b). Otherwise, match substring.
                 const regexStr = isExact ? `\\b${qEscaped}\\b` : qEscaped;
                 const searchRegex = new RegExp(regexStr, 'i');
                 const highlightRegex = new RegExp(`(${regexStr})`, 'gi');
@@ -438,65 +436,62 @@
                     
                     let htmlOut = '';
                     let matchCount = 0;
+                    let totalSnippetHits = 0;
 
                     window.app.archiveVideos.forEach(v => {
                         let segments = window.app.getTranscriptSegments(v);
                         
                         if(segments && Array.isArray(segments)) {
+                            // Filter segments based on regex
                             let hits = segments.filter(s => s.text && searchRegex.test(s.text));
                             
-                            if (qRaw.split(' ').length > 1) {
-                                // PHRASE MODE
-                                if (hits.length > 0) {
-                                    matchCount += hits.length;
-                                    hits.forEach(hit => {
-                                        let snippet = hit.text.replace(highlightRegex, '<span style="color: #050505; background: var(--gold); padding: 0 4px; border-radius: 4px; font-weight: 900;">$1</span>');
-                                        let timeS = Math.floor(hit.start || 0);
-                                        let mins = Math.floor(timeS / 60);
-                                        let secs = (timeS % 60).toString().padStart(2, '0');
-                                        
-                                        htmlOut += `
-                                        <div class="deep-result-card" onclick="window.app.openVideo('${v.identifier}', ${timeS})">
-                                            <div class="flex justify-between items-start mb-2">
-                                                <span class="text-sm font-bold" style="color:var(--text-primary)">${v.title}</span>
-                                                <span class="text-[10px] font-mono border px-2 py-0.5 rounded whitespace-nowrap ml-2" style="color: var(--gold); border-color: rgba(212, 175, 55, 0.4); background: rgba(212, 175, 55, 0.05);">@ ${mins}:${secs}</span>
-                                            </div>
-                                            <p class="italic leading-relaxed mt-2 text-sm" style="color:var(--text-secondary)">"...${snippet}..."</p>
-                                        </div>`;
-                                    });
-                                }
-                            } else {
-                                // WORD MODE COUNTER
-                                if (hits.length > 0) {
-                                    matchCount++;
-                                    let totalVideoHits = 0;
-                                    hits.forEach(h => {
-                                        totalVideoHits += (h.text.match(highlightRegex) || []).length;
-                                    });
+                            if (hits.length > 0) {
+                                matchCount++;
+                                totalSnippetHits += hits.length;
+                                
+                                // Build Video Card Header (Accordion Toggle)
+                                htmlOut += `
+                                <div class="deep-result-card">
+                                    <div class="flex justify-between items-center cursor-pointer group" onclick="this.nextElementSibling.classList.toggle('hidden')">
+                                        <span class="text-sm font-bold group-hover:opacity-70 transition-opacity" style="color:var(--text-primary)">${v.title}</span>
+                                        <span class="text-gold font-mono text-sm md:text-base px-3 py-1 rounded border whitespace-nowrap ml-4 flex-shrink-0" style="background-color: rgba(212, 175, 55, 0.1); border-color: rgba(212, 175, 55, 0.3);">${hits.length} <span class="text-[10px] uppercase hidden md:inline">Hits</span><i class="fa-solid fa-chevron-down ml-2 text-[10px]"></i></span>
+                                    </div>
+                                    <div class="hidden mt-4 space-y-3 pt-4 border-t" style="border-color: var(--border-color);">
+                                `;
+
+                                // Build Specific Snippets inside the Accordion
+                                hits.forEach(hit => {
+                                    let snippet = hit.text.replace(highlightRegex, '<span style="color: #050505; background: var(--gold); padding: 0 4px; border-radius: 4px; font-weight: 900;">$1</span>');
+                                    let timeS = Math.floor(hit.start || 0);
+                                    let mins = Math.floor(timeS / 60);
+                                    let secs = (timeS % 60).toString().padStart(2, '0');
                                     
                                     htmlOut += `
-                                    <div class="deep-result-card flex justify-between items-center" onclick="window.app.openVideo('${v.identifier}')">
-                                        <span class="text-xs md:text-sm font-bold" style="color:var(--text-primary)">${v.title}</span>
-                                        <span class="text-gold font-mono text-xl bg-gold/10 px-3 py-1 rounded border border-gold/20 whitespace-nowrap ml-4">${totalVideoHits} <span class="text-[10px] uppercase">Hits</span></span>
-                                    </div>`;
-                                }
+                                        <div class="p-3 rounded cursor-pointer transition flex flex-col gap-2 snippet-item" onclick="window.app.openVideo('${v.identifier}', ${timeS})">
+                                            <span class="text-[10px] font-mono border px-2 py-0.5 rounded self-start" style="color: var(--gold); border-color: rgba(212, 175, 55, 0.4); background: rgba(212, 175, 55, 0.05);">@ ${mins}:${secs}</span>
+                                            <p class="italic text-xs md:text-sm leading-relaxed" style="color:var(--text-secondary)">"...${snippet}..."</p>
+                                        </div>`;
+                                });
+
+                                htmlOut += `</div></div>`;
                             }
                         } 
                         else if (searchRegex.test(v.title)) {
                             matchCount++;
                             htmlOut += `
-                            <div class="deep-result-card" onclick="window.app.openVideo('${v.identifier}')">
-                                <div class="flex justify-between items-start mb-2">
+                            <div class="deep-result-card cursor-pointer" onclick="window.app.openVideo('${v.identifier}')">
+                                <div class="flex justify-between items-center">
                                     <span class="text-sm font-bold" style="color:var(--text-primary)">${v.title}</span>
-                                    <span class="text-[9px] uppercase tracking-widest border px-1 rounded ml-2" style="color: var(--text-secondary); border-color: var(--border-color);">Title Match</span>
+                                    <span class="text-[9px] uppercase tracking-widest border px-2 py-1 rounded ml-4 flex-shrink-0" style="color: var(--text-secondary); border-color: var(--border-color);">Title Match</span>
                                 </div>
-                                <p class="italic mt-2 text-xs" style="color: var(--gold);">Match found in video title metadata.</p>
                             </div>`;
                         }
                     });
 
                     if(matchCount === 0) {
-                        htmlOut = `<p style="color:var(--text-primary)">No transcript or title matches found for "${qRaw}".</p>`;
+                        htmlOut = `<p style="color:var(--text-primary)">No exact transcript matches found for "${qRaw}". Toggle off "Exact Word Match" to broaden your search.</p>`;
+                    } else {
+                        text.innerHTML += `<span class="text-xs" style="color: var(--text-primary);">Found <b>${totalSnippetHits}</b> exact snippets across <b>${matchCount}</b> videos. Click a video to expand hits.</span>`;
                     }
                     
                     grid.style.display = 'flex';
@@ -606,7 +601,6 @@
                         const urlK = keys.find(k => k.toLowerCase().includes('url'));
                         window.app.data = res.data.map(r => ({ topic: r[topK] || "General", url: r[urlK] || "" }));
                         
-                        // Strict Filter Setup: Capture valid YouTube IDs from the CSV
                         window.app.validYtIds = new Set();
                         window.app.data.forEach(r => {
                             if (r.url) {
@@ -615,17 +609,12 @@
                             }
                         });
                         
-                        // Fetch from Internet Archive
                         fetch(`https://archive.org/advancedsearch.php?q=${encodeURIComponent('subject:"bill_donahue" AND mediatype:"movies"')}&fl[]=identifier,title,external-identifier&output=json&rows=1000`)
                         .then(r => r.json()).then(d => {
                             
-                            // STRICT FILTER: Only allow videos that are explicitly in your catalog.csv
                             window.app.archiveVideos = d.response.docs.filter(v => {
                                 let ytIdMatch = v['external-identifier']?.match(/urn:youtube:([a-zA-Z0-9_-]{11})/);
-                                if (ytIdMatch && window.app.validYtIds && window.app.validYtIds.has(ytIdMatch[1])) {
-                                    return true;
-                                }
-                                return false; // Blocks Piers Morgan & unauthorized uploads
+                                return (ytIdMatch && window.app.validYtIds && window.app.validYtIds.has(ytIdMatch[1]));
                             });
 
                             document.getElementById('global-counter').innerText = `INDEX: ${window.app.archiveVideos.length}`;
