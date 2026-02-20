@@ -264,9 +264,9 @@
                     </a>
                 </div>
                 <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
-                    <a href="https://www.hiddenmeanings.com" target="_blank" class="cosmos-card p-8 text-center justify-center"><h3 class="cinzel text-gold text-xl mb-2 font-bold">HiddenMeanings.com</h3><p class="text-xs uppercase tracking-widest" style="color: var(--text-secondary);">Transcripts</p></a>
-                    <a href="https://www.facebook.com/groups/356472414984195" target="_blank" class="cosmos-card p-8 text-center justify-center"><h3 class="cinzel text-gold text-xl mb-2 font-bold">Facebook Group</h3><p class="text-xs uppercase tracking-widest" style="color: var(--text-secondary);">Community</p></a>
-                    <a href="https://thehiddenlighthouse.blogspot.com" target="_blank" class="cosmos-card p-8 text-center justify-center"><h3 class="cinzel text-gold text-xl mb-2 font-bold">Lighthouse Blog</h3><p class="text-xs uppercase tracking-widest" style="color: var(--text-secondary);">Essays</p></a>
+                    <a href="https://www.hiddenmeanings.com" target="_blank" class="cosmos-card p-8 text-center justify-center"><h3 class="cinzel text-gold text-xl mb-2 font-bold">HiddenMeanings.com</h3><p class="text-xs uppercase tracking-widest" style="color: var(--text-secondary);">Transcripts & Books</p></a>
+                    <a href="https://www.facebook.com/groups/356472414984195" target="_blank" class="cosmos-card p-8 text-center justify-center"><h3 class="cinzel text-gold text-xl mb-2 font-bold">Facebook Group</h3><p class="text-xs uppercase tracking-widest" style="color: var(--text-secondary);">Community & Discussion</p></a>
+                    <a href="https://thehiddenlighthouse.blogspot.com" target="_blank" class="cosmos-card p-8 text-center justify-center"><h3 class="cinzel text-gold text-xl mb-2 font-bold">Lighthouse Blog</h3><p class="text-xs uppercase tracking-widest" style="color: var(--text-secondary);">Archives & Essays</p></a>
                 </div>
             </div>
         </section>
@@ -352,8 +352,8 @@
 
             getTopic: (v) => {
                 if(!window.app.data.length) return "General";
-                let id = v['external-identifier']?.match(/urn:youtube:([a-zA-Z0-9_-]{11})/)?.[1];
-                if(id) { const m = window.app.data.find(r => r.url && r.url.includes(id)); if(m) return m.topic; }
+                let ytId = v['external-identifier']?.match(/urn:youtube:([a-zA-Z0-9_-]{11})/)?.[1];
+                if(ytId) { const m = window.app.data.find(r => r.url && r.url.includes(ytId)); if(m) return m.topic; }
                 return "Uncatalogued";
             },
 
@@ -413,7 +413,7 @@
                 window.scrollTo(0,0);
             },
 
-            // --- THE QUANTUM EXPAND SEARCH ENGINE ---
+            // --- THE QUANTUM EXPAND SEARCH ENGINE (REVISED FOR UNCATALOGUED CHECK) ---
             performOverlaySearch: (isDeep) => {
                 const qRaw = document.getElementById('overlay-search-input').value.trim();
                 const grid = document.getElementById('overlay-results');
@@ -425,7 +425,6 @@
                 const escapeRegExp = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
                 const qEscaped = escapeRegExp(qRaw);
                 
-                // Regex Magic: If exact match, use boundaries (\b). Otherwise, match substring.
                 const regexStr = isExact ? `\\b${qEscaped}\\b` : qEscaped;
                 const searchRegex = new RegExp(regexStr, 'i');
                 const highlightRegex = new RegExp(`(${regexStr})`, 'gi');
@@ -442,14 +441,12 @@
                         let segments = window.app.getTranscriptSegments(v);
                         
                         if(segments && Array.isArray(segments)) {
-                            // Filter segments based on regex
                             let hits = segments.filter(s => s.text && searchRegex.test(s.text));
                             
                             if (hits.length > 0) {
                                 matchCount++;
                                 totalSnippetHits += hits.length;
                                 
-                                // Build Video Card Header (Accordion Toggle)
                                 htmlOut += `
                                 <div class="deep-result-card">
                                     <div class="flex justify-between items-center cursor-pointer group" onclick="this.nextElementSibling.classList.toggle('hidden')">
@@ -459,7 +456,6 @@
                                     <div class="hidden mt-4 space-y-3 pt-4 border-t" style="border-color: var(--border-color);">
                                 `;
 
-                                // Build Specific Snippets inside the Accordion
                                 hits.forEach(hit => {
                                     let snippet = hit.text.replace(highlightRegex, '<span style="color: #050505; background: var(--gold); padding: 0 4px; border-radius: 4px; font-weight: 900;">$1</span>');
                                     let timeS = Math.floor(hit.start || 0);
@@ -556,6 +552,11 @@
                 const drop = document.getElementById('mobile-topic-dropdown');
                 const topics = [...new Set(window.app.data.map(r => r.topic))].sort();
                 
+                // Add Uncatalogued if it exists in the archive list
+                if(window.app.archiveVideos.some(v => window.app.getTopic(v) === "Uncatalogued") && !topics.includes("Uncatalogued")) {
+                    topics.push("Uncatalogued");
+                }
+                
                 container.innerHTML = topics.map(t => {
                     const count = window.app.archiveVideos.filter(v => window.app.getTopic(v) === t).length;
                     const isActive = window.app.selectedTopics.has(t) ? 'active' : '';
@@ -591,7 +592,6 @@
                     fetch('transcripts_5.json').then(r => r.ok ? r.json() : [])
                 ]).then(results => {
                     window.app.transcripts = results.flat();
-                    console.log("Deep Brain Loaded:", window.app.transcripts.length, "video transcripts.");
                 });
 
                 Papa.parse('catalog.csv', { download: true, header: true, complete: (res) => {
@@ -612,9 +612,21 @@
                         fetch(`https://archive.org/advancedsearch.php?q=${encodeURIComponent('subject:"bill_donahue" AND mediatype:"movies"')}&fl[]=identifier,title,external-identifier&output=json&rows=1000`)
                         .then(r => r.json()).then(d => {
                             
+                            // SAFEGUARD UNCATALOGUED FILTER
                             window.app.archiveVideos = d.response.docs.filter(v => {
                                 let ytIdMatch = v['external-identifier']?.match(/urn:youtube:([a-zA-Z0-9_-]{11})/);
-                                return (ytIdMatch && window.app.validYtIds && window.app.validYtIds.has(ytIdMatch[1]));
+                                
+                                // 1. If in CSV -> Approved
+                                if (ytIdMatch && window.app.validYtIds.has(ytIdMatch[1])) {
+                                    return true;
+                                }
+                                
+                                // 2. If UNCATALOGUED -> Second Check (Block TV Bots)
+                                let titleLower = (v.title || "").toLowerCase();
+                                let isTvArchiveBot = titleLower.includes("piers morgan") || titleLower.includes("cnn") || titleLower.includes("fox news") || titleLower.includes("bbc") || titleLower.match(/\d{1,2}:\d{2}[ap]m/);
+                                
+                                if (isTvArchiveBot) return false;
+                                return true;
                             });
 
                             document.getElementById('global-counter').innerText = `INDEX: ${window.app.archiveVideos.length}`;
