@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bill Donahue | Official Archive</title>
    
     <script src="https://cdn.tailwindcss.com"></script>
@@ -30,10 +30,10 @@
         }
 
         body.light-mode {
-            --bg-base: #f4ead5; /* Parchment */
+            --bg-base: #f4ead5; 
             --bg-gradient-start: #e8dbbc;
             --bg-secondary: #fffcf5;
-            --text-primary: #2d241e; /* Dark Charcoal */
+            --text-primary: #2d241e; 
             --text-secondary: #5d4d42;
             --border-color: rgba(44, 36, 27, 0.15);
             --purple: #6b21a8;
@@ -46,13 +46,10 @@
             --overlay-bg: rgba(244, 234, 213, 0.98);
         }
 
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg-base); color: var(--text-primary); transition: background-color 0.5s ease, color 0.5s ease; overflow-x: hidden; height: 100vh; width: 100vw; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-base); color: var(--text-primary); transition: background-color 0.5s ease, color 0.5s ease; overflow-x: hidden; min-height: 100vh; width: 100vw; }
         .cinzel { font-family: 'Cinzel', serif; }
         
-        /* Placeholder Adapters */
         ::placeholder { color: var(--text-secondary); opacity: 0.6; }
-        :-ms-input-placeholder { color: var(--text-secondary); }
-        ::-ms-input-placeholder { color: var(--text-secondary); }
         
         /* BACKGROUND */
         .stars-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; background: radial-gradient(circle at bottom center, var(--bg-gradient-start) 0%, var(--bg-base) 80%); }
@@ -61,21 +58,24 @@
         .masonry-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; padding-bottom: 160px; }
         @media (max-width: 640px) { 
             .masonry-grid { grid-template-columns: 1fr; padding-bottom: 180px; } 
-            h1.cinzel { font-size: 2.5rem !important; }
             .view-section { padding-top: 100px !important; }
         }
         
         .cosmos-card { background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 16px; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); cursor: pointer; position: relative; overflow: hidden; display: flex; flex-direction: column; min-height: 240px; box-shadow: 0 4px 6px var(--shadow-color); }
-        .cosmos-card:hover { border-color: var(--gold); transform: translateY(-5px); box-shadow: 0 15px 30px var(--accent-glow); }
+        .cosmos-card:hover { border-color: var(--gold); transform: translateY(-5px); box-shadow: 0 15px 30px var(--shadow-color); }
 
-        /* NAVIGATION DOCK */
+        /* SCALABLE DOCK */
         .dock-container { position: fixed; bottom: 20px; left: 0; width: 100%; display: flex; justify-content: center; z-index: 50; padding: 0 10px; pointer-events: none; }
-        .dock { pointer-events: auto; background: var(--dock-bg); backdrop-filter: blur(20px); border: 1px solid var(--border-color); padding: 10px; border-radius: 24px; display: flex; gap: 8px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); max-width: 100%; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
-        .dock-btn { display: flex; align-items: center; justify-content: center; padding: 10px 16px; border-radius: 14px; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-secondary); transition: all 0.2s; cursor: pointer; white-space: nowrap; flex-shrink: 0; }
+        .dock { pointer-events: auto; background: var(--dock-bg); backdrop-filter: blur(20px); border: 1px solid var(--border-color); padding: 8px; border-radius: 24px; display: flex; gap: 4px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); max-width: 100%; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+        .dock-btn { display: flex; align-items: center; justify-content: center; padding: 8px 10px; border-radius: 14px; font-size: 8px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-secondary); transition: all 0.2s; cursor: pointer; white-space: nowrap; flex-shrink: 0; }
+        @media (min-width: 768px) {
+            .dock { padding: 10px; gap: 8px; }
+            .dock-btn { padding: 10px 16px; font-size: 10px; }
+        }
         .dock-btn.active { background: var(--btn-active-bg) !important; color: var(--btn-active-text) !important; }
 
         /* OVERLAYS */
-        #search-overlay { position: fixed; inset: 0; background: var(--overlay-bg); z-index: 90; display: none; flex-direction: column; align-items: center; padding-top: 80px; backdrop-filter: blur(20px); transition: background-color 0.5s ease; }
+        #search-overlay { position: fixed; inset: 0; background: var(--overlay-bg); z-index: 90; display: none; flex-direction: column; align-items: center; padding-top: 80px; backdrop-filter: blur(20px); transition: background-color 0.5s ease; overflow-y: auto; }
         #search-overlay.active { display: flex; }
         
         .deep-result-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; margin-bottom: 15px; text-align: left; transition: 0.3s; cursor: pointer; box-shadow: 0 4px 10px var(--shadow-color); }
@@ -87,14 +87,16 @@
         .progress-bar { height: 4px; background: var(--border-color); width: 100%; border-radius: 2px; overflow: hidden; margin: 20px 0; }
         .progress-fill { height: 100%; background: var(--gold); width: 0%; transition: width 0.3s ease; }
         
-        /* CHIPS */
+        /* CHIPS & DROPDOWNS */
         .topic-chip { padding: 6px 12px; border-radius: 99px; font-size: 9px; font-weight: 700; text-transform: uppercase; cursor: pointer; border: 1px solid var(--border-color); background: var(--bg-secondary); transition: all 0.2s; white-space: nowrap; color: var(--text-primary); z-index: 20; position: relative; }
         .topic-chip.active { background: var(--purple); color: white !important; border-color: var(--purple); }
+        .mobile-dropdown { width: 100%; background-color: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--gold); padding: 12px 16px; border-radius: 12px; font-weight: 700; text-transform: uppercase; outline: none; appearance: none; }
 
-        /* ANATOMY */
-        .anatomy-wrapper { position: relative; width: 280px; height: 550px; border: 1px solid var(--border-color); border-radius: 999px; background: var(--bg-secondary); box-shadow: 0 0 50px -20px var(--gold); margin: 0 auto; }
-        .anatomy-dot { width: 30px; height: 30px; border-radius: 50%; position: absolute; left: 50%; transform: translateX(-50%); cursor: pointer; transition: all 0.3s ease; border: 2px solid rgba(255,255,255,0.8); z-index: 20; box-shadow: 0 0 10px var(--purple); }
-        .anatomy-dot:hover { transform: translateX(-50%) scale(1.3); background: white !important; }
+        /* THE TEMPLE SPINAL CORD */
+        .spine-container { position: relative; width: 60px; height: 500px; margin: 0 auto; display: flex; flex-direction: column; justify-content: space-between; align-items: center; z-index: 10; padding: 20px 0; }
+        .spine-line { position: absolute; top: 0; bottom: 0; width: 4px; background: linear-gradient(to bottom, #a855f7, #3b82f6, #22c55e, #eab308, #ef4444); left: 50%; transform: translateX(-50%); z-index: 0; border-radius: 4px; opacity: 0.6; box-shadow: 0 0 15px rgba(255,255,255,0.2); }
+        .chakra-node { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s ease; border: 2px solid rgba(255,255,255,0.9); z-index: 10; color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.5); font-size: 16px; }
+        .chakra-node:hover { transform: scale(1.3); box-shadow: 0 0 20px currentColor; }
 
         .view-section { display: none; padding-top: 100px; padding-bottom: 150px; width: 100%; min-height: 100vh; animation: fadeIn 0.4s ease; }
         .view-section.active { display: block; }
@@ -122,24 +124,24 @@
     </div>
 
     <div id="search-overlay">
-        <button onclick="window.app.closeSearchOverlay()" class="absolute top-6 right-6 p-4 hover:scale-110 transition" style="color: var(--text-primary);"><i class="fa-solid fa-xmark text-3xl"></i></button>
-        <div class="w-full max-w-4xl px-6 text-center">
-            <input type="text" id="overlay-search-input" placeholder="Type keyword or phrase..." class="w-full bg-transparent border-b-2 cinzel outline-none py-4 text-center text-3xl md:text-4xl" style="color: var(--text-primary); border-color: var(--gold);" onkeydown="if(event.key === 'Enter') window.app.performOverlaySearch(true)">
+        <button onclick="window.app.closeSearchOverlay()" class="absolute top-4 right-4 md:top-6 md:right-6 p-4 hover:scale-110 transition z-50" style="color: var(--text-primary);"><i class="fa-solid fa-xmark text-3xl"></i></button>
+        <div class="w-full max-w-4xl px-4 md:px-6 text-center">
+            <input type="text" id="overlay-search-input" placeholder="Type keyword or phrase..." class="w-full bg-transparent border-b-2 cinzel outline-none py-4 text-center text-2xl sm:text-3xl md:text-4xl" style="color: var(--text-primary); border-color: var(--gold);" onkeydown="if(event.key === 'Enter') window.app.performOverlaySearch(true)">
             
-            <div class="flex justify-center items-center gap-4 mt-8">
-                <button onclick="window.app.performOverlaySearch(false)" class="px-6 py-3 border rounded-full text-[10px] font-black uppercase tracking-widest transition hover:opacity-70" style="color: var(--text-primary); border-color: var(--text-primary);">
+            <div class="flex flex-col sm:flex-row justify-center items-center gap-4 mt-8">
+                <button onclick="window.app.performOverlaySearch(false)" class="w-full sm:w-auto px-6 py-3 border rounded-full text-[10px] font-black uppercase tracking-widest transition hover:opacity-70" style="color: var(--text-primary); border-color: var(--text-primary);">
                     Video Search
                 </button>
-                <button onclick="window.app.performOverlaySearch(true)" class="px-6 py-3 rounded-full text-[10px] font-black uppercase tracking-widest hover:scale-105 transition shadow-[0_0_15px_rgba(212,175,55,0.4)]" style="background-color: var(--gold); color: #050505;">
+                <button onclick="window.app.performOverlaySearch(true)" class="w-full sm:w-auto px-6 py-3 rounded-full text-[10px] font-black uppercase tracking-widest hover:scale-105 transition shadow-[0_0_15px_rgba(212,175,55,0.4)]" style="background-color: var(--gold); color: #050505;">
                     <i class="fa-solid fa-align-left mr-1"></i> Transcript Deep Search
                 </button>
             </div>
             
-            <div id="overlay-insight-box" class="hidden mt-8 p-6 rounded-xl text-left border-l-4" style="background-color: var(--bg-secondary); border-color: var(--gold);">
-                <p id="overlay-insight-text" class="italic text-lg leading-relaxed" style="color: var(--text-primary);"></p>
+            <div id="overlay-insight-box" class="hidden mt-8 p-4 md:p-6 rounded-xl text-left border-l-4" style="background-color: var(--bg-secondary); border-color: var(--gold);">
+                <p id="overlay-insight-text" class="italic text-base md:text-lg leading-relaxed" style="color: var(--text-primary);"></p>
             </div>
             
-            <div id="overlay-results" class="w-full mt-12 overflow-y-auto max-h-[50vh] p-4 custom-scrollbar text-left flex flex-col gap-4"></div>
+            <div id="overlay-results" class="w-full mt-8 overflow-y-auto max-h-[60vh] p-2 md:p-4 custom-scrollbar text-left flex flex-col gap-4"></div>
         </div>
     </div>
 
@@ -161,33 +163,40 @@
     <div id="main-content" class="flex-1 w-full relative z-10">
         
         <section id="view-home" class="view-section active px-4 text-center">
-            <div class="max-w-4xl mx-auto flex flex-col items-center justify-center pt-10 min-h-[60vh]">
-                <h1 class="cinzel text-4xl md:text-7xl font-black mb-8 leading-tight" style="color: var(--text-primary);">HIDDEN<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-blue-500 italic">MEANINGS</span></h1>
+            <div class="max-w-4xl mx-auto flex flex-col items-center justify-center pt-4 md:pt-10 min-h-[60vh]">
+                <h1 class="cinzel text-5xl sm:text-6xl md:text-8xl lg:text-9xl font-black mb-8 leading-tight" style="color: var(--text-primary);">HIDDEN<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-blue-500 italic">MEANINGS</span></h1>
+                
                 <div class="w-full max-w-lg mb-12 relative">
-                    <input type="text" id="teacher-input" placeholder="Deep Search Transcripts & Videos..." class="w-full rounded-full py-4 px-8 border outline-none text-sm transition-all shadow-lg" style="background-color: var(--bg-secondary); border-color: var(--border-color); color: var(--text-primary);" onkeydown="if(event.key === 'Enter') { window.app.openSearchOverlay(); document.getElementById('overlay-search-input').value = this.value; window.app.performOverlaySearch(true); }">
-                    <button onclick="window.app.openSearchOverlay()" class="absolute right-4 top-1/2 -translate-y-1/2 text-gold opacity-60 hover:opacity-100 transition-opacity"><i class="fa-solid fa-magnifying-glass text-lg"></i></button>
+                    <input type="text" id="teacher-input" placeholder="Deep Search Transcripts..." class="w-full rounded-full py-4 px-6 md:px-8 border outline-none text-base transition-all shadow-lg" style="background-color: var(--bg-secondary); border-color: var(--border-color); color: var(--text-primary);" onkeydown="if(event.key === 'Enter') { window.app.openSearchOverlay(); document.getElementById('overlay-search-input').value = this.value; window.app.performOverlaySearch(true); }">
+                    <button onclick="window.app.openSearchOverlay()" class="absolute right-4 top-1/2 -translate-y-1/2 text-gold opacity-60 hover:opacity-100 transition-opacity p-2"><i class="fa-solid fa-magnifying-glass text-lg"></i></button>
                 </div>
             </div>
         </section>
 
-        <section id="view-library" class="view-section px-6">
+        <section id="view-library" class="view-section px-4 md:px-6">
             <div class="max-w-[1800px] mx-auto w-full text-center">
-                <h2 class="cinzel text-3xl font-bold mb-6 uppercase tracking-widest" style="color: var(--text-primary);">Upscaled HD Archive</h2>
-                <div id="library-topics" class="flex flex-wrap gap-2 justify-center mb-10 min-h-[40px]"></div>
+                <h2 class="cinzel text-3xl md:text-4xl font-bold mb-6 uppercase tracking-widest" style="color: var(--text-primary);">Upscaled Archive</h2>
+                
+                <div class="block md:hidden mb-8 w-full max-w-sm mx-auto relative">
+                    <select id="mobile-topic-dropdown" onchange="window.app.selectMobileTopic(this.value)" class="mobile-dropdown cinzel"></select>
+                    <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" style="color: var(--gold);"></i>
+                </div>
+                <div id="library-topics" class="hidden md:flex flex-wrap gap-2 justify-center mb-10 min-h-[40px]"></div>
+                
                 <div id="library-grid" class="masonry-grid"></div>
             </div>
         </section>
 
-        <section id="view-brain" class="view-section px-6 text-center">
+        <section id="view-brain" class="view-section px-4 md:px-6 text-center">
             <div class="max-w-5xl mx-auto pt-4">
                 <h2 class="cinzel text-4xl md:text-6xl font-black mb-4 uppercase" style="color: var(--text-primary);">The Upper Room</h2>
-                <div id="brain-quote" class="cinzel text-sm mb-8 italic tracking-widest text-gold px-6 min-h-[40px]"></div>
-                <div class="relative w-full max-w-lg mx-auto aspect-video border rounded-xl mb-12 flex items-center justify-center overflow-hidden" style="border-color: var(--border-color); background: var(--bg-secondary);">
+                <div id="brain-quote" class="cinzel text-xs md:text-sm mb-8 italic tracking-widest text-gold px-2 md:px-6 min-h-[40px]"></div>
+                <div class="relative w-full max-w-lg mx-auto aspect-video border rounded-xl mb-12 flex items-center justify-center overflow-hidden shadow-2xl" style="border-color: var(--border-color); background: var(--bg-secondary);">
                     <div class="absolute inset-0 bg-[radial-gradient(circle,var(--purple)_0%,transparent_70%)] opacity-10"></div>
-                    <div class="flex items-center gap-8 z-10">
-                        <div class="text-center"><div class="w-8 h-8 rounded-full bg-purple-500 animate-pulse shadow-[0_0_30px_#a855f7] mb-2 mx-auto"></div><span class="text-[9px] font-bold" style="color: var(--text-primary);">PINEAL</span></div>
-                        <div class="h-1 w-20 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full"></div>
-                        <div class="text-center"><div class="w-8 h-8 rounded-full bg-blue-500 animate-pulse shadow-[0_0_30px_#3b82f6] mb-2 mx-auto"></div><span class="text-[9px] font-bold" style="color: var(--text-primary);">PITUITARY</span></div>
+                    <div class="flex items-center gap-4 md:gap-8 z-10">
+                        <div class="text-center"><div class="w-8 h-8 rounded-full bg-purple-500 animate-pulse shadow-[0_0_30px_#a855f7] mb-2 mx-auto border-2 border-white/20"></div><span class="text-[9px] font-bold tracking-widest" style="color: var(--text-primary);">PINEAL</span></div>
+                        <div class="h-1 w-12 md:w-20 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full"></div>
+                        <div class="text-center"><div class="w-8 h-8 rounded-full bg-blue-500 animate-[pulse_3s_infinite] shadow-[0_0_30px_#3b82f6] mb-2 mx-auto border-2 border-white/20"></div><span class="text-[9px] font-bold tracking-widest" style="color: var(--text-primary);">PITUITARY</span></div>
                     </div>
                 </div>
                 <div id="brain-lectures-grid" class="masonry-grid"></div>
@@ -195,49 +204,67 @@
         </section>
 
         <section id="view-anatomy" class="view-section px-4">
-            <div class="max-w-6xl mx-auto grid lg:grid-cols-2 gap-10 items-center">
-                <div class="anatomy-wrapper relative flex items-center justify-center">
-                    <div class="absolute top-[10%] bottom-[10%] w-px left-1/2" style="background-color: var(--border-color);"></div>
-                    <div class="anatomy-dot" style="top: 10%; background: #a855f7;" onclick="window.app.showAnatomy('crown')"></div>
-                    <div class="anatomy-dot" style="top: 22%; background: #4f46e5;" onclick="window.app.showAnatomy('brow')"></div>
-                    <div class="anatomy-dot" style="top: 34%; background: #3b82f6;" onclick="window.app.showAnatomy('throat')"></div>
-                    <div class="anatomy-dot" style="top: 46%; background: #22c55e;" onclick="window.app.showAnatomy('heart')"></div>
-                    <div class="anatomy-dot" style="top: 58%; background: #eab308;" onclick="window.app.showAnatomy('solar')"></div>
-                    <div class="anatomy-dot" style="top: 70%; background: #f97316;" onclick="window.app.showAnatomy('sacral')"></div>
-                    <div class="anatomy-dot" style="top: 82%; background: #ef4444;" onclick="window.app.showAnatomy('root')"></div>
-                </div>
-                <div id="anatomy-info" class="p-8 border rounded-2xl text-left min-h-[300px] transition-all" style="background-color: var(--bg-secondary); border-color: var(--border-color);">
-                    <h3 class="cinzel text-3xl mb-4 text-gold" id="ana-title">Select a Seal</h3>
-                    <p class="leading-relaxed italic text-lg" style="color: var(--text-primary);" id="ana-desc">Click the energy centers on the diagram to reveal the esoteric decoding.</p>
+            <div class="max-w-6xl mx-auto">
+                <h2 class="cinzel text-4xl md:text-6xl font-black mb-10 text-center uppercase" style="color: var(--text-primary);">The Temple</h2>
+                
+                <div class="grid lg:grid-cols-12 gap-10 items-start">
+                    
+                    <div class="lg:col-span-5 flex justify-center relative bg-black/5 rounded-3xl py-8 border shadow-inner" style="border-color: var(--border-color);">
+                        <div class="spine-container">
+                            <div class="spine-line"></div>
+                            <div class="chakra-node" style="background-color: #a855f7; box-shadow: 0 0 20px #a855f7;" onclick="window.app.showAnatomy('crown')"><i class="fa-solid fa-crown"></i></div>
+                            <div class="chakra-node" style="background-color: #4f46e5; box-shadow: 0 0 20px #4f46e5;" onclick="window.app.showAnatomy('brow')"><i class="fa-solid fa-eye"></i></div>
+                            <div class="chakra-node" style="background-color: #3b82f6; box-shadow: 0 0 20px #3b82f6;" onclick="window.app.showAnatomy('throat')"><i class="fa-solid fa-comment-dots"></i></div>
+                            <div class="chakra-node" style="background-color: #22c55e; box-shadow: 0 0 20px #22c55e;" onclick="window.app.showAnatomy('heart')"><i class="fa-solid fa-heart"></i></div>
+                            <div class="chakra-node" style="background-color: #eab308; box-shadow: 0 0 20px #eab308;" onclick="window.app.showAnatomy('solar')"><i class="fa-solid fa-fire"></i></div>
+                            <div class="chakra-node" style="background-color: #f97316; box-shadow: 0 0 20px #f97316;" onclick="window.app.showAnatomy('sacral')"><i class="fa-solid fa-water"></i></div>
+                            <div class="chakra-node" style="background-color: #ef4444; box-shadow: 0 0 20px #ef4444;" onclick="window.app.showAnatomy('root')"><i class="fa-solid fa-mountain"></i></div>
+                        </div>
+                    </div>
+
+                    <div class="lg:col-span-7">
+                        <div id="anatomy-info" class="p-8 md:p-12 border rounded-3xl text-left min-h-[300px] transition-all shadow-2xl relative overflow-hidden" style="background-color: var(--bg-secondary); border-color: var(--border-color);">
+                            <div class="absolute -top-10 -right-10 text-9xl opacity-5 pointer-events-none" style="color: var(--text-primary);"><i id="ana-bg-icon" class="fa-solid fa-dharmachakra"></i></div>
+                            
+                            <h3 class="cinzel text-3xl md:text-5xl mb-2 text-gold font-bold" id="ana-title">The Seven Seals</h3>
+                            <p class="font-mono text-xs md:text-sm uppercase tracking-[0.3em] opacity-60 mb-8" style="color: var(--text-primary);" id="ana-meta">Jacob's Ladder</p>
+                            
+                            <div class="space-y-6">
+                                <p class="leading-relaxed italic text-lg md:text-xl" style="color: var(--text-primary);" id="ana-desc">
+                                    The human spine is the true Jacob's Ladder. Click the specific nerve plexuses on the diagram to reveal their esoteric decoding.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
 
-        <section id="view-meditation" class="view-section px-6 text-center">
+        <section id="view-meditation" class="view-section px-4 md:px-6 text-center">
             <div class="max-w-4xl mx-auto">
-                <h2 class="cinzel text-5xl mb-4 uppercase" style="color: var(--text-primary);">Meditation</h2>
-                <div id="meditation-quote" class="cinzel text-sm mb-12 italic tracking-widest text-gold"></div>
-                <div class="w-32 h-32 rounded-full border mx-auto mb-12 flex items-center justify-center animate-[pulse_4s_infinite]" style="border-color: var(--border-color);">
-                    <div class="w-24 h-24 rounded-full backdrop-blur-sm" style="background-color: rgba(255,255,255,0.05);"></div>
+                <h2 class="cinzel text-4xl md:text-6xl font-black mb-4 uppercase" style="color: var(--text-primary);">Meditation</h2>
+                <div id="meditation-quote" class="cinzel text-xs md:text-sm mb-12 italic tracking-widest text-gold"></div>
+                <div class="w-32 h-32 md:w-48 md:h-48 rounded-full border mx-auto mb-16 flex items-center justify-center animate-[pulse_4s_infinite] shadow-[0_0_50px_rgba(255,255,255,0.05)]" style="border-color: var(--border-color);">
+                    <div class="w-20 h-20 md:w-32 md:h-32 rounded-full backdrop-blur-sm" style="background-color: rgba(107, 33, 168, 0.1); border: 1px solid var(--border-color);"></div>
                 </div>
                 <div id="meditation-lectures-grid" class="masonry-grid"></div>
             </div>
         </section>
 
-        <section id="view-resources" class="view-section px-6 text-center">
+        <section id="view-resources" class="view-section px-4 md:px-6 text-center">
             <div class="max-w-5xl mx-auto">
-                <h2 class="cinzel text-4xl mb-12 uppercase" style="color: var(--text-primary);">Primary Links</h2>
+                <h2 class="cinzel text-4xl md:text-6xl font-black mb-12 uppercase" style="color: var(--text-primary);">Primary Links</h2>
                 <div class="flex justify-center mb-12">
                     <a href="https://www.youtube.com/@bdona4556" target="_blank" class="cosmos-card p-10 w-full max-w-lg flex flex-col items-center justify-center group" style="border-color: rgba(239, 68, 68, 0.5);">
-                        <i class="fa-brands fa-youtube text-5xl text-red-600 mb-4 group-hover:scale-110 transition-transform"></i>
-                        <h3 class="cinzel text-2xl" style="color: var(--text-primary);">Official YouTube</h3>
-                        <p class="text-[10px] uppercase font-bold tracking-widest mt-2" style="color: var(--text-secondary);">The Video Archive</p>
+                        <i class="fa-brands fa-youtube text-6xl text-red-600 mb-4 group-hover:scale-110 transition-transform drop-shadow-[0_0_15px_rgba(239,68,68,0.5)]"></i>
+                        <h3 class="cinzel text-2xl font-bold" style="color: var(--text-primary);">Official YouTube</h3>
+                        <p class="text-[10px] uppercase font-bold tracking-widest mt-2" style="color: var(--text-secondary);">The Master Archive</p>
                     </a>
                 </div>
-                <div class="grid md:grid-cols-3 gap-6">
-                    <a href="https://www.hiddenmeanings.com" target="_blank" class="cosmos-card p-8 text-left justify-center"><h3 class="cinzel text-gold text-lg mb-2">HiddenMeanings.com</h3><p class="text-[10px]" style="color: var(--text-secondary);">Transcripts & Books</p></a>
-                    <a href="https://www.facebook.com/groups/356472414984195" target="_blank" class="cosmos-card p-8 text-left justify-center"><h3 class="cinzel text-gold text-lg mb-2">Facebook Group</h3><p class="text-[10px]" style="color: var(--text-secondary);">Community & Discussion</p></a>
-                    <a href="https://thehiddenlighthouse.blogspot.com" target="_blank" class="cosmos-card p-8 text-left justify-center"><h3 class="cinzel text-gold text-lg mb-2">Lighthouse Blog</h3><p class="text-[10px]" style="color: var(--text-secondary);">Archives & Essays</p></a>
+                <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
+                    <a href="https://www.hiddenmeanings.com" target="_blank" class="cosmos-card p-8 text-center justify-center"><h3 class="cinzel text-gold text-xl mb-2 font-bold">HiddenMeanings.com</h3><p class="text-xs uppercase tracking-widest" style="color: var(--text-secondary);">Transcripts</p></a>
+                    <a href="https://www.facebook.com/groups/356472414984195" target="_blank" class="cosmos-card p-8 text-center justify-center"><h3 class="cinzel text-gold text-xl mb-2 font-bold">Facebook Group</h3><p class="text-xs uppercase tracking-widest" style="color: var(--text-secondary);">Community</p></a>
+                    <a href="https://thehiddenlighthouse.blogspot.com" target="_blank" class="cosmos-card p-8 text-center justify-center"><h3 class="cinzel text-gold text-xl mb-2 font-bold">Lighthouse Blog</h3><p class="text-xs uppercase tracking-widest" style="color: var(--text-secondary);">Essays</p></a>
                 </div>
             </div>
         </section>
@@ -245,20 +272,20 @@
 
     <div class="dock-container">
         <div class="dock">
-            <button class="dock-btn active" id="nav-home" onclick="window.app.nav('home')">Home</button>
-            <button class="dock-btn" id="nav-library" onclick="window.app.nav('library')">Library</button>
-            <button class="dock-btn" id="nav-brain" onclick="window.app.nav('brain')">Brain</button>
-            <button class="dock-btn text-xl" style="color: var(--gold);" onclick="window.app.openSearchOverlay()"><i class="fa-solid fa-magnifying-glass"></i></button>
-            <button class="dock-btn" id="nav-anatomy" onclick="window.app.nav('anatomy')">Temple</button>
-            <button class="dock-btn" id="nav-meditation" onclick="window.app.nav('meditation')">Silence</button>
-            <button class="dock-btn" id="nav-resources" onclick="window.app.nav('resources')">Links</button>
-            <button class="dock-btn text-red-500" onclick="window.app.scanForBrokenLinks()"><i class="fa-solid fa-stethoscope"></i></button>
+            <button class="dock-btn active" id="nav-home" onclick="window.app.nav('home')"><i class="fa-solid fa-house md:hidden mb-1 text-lg"></i><span class="hidden md:inline">Home</span></button>
+            <button class="dock-btn" id="nav-library" onclick="window.app.nav('library')"><i class="fa-solid fa-book md:hidden mb-1 text-lg"></i><span class="hidden md:inline">Library</span></button>
+            <button class="dock-btn" id="nav-brain" onclick="window.app.nav('brain')"><i class="fa-solid fa-brain md:hidden mb-1 text-lg"></i><span class="hidden md:inline">Brain</span></button>
+            <button class="dock-btn" style="color: var(--gold);" onclick="window.app.openSearchOverlay()"><i class="fa-solid fa-magnifying-glass text-xl"></i></button>
+            <button class="dock-btn" id="nav-anatomy" onclick="window.app.nav('anatomy')"><i class="fa-solid fa-person md:hidden mb-1 text-lg"></i><span class="hidden md:inline">Temple</span></button>
+            <button class="dock-btn" id="nav-meditation" onclick="window.app.nav('meditation')"><i class="fa-solid fa-om md:hidden mb-1 text-lg"></i><span class="hidden md:inline">Silence</span></button>
+            <button class="dock-btn" id="nav-resources" onclick="window.app.nav('resources')"><i class="fa-solid fa-link md:hidden mb-1 text-lg"></i><span class="hidden md:inline">Links</span></button>
+            <button class="dock-btn text-red-500" onclick="window.app.scanForBrokenLinks()"><i class="fa-solid fa-stethoscope md:text-lg"></i></button>
         </div>
     </div>
 
-    <div id="video-modal" class="fixed inset-0 z-[200] bg-black/95 hidden flex items-center justify-center p-4" onclick="if(event.target === this) window.app.closeVideo()">
-        <div class="relative w-full max-w-5xl aspect-video bg-black rounded-xl overflow-hidden shadow-2xl">
-            <button onclick="window.app.closeVideo()" class="absolute top-4 right-4 z-[250] w-10 h-10 bg-black/80 text-white rounded-full hover:bg-red-600 flex items-center justify-center border border-white/20 transition-all">
+    <div id="video-modal" class="fixed inset-0 z-[200] bg-black/95 hidden flex items-center justify-center p-0 md:p-4" onclick="if(event.target === this) window.app.closeVideo()">
+        <div class="relative w-full max-w-5xl aspect-video bg-black rounded-none md:rounded-xl overflow-hidden shadow-2xl mt-[-10vh] md:mt-0">
+            <button onclick="window.app.closeVideo()" class="absolute top-2 right-2 md:top-4 md:right-4 z-[250] w-10 h-10 bg-black/80 text-white rounded-full hover:bg-red-600 flex items-center justify-center border border-white/20 transition-all">
                 <i class="fa-solid fa-xmark"></i>
             </button>
             <div id="video-frame-container" class="w-full h-full relative z-[200]"></div>
@@ -277,7 +304,9 @@
             
             const colors = ['#3b82f6', '#a855f7', '#ef4444', '#ffffff', '#f97316', '#22c55e'];
             const particles = [];
-            for(let i=0; i<4500; i++) {
+            let density = window.innerWidth < 768 ? 2000 : 4500; // Less particles on mobile for performance
+            
+            for(let i=0; i<density; i++) {
                 particles.push({
                     x: Math.random()*w, y: Math.random()*h, r: Math.random()*0.6 + 0.1, 
                     dy: Math.random()*0.15 + 0.05, 
@@ -310,13 +339,13 @@
                 "Meditation is the absence of thought."
             ],
             anaMap: {
-                root: {t: "Root | 400Hz", d: "Egypt. Material bondage center."},
-                sacral: {t: "Sacral | 480Hz", d: "Sodom. Emotional fire and manifestation."},
-                solar: {t: "Solar | 520Hz", d: "The Manger. Ego transformation. Fire center."},
-                heart: {t: "Heart | 600Hz", d: "JERUSALEM. The center of peace and balance."},
-                throat: {t: "Throat | 670Hz", d: "The Word. Expression of truth into frequency."},
-                brow: {t: "Brow | 750Hz", d: "Peniel. Single Eye. Seeing beyond duality into light."},
-                crown: {t: "Crown | 789Hz", d: "ZION. Full realization and Universal light connection."}
+                root: {t: "Root (Muladhara) | 400Hz", m: "The Earth Element", d: "Located at the base of the spine. Represents biblical Egypt. This is the center of physical survival, material bondage, and the foundation where the Serpent Fire (Kundalini) rests.", i: "fa-mountain"},
+                sacral: {t: "Sacral (Svadhisthana) | 480Hz", m: "The Water Element", d: "The reproductive center. Represents biblical Sodom. The seat of raw emotions, desires, and the physical fire that must be raised upward.", i: "fa-water"},
+                solar: {t: "Solar Plexus (Manipura) | 520Hz", m: "The Fire Element", d: "The Manger where the Christos (seed/oil) is born. The center of personal power and the fiery furnace where the ego begins its transformation into spirit.", i: "fa-fire"},
+                heart: {t: "Heart (Anahata) | 600Hz", m: "The Air Element", d: "Jerusalem—the City of Peace. The bridge crossing over from the animal lower nature into the higher spiritual mind. A place of perfect balance.", i: "fa-heart"},
+                throat: {t: "Throat (Vishuddha) | 670Hz", m: "The Ether Element", d: "The center of expression and truth. The biological crossing of the Red Sea, where the silent truth of the upper room translates into the spoken Word.", i: "fa-comment-dots"},
+                brow: {t: "Brow (Ajna) | 750Hz", m: "The Light Element", d: "The Pineal Gland. Peniel, where Jacob saw God face to face. The Single Eye that sees beyond the illusion of duality and opens to universal light.", i: "fa-eye"},
+                crown: {t: "Crown (Sahasrara) | 789Hz+", m: "Cosmic Consciousness", d: "ZION. The Thousand-Petaled Lotus. The ultimate destination of the spinal fluid, resulting in full realization and direct connection to Universal consciousness.", i: "fa-crown"}
             },
 
             getTopic: (v) => {
@@ -336,14 +365,14 @@
 
             renderCard: (v) => {
                 const topic = window.app.getTopic(v);
-                let btn = v['external-identifier']?.includes('urn:youtube:') ? `<button onclick="event.stopPropagation(); window.open('https://youtube.com/watch?v=${v['external-identifier'].match(/urn:youtube:([a-zA-Z0-9_-]{11})/)[1]}', '_blank')" class="text-[8px] font-bold border px-1.5 py-0.5 rounded ml-2 relative z-20 pointer-events-auto hover:bg-red-900 hover:text-white transition-colors" style="color:var(--gold); border-color:var(--gold);">SOURCE</button>` : '';
+                let btn = v['external-identifier']?.includes('urn:youtube:') ? `<button onclick="event.stopPropagation(); window.open('https://youtube.com/watch?v=${v['external-identifier'].match(/urn:youtube:([a-zA-Z0-9_-]{11})/)[1]}', '_blank')" class="text-[8px] font-bold border px-2 py-1 rounded relative z-20 pointer-events-auto hover:bg-red-900 hover:text-white transition-colors uppercase tracking-widest" style="color:var(--gold); border-color:var(--gold);">YouTube</button>` : '';
                 return `
                 <div class="cosmos-card group" onclick="window.app.openVideo('${v.identifier}')">
                     <img src="https://archive.org/services/img/${v.identifier}" class="aspect-video object-cover opacity-80 group-hover:opacity-100 transition-opacity" loading="lazy" />
                     <div class="p-4 flex flex-col flex-1">
-                        <h3 class="text-[11px] font-semibold line-clamp-2 mb-3 leading-snug" style="color: var(--text-primary);">${v.title}</h3>
+                        <h3 class="text-xs md:text-[13px] font-bold line-clamp-2 mb-4 leading-snug" style="color: var(--text-primary);">${v.title}</h3>
                         <div class="mt-auto flex justify-between items-center">
-                            <button onclick="event.stopPropagation(); window.app.clickCardTopic('${topic}')" class="text-[8px] font-bold uppercase px-2 py-1 rounded border relative z-20 pointer-events-auto hover:scale-105 transition-transform" style="color: var(--purple); border-color: var(--border-color); background: var(--bg-base);">${topic}</button>
+                            <button onclick="event.stopPropagation(); window.app.clickCardTopic('${topic}')" class="text-[8px] font-black uppercase px-2 py-1 rounded border relative z-20 pointer-events-auto hover:scale-105 transition-transform tracking-widest" style="color: var(--purple); border-color: var(--border-color); background: var(--bg-base);">${topic}</button>
                             ${btn}
                         </div>
                     </div>
@@ -355,6 +384,16 @@
                 window.app.selectedTopics.clear();
                 window.app.selectedTopics.add(t);
                 window.app.nav('library');
+                
+                // Update mobile dropdown to match clicked topic
+                const drop = document.getElementById('mobile-topic-dropdown');
+                if(drop) drop.value = t;
+            },
+            
+            selectMobileTopic: (t) => {
+                window.app.selectedTopics.clear();
+                if(t) window.app.selectedTopics.add(t);
+                window.app.renderLibraryInterface();
             },
 
             nav: (id) => {
@@ -397,7 +436,6 @@
                             if (hits.length > 0) {
                                 matchCount += hits.length;
                                 hits.forEach(hit => {
-                                    // Highlight exact word match
                                     let snippet = hit.text.replace(new RegExp(`(${q})`, 'gi'), '<span style="color: #050505; background: var(--gold); padding: 0 4px; border-radius: 4px; font-weight: 900;">$1</span>');
                                     let timeS = Math.floor(hit.start || 0);
                                     let mins = Math.floor(timeS / 60);
@@ -428,7 +466,7 @@
                     });
 
                     if(matchCount === 0) {
-                        htmlOut = `<p style="color:var(--text-primary)">No transcript or title matches found for "${q}". Ensure you have loaded the transcripts.json parts.</p>`;
+                        htmlOut = `<p style="color:var(--text-primary)">No exact transcript or title matches found for "${q}".</p>`;
                     }
                     
                     grid.style.display = 'flex';
@@ -447,7 +485,9 @@
             showAnatomy: (k) => {
                 const d = window.app.anaMap[k];
                 document.getElementById('ana-title').innerText = d.t;
+                document.getElementById('ana-meta').innerText = d.m;
                 document.getElementById('ana-desc').innerText = d.d;
+                document.getElementById('ana-bg-icon').className = `fa-solid ${d.i}`;
             },
 
             scanForBrokenLinks: () => {
@@ -488,13 +528,23 @@
 
             renderLibraryInterface: () => {
                 const container = document.getElementById('library-topics');
+                const drop = document.getElementById('mobile-topic-dropdown');
                 const topics = [...new Set(window.app.data.map(r => r.topic))].sort();
                 
+                // Build Desktop Chips
                 container.innerHTML = topics.map(t => {
                     const count = window.app.archiveVideos.filter(v => window.app.getTopic(v) === t).length;
                     const isActive = window.app.selectedTopics.has(t) ? 'active' : '';
                     return `<div class="topic-chip ${isActive}" onclick="window.app.toggleTopic('${t}')">${t} <span class="chip-count opacity-50">(${count})</span></div>`;
                 }).join('');
+                
+                // Build Mobile Dropdown
+                let dropOptions = `<option value="">ALL TOPICS</option>`;
+                topics.forEach(t => {
+                    const selected = window.app.selectedTopics.has(t) ? 'selected' : '';
+                    dropOptions += `<option value="${t}" ${selected}>${t}</option>`;
+                });
+                drop.innerHTML = dropOptions;
                 
                 const filtered = window.app.selectedTopics.size > 0 ? window.app.archiveVideos.filter(v => window.app.selectedTopics.has(window.app.getTopic(v))) : window.app.archiveVideos;
                 document.getElementById('library-grid').innerHTML = filtered.map(v => window.app.renderCard(v)).join('');
