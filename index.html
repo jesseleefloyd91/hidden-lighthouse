@@ -111,7 +111,7 @@
     
     <div id="app-loader" class="fixed inset-0 z-[100] bg-black flex flex-col items-center justify-center transition-opacity duration-500">
         <div class="w-12 h-12 border-4 border-t-purple-500 border-white/10 rounded-full animate-spin mb-4"></div>
-        <p class="cinzel text-xs tracking-widest animate-pulse text-white uppercase">Syncing Archive & Transcripts...</p>
+        <p class="cinzel text-xs tracking-widest animate-pulse text-white uppercase">Syncing Official Archive...</p>
     </div>
 
     <div id="diagnostics-overlay">
@@ -126,9 +126,17 @@
     <div id="search-overlay">
         <button onclick="window.app.closeSearchOverlay()" class="absolute top-4 right-4 md:top-6 md:right-6 p-4 hover:scale-110 transition z-50" style="color: var(--text-primary);"><i class="fa-solid fa-xmark text-3xl"></i></button>
         <div class="w-full max-w-4xl px-4 md:px-6 text-center">
+            
             <input type="text" id="overlay-search-input" placeholder="Type keyword or phrase..." class="w-full bg-transparent border-b-2 cinzel outline-none py-4 text-center text-2xl sm:text-3xl md:text-4xl" style="color: var(--text-primary); border-color: var(--gold);" onkeydown="if(event.key === 'Enter') window.app.performOverlaySearch(true)">
             
-            <div class="flex flex-col sm:flex-row justify-center items-center gap-4 mt-8">
+            <div class="flex justify-center items-center mt-6">
+                <label class="text-[10px] uppercase font-bold tracking-widest cursor-pointer flex items-center gap-2 transition hover:opacity-70" style="color: var(--text-secondary);">
+                    <input type="checkbox" id="exact-match-checkbox" checked class="w-4 h-4 cursor-pointer" style="accent-color: var(--gold);">
+                    Exact Word Match
+                </label>
+            </div>
+
+            <div class="flex flex-col sm:flex-row justify-center items-center gap-4 mt-6">
                 <button onclick="window.app.performOverlaySearch(false)" class="w-full sm:w-auto px-6 py-3 border rounded-full text-[10px] font-black uppercase tracking-widest transition hover:opacity-70" style="color: var(--text-primary); border-color: var(--text-primary);">
                     Video Search
                 </button>
@@ -191,6 +199,7 @@
             <div class="max-w-5xl mx-auto pt-4">
                 <h2 class="cinzel text-4xl md:text-6xl font-black mb-4 uppercase" style="color: var(--text-primary);">The Upper Room</h2>
                 <div id="brain-quote" class="cinzel text-xs md:text-sm mb-8 italic tracking-widest text-gold px-2 md:px-6 min-h-[40px]"></div>
+                
                 <div class="relative w-full max-w-lg mx-auto aspect-video border rounded-xl mb-12 flex items-center justify-center overflow-hidden shadow-2xl" style="border-color: var(--border-color); background: var(--bg-secondary);">
                     <div class="absolute inset-0 bg-[radial-gradient(circle,var(--purple)_0%,transparent_70%)] opacity-10"></div>
                     <div class="flex items-center gap-4 md:gap-8 z-10">
@@ -199,6 +208,7 @@
                         <div class="text-center"><div class="w-8 h-8 rounded-full bg-blue-500 animate-[pulse_3s_infinite] shadow-[0_0_30px_#3b82f6] mb-2 mx-auto border-2 border-white/20"></div><span class="text-[9px] font-bold tracking-widest" style="color: var(--text-primary);">PITUITARY</span></div>
                     </div>
                 </div>
+
                 <div id="brain-lectures-grid" class="masonry-grid"></div>
             </div>
         </section>
@@ -208,7 +218,6 @@
                 <h2 class="cinzel text-4xl md:text-6xl font-black mb-10 text-center uppercase" style="color: var(--text-primary);">The Temple</h2>
                 
                 <div class="grid lg:grid-cols-12 gap-10 items-start">
-                    
                     <div class="lg:col-span-5 flex justify-center relative bg-black/5 rounded-3xl py-8 border shadow-inner" style="border-color: var(--border-color);">
                         <div class="spine-container">
                             <div class="spine-line"></div>
@@ -221,14 +230,11 @@
                             <div class="chakra-node" style="background-color: #ef4444; box-shadow: 0 0 20px #ef4444;" onclick="window.app.showAnatomy('root')"><i class="fa-solid fa-mountain"></i></div>
                         </div>
                     </div>
-
                     <div class="lg:col-span-7">
                         <div id="anatomy-info" class="p-8 md:p-12 border rounded-3xl text-left min-h-[300px] transition-all shadow-2xl relative overflow-hidden" style="background-color: var(--bg-secondary); border-color: var(--border-color);">
                             <div class="absolute -top-10 -right-10 text-9xl opacity-5 pointer-events-none" style="color: var(--text-primary);"><i id="ana-bg-icon" class="fa-solid fa-dharmachakra"></i></div>
-                            
                             <h3 class="cinzel text-3xl md:text-5xl mb-2 text-gold font-bold" id="ana-title">The Seven Seals</h3>
                             <p class="font-mono text-xs md:text-sm uppercase tracking-[0.3em] opacity-60 mb-8" style="color: var(--text-primary);" id="ana-meta">Jacob's Ladder</p>
-                            
                             <div class="space-y-6">
                                 <p class="leading-relaxed italic text-lg md:text-xl" style="color: var(--text-primary);" id="ana-desc">
                                     The human spine is the true Jacob's Ladder. Click the specific nerve plexuses on the diagram to reveal their esoteric decoding.
@@ -304,7 +310,7 @@
             
             const colors = ['#3b82f6', '#a855f7', '#ef4444', '#ffffff', '#f97316', '#22c55e'];
             const particles = [];
-            let density = window.innerWidth < 768 ? 2000 : 4500; // Less particles on mobile for performance
+            let density = window.innerWidth < 768 ? 2000 : 4500; 
             
             for(let i=0; i<density; i++) {
                 particles.push({
@@ -330,7 +336,7 @@
         }
 
         window.app = {
-            data: [], archiveVideos: [], selectedTopics: new Set(), transcripts: [],
+            data: [], archiveVideos: [], selectedTopics: new Set(), validYtIds: new Set(), transcripts: [],
             quotes: [
                 "Everything in the Bible is Anatomy.",
                 "Turn off the thoughts and let the light enter the single eye.",
@@ -339,9 +345,9 @@
                 "Meditation is the absence of thought."
             ],
             anaMap: {
-                root: {t: "Root (Muladhara) | 400Hz", m: "The Earth Element", d: "Located at the base of the spine. Represents biblical Egypt. This is the center of physical survival, material bondage, and the foundation where the Serpent Fire (Kundalini) rests.", i: "fa-mountain"},
+                root: {t: "Root (Muladhara) | 400Hz", m: "The Earth Element", d: "Base of spine. Represents biblical Egypt. This is the center of physical survival, material bondage, and the foundation where the Serpent Fire rests.", i: "fa-mountain"},
                 sacral: {t: "Sacral (Svadhisthana) | 480Hz", m: "The Water Element", d: "The reproductive center. Represents biblical Sodom. The seat of raw emotions, desires, and the physical fire that must be raised upward.", i: "fa-water"},
-                solar: {t: "Solar Plexus (Manipura) | 520Hz", m: "The Fire Element", d: "The Manger where the Christos (seed/oil) is born. The center of personal power and the fiery furnace where the ego begins its transformation into spirit.", i: "fa-fire"},
+                solar: {t: "Solar Plexus (Manipura) | 520Hz", m: "The Fire Element", d: "The Manger where the Christos is born. The center of personal power and the fiery furnace where the ego begins its transformation into spirit.", i: "fa-fire"},
                 heart: {t: "Heart (Anahata) | 600Hz", m: "The Air Element", d: "Jerusalem—the City of Peace. The bridge crossing over from the animal lower nature into the higher spiritual mind. A place of perfect balance.", i: "fa-heart"},
                 throat: {t: "Throat (Vishuddha) | 670Hz", m: "The Ether Element", d: "The center of expression and truth. The biological crossing of the Red Sea, where the silent truth of the upper room translates into the spoken Word.", i: "fa-comment-dots"},
                 brow: {t: "Brow (Ajna) | 750Hz", m: "The Light Element", d: "The Pineal Gland. Peniel, where Jacob saw God face to face. The Single Eye that sees beyond the illusion of duality and opens to universal light.", i: "fa-eye"},
@@ -384,8 +390,6 @@
                 window.app.selectedTopics.clear();
                 window.app.selectedTopics.add(t);
                 window.app.nav('library');
-                
-                // Update mobile dropdown to match clicked topic
                 const drop = document.getElementById('mobile-topic-dropdown');
                 if(drop) drop.value = t;
             },
@@ -414,16 +418,23 @@
             },
 
             performOverlaySearch: (isDeep) => {
-                const q = document.getElementById('overlay-search-input').value.trim().toLowerCase();
+                const qRaw = document.getElementById('overlay-search-input').value.trim();
                 const grid = document.getElementById('overlay-results');
                 const box = document.getElementById('overlay-insight-box');
                 const text = document.getElementById('overlay-insight-text');
+                if(!qRaw) return;
+
+                const isExact = document.getElementById('exact-match-checkbox').checked;
+                const escapeRegExp = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                const qEscaped = escapeRegExp(qRaw);
                 
-                if(!q) return;
+                const regexStr = isExact ? `\\b${qEscaped}\\b` : qEscaped;
+                const searchRegex = new RegExp(regexStr, 'i');
+                const highlightRegex = new RegExp(`(${regexStr})`, 'gi');
 
                 if(isDeep) {
                     box.classList.remove('hidden');
-                    text.innerHTML = `<span style="color: var(--gold);" class="uppercase text-xs font-bold tracking-widest block mb-2">Deep Transcript Scan for "${q}"</span>`;
+                    text.innerHTML = `<span style="color: var(--gold);" class="uppercase text-xs font-bold tracking-widest block mb-2">Deep Transcript Scan for "${qRaw}"</span>`;
                     
                     let htmlOut = '';
                     let matchCount = 0;
@@ -432,27 +443,46 @@
                         let segments = window.app.getTranscriptSegments(v);
                         
                         if(segments && Array.isArray(segments)) {
-                            let hits = segments.filter(s => s.text && s.text.toLowerCase().includes(q));
-                            if (hits.length > 0) {
-                                matchCount += hits.length;
-                                hits.forEach(hit => {
-                                    let snippet = hit.text.replace(new RegExp(`(${q})`, 'gi'), '<span style="color: #050505; background: var(--gold); padding: 0 4px; border-radius: 4px; font-weight: 900;">$1</span>');
-                                    let timeS = Math.floor(hit.start || 0);
-                                    let mins = Math.floor(timeS / 60);
-                                    let secs = (timeS % 60).toString().padStart(2, '0');
+                            let hits = segments.filter(s => s.text && searchRegex.test(s.text));
+                            
+                            if (qRaw.split(' ').length > 1) {
+                                // PHRASE MODE
+                                if (hits.length > 0) {
+                                    matchCount += hits.length;
+                                    hits.forEach(hit => {
+                                        let snippet = hit.text.replace(highlightRegex, '<span style="color: #050505; background: var(--gold); padding: 0 4px; border-radius: 4px; font-weight: 900;">$1</span>');
+                                        let timeS = Math.floor(hit.start || 0);
+                                        let mins = Math.floor(timeS / 60);
+                                        let secs = (timeS % 60).toString().padStart(2, '0');
+                                        
+                                        htmlOut += `
+                                        <div class="deep-result-card" onclick="window.app.openVideo('${v.identifier}', ${timeS})">
+                                            <div class="flex justify-between items-start mb-2">
+                                                <span class="text-sm font-bold" style="color:var(--text-primary)">${v.title}</span>
+                                                <span class="text-[10px] font-mono border px-2 py-0.5 rounded whitespace-nowrap ml-2" style="color: var(--gold); border-color: rgba(212, 175, 55, 0.4); background: rgba(212, 175, 55, 0.05);">@ ${mins}:${secs}</span>
+                                            </div>
+                                            <p class="italic leading-relaxed mt-2 text-sm" style="color:var(--text-secondary)">"...${snippet}..."</p>
+                                        </div>`;
+                                    });
+                                }
+                            } else {
+                                // WORD MODE COUNTER
+                                if (hits.length > 0) {
+                                    matchCount++;
+                                    let totalVideoHits = 0;
+                                    hits.forEach(h => {
+                                        totalVideoHits += (h.text.match(highlightRegex) || []).length;
+                                    });
                                     
                                     htmlOut += `
-                                    <div class="deep-result-card" onclick="window.app.openVideo('${v.identifier}', ${timeS})">
-                                        <div class="flex justify-between items-start mb-2">
-                                            <span class="text-sm font-bold" style="color:var(--text-primary)">${v.title}</span>
-                                            <span class="text-[10px] font-mono border px-2 py-0.5 rounded whitespace-nowrap ml-2" style="color: var(--gold); border-color: rgba(212, 175, 55, 0.4); background: rgba(212, 175, 55, 0.05);">@ ${mins}:${secs}</span>
-                                        </div>
-                                        <p class="italic leading-relaxed mt-2 text-sm" style="color:var(--text-secondary)">"...${snippet}..."</p>
+                                    <div class="deep-result-card flex justify-between items-center" onclick="window.app.openVideo('${v.identifier}')">
+                                        <span class="text-xs md:text-sm font-bold" style="color:var(--text-primary)">${v.title}</span>
+                                        <span class="text-gold font-mono text-xl bg-gold/10 px-3 py-1 rounded border border-gold/20 whitespace-nowrap ml-4">${totalVideoHits} <span class="text-[10px] uppercase">Hits</span></span>
                                     </div>`;
-                                });
+                                }
                             }
                         } 
-                        else if (v.title.toLowerCase().includes(q)) {
+                        else if (searchRegex.test(v.title)) {
                             matchCount++;
                             htmlOut += `
                             <div class="deep-result-card" onclick="window.app.openVideo('${v.identifier}')">
@@ -466,7 +496,7 @@
                     });
 
                     if(matchCount === 0) {
-                        htmlOut = `<p style="color:var(--text-primary)">No exact transcript or title matches found for "${q}".</p>`;
+                        htmlOut = `<p style="color:var(--text-primary)">No transcript or title matches found for "${qRaw}".</p>`;
                     }
                     
                     grid.style.display = 'flex';
@@ -477,7 +507,7 @@
                 } else {
                     box.classList.add('hidden');
                     grid.style.display = 'grid'; 
-                    const filtered = window.app.archiveVideos.filter(v => v.title.toLowerCase().includes(q));
+                    const filtered = window.app.archiveVideos.filter(v => searchRegex.test(v.title));
                     grid.innerHTML = filtered.map(v => window.app.renderCard(v)).join('');
                 }
             },
@@ -531,14 +561,12 @@
                 const drop = document.getElementById('mobile-topic-dropdown');
                 const topics = [...new Set(window.app.data.map(r => r.topic))].sort();
                 
-                // Build Desktop Chips
                 container.innerHTML = topics.map(t => {
                     const count = window.app.archiveVideos.filter(v => window.app.getTopic(v) === t).length;
                     const isActive = window.app.selectedTopics.has(t) ? 'active' : '';
                     return `<div class="topic-chip ${isActive}" onclick="window.app.toggleTopic('${t}')">${t} <span class="chip-count opacity-50">(${count})</span></div>`;
                 }).join('');
                 
-                // Build Mobile Dropdown
                 let dropOptions = `<option value="">ALL TOPICS</option>`;
                 topics.forEach(t => {
                     const selected = window.app.selectedTopics.has(t) ? 'selected' : '';
@@ -577,21 +605,40 @@
                         const topK = keys.find(k => k.toLowerCase().includes('topic'));
                         const urlK = keys.find(k => k.toLowerCase().includes('url'));
                         window.app.data = res.data.map(r => ({ topic: r[topK] || "General", url: r[urlK] || "" }));
+                        
+                        // Strict Filter Setup: Capture valid YouTube IDs from the CSV
+                        window.app.validYtIds = new Set();
+                        window.app.data.forEach(r => {
+                            if (r.url) {
+                                let match = r.url.match(/(?:v=|\/)([0-9A-Za-z_-]{11})/);
+                                if (match) window.app.validYtIds.add(match[1]);
+                            }
+                        });
+                        
+                        // Fetch from Internet Archive
+                        fetch(`https://archive.org/advancedsearch.php?q=${encodeURIComponent('subject:"bill_donahue" AND mediatype:"movies"')}&fl[]=identifier,title,external-identifier&output=json&rows=1000`)
+                        .then(r => r.json()).then(d => {
+                            
+                            // STRICT FILTER: Only allow videos that are explicitly in your catalog.csv
+                            window.app.archiveVideos = d.response.docs.filter(v => {
+                                let ytIdMatch = v['external-identifier']?.match(/urn:youtube:([a-zA-Z0-9_-]{11})/);
+                                if (ytIdMatch && window.app.validYtIds && window.app.validYtIds.has(ytIdMatch[1])) {
+                                    return true;
+                                }
+                                return false; // Blocks Piers Morgan & unauthorized uploads
+                            });
+
+                            document.getElementById('global-counter').innerText = `INDEX: ${window.app.archiveVideos.length}`;
+                            
+                            document.getElementById('brain-lectures-grid').innerHTML = window.app.archiveVideos.filter(v => v.title.toLowerCase().match(/brain|skull|anatomy/)).slice(0,8).map(v => window.app.renderCard(v)).join('');
+                            document.getElementById('meditation-lectures-grid').innerHTML = window.app.archiveVideos.filter(v => v.title.toLowerCase().match(/meditation|silence/)).slice(0,8).map(v => window.app.renderCard(v)).join('');
+                            
+                            document.getElementById('app-loader').classList.add('hidden');
+                            if(location.hash) window.app.nav(location.hash.substring(1));
+                            else window.app.nav('home');
+                        });
                     }
                 }});
-
-                fetch(`https://archive.org/advancedsearch.php?q=${encodeURIComponent('subject:"bill_donahue" AND mediatype:"movies"')}&fl[]=identifier,title,external-identifier&output=json&rows=1000`)
-                .then(r => r.json()).then(d => {
-                    window.app.archiveVideos = d.response.docs;
-                    document.getElementById('global-counter').innerText = `INDEX: ${d.response.numFound}`;
-                    
-                    document.getElementById('brain-lectures-grid').innerHTML = window.app.archiveVideos.filter(v => v.title.toLowerCase().match(/brain|skull|anatomy/)).slice(0,8).map(v => window.app.renderCard(v)).join('');
-                    document.getElementById('meditation-lectures-grid').innerHTML = window.app.archiveVideos.filter(v => v.title.toLowerCase().match(/meditation|silence/)).slice(0,8).map(v => window.app.renderCard(v)).join('');
-                    
-                    document.getElementById('app-loader').classList.add('hidden');
-                    if(location.hash) window.app.nav(location.hash.substring(1));
-                    else window.app.nav('home');
-                });
             }
         };
         window.onload = () => window.app.init();
