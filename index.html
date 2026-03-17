@@ -258,7 +258,6 @@
                             data-query="(accessory nerve|aquarius|simon|burden bearer)"/>
                         <text x="310" y="434" fill="var(--text-secondary)" font-size="10" font-family="monospace" text-anchor="end">CN XI</text>
 
-
                         <circle class="nerve-hotspot" cx="500" cy="180" r="18" 
                             data-nerve="CN II: Optic" data-zodiac="Taurus (The Bull)" data-disciple="Peter" data-esoteric="The Single Eye"
                             data-query="(optic nerve|taurus|peter|single eye|vision)"/>
@@ -669,7 +668,6 @@
                 window.app.renderLibraryInterface();
             },
 
-            // --- THE MATRIX TRIGGER ---
             initMatrixInteractions: () => {
                 const hotspots = document.querySelectorAll('.nerve-hotspot');
                 const tooltip = document.getElementById('matrix-tooltip');
@@ -704,15 +702,32 @@
                 window.app.initMatrixInteractions();
                 window.onpopstate = (e) => { if(e.state && e.state.view) window.app.nav(e.state.view); };
 
-                Promise.all([
-                    fetch('transcripts_1.json').then(r => r.ok ? r.json() : []),
-                    fetch('transcripts_2.json').then(r => r.ok ? r.json() : []),
-                    fetch('transcripts_3.json').then(r => r.ok ? r.json() : []),
-                    fetch('transcripts_4.json').then(r => r.ok ? r.json() : []),
-                    fetch('transcripts_5.json').then(r => r.ok ? r.json() : [])
-                ]).then(results => {
-                    window.app.transcripts = results.flat();
-                });
+                // --- DYNAMIC TRANSCRIPT AUTO-LOADER ---
+                const loadAllTranscripts = async () => {
+                    let allTranscripts = [];
+                    let fileIndex = 1;
+                    let keepFetching = true;
+                    
+                    while (keepFetching) {
+                        try {
+                            const response = await fetch(`transcripts_${fileIndex}.json`);
+                            if (response.ok) {
+                                const data = await response.json();
+                                allTranscripts = allTranscripts.concat(data);
+                                fileIndex++;
+                            } else {
+                                keepFetching = false; 
+                            }
+                        } catch (error) {
+                            keepFetching = false;
+                        }
+                    }
+                    
+                    window.app.transcripts = allTranscripts;
+                };
+
+                // Execute the auto-loader asynchronously alongside the CSV parser
+                loadAllTranscripts();
 
                 Papa.parse('catalog.csv', { download: true, header: true, complete: (res) => {
                     if (res.data && res.data.length > 0) {
