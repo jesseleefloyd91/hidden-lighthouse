@@ -94,6 +94,16 @@
         .chakra-node { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s ease; border: 2px solid rgba(255,255,255,0.9); z-index: 10; color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.5); font-size: 16px; }
         .chakra-node:hover { transform: scale(1.3); box-shadow: 0 0 20px currentColor; }
 
+        /* --- THE 12 GATES (BRAIN MATRIX) --- */
+        .matrix-container { position: relative; width: 100%; max-width: 800px; margin: 0 auto; padding: 20px; }
+        .nerve-hotspot { fill: rgba(212, 175, 55, 0.1); stroke: var(--gold); stroke-width: 2; cursor: pointer; transition: all 0.3s ease; }
+        .nerve-hotspot:hover { fill: rgba(212, 175, 55, 0.4); stroke: #fff; filter: drop-shadow(0 0 10px var(--gold)); transform: scale(1.02); }
+        
+        #matrix-tooltip { position: absolute; display: none; background: var(--overlay-bg); border: 1px solid var(--gold); padding: 15px; border-radius: 8px; pointer-events: none; box-shadow: 0 10px 30px rgba(0,0,0,0.8); z-index: 50; min-width: 220px; text-align: left; backdrop-filter: blur(10px); }
+        .tt-title { color: var(--gold); font-family: 'Cinzel', serif; font-weight: bold; font-size: 1.1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 5px; margin-bottom: 8px; }
+        .tt-data { margin: 4px 0; font-size: 12px; font-family: 'Inter', sans-serif; color: var(--text-primary); }
+        .tt-highlight { color: var(--purple); font-weight: bold; font-family: monospace; letter-spacing: 0.05em; }
+
         .view-section { display: none; padding-top: 100px; padding-bottom: 150px; width: 100%; min-height: 100vh; animation: fadeIn 0.4s ease; }
         .view-section.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -192,17 +202,47 @@
         </section>
 
         <section id="view-brain" class="view-section px-4 md:px-6 text-center">
-            <div class="max-w-5xl mx-auto pt-4">
+            <div class="max-w-5xl mx-auto pt-4 relative">
                 <h2 class="cinzel text-4xl md:text-6xl font-black mb-4 uppercase" style="color: var(--text-primary);">The Upper Room</h2>
                 <div id="brain-quote" class="cinzel text-xs md:text-sm mb-8 italic tracking-widest text-gold px-2 md:px-6 min-h-[40px]"></div>
                 
-                <div class="relative w-full max-w-lg mx-auto aspect-video border rounded-xl mb-12 flex items-center justify-center overflow-hidden shadow-2xl" style="border-color: var(--border-color); background: var(--bg-secondary);">
-                    <div class="absolute inset-0 bg-[radial-gradient(circle,var(--purple)_0%,transparent_70%)] opacity-10"></div>
-                    <div class="flex items-center gap-4 md:gap-8 z-10">
-                        <div class="text-center"><div class="w-8 h-8 rounded-full bg-purple-500 animate-pulse shadow-[0_0_30px_#a855f7] mb-2 mx-auto border-2 border-white/20"></div><span class="text-[9px] font-bold tracking-widest" style="color: var(--text-primary);">PINEAL</span></div>
-                        <div class="h-1 w-12 md:w-20 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full"></div>
-                        <div class="text-center"><div class="w-8 h-8 rounded-full bg-blue-500 animate-[pulse_3s_infinite] shadow-[0_0_30px_#3b82f6] mb-2 mx-auto border-2 border-white/20"></div><span class="text-[9px] font-bold tracking-widest" style="color: var(--text-primary);">PITUITARY</span></div>
+                <div class="matrix-container mb-16">
+                    <div id="matrix-tooltip">
+                        <div class="tt-title" id="tt-nerve"></div>
+                        <div class="tt-data">ZODIAC: <span class="tt-highlight" id="tt-zodiac"></span></div>
+                        <div class="tt-data">DISCIPLE: <span class="tt-highlight" id="tt-disciple"></span></div>
+                        <div class="tt-data">ESOTERIC: <span class="tt-highlight" id="tt-esoteric"></span></div>
                     </div>
+
+                    <svg viewBox="0 0 800 600" class="w-full h-auto border rounded-xl shadow-2xl" style="background: var(--bg-secondary); border-color: var(--border-color);">
+                        <defs>
+                            <radialGradient id="pinealGlow" cx="50%" cy="50%" r="50%">
+                                <stop offset="0%" stop-color="#a855f7" stop-opacity="0.6"/>
+                                <stop offset="100%" stop-color="#a855f7" stop-opacity="0"/>
+                            </radialGradient>
+                        </defs>
+                        
+                        <path d="M 250 150 C 250 50, 550 50, 550 150 C 600 250, 550 400, 450 450 C 400 500, 350 450, 250 350 Z" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="2"/>
+                        
+                        <circle cx="400" cy="250" r="40" fill="url(#pinealGlow)" class="animate-pulse"/>
+                        <circle cx="400" cy="250" r="15" fill="#a855f7"/>
+                        <text x="400" y="210" fill="var(--text-primary)" font-size="10" font-family="monospace" font-weight="bold" text-anchor="middle" letter-spacing="2">PINEAL</text>
+                        
+                        <circle class="nerve-hotspot" cx="300" cy="200" r="18" 
+                            data-nerve="CN I: Olfactory Nerve" data-zodiac="Aries" data-disciple="Andrew" data-esoteric="Breath of Life"
+                            data-query="(olfactory|aries|andrew|breath of life)"/>
+                        <text x="260" y="203" fill="var(--text-secondary)" font-size="10" font-family="monospace">CN I</text>
+
+                        <circle class="nerve-hotspot" cx="340" cy="160" r="18" 
+                            data-nerve="CN II: Optic Nerve" data-zodiac="Taurus" data-disciple="Peter" data-esoteric="The Single Eye"
+                            data-query="(optic nerve|taurus|peter|single eye|vision)"/>
+                        <text x="320" y="130" fill="var(--text-secondary)" font-size="10" font-family="monospace">CN II</text>
+
+                        <circle class="nerve-hotspot" cx="400" cy="380" r="22" 
+                            data-nerve="CN X: Vagus Nerve" data-zodiac="Capricorn" data-disciple="Thaddeus" data-esoteric="The Silver Cord"
+                            data-query="(vagus|pneumogastric|capricorn|thaddeus|silver cord)"/>
+                        <text x="400" y="420" fill="var(--text-secondary)" font-size="10" font-family="monospace" text-anchor="middle">CN X (VAGUS)</text>
+                    </svg>
                 </div>
 
                 <div id="brain-lectures-grid" class="masonry-grid"></div>
@@ -413,7 +453,6 @@
                 window.scrollTo(0,0);
             },
 
-            // --- THE QUANTUM EXPAND SEARCH ENGINE (REVISED FOR UNCATALOGUED CHECK) ---
             performOverlaySearch: (isDeep) => {
                 const qRaw = document.getElementById('overlay-search-input').value.trim();
                 const grid = document.getElementById('overlay-results');
@@ -423,11 +462,16 @@
 
                 const isExact = document.getElementById('exact-match-checkbox').checked;
                 const escapeRegExp = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-                const qEscaped = escapeRegExp(qRaw);
                 
-                const regexStr = isExact ? `\\b${qEscaped}\\b` : qEscaped;
-                const searchRegex = new RegExp(regexStr, 'i');
-                const highlightRegex = new RegExp(`(${regexStr})`, 'gi');
+                let searchRegex;
+                if(isExact) {
+                    const qEscaped = escapeRegExp(qRaw);
+                    searchRegex = new RegExp(`\\b${qEscaped}\\b`, 'i');
+                } else {
+                    searchRegex = new RegExp(qRaw, 'i');
+                }
+                
+                const highlightRegex = new RegExp(`(${searchRegex.source})`, 'gi');
 
                 if(isDeep) {
                     box.classList.remove('hidden');
@@ -552,7 +596,6 @@
                 const drop = document.getElementById('mobile-topic-dropdown');
                 const topics = [...new Set(window.app.data.map(r => r.topic))].sort();
                 
-                // Add Uncatalogued if it exists in the archive list
                 if(window.app.archiveVideos.some(v => window.app.getTopic(v) === "Uncatalogued") && !topics.includes("Uncatalogued")) {
                     topics.push("Uncatalogued");
                 }
@@ -580,8 +623,39 @@
                 window.app.renderLibraryInterface();
             },
 
+            // --- THE MATRIX TRIGGER ---
+            initMatrixInteractions: () => {
+                const hotspots = document.querySelectorAll('.nerve-hotspot');
+                const tooltip = document.getElementById('matrix-tooltip');
+                
+                hotspots.forEach(hotspot => {
+                    hotspot.addEventListener('mousemove', (e) => {
+                        tooltip.style.display = 'block';
+                        const rect = document.getElementById('view-brain').getBoundingClientRect();
+                        tooltip.style.left = (e.clientX - rect.left + 15) + 'px';
+                        tooltip.style.top = (e.clientY - rect.top + 15) + 'px';
+                        
+                        document.getElementById('tt-nerve').textContent = hotspot.getAttribute('data-nerve');
+                        document.getElementById('tt-zodiac').textContent = hotspot.getAttribute('data-zodiac');
+                        document.getElementById('tt-disciple').textContent = hotspot.getAttribute('data-disciple');
+                        document.getElementById('tt-esoteric').textContent = hotspot.getAttribute('data-esoteric');
+                    });
+
+                    hotspot.addEventListener('mouseleave', () => { tooltip.style.display = 'none'; });
+
+                    hotspot.addEventListener('click', () => {
+                        const advancedQuery = hotspot.getAttribute('data-query');
+                        window.app.openSearchOverlay();
+                        document.getElementById('exact-match-checkbox').checked = false;
+                        document.getElementById('overlay-search-input').value = advancedQuery;
+                        window.app.performOverlaySearch(true);
+                    });
+                });
+            },
+
             init: function() {
                 createDust();
+                window.app.initMatrixInteractions();
                 window.onpopstate = (e) => { if(e.state && e.state.view) window.app.nav(e.state.view); };
 
                 Promise.all([
@@ -612,16 +686,10 @@
                         fetch(`https://archive.org/advancedsearch.php?q=${encodeURIComponent('subject:"bill_donahue" AND mediatype:"movies"')}&fl[]=identifier,title,external-identifier&output=json&rows=1000`)
                         .then(r => r.json()).then(d => {
                             
-                            // SAFEGUARD UNCATALOGUED FILTER
                             window.app.archiveVideos = d.response.docs.filter(v => {
                                 let ytIdMatch = v['external-identifier']?.match(/urn:youtube:([a-zA-Z0-9_-]{11})/);
+                                if (ytIdMatch && window.app.validYtIds.has(ytIdMatch[1])) return true;
                                 
-                                // 1. If in CSV -> Approved
-                                if (ytIdMatch && window.app.validYtIds.has(ytIdMatch[1])) {
-                                    return true;
-                                }
-                                
-                                // 2. If UNCATALOGUED -> Second Check (Block TV Bots)
                                 let titleLower = (v.title || "").toLowerCase();
                                 let isTvArchiveBot = titleLower.includes("piers morgan") || titleLower.includes("cnn") || titleLower.includes("fox news") || titleLower.includes("bbc") || titleLower.match(/\d{1,2}:\d{2}[ap]m/);
                                 
