@@ -26,7 +26,7 @@
             --btn-active-text: #050505;
             --card-bg: #0f0f0f;
             --shadow-color: rgba(0,0,0,0.5);
-            --overlay-bg: rgba(5, 5, 5, 0.98);
+            --overlay-bg: rgba(5, 5, 5, 0.95);
             --hover-bg: rgba(255, 255, 255, 0.05);
         }
 
@@ -70,10 +70,10 @@
         .dock-btn.active { background: var(--btn-active-bg) !important; color: var(--btn-active-text) !important; }
 
         /* OVERLAYS */
-        #search-overlay { position: fixed; inset: 0; background: var(--overlay-bg); z-index: 90; display: none; flex-direction: column; align-items: center; padding-top: 80px; backdrop-filter: blur(20px); transition: background-color 0.5s ease; overflow-y: auto; }
+        #search-overlay { position: fixed; inset: 0; background: var(--overlay-bg); z-index: 90; display: none; flex-direction: column; align-items: center; padding-top: 50px; md:padding-top: 80px; backdrop-filter: blur(25px); transition: background-color 0.5s ease; }
         #search-overlay.active { display: flex; }
         
-        .deep-result-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 15px; margin-bottom: 10px; text-align: left; transition: 0.3s; box-shadow: 0 4px 10px var(--shadow-color); }
+        .deep-result-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 16px; padding: 15px; margin-bottom: 8px; text-align: left; transition: 0.3s; box-shadow: 0 4px 10px var(--shadow-color); }
         .snippet-item { border-left: 2px solid transparent; transition: all 0.2s ease; }
         .snippet-item:hover { border-color: var(--gold); background-color: var(--hover-bg); }
 
@@ -88,32 +88,18 @@
         .topic-chip.active { background: var(--purple); color: white !important; border-color: var(--purple); }
         .mobile-dropdown { width: 100%; background-color: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--gold); padding: 12px 16px; border-radius: 12px; font-weight: 700; text-transform: uppercase; outline: none; appearance: none; }
 
-        /* THE TEMPLE SPINAL CORD */
-        .spine-container { position: relative; width: 60px; height: 500px; margin: 0 auto; display: flex; flex-direction: column; justify-content: space-between; align-items: center; z-index: 10; padding: 20px 0; }
-        .spine-line { position: absolute; top: 0; bottom: 0; width: 4px; background: linear-gradient(to bottom, #a855f7, #3b82f6, #22c55e, #eab308, #ef4444); left: 50%; transform: translateX(-50%); z-index: 0; border-radius: 4px; opacity: 0.6; box-shadow: 0 0 15px rgba(255,255,255,0.2); }
-        .chakra-node { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s ease; border: 2px solid rgba(255,255,255,0.9); z-index: 10; color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.5); font-size: 16px; }
-        .chakra-node:hover { transform: scale(1.3); box-shadow: 0 0 20px currentColor; }
-
-        /* --- THE 12 GATES (BRAIN MATRIX) --- */
-        .matrix-container { position: relative; width: 100%; max-width: 800px; margin: 0 auto; padding: 20px; }
-        .nerve-hotspot { fill: rgba(212, 175, 55, 0.1); stroke: var(--gold); stroke-width: 2; cursor: pointer; transition: all 0.3s ease; }
-        .nerve-hotspot:hover { fill: rgba(212, 175, 55, 0.4); stroke: #fff; filter: drop-shadow(0 0 10px var(--gold)); transform: scale(1.02); }
-        
-        #matrix-tooltip { position: absolute; display: none; background: var(--overlay-bg); border: 1px solid var(--gold); padding: 15px; border-radius: 8px; pointer-events: none; box-shadow: 0 10px 30px rgba(0,0,0,0.8); z-index: 50; min-width: 220px; text-align: left; backdrop-filter: blur(10px); }
-        .tt-title { color: var(--gold); font-family: 'Cinzel', serif; font-weight: bold; font-size: 1.1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 5px; margin-bottom: 8px; }
-        .tt-data { margin: 4px 0; font-size: 12px; font-family: 'Inter', sans-serif; color: var(--text-primary); }
-        .tt-highlight { color: var(--purple); font-weight: bold; font-family: monospace; letter-spacing: 0.05em; }
-
-        /* --- MEDITATION VISUALIZER ANIMATIONS --- */
-        @keyframes customPulse { 0%, 100% { transform: scale(0.95); opacity: 0.5; } 50% { transform: scale(1.05); opacity: 0.8; } }
-        .med-ring-anim { animation: customPulse infinite ease-in-out; }
-
         .view-section { display: none; padding-top: 100px; padding-bottom: 150px; width: 100%; min-height: 100vh; animation: fadeIn 0.4s ease; }
         .view-section.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         #app-loader { position: fixed; inset: 0; z-index: 100; background: #050505; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.5s; pointer-events: none; }
         #app-loader.hidden { opacity: 0; }
+        
+        /* Custom Scrollbar for Search */
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: var(--gold); }
     </style>
 </head>
 <body class="flex flex-col min-h-screen">
@@ -134,32 +120,35 @@
     </div>
 
     <div id="search-overlay">
-        <button onclick="window.app.closeSearchOverlay()" class="absolute top-4 right-4 md:top-6 md:right-6 p-4 hover:scale-110 transition z-50" style="color: var(--text-primary);"><i class="fa-solid fa-xmark text-3xl"></i></button>
-        <div class="w-full max-w-4xl px-4 md:px-6 text-center">
+        <button onclick="window.app.closeSearchOverlay()" class="absolute top-4 right-4 md:top-8 md:right-8 p-2 hover:scale-110 transition z-50 text-2xl md:text-3xl opacity-70 hover:opacity-100" style="color: var(--text-primary);"><i class="fa-solid fa-xmark"></i></button>
+        
+        <div class="w-full max-w-3xl px-4 flex flex-col h-full mt-4 md:mt-10">
+            <div class="relative w-full shadow-2xl rounded-[30px]">
+                <i class="fa-solid fa-magnifying-glass absolute left-6 top-1/2 -translate-y-1/2 text-xl" style="color: var(--gold);"></i>
+                <input type="text" id="overlay-search-input" placeholder="Search the archive..." class="w-full rounded-[30px] py-4 md:py-5 pl-14 pr-6 text-lg md:text-xl font-sans outline-none border-2 transition-all shadow-lg" style="color: var(--text-primary); border-color: var(--border-color); background-color: var(--bg-secondary);" onkeydown="if(event.key === 'Enter') window.app.performOverlaySearch(true)">
+            </div>
             
-            <input type="text" id="overlay-search-input" placeholder="Type keyword or phrase..." class="w-full bg-transparent border-b-2 cinzel outline-none py-4 text-center text-2xl sm:text-3xl md:text-4xl" style="color: var(--text-primary); border-color: var(--gold);" onkeydown="if(event.key === 'Enter') window.app.performOverlaySearch(true)">
-            
-            <div class="flex justify-center items-center mt-6">
-                <label class="text-[10px] uppercase font-bold tracking-widest cursor-pointer flex items-center gap-2 transition hover:opacity-70" style="color: var(--text-secondary);">
+            <div class="flex flex-col sm:flex-row justify-between items-center gap-4 mt-6 px-2">
+                <label class="text-[10px] md:text-xs uppercase font-bold tracking-widest cursor-pointer flex items-center gap-2 transition hover:opacity-70" style="color: var(--text-secondary);">
                     <input type="checkbox" id="exact-match-checkbox" checked class="w-4 h-4 cursor-pointer" style="accent-color: var(--gold);">
-                    Exact Word Match
+                    Exact Match
                 </label>
-            </div>
 
-            <div class="flex flex-col sm:flex-row justify-center items-center gap-4 mt-6">
-                <button onclick="window.app.performOverlaySearch(false)" class="w-full sm:w-auto px-6 py-3 border rounded-full text-[10px] font-black uppercase tracking-widest transition hover:opacity-70" style="color: var(--text-primary); border-color: var(--text-primary);">
-                    Video Search
-                </button>
-                <button onclick="window.app.performOverlaySearch(true)" class="w-full sm:w-auto px-6 py-3 rounded-full text-[10px] font-black uppercase tracking-widest hover:scale-105 transition shadow-[0_0_15px_rgba(212,175,55,0.4)]" style="background-color: var(--gold); color: #050505;">
-                    <i class="fa-solid fa-align-left mr-1"></i> Transcript Deep Search
-                </button>
+                <div class="flex gap-3 w-full sm:w-auto">
+                    <button onclick="window.app.performOverlaySearch(false)" class="flex-1 sm:flex-none px-5 py-2.5 rounded-xl text-[10px] md:text-xs font-bold uppercase tracking-wider transition hover:opacity-80 border" style="color: var(--text-primary); border-color: var(--border-color); background: var(--bg-base);">
+                        Titles
+                    </button>
+                    <button onclick="window.app.performOverlaySearch(true)" class="flex-1 sm:flex-none px-5 py-2.5 rounded-xl text-[10px] md:text-xs font-bold uppercase tracking-wider hover:scale-105 transition shadow-lg" style="background-color: var(--gold); color: #050505;">
+                        <i class="fa-solid fa-align-left mr-1"></i> Transcripts
+                    </button>
+                </div>
             </div>
             
-            <div id="overlay-insight-box" class="hidden mt-8 p-4 md:p-6 rounded-xl text-left border-l-4" style="background-color: var(--bg-secondary); border-color: var(--gold);">
-                <p id="overlay-insight-text" class="italic text-base md:text-lg leading-relaxed" style="color: var(--text-primary);"></p>
+            <div id="overlay-insight-box" class="hidden mt-6 p-5 rounded-2xl text-left border-l-4 shadow-lg" style="background-color: var(--bg-secondary); border-color: var(--gold);">
+                <p id="overlay-insight-text" class="italic text-sm md:text-base leading-relaxed" style="color: var(--text-primary);"></p>
             </div>
             
-            <div id="overlay-results" class="w-full mt-8 overflow-y-auto max-h-[60vh] p-2 md:p-4 custom-scrollbar text-left flex flex-col gap-4"></div>
+            <div id="overlay-results" class="w-full mt-6 pb-24 overflow-y-auto flex-1 custom-scrollbar text-left flex flex-col gap-3"></div>
         </div>
     </div>
 
@@ -206,7 +195,7 @@
         </section>
 
         <section id="view-brain" class="view-section px-4 md:px-6 text-center">
-            <div class="max-w-5xl mx-auto pt-4 relative">
+            <div class="max-w-5xl mx-auto pt-4">
                 <h2 class="cinzel text-4xl md:text-6xl font-black mb-4 uppercase" style="color: var(--text-primary);">The Upper Room</h2>
                 <div id="brain-quote" class="cinzel text-xs md:text-sm mb-8 italic tracking-widest text-gold px-2 md:px-6 min-h-[40px]"></div>
                 
@@ -217,8 +206,7 @@
                         <div class="tt-data">DISCIPLE: <span class="tt-highlight" id="tt-disciple"></span></div>
                         <div class="tt-data">ESOTERIC: <span class="tt-highlight" id="tt-esoteric"></span></div>
                     </div>
-
-                    <svg viewBox="0 0 800 600" class="w-full h-auto border rounded-xl shadow-2xl relative" style="background: var(--bg-secondary); border-color: var(--border-color);">
+                    <svg viewBox="0 0 800 600" class="w-full h-auto max-h-[45vh] md:max-h-[600px] border rounded-xl shadow-2xl relative object-contain" style="background: var(--bg-secondary); border-color: var(--border-color);">
                         <defs>
                             <radialGradient id="pinealGlow" cx="50%" cy="50%" r="50%">
                                 <stop offset="0%" stop-color="#a855f7" stop-opacity="0.6"/>
@@ -226,7 +214,7 @@
                             </radialGradient>
                         </defs>
                         
-                        <image href="brain-anatomy-bg.png" x="150" y="50" width="500" height="450" opacity="0.15" preserveAspectRatio="xMidYMid meet" />
+                        <image href="brain-anatomy-bg.png" x="150" y="50" width="500" height="450" opacity="0.25" preserveAspectRatio="xMidYMid meet" />
                         
                         <path d="M 250 150 C 250 50, 550 50, 550 150 C 600 250, 550 400, 450 450 C 400 500, 350 450, 250 350 Z" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="2" stroke-dasharray="5,5"/>
                         
@@ -234,103 +222,45 @@
                         <circle cx="400" cy="250" r="15" fill="#a855f7"/>
                         <text x="400" y="210" fill="var(--text-primary)" font-size="10" font-family="monospace" font-weight="bold" text-anchor="middle" letter-spacing="2">PINEAL</text>
                         
-                        <circle class="nerve-hotspot" cx="300" cy="180" r="18" 
-                            data-nerve="CN I: Olfactory" data-zodiac="Aries (The Ram)" data-disciple="Andrew" data-esoteric="Breath of Life"
-                            data-query="(olfactory|aries|andrew|breath of life)"/>
+                        <circle class="nerve-hotspot" cx="300" cy="180" r="18" data-nerve="CN I: Olfactory" data-zodiac="Aries (The Ram)" data-disciple="Andrew" data-esoteric="Breath of Life" data-query="(olfactory|aries|andrew|breath of life)"/>
                         <text x="260" y="184" fill="var(--text-secondary)" font-size="10" font-family="monospace" text-anchor="end">CN I</text>
 
-                        <circle class="nerve-hotspot" cx="330" cy="230" r="18" 
-                            data-nerve="CN III: Oculomotor" data-zodiac="Gemini (The Twins)" data-disciple="James" data-esoteric="Twins of Perception"
-                            data-query="(oculomotor|gemini|james|twins of perception)"/>
+                        <circle class="nerve-hotspot" cx="330" cy="230" r="18" data-nerve="CN III: Oculomotor" data-zodiac="Gemini (The Twins)" data-disciple="James" data-esoteric="Twins of Perception" data-query="(oculomotor|gemini|james|twins of perception)"/>
                         <text x="290" y="234" fill="var(--text-secondary)" font-size="10" font-family="monospace" text-anchor="end">CN III</text>
 
-                        <circle class="nerve-hotspot" cx="310" cy="280" r="18" 
-                            data-nerve="CN V: Trigeminal" data-zodiac="Leo (The Lion)" data-disciple="Philip" data-esoteric="Lion of Judah / Jawbone"
-                            data-query="(trigeminal|leo|philip|lion of judah|jawbone)"/>
+                        <circle class="nerve-hotspot" cx="310" cy="280" r="18" data-nerve="CN V: Trigeminal" data-zodiac="Leo (The Lion)" data-disciple="Philip" data-esoteric="Lion of Judah / Jawbone" data-query="(trigeminal|leo|philip|lion of judah|jawbone)"/>
                         <text x="270" y="284" fill="var(--text-secondary)" font-size="10" font-family="monospace" text-anchor="end">CN V</text>
 
-                        <circle class="nerve-hotspot" cx="330" cy="330" r="18" 
-                            data-nerve="CN VII: Facial" data-zodiac="Libra (The Scales)" data-disciple="Thomas" data-esoteric="The Balance"
-                            data-query="(facial nerve|libra|thomas|the balance)"/>
+                        <circle class="nerve-hotspot" cx="330" cy="330" r="18" data-nerve="CN VII: Facial" data-zodiac="Libra (The Scales)" data-disciple="Thomas" data-esoteric="The Balance" data-query="(facial nerve|libra|thomas|the balance)"/>
                         <text x="290" y="334" fill="var(--text-secondary)" font-size="10" font-family="monospace" text-anchor="end">CN VII</text>
 
-                        <circle class="nerve-hotspot" cx="340" cy="380" r="18" 
-                            data-nerve="CN IX: Glossopharyngeal" data-zodiac="Sagittarius (The Archer)" data-disciple="James the Lesser" data-esoteric="The Directed Word"
-                            data-query="(glossopharyngeal|sagittarius|james the lesser|directed word)"/>
+                        <circle class="nerve-hotspot" cx="340" cy="380" r="18" data-nerve="CN IX: Glossopharyngeal" data-zodiac="Sagittarius (The Archer)" data-disciple="James the Lesser" data-esoteric="The Directed Word" data-query="(glossopharyngeal|sagittarius|james the lesser|directed word)"/>
                         <text x="300" y="384" fill="var(--text-secondary)" font-size="10" font-family="monospace" text-anchor="end">CN IX</text>
 
-                        <circle class="nerve-hotspot" cx="350" cy="430" r="18" 
-                            data-nerve="CN XI: Accessory" data-zodiac="Aquarius (Water Bearer)" data-disciple="Simon" data-esoteric="The Burden Bearer"
-                            data-query="(accessory nerve|aquarius|simon|burden bearer)"/>
+                        <circle class="nerve-hotspot" cx="350" cy="430" r="18" data-nerve="CN XI: Accessory" data-zodiac="Aquarius (Water Bearer)" data-disciple="Simon" data-esoteric="The Burden Bearer" data-query="(accessory nerve|aquarius|simon|burden bearer)"/>
                         <text x="310" y="434" fill="var(--text-secondary)" font-size="10" font-family="monospace" text-anchor="end">CN XI</text>
 
-
-                        <circle class="nerve-hotspot" cx="500" cy="180" r="18" 
-                            data-nerve="CN II: Optic" data-zodiac="Taurus (The Bull)" data-disciple="Peter" data-esoteric="The Single Eye"
-                            data-query="(optic nerve|taurus|peter|single eye|vision)"/>
+                        <circle class="nerve-hotspot" cx="500" cy="180" r="18" data-nerve="CN II: Optic" data-zodiac="Taurus (The Bull)" data-disciple="Peter" data-esoteric="The Single Eye" data-query="(optic nerve|taurus|peter|single eye|vision)"/>
                         <text x="540" y="184" fill="var(--text-secondary)" font-size="10" font-family="monospace" text-anchor="start">CN II</text>
 
-                        <circle class="nerve-hotspot" cx="470" cy="230" r="18" 
-                            data-nerve="CN IV: Trochlear" data-zodiac="Cancer (The Crab)" data-disciple="John" data-esoteric="Foundational Water"
-                            data-query="(trochlear|cancer|john|foundational water)"/>
+                        <circle class="nerve-hotspot" cx="470" cy="230" r="18" data-nerve="CN IV: Trochlear" data-zodiac="Cancer (The Crab)" data-disciple="John" data-esoteric="Foundational Water" data-query="(trochlear|cancer|john|foundational water)"/>
                         <text x="510" y="234" fill="var(--text-secondary)" font-size="10" font-family="monospace" text-anchor="start">CN IV</text>
 
-                        <circle class="nerve-hotspot" cx="490" cy="280" r="18" 
-                            data-nerve="CN VI: Abducens" data-zodiac="Virgo (The Virgin)" data-disciple="Bartholomew" data-esoteric="Pure Sight / House of Bread"
-                            data-query="(abducens|virgo|bartholomew|house of bread)"/>
+                        <circle class="nerve-hotspot" cx="490" cy="280" r="18" data-nerve="CN VI: Abducens" data-zodiac="Virgo (The Virgin)" data-disciple="Bartholomew" data-esoteric="Pure Sight / House of Bread" data-query="(abducens|virgo|bartholomew|house of bread)"/>
                         <text x="530" y="284" fill="var(--text-secondary)" font-size="10" font-family="monospace" text-anchor="start">CN VI</text>
 
-                        <circle class="nerve-hotspot" cx="470" cy="330" r="18" 
-                            data-nerve="CN VIII: Vestibulocochlear" data-zodiac="Scorpio (The Scorpion)" data-disciple="Matthew" data-esoteric="Hidden Frequency"
-                            data-query="(vestibulocochlear|scorpio|matthew|hidden frequency)"/>
+                        <circle class="nerve-hotspot" cx="470" cy="330" r="18" data-nerve="CN VIII: Vestibulocochlear" data-zodiac="Scorpio (The Scorpion)" data-disciple="Matthew" data-esoteric="Hidden Frequency" data-query="(vestibulocochlear|scorpio|matthew|hidden frequency)"/>
                         <text x="510" y="334" fill="var(--text-secondary)" font-size="10" font-family="monospace" text-anchor="start">CN VIII</text>
 
-                        <circle class="nerve-hotspot" cx="460" cy="380" r="18" 
-                            data-nerve="CN X: Vagus" data-zodiac="Capricorn (The Goat)" data-disciple="Thaddeus" data-esoteric="The Silver Cord"
-                            data-query="(vagus|pneumogastric|capricorn|thaddeus|silver cord)"/>
+                        <circle class="nerve-hotspot" cx="460" cy="380" r="18" data-nerve="CN X: Vagus" data-zodiac="Capricorn (The Goat)" data-disciple="Thaddeus" data-esoteric="The Silver Cord" data-query="(vagus|pneumogastric|capricorn|thaddeus|silver cord)"/>
                         <text x="500" y="384" fill="var(--text-secondary)" font-size="10" font-family="monospace" text-anchor="start">CN X</text>
 
-                        <circle class="nerve-hotspot" cx="450" cy="430" r="18" 
-                            data-nerve="CN XII: Hypoglossal" data-zodiac="Pisces (The Fishes)" data-disciple="Judas" data-esoteric="The Lower Speech"
-                            data-query="(hypoglossal|pisces|judas|lower speech|betrayer)"/>
+                        <circle class="nerve-hotspot" cx="450" cy="430" r="18" data-nerve="CN XII: Hypoglossal" data-zodiac="Pisces (The Fishes)" data-disciple="Judas" data-esoteric="The Lower Speech" data-query="(hypoglossal|pisces|judas|lower speech|betrayer)"/>
                         <text x="490" y="434" fill="var(--text-secondary)" font-size="10" font-family="monospace" text-anchor="start">CN XII</text>
                     </svg>
                 </div>
 
                 <div id="brain-lectures-grid" class="masonry-grid"></div>
-            </div>
-        </section>
-
-        <section id="view-anatomy" class="view-section px-4">
-            <div class="max-w-6xl mx-auto">
-                <h2 class="cinzel text-4xl md:text-6xl font-black mb-10 text-center uppercase" style="color: var(--text-primary);">The Temple</h2>
-                
-                <div class="grid lg:grid-cols-12 gap-10 items-start">
-                    <div class="lg:col-span-5 flex justify-center relative bg-black/5 rounded-3xl py-8 border shadow-inner" style="border-color: var(--border-color);">
-                        <div class="spine-container">
-                            <div class="spine-line"></div>
-                            <div class="chakra-node" style="background-color: #a855f7; box-shadow: 0 0 20px #a855f7;" onclick="window.app.showAnatomy('crown')"><i class="fa-solid fa-crown"></i></div>
-                            <div class="chakra-node" style="background-color: #4f46e5; box-shadow: 0 0 20px #4f46e5;" onclick="window.app.showAnatomy('brow')"><i class="fa-solid fa-eye"></i></div>
-                            <div class="chakra-node" style="background-color: #3b82f6; box-shadow: 0 0 20px #3b82f6;" onclick="window.app.showAnatomy('throat')"><i class="fa-solid fa-comment-dots"></i></div>
-                            <div class="chakra-node" style="background-color: #22c55e; box-shadow: 0 0 20px #22c55e;" onclick="window.app.showAnatomy('heart')"><i class="fa-solid fa-heart"></i></div>
-                            <div class="chakra-node" style="background-color: #eab308; box-shadow: 0 0 20px #eab308;" onclick="window.app.showAnatomy('solar')"><i class="fa-solid fa-fire"></i></div>
-                            <div class="chakra-node" style="background-color: #f97316; box-shadow: 0 0 20px #f97316;" onclick="window.app.showAnatomy('sacral')"><i class="fa-solid fa-water"></i></div>
-                            <div class="chakra-node" style="background-color: #ef4444; box-shadow: 0 0 20px #ef4444;" onclick="window.app.showAnatomy('root')"><i class="fa-solid fa-mountain"></i></div>
-                        </div>
-                    </div>
-                    <div class="lg:col-span-7">
-                        <div id="anatomy-info" class="p-8 md:p-12 border rounded-3xl text-left min-h-[300px] transition-all shadow-2xl relative overflow-hidden" style="background-color: var(--bg-secondary); border-color: var(--border-color);">
-                            <div class="absolute -top-10 -right-10 text-9xl opacity-5 pointer-events-none" style="color: var(--text-primary);"><i id="ana-bg-icon" class="fa-solid fa-dharmachakra"></i></div>
-                            <h3 class="cinzel text-3xl md:text-5xl mb-2 text-gold font-bold" id="ana-title">The Seven Seals</h3>
-                            <p class="font-mono text-xs md:text-sm uppercase tracking-[0.3em] opacity-60 mb-8" style="color: var(--text-primary);" id="ana-meta">Jacob's Ladder</p>
-                            <div class="space-y-6">
-                                <p class="leading-relaxed italic text-lg md:text-xl" style="color: var(--text-primary);" id="ana-desc">
-                                    The human spine is the true Jacob's Ladder. Click the specific nerve plexuses on the diagram to reveal their esoteric decoding.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
         </section>
 
@@ -351,17 +281,17 @@
 
                     <div class="max-w-md text-left w-full">
                         <h3 id="med-title" class="cinzel text-2xl md:text-3xl text-gold font-bold mb-1">1. The Noise (Beta)</h3>
-                        <p id="med-desc" class="text-[10px] md:text-xs text-gray-400 font-mono uppercase tracking-widest mb-4">14-30 Hz | Egypt | The Carnal Mind</p>
+                        <p id="med-desc" class="text-[10px] md:text-xs font-mono uppercase tracking-widest mb-4" style="color: var(--text-secondary);">14-30 Hz | Egypt | The Carnal Mind</p>
                         <p id="med-text" class="text-sm md:text-base italic leading-relaxed h-24" style="color: var(--text-primary);">This is the waking state. The left hemisphere is dominating, analyzing, and stressing over the physical simulation. You are trapped in the five senses. You must shut the door.</p>
                         
                         <div class="flex flex-wrap gap-2 mt-4">
-                            <button onclick="window.app.setMeditationState(1)" id="med-btn-1" class="med-btn px-4 py-2 border border-white rounded text-[10px] font-bold uppercase tracking-widest transition hover:bg-white/10 bg-white/10" style="color: var(--text-primary);">Beta</button>
-                            <button onclick="window.app.setMeditationState(2)" id="med-btn-2" class="med-btn px-4 py-2 border border-white/20 rounded text-[10px] font-bold uppercase tracking-widest transition hover:bg-white/10" style="color: var(--text-primary);">Alpha</button>
-                            <button onclick="window.app.setMeditationState(3)" id="med-btn-3" class="med-btn px-4 py-2 border border-white/20 rounded text-[10px] font-bold uppercase tracking-widest transition hover:bg-white/10" style="color: var(--text-primary);">Theta</button>
-                            <button onclick="window.app.setMeditationState(4)" id="med-btn-4" class="med-btn px-4 py-2 border border-purple-500/50 rounded text-[10px] font-bold uppercase tracking-widest transition hover:bg-purple-500/20 text-purple-400">Silence (Delta)</button>
+                            <button onclick="window.app.setMeditationState(1)" id="med-btn-1" class="med-btn px-4 py-2 border rounded text-[10px] font-bold uppercase tracking-widest transition" style="color: var(--text-primary); border-color: var(--text-primary); background: var(--bg-secondary);">Beta</button>
+                            <button onclick="window.app.setMeditationState(2)" id="med-btn-2" class="med-btn px-4 py-2 border rounded text-[10px] font-bold uppercase tracking-widest transition" style="color: var(--text-primary); border-color: var(--border-color);">Alpha</button>
+                            <button onclick="window.app.setMeditationState(3)" id="med-btn-3" class="med-btn px-4 py-2 border rounded text-[10px] font-bold uppercase tracking-widest transition" style="color: var(--text-primary); border-color: var(--border-color);">Theta</button>
+                            <button onclick="window.app.setMeditationState(4)" id="med-btn-4" class="med-btn px-4 py-2 border rounded text-[10px] font-bold uppercase tracking-widest transition text-purple-400" style="border-color: var(--border-color);">Silence</button>
                         </div>
 
-                        <button onclick="window.app.searchMeditationState()" id="med-search-btn" data-query="(carnal mind|egypt|left brain|waking state|beta)" class="mt-6 w-full py-3 border rounded text-[10px] uppercase font-black tracking-widest transition flex justify-center items-center gap-2" style="background-color: rgba(212, 175, 55, 0.1); border-color: var(--gold); color: var(--gold); hover:background-color: var(--gold); hover:color: black;">
+                        <button onclick="window.app.searchMeditationState()" id="med-search-btn" data-query="(carnal mind|egypt|left brain|waking state|beta)" class="mt-6 w-full py-3 border rounded-xl text-[10px] uppercase font-black tracking-widest transition flex justify-center items-center gap-2 hover:scale-105 shadow-md" style="background-color: var(--gold); border-color: var(--gold); color: #050505;">
                             <i class="fa-solid fa-magnifying-glass"></i> Search This Frequency
                         </button>
                     </div>
@@ -396,7 +326,6 @@
             <button class="dock-btn" id="nav-library" onclick="window.app.nav('library')"><i class="fa-solid fa-book md:hidden mb-1 text-lg"></i><span class="hidden md:inline">Library</span></button>
             <button class="dock-btn" id="nav-brain" onclick="window.app.nav('brain')"><i class="fa-solid fa-brain md:hidden mb-1 text-lg"></i><span class="hidden md:inline">Brain</span></button>
             <button class="dock-btn" style="color: var(--gold);" onclick="window.app.openSearchOverlay()"><i class="fa-solid fa-magnifying-glass text-xl"></i></button>
-            <button class="dock-btn" id="nav-anatomy" onclick="window.app.nav('anatomy')"><i class="fa-solid fa-person md:hidden mb-1 text-lg"></i><span class="hidden md:inline">Temple</span></button>
             <button class="dock-btn" id="nav-meditation" onclick="window.app.nav('meditation')"><i class="fa-solid fa-om md:hidden mb-1 text-lg"></i><span class="hidden md:inline">Silence</span></button>
             <button class="dock-btn" id="nav-resources" onclick="window.app.nav('resources')"><i class="fa-solid fa-link md:hidden mb-1 text-lg"></i><span class="hidden md:inline">Links</span></button>
             <button class="dock-btn text-red-500" onclick="window.app.scanForBrokenLinks()"><i class="fa-solid fa-stethoscope md:text-lg"></i></button>
@@ -459,17 +388,6 @@
                 "Meditation is the absence of thought."
             ],
             
-            anaMap: {
-                root: {t: "Root (Muladhara) | 400Hz", m: "The Earth Element", d: "Base of spine. Represents biblical Egypt. This is the center of physical survival, material bondage, and the foundation where the Serpent Fire rests.", i: "fa-mountain"},
-                sacral: {t: "Sacral (Svadhisthana) | 480Hz", m: "The Water Element", d: "The reproductive center. Represents biblical Sodom. The seat of raw emotions, desires, and the physical fire that must be raised upward.", i: "fa-water"},
-                solar: {t: "Solar Plexus (Manipura) | 520Hz", m: "The Fire Element", d: "The Manger where the Christos is born. The center of personal power and the fiery furnace where the ego begins its transformation into spirit.", i: "fa-fire"},
-                heart: {t: "Heart (Anahata) | 600Hz", m: "The Air Element", d: "Jerusalem—the City of Peace. The bridge crossing over from the animal lower nature into the higher spiritual mind. A place of perfect balance.", i: "fa-heart"},
-                throat: {t: "Throat (Vishuddha) | 670Hz", m: "The Ether Element", d: "The center of expression and truth. The biological crossing of the Red Sea, where the silent truth of the upper room translates into the spoken Word.", i: "fa-comment-dots"},
-                brow: {t: "Brow (Ajna) | 750Hz", m: "The Light Element", d: "The Pineal Gland. Peniel, where Jacob saw God face to face. The Single Eye that sees beyond the illusion of duality and opens to universal light.", i: "fa-eye"},
-                crown: {t: "Crown (Sahasrara) | 789Hz+", m: "Cosmic Consciousness", d: "ZION. The Thousand-Petaled Lotus. The ultimate destination of the spinal fluid, resulting in full realization and direct connection to Universal consciousness.", i: "fa-crown"}
-            },
-
-            // --- THE MEDITATION COHERENCE DATA ---
             medStates: {
                 1: { t: "1. The Noise (Beta)", m: "14-30 Hz | Egypt | The Carnal Mind", d: "This is the waking state. The left hemisphere is dominating, analyzing, and stressing over the physical simulation. You are trapped in the five senses. You must shut the door.", q: "(carnal mind|egypt|left brain|waking state|beta)" },
                 2: { t: "2. The Withdrawal (Alpha)", m: "8-13 Hz | The Wilderness | Letting Go", d: "You have closed your physical eyes. The brain slows down. You are detaching from the five senses and entering the wilderness.", q: "(wilderness|alpha|closing the eyes|detach)" },
@@ -485,9 +403,8 @@
                 document.getElementById('med-search-btn').setAttribute('data-query', s.q);
 
                 document.querySelectorAll('.med-btn').forEach((b, i) => {
-                    b.classList.toggle('bg-white/10', i === step - 1);
-                    b.classList.toggle('border-white', i === step - 1);
-                    b.classList.toggle('border-white/20', i !== step - 1);
+                    b.style.borderColor = i === step - 1 ? 'var(--text-primary)' : 'var(--border-color)';
+                    b.style.background = i === step - 1 ? 'var(--bg-secondary)' : 'transparent';
                 });
 
                 const r1 = document.getElementById('med-ring-1');
@@ -524,8 +441,8 @@
 
             getTopic: (v) => {
                 if(!window.app.data.length) return "General";
-                let ytId = v['external-identifier']?.match(/urn:youtube:([a-zA-Z0-9_-]{11})/)?.[1];
-                if(ytId) { const m = window.app.data.find(r => r.url && r.url.includes(ytId)); if(m) return m.topic; }
+                let id = v['external-identifier']?.match(/urn:youtube:([a-zA-Z0-9_-]{11})/)?.[1];
+                if(id) { const m = window.app.data.find(r => r.url && r.url.includes(id)); if(m) return m.topic; }
                 return "Uncatalogued";
             },
 
@@ -576,6 +493,11 @@
                 const btn = document.getElementById('nav-' + id);
                 if(btn) btn.classList.add('active');
                 
+                if(id === 'brain' || id === 'meditation') {
+                    const q = window.app.quotes[Math.floor(Math.random()*window.app.quotes.length)];
+                    const el = document.getElementById(id + '-quote');
+                    if(el) el.innerText = `"${q}"`;
+                }
                 if(id==='library') window.app.renderLibraryInterface();
                 window.scrollTo(0,0);
             },
@@ -589,10 +511,10 @@
 
                 const isExact = document.getElementById('exact-match-checkbox').checked;
                 const escapeRegExp = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                const qEscaped = escapeRegExp(qRaw);
                 
                 let searchRegex;
                 if(isExact) {
-                    const qEscaped = escapeRegExp(qRaw);
                     searchRegex = new RegExp(`\\b${qEscaped}\\b`, 'i');
                 } else {
                     searchRegex = new RegExp(qRaw, 'i');
@@ -614,7 +536,6 @@
                         if(segments && Array.isArray(segments)) {
                             let rawHits = segments.filter(s => s.text && searchRegex.test(s.text));
                             
-                            // The Deduplication Filter
                             let hits = [];
                             if (rawHits.length > 0) {
                                 rawHits.forEach(currentHit => {
@@ -680,7 +601,7 @@
                     });
 
                     if(matchCount === 0) {
-                        htmlOut = `<p style="color:var(--text-primary)">No exact transcript matches found for "${qRaw}". Toggle off "Exact Word Match" to broaden your search.</p>`;
+                        htmlOut = `<p style="color:var(--text-primary)">No exact transcript matches found for "${qRaw}". Toggle off "Exact Match" to broaden your search.</p>`;
                     } else {
                         text.innerHTML += `<span class="text-xs" style="color: var(--text-primary);">Found <b>${totalSnippetHits}</b> exact snippets across <b>${matchCount}</b> videos. Click a video to expand hits.</span>`;
                     }
@@ -698,12 +619,33 @@
                 }
             },
 
-            showAnatomy: (k) => {
-                const d = window.app.anaMap[k];
-                document.getElementById('ana-title').innerText = d.t;
-                document.getElementById('ana-meta').innerText = d.m;
-                document.getElementById('ana-desc').innerText = d.d;
-                document.getElementById('ana-bg-icon').className = `fa-solid ${d.i}`;
+            initMatrixInteractions: () => {
+                const hotspots = document.querySelectorAll('.nerve-hotspot');
+                const tooltip = document.getElementById('matrix-tooltip');
+                
+                hotspots.forEach(hotspot => {
+                    hotspot.addEventListener('mousemove', (e) => {
+                        tooltip.style.display = 'block';
+                        const rect = document.getElementById('view-brain').getBoundingClientRect();
+                        tooltip.style.left = (e.clientX - rect.left + 15) + 'px';
+                        tooltip.style.top = (e.clientY - rect.top + 15) + 'px';
+                        
+                        document.getElementById('tt-nerve').textContent = hotspot.getAttribute('data-nerve');
+                        document.getElementById('tt-zodiac').textContent = hotspot.getAttribute('data-zodiac');
+                        document.getElementById('tt-disciple').textContent = hotspot.getAttribute('data-disciple');
+                        document.getElementById('tt-esoteric').textContent = hotspot.getAttribute('data-esoteric');
+                    });
+
+                    hotspot.addEventListener('mouseleave', () => { tooltip.style.display = 'none'; });
+
+                    hotspot.addEventListener('click', () => {
+                        const advancedQuery = hotspot.getAttribute('data-query');
+                        window.app.openSearchOverlay();
+                        document.getElementById('exact-match-checkbox').checked = false;
+                        document.getElementById('overlay-search-input').value = advancedQuery;
+                        window.app.performOverlaySearch(true);
+                    });
+                });
             },
 
             scanForBrokenLinks: () => {
@@ -742,71 +684,10 @@
             closeVideo: () => { document.getElementById('video-frame-container').innerHTML = ''; document.getElementById('video-modal').classList.add('hidden'); },
             toggleTheme: () => { document.body.classList.toggle('light-mode'); document.getElementById('theme-icon').className = document.body.classList.contains('light-mode') ? 'fa-solid fa-sun' : 'fa-solid fa-moon'; },
 
-            renderLibraryInterface: () => {
-                const container = document.getElementById('library-topics');
-                const drop = document.getElementById('mobile-topic-dropdown');
-                const topics = [...new Set(window.app.data.map(r => r.topic))].sort();
-                
-                if(window.app.archiveVideos.some(v => window.app.getTopic(v) === "Uncatalogued") && !topics.includes("Uncatalogued")) {
-                    topics.push("Uncatalogued");
-                }
-                
-                container.innerHTML = topics.map(t => {
-                    const count = window.app.archiveVideos.filter(v => window.app.getTopic(v) === t).length;
-                    const isActive = window.app.selectedTopics.has(t) ? 'active' : '';
-                    return `<div class="topic-chip ${isActive}" onclick="window.app.toggleTopic('${t}')">${t} <span class="chip-count opacity-50">(${count})</span></div>`;
-                }).join('');
-                
-                let dropOptions = `<option value="">ALL TOPICS</option>`;
-                topics.forEach(t => {
-                    const selected = window.app.selectedTopics.has(t) ? 'selected' : '';
-                    dropOptions += `<option value="${t}" ${selected}>${t}</option>`;
-                });
-                drop.innerHTML = dropOptions;
-                
-                const filtered = window.app.selectedTopics.size > 0 ? window.app.archiveVideos.filter(v => window.app.selectedTopics.has(window.app.getTopic(v))) : window.app.archiveVideos;
-                document.getElementById('library-grid').innerHTML = filtered.map(v => window.app.renderCard(v)).join('');
-            },
-
-            toggleTopic: (t) => {
-                if(window.app.selectedTopics.has(t)) window.app.selectedTopics.delete(t);
-                else window.app.selectedTopics.add(t);
-                window.app.renderLibraryInterface();
-            },
-
-            initMatrixInteractions: () => {
-                const hotspots = document.querySelectorAll('.nerve-hotspot');
-                const tooltip = document.getElementById('matrix-tooltip');
-                
-                hotspots.forEach(hotspot => {
-                    hotspot.addEventListener('mousemove', (e) => {
-                        tooltip.style.display = 'block';
-                        const rect = document.getElementById('view-brain').getBoundingClientRect();
-                        tooltip.style.left = (e.clientX - rect.left + 15) + 'px';
-                        tooltip.style.top = (e.clientY - rect.top + 15) + 'px';
-                        
-                        document.getElementById('tt-nerve').textContent = hotspot.getAttribute('data-nerve');
-                        document.getElementById('tt-zodiac').textContent = hotspot.getAttribute('data-zodiac');
-                        document.getElementById('tt-disciple').textContent = hotspot.getAttribute('data-disciple');
-                        document.getElementById('tt-esoteric').textContent = hotspot.getAttribute('data-esoteric');
-                    });
-
-                    hotspot.addEventListener('mouseleave', () => { tooltip.style.display = 'none'; });
-
-                    hotspot.addEventListener('click', () => {
-                        const advancedQuery = hotspot.getAttribute('data-query');
-                        window.app.openSearchOverlay();
-                        document.getElementById('exact-match-checkbox').checked = false;
-                        document.getElementById('overlay-search-input').value = advancedQuery;
-                        window.app.performOverlaySearch(true);
-                    });
-                });
-            },
-
             init: function() {
                 createDust();
                 window.app.initMatrixInteractions();
-                window.app.setMeditationState(1); // Initialize the visualizer
+                window.app.setMeditationState(1); 
                 window.onpopstate = (e) => { if(e.state && e.state.view) window.app.nav(e.state.view); };
 
                 const loadAllTranscripts = async () => {
