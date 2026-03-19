@@ -6,18 +6,30 @@
     <title>System Architecture | The Internal Grid</title>
    
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&family=Cinzel:wght@600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
    
     <style>
+        /* --- UNIFIED THEME VARIABLES --- */
         :root {
             --bg-base: #000000;
             --surface: rgba(20, 20, 22, 0.7);
             --surface-border: rgba(255, 255, 255, 0.08);
             --text-main: #FAFAFA;
             --text-muted: #A1A1AA;
-            --accent-glow: #3B82F6; /* Tech Blue */
-            --accent-purple: #8B5CF6;
+            --accent-glow: #3B82F6; 
+            --gold: #D4AF37;
+        }
+
+        /* --- LIGHT THEME (Modern Bento Light) --- */
+        body.light-mode {
+            --bg-base: #F3F4F6;
+            --surface: rgba(255, 255, 255, 0.9);
+            --surface-border: rgba(0, 0, 0, 0.08);
+            --text-main: #111827;
+            --text-muted: #4B5563;
+            --accent-glow: #2563EB;
+            --gold: #B45309;
         }
 
         body { 
@@ -26,21 +38,28 @@
             color: var(--text-main); 
             overflow-x: hidden; 
             margin: 0;
-            antialiased;
+            -webkit-font-smoothing: antialiased;
+            transition: background-color 0.5s ease, color 0.5s ease;
         }
         
         h1, h2, h3, .grotesk { font-family: 'Space Grotesk', sans-serif; }
+        .cinzel { font-family: 'Cinzel', serif; }
+
+        /* The Stars Canvas */
+        #stars-container {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: -2;
+            pointer-events: none;
+        }
 
         /* Modern Mesh Gradient Background */
         .mesh-bg {
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
-            background-color: #000;
-            background-image: 
-                radial-gradient(at 10% 20%, rgba(59, 130, 246, 0.15) 0px, transparent 50%),
-                radial-gradient(at 90% 80%, rgba(139, 92, 246, 0.15) 0px, transparent 50%);
+            background: radial-gradient(circle at 50% 0%, rgba(59, 130, 246, 0.05) 0%, transparent 70%);
             z-index: -1;
-            filter: blur(80px);
+            pointer-events: none;
         }
 
         /* Glassmorphism Bento Grid Elements */
@@ -51,17 +70,17 @@
             border: 1px solid var(--surface-border);
             border-radius: 24px;
             padding: 32px;
-            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease, background 0.5s ease;
         }
         
         .bento-card:hover {
             transform: translateY(-4px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-            border-color: rgba(255,255,255,0.2);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            border-color: var(--gold);
         }
 
         /* Hardware Data Readout Animation */
-        .hz-bar { width: 100%; height: 4px; background: #333; border-radius: 2px; overflow: hidden; margin-top: 8px; }
+        .hz-bar { width: 100%; height: 4px; background: rgba(150,150,150,0.2); border-radius: 2px; overflow: hidden; margin-top: 8px; }
         .hz-fill { height: 100%; width: 0%; border-radius: 2px; }
         .fill-beta { background: #EF4444; animation: loadBeta 2s forwards ease-out; }
         .fill-alpha { background: #3B82F6; animation: loadAlpha 2s forwards ease-out 0.5s; }
@@ -84,8 +103,8 @@
 
         /* Modern CTA Button */
         .btn-primary {
-            background: #fff;
-            color: #000;
+            background: var(--text-main);
+            color: var(--bg-base);
             font-weight: 600;
             padding: 16px 32px;
             border-radius: 99px;
@@ -93,15 +112,16 @@
             align-items: center;
             gap: 12px;
             transition: all 0.3s ease;
+            border: 1px solid var(--surface-border);
         }
         .btn-primary:hover {
-            transform: scale(1.02);
-            box-shadow: 0 0 30px rgba(255,255,255,0.3);
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.3);
         }
         
         /* Simulated Code Block */
         .code-block {
-            background: rgba(0,0,0,0.5);
+            background: rgba(0,0,0,0.3);
             border: 1px solid var(--surface-border);
             border-radius: 12px;
             padding: 16px;
@@ -109,37 +129,50 @@
             color: #10B981;
             font-size: 12px;
         }
+        body.light-mode .code-block { background: rgba(0,0,0,0.05); color: #059669; }
     </style>
 </head>
 <body>
+    <div id="stars-container"></div>
     <div class="mesh-bg"></div>
 
-    <nav class="fixed top-0 w-full p-6 z-50 mix-blend-difference">
+    <nav class="fixed top-0 w-full p-6 z-50 backdrop-blur-md border-b" style="border-color: var(--surface-border); background: var(--surface);">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
             <div class="grotesk font-bold tracking-widest text-sm uppercase flex items-center gap-3">
                 <div class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></div> System_Architecture
             </div>
-            <div class="text-xs font-mono text-gray-500">v.1.0.4</div>
+            <div class="flex gap-6 items-center">
+                <div class="text-xs font-mono" style="color: var(--text-muted);">v.2.0.0</div>
+                <button onclick="toggleTheme()" class="w-8 h-8 rounded-full flex items-center justify-center border transition-all hover:scale-110" style="color: var(--text-main); border-color: var(--surface-border);">
+                    <i class="fa-solid fa-moon" id="theme-icon"></i>
+                </button>
+            </div>
         </div>
     </nav>
 
-    <section class="min-h-screen flex flex-col justify-center px-6 pt-20">
+    <section class="min-h-screen flex flex-col justify-center px-6 pt-24 pb-12">
         <div class="max-w-5xl mx-auto w-full reveal active">
+            
+            <div class="flex items-center gap-3 mb-8 inline-flex p-2 pr-4 rounded-full border bg-black/20 backdrop-blur-md" style="border-color: var(--surface-border);">
+                <img src="bill_profile.jpg" alt="Bill Donahue" class="w-8 h-8 rounded-full object-cover border border-gray-500">
+                <span class="text-[10px] font-mono uppercase tracking-widest" style="color: var(--text-muted);">The Bill Donahue Master Archive</span>
+            </div>
+
             <h1 class="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tighter mb-8 leading-[1.1]">
                 Your biological <br>
                 <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">infrastructure</span> <br>
                 is overloaded.
             </h1>
-            <p class="text-lg md:text-xl text-muted max-w-2xl leading-relaxed mb-12 font-light">
+            <p class="text-lg md:text-xl max-w-2xl leading-relaxed mb-12 font-light" style="color: var(--text-muted);">
                 The modern environment is mathematically engineered to keep your nervous system locked in a high-latency survival state. It is a closed-loop system designed to drain physiological energy. It’s time to rewrite the parameters.
             </p>
         </div>
     </section>
 
-    <section class="py-24 px-6">
+    <section class="py-24 px-6 relative z-10">
         <div class="max-w-6xl mx-auto">
             <div class="mb-16 reveal">
-                <h2 class="text-sm font-mono uppercase tracking-[0.2em] text-blue-400 mb-4">01 // The Diagnostics</h2>
+                <h2 class="text-sm font-mono uppercase tracking-[0.2em] text-blue-500 mb-4">01 // The Diagnostics</h2>
                 <h3 class="text-3xl md:text-5xl font-bold tracking-tight">Understanding the Hardware.</h3>
             </div>
 
@@ -147,27 +180,27 @@
                 
                 <div class="bento-card md:col-span-2 reveal">
                     <h4 class="grotesk text-xl font-semibold mb-2">Cognitive Frequencies (Hz)</h4>
-                    <p class="text-sm text-muted mb-8">Current societal baseline operates exclusively in high-stress spectrums.</p>
+                    <p class="text-sm mb-8" style="color: var(--text-muted);">Current societal baseline operates exclusively in high-stress spectrums.</p>
                     
                     <div class="space-y-6">
                         <div>
                             <div class="flex justify-between text-xs font-mono mb-1">
-                                <span class="text-red-400">HIGH BETA (14-30Hz) - Analytical / Stress / Survival</span>
-                                <span>85% Load</span>
+                                <span class="text-red-500 font-bold">HIGH BETA (14-30Hz) - Analytical / Stress / Survival</span>
+                                <span style="color: var(--text-main);">85% Load</span>
                             </div>
                             <div class="hz-bar"><div class="hz-fill fill-beta"></div></div>
                         </div>
                         <div>
                             <div class="flex justify-between text-xs font-mono mb-1">
-                                <span class="text-blue-400">ALPHA (8-13Hz) - Flow / Coherence / Detachment</span>
-                                <span>40% Load</span>
+                                <span class="text-blue-500 font-bold">ALPHA (8-13Hz) - Flow / Coherence / Detachment</span>
+                                <span style="color: var(--text-main);">40% Load</span>
                             </div>
                             <div class="hz-bar"><div class="hz-fill fill-alpha"></div></div>
                         </div>
                         <div>
                             <div class="flex justify-between text-xs font-mono mb-1">
-                                <span class="text-purple-400">THETA (4-7Hz) - Neural Reprogramming / Intuition</span>
-                                <span>15% Load</span>
+                                <span class="text-purple-500 font-bold">THETA (4-7Hz) - Neural Reprogramming / Intuition</span>
+                                <span style="color: var(--text-main);">15% Load</span>
                             </div>
                             <div class="hz-bar"><div class="hz-fill fill-theta"></div></div>
                         </div>
@@ -175,9 +208,9 @@
                 </div>
 
                 <div class="bento-card reveal">
-                    <i class="fa-solid fa-network-wired text-2xl text-blue-400 mb-4"></i>
+                    <i class="fa-solid fa-network-wired text-2xl text-blue-500 mb-4"></i>
                     <h4 class="grotesk text-xl font-semibold mb-2">Cranial Nerve X</h4>
-                    <p class="text-sm text-muted leading-relaxed mb-6">
+                    <p class="text-sm leading-relaxed mb-6" style="color: var(--text-muted);">
                         The Vagus Nerve is the longest fiber-optic cable in the human body, directly connecting the brainstem to the heart and solar plexus. 
                     </p>
                     <div class="code-block">
@@ -189,23 +222,23 @@
 
                 <div class="bento-card md:col-span-3 reveal flex flex-col md:flex-row gap-8 items-center">
                     <div class="flex-1">
-                        <h4 class="grotesk text-2xl font-semibold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400">The Encrypted Schematics</h4>
-                        <p class="text-base text-gray-300 leading-relaxed">
+                        <h4 class="grotesk text-2xl font-semibold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-500">The Encrypted Schematics</h4>
+                        <p class="text-base leading-relaxed" style="color: var(--text-muted);">
                             Thousands of years before modern neuroscience, ancient engineers mapped this exact biological hardware. Because they lacked the vocabulary of quantum physics, they encrypted the blueprints of the human nervous system into allegories, mythologies, and scriptures. 
                             <br><br>
                             The stories of 12 disciples or the crossing of a sea are not historical events. They are strict, anatomically accurate manuals for upgrading the human operating system.
                         </p>
                     </div>
-                    <div class="flex-1 w-full border border-white/10 rounded-xl p-6 bg-black/50">
-                        <div class="flex justify-between text-xs font-mono text-muted mb-4 border-b border-white/10 pb-2">
+                    <div class="flex-1 w-full border rounded-xl p-6" style="border-color: var(--surface-border); background: rgba(0,0,0,0.1);">
+                        <div class="flex justify-between text-xs font-mono mb-4 border-b pb-2" style="color: var(--text-muted); border-color: var(--surface-border);">
                             <span>Allegorical Term</span>
                             <span>Biological Counterpart</span>
                         </div>
-                        <ul class="space-y-3 text-sm">
-                            <li class="flex justify-between"><span>The 12 Disciples</span><span class="text-blue-400">12 Cranial Nerves</span></li>
-                            <li class="flex justify-between"><span>The Manger / Bethlehem</span><span class="text-blue-400">The Solar Plexus</span></li>
-                            <li class="flex justify-between"><span>Golgotha (Place of the Skull)</span><span class="text-blue-400">The Cerebrum</span></li>
-                            <li class="flex justify-between"><span>The Silver Cord</span><span class="text-blue-400">The Vagus Nerve</span></li>
+                        <ul class="space-y-3 text-sm font-medium" style="color: var(--text-main);">
+                            <li class="flex justify-between"><span>The 12 Disciples</span><span class="text-blue-500">12 Cranial Nerves</span></li>
+                            <li class="flex justify-between"><span>The Manger / Bethlehem</span><span class="text-blue-500">The Solar Plexus</span></li>
+                            <li class="flex justify-between"><span>Golgotha (Place of the Skull)</span><span class="text-blue-500">The Cerebrum</span></li>
+                            <li class="flex justify-between"><span>The Silver Cord</span><span class="text-blue-500">The Vagus Nerve</span></li>
                         </ul>
                     </div>
                 </div>
@@ -214,22 +247,67 @@
         </div>
     </section>
 
-    <section class="py-32 px-6 text-center">
+    <section class="py-32 px-6 text-center relative z-10">
         <div class="max-w-3xl mx-auto reveal">
             <h2 class="text-4xl md:text-6xl font-bold tracking-tighter mb-6">Access the Database.</h2>
-            <p class="text-lg text-muted mb-12 font-light max-w-xl mx-auto">
+            <p class="text-lg mb-12 font-light max-w-xl mx-auto" style="color: var(--text-muted);">
                 Decades of research have been digitized and cross-referenced into an interactive framework. View the exact alignment between astrophysics, neuroanatomy, and the ancient texts.
             </p>
             
             <a href="archive.html" class="btn-primary">
                 Initialize Archive <i class="fa-solid fa-arrow-right"></i>
             </a>
-            <p class="mt-6 text-xs font-mono text-gray-600 uppercase">Secure Connection • No Tracking</p>
+            <p class="mt-6 text-[10px] font-mono uppercase tracking-widest" style="color: var(--text-muted);">Secure Connection • No Tracking</p>
         </div>
     </section>
 
     <script>
+        // Stars Particle Generation
+        function createDust() {
+            const container = document.getElementById('stars-container');
+            const canvas = document.createElement('canvas');
+            canvas.style.position = 'fixed'; canvas.style.top = '0'; canvas.style.left = '0';
+            canvas.style.width = '100%'; canvas.style.height = '100%';
+            container.appendChild(canvas);
+            const ctx = canvas.getContext('2d');
+            let w = canvas.width = window.innerWidth; let h = canvas.height = window.innerHeight;
+            
+            const colors = ['#3b82f6', '#8B5CF6', '#ffffff', '#D4AF37'];
+            const particles = [];
+            let density = window.innerWidth < 768 ? 1000 : 2500; 
+            
+            for(let i=0; i<density; i++) {
+                particles.push({
+                    x: Math.random()*w, y: Math.random()*h, r: Math.random()*0.8 + 0.1, 
+                    dy: Math.random()*0.15 + 0.05, 
+                    color: colors[Math.floor(Math.random()*colors.length)], alpha: Math.random()
+                });
+            }
+
+            function animate() {
+                ctx.clearRect(0,0,w,h);
+                const isLight = document.body.classList.contains('light-mode');
+                particles.forEach(p => {
+                    p.y -= p.dy; if(p.y < 0) p.y = h;
+                    // In light mode, draw dark grey stars. In dark mode, use the colors.
+                    ctx.fillStyle = isLight ? `rgba(100,100,110,${p.alpha * 0.6})` : p.color; 
+                    ctx.globalAlpha = p.alpha;
+                    ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI*2); ctx.fill();
+                });
+                ctx.globalAlpha = 1.0;
+                requestAnimationFrame(animate);
+            }
+            animate();
+        }
+
+        // Theme Toggle
+        function toggleTheme() { 
+            document.body.classList.toggle('light-mode'); 
+            document.getElementById('theme-icon').className = document.body.classList.contains('light-mode') ? 'fa-solid fa-sun' : 'fa-solid fa-moon'; 
+        }
+
         document.addEventListener("DOMContentLoaded", () => {
+            createDust();
             const reveals = document.querySelectorAll(".reveal");
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
@@ -238,7 +316,6 @@
                     }
                 });
             }, { threshold: 0.1 });
-            
             reveals.forEach(reveal => observer.observe(reveal));
         });
     </script>
