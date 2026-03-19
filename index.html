@@ -3,165 +3,243 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Inner Architecture | Introduction</title>
+    <title>System Architecture | The Internal Grid</title>
    
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;800&family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
    
     <style>
         :root {
-            --bg-base: #050505;
-            --text-primary: #EAEAEA;
-            --text-secondary: #a1a1aa;
-            --gold: #D4AF37;
-            --purple: #D8B4FE;
-            --border-color: rgba(255,255,255,0.1);
+            --bg-base: #000000;
+            --surface: rgba(20, 20, 22, 0.7);
+            --surface-border: rgba(255, 255, 255, 0.08);
+            --text-main: #FAFAFA;
+            --text-muted: #A1A1AA;
+            --accent-glow: #3B82F6; /* Tech Blue */
+            --accent-purple: #8B5CF6;
         }
 
         body { 
             font-family: 'Inter', sans-serif; 
             background-color: var(--bg-base); 
-            color: var(--text-primary); 
+            color: var(--text-main); 
             overflow-x: hidden; 
             margin: 0;
-            scroll-behavior: smooth;
+            antialiased;
         }
         
-        .cinzel { font-family: 'Cinzel', serif; }
-        
-        /* Subtle background gradient */
-        .bg-gradient {
+        h1, h2, h3, .grotesk { font-family: 'Space Grotesk', sans-serif; }
+
+        /* Modern Mesh Gradient Background */
+        .mesh-bg {
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
-            background: radial-gradient(circle at center, #1a0f2e 0%, #050505 70%);
+            background-color: #000;
+            background-image: 
+                radial-gradient(at 10% 20%, rgba(59, 130, 246, 0.15) 0px, transparent 50%),
+                radial-gradient(at 90% 80%, rgba(139, 92, 246, 0.15) 0px, transparent 50%);
             z-index: -1;
-            opacity: 0.6;
+            filter: blur(80px);
         }
 
-        /* Fade-in animation for scroll elements */
-        .fade-step {
-            opacity: 0;
-            transform: translateY(30px);
-            transition: all 1s cubic-bezier(0.25, 0.8, 0.25, 1);
+        /* Glassmorphism Bento Grid Elements */
+        .bento-card {
+            background: var(--surface);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid var(--surface-border);
+            border-radius: 24px;
+            padding: 32px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
         }
-        .fade-step.visible {
+        
+        .bento-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            border-color: rgba(255,255,255,0.2);
+        }
+
+        /* Hardware Data Readout Animation */
+        .hz-bar { width: 100%; height: 4px; background: #333; border-radius: 2px; overflow: hidden; margin-top: 8px; }
+        .hz-fill { height: 100%; width: 0%; border-radius: 2px; }
+        .fill-beta { background: #EF4444; animation: loadBeta 2s forwards ease-out; }
+        .fill-alpha { background: #3B82F6; animation: loadAlpha 2s forwards ease-out 0.5s; }
+        .fill-theta { background: #8B5CF6; animation: loadTheta 2s forwards ease-out 1s; }
+
+        @keyframes loadBeta { to { width: 85%; } }
+        @keyframes loadAlpha { to { width: 40%; } }
+        @keyframes loadTheta { to { width: 15%; } }
+
+        /* Scroll Animations */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .reveal.active {
             opacity: 1;
             transform: translateY(0);
         }
 
-        .pulse-line {
-            width: 2px;
-            height: 100px;
-            background: linear-gradient(to bottom, transparent, var(--gold), transparent);
-            margin: 0 auto;
-            animation: pulseHeight 3s infinite ease-in-out;
+        /* Modern CTA Button */
+        .btn-primary {
+            background: #fff;
+            color: #000;
+            font-weight: 600;
+            padding: 16px 32px;
+            border-radius: 99px;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.3s ease;
         }
-
-        @keyframes pulseHeight {
-            0%, 100% { transform: scaleY(0.5); opacity: 0.3; }
-            50% { transform: scaleY(1); opacity: 1; }
-        }
-
-        .enter-btn {
-            background: transparent;
-            border: 1px solid var(--gold);
-            color: var(--gold);
-            transition: all 0.4s ease;
-            position: relative;
-            overflow: hidden;
+        .btn-primary:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 30px rgba(255,255,255,0.3);
         }
         
-        .enter-btn::before {
-            content: '';
-            position: absolute;
-            top: 0; left: -100%; width: 100%; height: 100%;
-            background: var(--gold);
-            transition: all 0.4s ease;
-            z-index: -1;
+        /* Simulated Code Block */
+        .code-block {
+            background: rgba(0,0,0,0.5);
+            border: 1px solid var(--surface-border);
+            border-radius: 12px;
+            padding: 16px;
+            font-family: monospace;
+            color: #10B981;
+            font-size: 12px;
         }
-
-        .enter-btn:hover::before { left: 0; }
-        .enter-btn:hover { color: #050505; box-shadow: 0 0 30px rgba(212, 175, 55, 0.4); transform: scale(1.05); }
     </style>
 </head>
 <body>
-    <div class="bg-gradient"></div>
+    <div class="mesh-bg"></div>
 
-    <section class="min-h-screen flex flex-col items-center justify-center text-center px-6 pt-20">
-        <div class="fade-step visible max-w-3xl mx-auto">
-            <h1 class="cinzel text-4xl md:text-6xl lg:text-7xl font-black mb-6 uppercase tracking-wider" style="color: var(--text-primary);">The Noise is <br><span class="italic" style="color: var(--gold);">Engineered.</span></h1>
-            <p class="text-lg md:text-xl leading-relaxed mb-12 text-gray-400 font-light">
-                The modern world runs on a highly specific frequency. The digital screens, the 24-hour outrage algorithms, and the constant friction of the daily grind are designed to keep your nervous system locked in a state of baseline survival.
+    <nav class="fixed top-0 w-full p-6 z-50 mix-blend-difference">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="grotesk font-bold tracking-widest text-sm uppercase flex items-center gap-3">
+                <div class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></div> System_Architecture
+            </div>
+            <div class="text-xs font-mono text-gray-500">v.1.0.4</div>
+        </div>
+    </nav>
+
+    <section class="min-h-screen flex flex-col justify-center px-6 pt-20">
+        <div class="max-w-5xl mx-auto w-full reveal active">
+            <h1 class="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tighter mb-8 leading-[1.1]">
+                Your biological <br>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">infrastructure</span> <br>
+                is overloaded.
+            </h1>
+            <p class="text-lg md:text-xl text-muted max-w-2xl leading-relaxed mb-12 font-light">
+                The modern environment is mathematically engineered to keep your nervous system locked in a high-latency survival state. It is a closed-loop system designed to drain physiological energy. It’s time to rewrite the parameters.
             </p>
-            <p class="text-[11px] font-mono uppercase tracking-[0.2em] text-gray-500 mb-8">Scroll to Decode</p>
-            <div class="pulse-line"></div>
         </div>
     </section>
 
-    <section class="min-h-screen flex flex-col items-center justify-center text-center px-6">
-        <div class="fade-step w-full max-w-4xl mx-auto border border-white/10 bg-black/40 p-10 md:p-16 rounded-3xl backdrop-blur-sm shadow-2xl">
-            <i class="fa-solid fa-heart-pulse text-5xl mb-6" style="color: var(--purple);"></i>
-            <h2 class="cinzel text-3xl md:text-5xl font-bold mb-6 text-white">The Biological Antenna</h2>
-            <p class="text-base md:text-lg leading-relaxed text-gray-300 text-left md:text-center space-y-4">
-                <span class="block mb-4">You are not just a physical body navigating a random universe. You are a highly sophisticated bioelectric engine.</span>
-                <span class="block mb-4">When you are stressed, your brain operates in a chaotic Beta-wave state. But your body possesses a master reset switch: <strong>The Vagus Nerve</strong>.</span>
-                <span class="block">When you slow your breathing and drop into <em>Heart Coherence</em>, your brainwaves literally shift frequencies. You exit the survival mechanism and enter the programmable layer of your own reality.</span>
-            </p>
-            <div class="mt-12 pulse-line"></div>
+    <section class="py-24 px-6">
+        <div class="max-w-6xl mx-auto">
+            <div class="mb-16 reveal">
+                <h2 class="text-sm font-mono uppercase tracking-[0.2em] text-blue-400 mb-4">01 // The Diagnostics</h2>
+                <h3 class="text-3xl md:text-5xl font-bold tracking-tight">Understanding the Hardware.</h3>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                
+                <div class="bento-card md:col-span-2 reveal">
+                    <h4 class="grotesk text-xl font-semibold mb-2">Cognitive Frequencies (Hz)</h4>
+                    <p class="text-sm text-muted mb-8">Current societal baseline operates exclusively in high-stress spectrums.</p>
+                    
+                    <div class="space-y-6">
+                        <div>
+                            <div class="flex justify-between text-xs font-mono mb-1">
+                                <span class="text-red-400">HIGH BETA (14-30Hz) - Analytical / Stress / Survival</span>
+                                <span>85% Load</span>
+                            </div>
+                            <div class="hz-bar"><div class="hz-fill fill-beta"></div></div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-xs font-mono mb-1">
+                                <span class="text-blue-400">ALPHA (8-13Hz) - Flow / Coherence / Detachment</span>
+                                <span>40% Load</span>
+                            </div>
+                            <div class="hz-bar"><div class="hz-fill fill-alpha"></div></div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-xs font-mono mb-1">
+                                <span class="text-purple-400">THETA (4-7Hz) - Neural Reprogramming / Intuition</span>
+                                <span>15% Load</span>
+                            </div>
+                            <div class="hz-bar"><div class="hz-fill fill-theta"></div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bento-card reveal">
+                    <i class="fa-solid fa-network-wired text-2xl text-blue-400 mb-4"></i>
+                    <h4 class="grotesk text-xl font-semibold mb-2">Cranial Nerve X</h4>
+                    <p class="text-sm text-muted leading-relaxed mb-6">
+                        The Vagus Nerve is the longest fiber-optic cable in the human body, directly connecting the brainstem to the heart and solar plexus. 
+                    </p>
+                    <div class="code-block">
+                        > status: monitoring<br>
+                        > function: autonomic override<br>
+                        > action: forces brainwave deceleration
+                    </div>
+                </div>
+
+                <div class="bento-card md:col-span-3 reveal flex flex-col md:flex-row gap-8 items-center">
+                    <div class="flex-1">
+                        <h4 class="grotesk text-2xl font-semibold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400">The Encrypted Schematics</h4>
+                        <p class="text-base text-gray-300 leading-relaxed">
+                            Thousands of years before modern neuroscience, ancient engineers mapped this exact biological hardware. Because they lacked the vocabulary of quantum physics, they encrypted the blueprints of the human nervous system into allegories, mythologies, and scriptures. 
+                            <br><br>
+                            The stories of 12 disciples or the crossing of a sea are not historical events. They are strict, anatomically accurate manuals for upgrading the human operating system.
+                        </p>
+                    </div>
+                    <div class="flex-1 w-full border border-white/10 rounded-xl p-6 bg-black/50">
+                        <div class="flex justify-between text-xs font-mono text-muted mb-4 border-b border-white/10 pb-2">
+                            <span>Allegorical Term</span>
+                            <span>Biological Counterpart</span>
+                        </div>
+                        <ul class="space-y-3 text-sm">
+                            <li class="flex justify-between"><span>The 12 Disciples</span><span class="text-blue-400">12 Cranial Nerves</span></li>
+                            <li class="flex justify-between"><span>The Manger / Bethlehem</span><span class="text-blue-400">The Solar Plexus</span></li>
+                            <li class="flex justify-between"><span>Golgotha (Place of the Skull)</span><span class="text-blue-400">The Cerebrum</span></li>
+                            <li class="flex justify-between"><span>The Silver Cord</span><span class="text-blue-400">The Vagus Nerve</span></li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
         </div>
     </section>
 
-    <section class="min-h-screen flex flex-col items-center justify-center text-center px-6">
-        <div class="fade-step max-w-4xl mx-auto">
-            <i class="fa-solid fa-book-journal-whills text-5xl mb-6 text-gray-600"></i>
-            <h2 class="cinzel text-3xl md:text-5xl font-bold mb-8 text-white">The Greatest Misunderstanding in History</h2>
-            <p class="text-base md:text-xl leading-relaxed text-gray-400 font-light mb-8">
-                Thousands of years ago, ancient civilizations understood this exact neurobiology. They mapped the 12 cranial nerves, the spinal fluid, and the electromagnetic Torus field of the human heart.
+    <section class="py-32 px-6 text-center">
+        <div class="max-w-3xl mx-auto reveal">
+            <h2 class="text-4xl md:text-6xl font-bold tracking-tighter mb-6">Access the Database.</h2>
+            <p class="text-lg text-muted mb-12 font-light max-w-xl mx-auto">
+                Decades of research have been digitized and cross-referenced into an interactive framework. View the exact alignment between astrophysics, neuroanatomy, and the ancient texts.
             </p>
-            <p class="text-lg md:text-2xl leading-relaxed text-white font-medium italic mb-12 border-l-4 pl-6 text-left" style="border-color: var(--gold);">
-                But they didn't have the vocabulary of quantum physics or neuroscience. So, they hid the blueprints of the human nervous system inside mythologies, allegories, and scriptures.
-            </p>
-            <p class="text-base md:text-lg text-gray-400">
-                The stories of 12 disciples, crossing the Red Sea, and the temple in Jerusalem are not historical events. <strong class="text-white">They are an anatomical map of your own skull and spine.</strong>
-            </p>
-            <div class="mt-16 pulse-line"></div>
-        </div>
-    </section>
-
-    <section class="min-h-[80vh] flex flex-col items-center justify-center text-center px-6 pb-20">
-        <div class="fade-step max-w-3xl mx-auto">
-            <h2 class="cinzel text-4xl md:text-6xl font-black mb-6 uppercase tracking-widest text-white">The Upper Room</h2>
-            <p class="text-sm md:text-base text-gray-400 uppercase tracking-[0.2em] font-mono mb-12">The Official Bill Donahue Archive</p>
             
-            <p class="text-base md:text-lg leading-relaxed text-gray-300 mb-12">
-                For over 30 years, researcher Bill Donahue successfully decoded the ancient texts, proving their exact alignment with modern neuroanatomy and astrophysics. This archive contains the digitized, searchable database of that work.
-            </p>
-
-            <p class="text-sm italic text-gray-500 mb-8">If you are ready to decode the machine, the door is open.</p>
-
-            <a href="archive.html" class="enter-btn inline-block px-10 py-5 text-sm md:text-base font-black uppercase tracking-[0.2em] rounded-full">
-                Enter The Archive <i class="fa-solid fa-arrow-right ml-2"></i>
+            <a href="archive.html" class="btn-primary">
+                Initialize Archive <i class="fa-solid fa-arrow-right"></i>
             </a>
+            <p class="mt-6 text-xs font-mono text-gray-600 uppercase">Secure Connection • No Tracking</p>
         </div>
     </section>
 
     <script>
-        // Simple Intersection Observer to fade in elements as they scroll into view
-        document.addEventListener("DOMContentLoaded", function() {
-            const steps = document.querySelectorAll('.fade-step');
-            
+        document.addEventListener("DOMContentLoaded", () => {
+            const reveals = document.querySelectorAll(".reveal");
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
-                        entry.target.classList.add('visible');
+                        entry.target.classList.add("active");
                     }
                 });
-            }, {
-                threshold: 0.2 // Triggers when 20% of the element is visible
-            });
-
-            steps.forEach(step => observer.observe(step));
+            }, { threshold: 0.1 });
+            
+            reveals.forEach(reveal => observer.observe(reveal));
         });
     </script>
 </body>
