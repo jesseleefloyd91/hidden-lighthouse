@@ -21,7 +21,7 @@
             --gold: #D4AF37;
         }
 
-        /* --- LIGHT THEME (Modern Bento Light) --- */
+        /* --- LIGHT THEME --- */
         body.light-mode {
             --bg-base: #F3F4F6;
             --surface: rgba(255, 255, 255, 0.9);
@@ -45,91 +45,45 @@
         h1, h2, h3, .grotesk { font-family: 'Space Grotesk', sans-serif; }
         .cinzel { font-family: 'Cinzel', serif; }
 
-        /* The Stars Canvas */
-        #stars-container {
-            position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            z-index: -2;
-            pointer-events: none;
-        }
+        #stars-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -2; pointer-events: none; }
+        .mesh-bg { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: radial-gradient(circle at 50% 0%, rgba(59, 130, 246, 0.05) 0%, transparent 70%); z-index: -1; pointer-events: none; }
 
-        /* Modern Mesh Gradient Background */
-        .mesh-bg {
-            position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            background: radial-gradient(circle at 50% 0%, rgba(59, 130, 246, 0.05) 0%, transparent 70%);
-            z-index: -1;
-            pointer-events: none;
-        }
-
-        /* Glassmorphism Bento Grid Elements */
         .bento-card {
-            background: var(--surface);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            border: 1px solid var(--surface-border);
-            border-radius: 24px;
-            padding: 32px;
+            background: var(--surface); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+            border: 1px solid var(--surface-border); border-radius: 24px; padding: 32px;
             transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease, background 0.5s ease;
         }
-        
-        .bento-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
-            border-color: var(--gold);
-        }
+        .bento-card:hover { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0,0,0,0.15); border-color: var(--gold); }
 
-        /* Hardware Data Readout Animation */
         .hz-bar { width: 100%; height: 4px; background: rgba(150,150,150,0.2); border-radius: 2px; overflow: hidden; margin-top: 8px; }
         .hz-fill { height: 100%; width: 0%; border-radius: 2px; }
         .fill-beta { background: #EF4444; animation: loadBeta 2s forwards ease-out; }
         .fill-alpha { background: #3B82F6; animation: loadAlpha 2s forwards ease-out 0.5s; }
         .fill-theta { background: #8B5CF6; animation: loadTheta 2s forwards ease-out 1s; }
-
         @keyframes loadBeta { to { width: 85%; } }
         @keyframes loadAlpha { to { width: 40%; } }
         @keyframes loadTheta { to { width: 15%; } }
 
-        /* Scroll Animations */
-        .reveal {
-            opacity: 0;
-            transform: translateY(40px);
-            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .reveal.active {
-            opacity: 1;
-            transform: translateY(0);
-        }
+        .reveal { opacity: 0; transform: translateY(40px); transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
+        .reveal.active { opacity: 1; transform: translateY(0); }
 
-        /* Modern CTA Button */
         .btn-primary {
-            background: var(--text-main);
-            color: var(--bg-base);
-            font-weight: 600;
-            padding: 16px 32px;
-            border-radius: 99px;
-            display: inline-flex;
-            align-items: center;
-            gap: 12px;
-            transition: all 0.3s ease;
-            border: 1px solid var(--surface-border);
+            background: var(--text-main); color: var(--bg-base); font-weight: 600; padding: 16px 32px; border-radius: 99px;
+            display: inline-flex; align-items: center; gap: 12px; transition: all 0.3s ease; border: 1px solid var(--surface-border);
         }
-        .btn-primary:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 30px rgba(212, 175, 55, 0.3);
-        }
+        .btn-primary:hover { transform: scale(1.05); box-shadow: 0 0 30px rgba(212, 175, 55, 0.3); }
         
-        /* Simulated Code Block */
-        .code-block {
-            background: rgba(0,0,0,0.3);
-            border: 1px solid var(--surface-border);
-            border-radius: 12px;
-            padding: 16px;
-            font-family: monospace;
-            color: #10B981;
-            font-size: 12px;
-        }
+        .code-block { background: rgba(0,0,0,0.3); border: 1px solid var(--surface-border); border-radius: 12px; padding: 16px; font-family: monospace; color: #10B981; font-size: 12px; }
         body.light-mode .code-block { background: rgba(0,0,0,0.05); color: #059669; }
+
+        /* Themed Avatar Image */
+        .themed-avatar {
+            filter: grayscale(100%) contrast(1.2) opacity(0.8);
+            transition: all 0.5s ease;
+        }
+        .themed-avatar:hover {
+            filter: grayscale(0%) contrast(1) opacity(1);
+        }
     </style>
 </head>
 <body>
@@ -142,7 +96,7 @@
                 <div class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></div> System_Architecture
             </div>
             <div class="flex gap-6 items-center">
-                <div class="text-xs font-mono" style="color: var(--text-muted);">v.2.0.0</div>
+                <div class="text-xs font-mono" style="color: var(--text-muted);">v.2.1.0</div>
                 <button onclick="toggleTheme()" class="w-8 h-8 rounded-full flex items-center justify-center border transition-all hover:scale-110" style="color: var(--text-main); border-color: var(--surface-border);">
                     <i class="fa-solid fa-moon" id="theme-icon"></i>
                 </button>
@@ -150,12 +104,15 @@
         </div>
     </nav>
 
-    <section class="min-h-screen flex flex-col justify-center px-6 pt-24 pb-12">
-        <div class="max-w-5xl mx-auto w-full reveal active">
+    <section class="min-h-screen flex flex-col justify-center px-6 pt-24 pb-12 text-center md:text-left">
+        <div class="max-w-5xl mx-auto w-full reveal active flex flex-col items-center md:items-start">
             
-            <div class="flex items-center gap-3 mb-8 inline-flex p-2 pr-4 rounded-full border bg-black/20 backdrop-blur-md" style="border-color: var(--surface-border);">
-                <img src="bill_profile.jpg" alt="Bill Donahue" class="w-8 h-8 rounded-full object-cover border border-gray-500">
-                <span class="text-[10px] font-mono uppercase tracking-widest" style="color: var(--text-muted);">The Bill Donahue Master Archive</span>
+            <div class="flex flex-col items-center md:items-start mb-10">
+                <div class="relative w-28 h-28 rounded-full p-1 border mb-4 shadow-[0_0_30px_rgba(255,255,255,0.05)]" style="border-color: var(--surface-border); background: var(--surface);">
+                    <img src="bill_profile.jpg" alt="Bill Donahue" class="w-full h-full rounded-full object-cover themed-avatar">
+                    <div class="absolute bottom-1 right-1 w-4 h-4 rounded-full bg-blue-500 border-2 animate-pulse" style="border-color: var(--bg-base);"></div>
+                </div>
+                <span class="text-[10px] font-mono uppercase tracking-[0.2em] px-4 py-1.5 rounded-full border bg-black/20" style="color: var(--text-muted); border-color: var(--surface-border);">The Bill Donahue Master Archive</span>
             </div>
 
             <h1 class="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tighter mb-8 leading-[1.1]">
@@ -163,7 +120,7 @@
                 <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">infrastructure</span> <br>
                 is overloaded.
             </h1>
-            <p class="text-lg md:text-xl max-w-2xl leading-relaxed mb-12 font-light" style="color: var(--text-muted);">
+            <p class="text-lg md:text-xl max-w-2xl leading-relaxed mb-12 font-light text-center md:text-left mx-auto md:mx-0" style="color: var(--text-muted);">
                 The modern environment is mathematically engineered to keep your nervous system locked in a high-latency survival state. It is a closed-loop system designed to drain physiological energy. It’s time to rewrite the parameters.
             </p>
         </div>
@@ -177,7 +134,6 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                
                 <div class="bento-card md:col-span-2 reveal">
                     <h4 class="grotesk text-xl font-semibold mb-2">Cognitive Frequencies (Hz)</h4>
                     <p class="text-sm mb-8" style="color: var(--text-muted);">Current societal baseline operates exclusively in high-stress spectrums.</p>
@@ -232,24 +188,20 @@
                     
                     <div class="flex-1 w-full flex flex-col gap-3">
                         <h5 class="text-xs font-mono uppercase tracking-[0.2em]" style="color: var(--text-main);">Access Initial Briefings</h5>
-                        
-                        <button onclick="playClip('YOUR_ARCHIVE_ID_HERE', 120)" class="text-left w-full p-4 rounded-xl border transition-all flex justify-between items-center group bg-black/20" style="border-color: var(--surface-border);">
+                        <button onclick="playClip('YOUR_ARCHIVE_ID_HERE', 120)" class="text-left w-full p-4 rounded-xl border transition-all flex justify-between items-center group bg-black/5" style="border-color: var(--surface-border);">
                             <span class="text-sm font-medium" style="color: var(--text-main);">Why does ancient text map to cranial anatomy?</span>
                             <i class="fa-solid fa-play text-blue-400 opacity-50 group-hover:opacity-100 group-hover:scale-110 transition-all"></i>
                         </button>
-
-                        <button onclick="playClip('YOUR_ARCHIVE_ID_HERE', 300)" class="text-left w-full p-4 rounded-xl border transition-all flex justify-between items-center group bg-black/20" style="border-color: var(--surface-border);">
+                        <button onclick="playClip('YOUR_ARCHIVE_ID_HERE', 300)" class="text-left w-full p-4 rounded-xl border transition-all flex justify-between items-center group bg-black/5" style="border-color: var(--surface-border);">
                             <span class="text-sm font-medium" style="color: var(--text-main);">What is the physical translation of the 12 Disciples?</span>
                             <i class="fa-solid fa-play text-blue-400 opacity-50 group-hover:opacity-100 group-hover:scale-110 transition-all"></i>
                         </button>
-
-                        <button onclick="playClip('YOUR_ARCHIVE_ID_HERE', 450)" class="text-left w-full p-4 rounded-xl border transition-all flex justify-between items-center group bg-black/20" style="border-color: var(--surface-border);">
+                        <button onclick="playClip('YOUR_ARCHIVE_ID_HERE', 450)" class="text-left w-full p-4 rounded-xl border transition-all flex justify-between items-center group bg-black/5" style="border-color: var(--surface-border);">
                             <span class="text-sm font-medium" style="color: var(--text-main);">How does the Solar Plexus connect to the 'Manger'?</span>
                             <i class="fa-solid fa-play text-blue-400 opacity-50 group-hover:opacity-100 group-hover:scale-110 transition-all"></i>
                         </button>
                     </div>
                 </div>
-
             </div>
         </div>
     </section>
@@ -260,7 +212,6 @@
             <p class="text-lg mb-12 font-light max-w-xl mx-auto" style="color: var(--text-muted);">
                 Decades of research have been digitized and cross-referenced into an interactive framework. View the exact alignment between astrophysics, neuroanatomy, and the ancient texts.
             </p>
-            
             <a href="archive.html" class="btn-primary">
                 Initialize Archive <i class="fa-solid fa-arrow-right"></i>
             </a>
@@ -278,11 +229,8 @@
     </div>
 
     <script>
-        // Video Modal Logic
         function playClip(archiveId, startTimeSeconds) {
             const container = document.getElementById('clip-container');
-            // If it's a YouTube ID, use the YouTube embed format. If it's Archive.org, use their format.
-            // Example below assumes an Archive.org identifier.
             let srcUrl = `https://archive.org/embed/${archiveId}?autoplay=1&start=${startTimeSeconds}`;
             container.innerHTML = `<iframe src="${srcUrl}" class="w-full h-full" frameborder="0" allowfullscreen></iframe>`;
             document.getElementById('clip-modal').classList.remove('hidden');
@@ -293,7 +241,6 @@
             document.getElementById('clip-modal').classList.add('hidden');
         }
 
-        // Stars Particle Generation
         function createDust() {
             const container = document.getElementById('stars-container');
             const canvas = document.createElement('canvas');
@@ -330,7 +277,6 @@
             animate();
         }
 
-        // Theme Toggle
         function toggleTheme() { 
             document.body.classList.toggle('light-mode'); 
             document.getElementById('theme-icon').className = document.body.classList.contains('light-mode') ? 'fa-solid fa-sun' : 'fa-solid fa-moon'; 
