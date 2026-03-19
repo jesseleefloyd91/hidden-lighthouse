@@ -136,7 +136,7 @@
     <div id="stars-container"></div>
     <div class="mesh-bg"></div>
 
-    <nav class="fixed top-0 w-full p-6 z-50 backdrop-blur-md border-b" style="border-color: var(--surface-border); background: var(--surface);">
+    <nav class="fixed top-0 w-full p-6 z-40 backdrop-blur-md border-b" style="border-color: var(--surface-border); background: var(--surface);">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
             <div class="grotesk font-bold tracking-widest text-sm uppercase flex items-center gap-3">
                 <div class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></div> System_Architecture
@@ -220,26 +220,33 @@
                     </div>
                 </div>
 
-                <div class="bento-card md:col-span-3 reveal flex flex-col md:flex-row gap-8 items-center">
+                <div class="bento-card md:col-span-3 reveal flex flex-col md:flex-row gap-8 items-start">
                     <div class="flex-1">
                         <h4 class="grotesk text-2xl font-semibold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-500">The Encrypted Schematics</h4>
-                        <p class="text-base leading-relaxed" style="color: var(--text-muted);">
+                        <p class="text-base leading-relaxed mb-6" style="color: var(--text-muted);">
                             Thousands of years before modern neuroscience, ancient engineers mapped this exact biological hardware. Because they lacked the vocabulary of quantum physics, they encrypted the blueprints of the human nervous system into allegories, mythologies, and scriptures. 
                             <br><br>
                             The stories of 12 disciples or the crossing of a sea are not historical events. They are strict, anatomically accurate manuals for upgrading the human operating system.
                         </p>
                     </div>
-                    <div class="flex-1 w-full border rounded-xl p-6" style="border-color: var(--surface-border); background: rgba(0,0,0,0.1);">
-                        <div class="flex justify-between text-xs font-mono mb-4 border-b pb-2" style="color: var(--text-muted); border-color: var(--surface-border);">
-                            <span>Allegorical Term</span>
-                            <span>Biological Counterpart</span>
-                        </div>
-                        <ul class="space-y-3 text-sm font-medium" style="color: var(--text-main);">
-                            <li class="flex justify-between"><span>The 12 Disciples</span><span class="text-blue-500">12 Cranial Nerves</span></li>
-                            <li class="flex justify-between"><span>The Manger / Bethlehem</span><span class="text-blue-500">The Solar Plexus</span></li>
-                            <li class="flex justify-between"><span>Golgotha (Place of the Skull)</span><span class="text-blue-500">The Cerebrum</span></li>
-                            <li class="flex justify-between"><span>The Silver Cord</span><span class="text-blue-500">The Vagus Nerve</span></li>
-                        </ul>
+                    
+                    <div class="flex-1 w-full flex flex-col gap-3">
+                        <h5 class="text-xs font-mono uppercase tracking-[0.2em]" style="color: var(--text-main);">Access Initial Briefings</h5>
+                        
+                        <button onclick="playClip('YOUR_ARCHIVE_ID_HERE', 120)" class="text-left w-full p-4 rounded-xl border transition-all flex justify-between items-center group bg-black/20" style="border-color: var(--surface-border);">
+                            <span class="text-sm font-medium" style="color: var(--text-main);">Why does ancient text map to cranial anatomy?</span>
+                            <i class="fa-solid fa-play text-blue-400 opacity-50 group-hover:opacity-100 group-hover:scale-110 transition-all"></i>
+                        </button>
+
+                        <button onclick="playClip('YOUR_ARCHIVE_ID_HERE', 300)" class="text-left w-full p-4 rounded-xl border transition-all flex justify-between items-center group bg-black/20" style="border-color: var(--surface-border);">
+                            <span class="text-sm font-medium" style="color: var(--text-main);">What is the physical translation of the 12 Disciples?</span>
+                            <i class="fa-solid fa-play text-blue-400 opacity-50 group-hover:opacity-100 group-hover:scale-110 transition-all"></i>
+                        </button>
+
+                        <button onclick="playClip('YOUR_ARCHIVE_ID_HERE', 450)" class="text-left w-full p-4 rounded-xl border transition-all flex justify-between items-center group bg-black/20" style="border-color: var(--surface-border);">
+                            <span class="text-sm font-medium" style="color: var(--text-main);">How does the Solar Plexus connect to the 'Manger'?</span>
+                            <i class="fa-solid fa-play text-blue-400 opacity-50 group-hover:opacity-100 group-hover:scale-110 transition-all"></i>
+                        </button>
                     </div>
                 </div>
 
@@ -261,7 +268,31 @@
         </div>
     </section>
 
+    <div id="clip-modal" class="fixed inset-0 z-[200] hidden flex items-center justify-center p-4 backdrop-blur-md transition-opacity" style="background: rgba(0,0,0,0.85);" onclick="if(event.target === this) closeClip()">
+        <div class="relative w-full max-w-4xl aspect-video bg-black rounded-2xl overflow-hidden shadow-2xl border" style="border-color: var(--surface-border);">
+            <button onclick="closeClip()" class="absolute top-4 right-4 z-[250] w-10 h-10 bg-black/80 text-white rounded-full flex items-center justify-center border transition-all hover:bg-red-600" style="border-color: var(--surface-border);">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div id="clip-container" class="w-full h-full"></div>
+        </div>
+    </div>
+
     <script>
+        // Video Modal Logic
+        function playClip(archiveId, startTimeSeconds) {
+            const container = document.getElementById('clip-container');
+            // If it's a YouTube ID, use the YouTube embed format. If it's Archive.org, use their format.
+            // Example below assumes an Archive.org identifier.
+            let srcUrl = `https://archive.org/embed/${archiveId}?autoplay=1&start=${startTimeSeconds}`;
+            container.innerHTML = `<iframe src="${srcUrl}" class="w-full h-full" frameborder="0" allowfullscreen></iframe>`;
+            document.getElementById('clip-modal').classList.remove('hidden');
+        }
+
+        function closeClip() {
+            document.getElementById('clip-container').innerHTML = '';
+            document.getElementById('clip-modal').classList.add('hidden');
+        }
+
         // Stars Particle Generation
         function createDust() {
             const container = document.getElementById('stars-container');
@@ -289,7 +320,6 @@
                 const isLight = document.body.classList.contains('light-mode');
                 particles.forEach(p => {
                     p.y -= p.dy; if(p.y < 0) p.y = h;
-                    // In light mode, draw dark grey stars. In dark mode, use the colors.
                     ctx.fillStyle = isLight ? `rgba(100,100,110,${p.alpha * 0.6})` : p.color; 
                     ctx.globalAlpha = p.alpha;
                     ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI*2); ctx.fill();
