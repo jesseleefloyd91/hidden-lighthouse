@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Inner Architecture | Introduction</title>
+   
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;800&family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+   
+    <style>
+        :root {
+            --bg-base: #050505;
+            --text-primary: #EAEAEA;
+            --text-secondary: #a1a1aa;
+            --gold: #D4AF37;
+            --purple: #D8B4FE;
+            --border-color: rgba(255,255,255,0.1);
+        }
+
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: var(--bg-base); 
+            color: var(--text-primary); 
+            overflow-x: hidden; 
+            margin: 0;
+            scroll-behavior: smooth;
+        }
+        
+        .cinzel { font-family: 'Cinzel', serif; }
+        
+        /* Subtle background gradient */
+        .bg-gradient {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: radial-gradient(circle at center, #1a0f2e 0%, #050505 70%);
+            z-index: -1;
+            opacity: 0.6;
+        }
+
+        /* Fade-in animation for scroll elements */
+        .fade-step {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 1s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        .fade-step.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .pulse-line {
+            width: 2px;
+            height: 100px;
+            background: linear-gradient(to bottom, transparent, var(--gold), transparent);
+            margin: 0 auto;
+            animation: pulseHeight 3s infinite ease-in-out;
+        }
+
+        @keyframes pulseHeight {
+            0%, 100% { transform: scaleY(0.5); opacity: 0.3; }
+            50% { transform: scaleY(1); opacity: 1; }
+        }
+
+        .enter-btn {
+            background: transparent;
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .enter-btn::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%; width: 100%; height: 100%;
+            background: var(--gold);
+            transition: all 0.4s ease;
+            z-index: -1;
+        }
+
+        .enter-btn:hover::before { left: 0; }
+        .enter-btn:hover { color: #050505; box-shadow: 0 0 30px rgba(212, 175, 55, 0.4); transform: scale(1.05); }
+    </style>
+</head>
+<body>
+    <div class="bg-gradient"></div>
+
+    <section class="min-h-screen flex flex-col items-center justify-center text-center px-6 pt-20">
+        <div class="fade-step visible max-w-3xl mx-auto">
+            <h1 class="cinzel text-4xl md:text-6xl lg:text-7xl font-black mb-6 uppercase tracking-wider" style="color: var(--text-primary);">The Noise is <br><span class="italic" style="color: var(--gold);">Engineered.</span></h1>
+            <p class="text-lg md:text-xl leading-relaxed mb-12 text-gray-400 font-light">
+                The modern world runs on a highly specific frequency. The digital screens, the 24-hour outrage algorithms, and the constant friction of the daily grind are designed to keep your nervous system locked in a state of baseline survival.
+            </p>
+            <p class="text-[11px] font-mono uppercase tracking-[0.2em] text-gray-500 mb-8">Scroll to Decode</p>
+            <div class="pulse-line"></div>
+        </div>
+    </section>
+
+    <section class="min-h-screen flex flex-col items-center justify-center text-center px-6">
+        <div class="fade-step w-full max-w-4xl mx-auto border border-white/10 bg-black/40 p-10 md:p-16 rounded-3xl backdrop-blur-sm shadow-2xl">
+            <i class="fa-solid fa-heart-pulse text-5xl mb-6" style="color: var(--purple);"></i>
+            <h2 class="cinzel text-3xl md:text-5xl font-bold mb-6 text-white">The Biological Antenna</h2>
+            <p class="text-base md:text-lg leading-relaxed text-gray-300 text-left md:text-center space-y-4">
+                <span class="block mb-4">You are not just a physical body navigating a random universe. You are a highly sophisticated bioelectric engine.</span>
+                <span class="block mb-4">When you are stressed, your brain operates in a chaotic Beta-wave state. But your body possesses a master reset switch: <strong>The Vagus Nerve</strong>.</span>
+                <span class="block">When you slow your breathing and drop into <em>Heart Coherence</em>, your brainwaves literally shift frequencies. You exit the survival mechanism and enter the programmable layer of your own reality.</span>
+            </p>
+            <div class="mt-12 pulse-line"></div>
+        </div>
+    </section>
+
+    <section class="min-h-screen flex flex-col items-center justify-center text-center px-6">
+        <div class="fade-step max-w-4xl mx-auto">
+            <i class="fa-solid fa-book-journal-whills text-5xl mb-6 text-gray-600"></i>
+            <h2 class="cinzel text-3xl md:text-5xl font-bold mb-8 text-white">The Greatest Misunderstanding in History</h2>
+            <p class="text-base md:text-xl leading-relaxed text-gray-400 font-light mb-8">
+                Thousands of years ago, ancient civilizations understood this exact neurobiology. They mapped the 12 cranial nerves, the spinal fluid, and the electromagnetic Torus field of the human heart.
+            </p>
+            <p class="text-lg md:text-2xl leading-relaxed text-white font-medium italic mb-12 border-l-4 pl-6 text-left" style="border-color: var(--gold);">
+                But they didn't have the vocabulary of quantum physics or neuroscience. So, they hid the blueprints of the human nervous system inside mythologies, allegories, and scriptures.
+            </p>
+            <p class="text-base md:text-lg text-gray-400">
+                The stories of 12 disciples, crossing the Red Sea, and the temple in Jerusalem are not historical events. <strong class="text-white">They are an anatomical map of your own skull and spine.</strong>
+            </p>
+            <div class="mt-16 pulse-line"></div>
+        </div>
+    </section>
+
+    <section class="min-h-[80vh] flex flex-col items-center justify-center text-center px-6 pb-20">
+        <div class="fade-step max-w-3xl mx-auto">
+            <h2 class="cinzel text-4xl md:text-6xl font-black mb-6 uppercase tracking-widest text-white">The Upper Room</h2>
+            <p class="text-sm md:text-base text-gray-400 uppercase tracking-[0.2em] font-mono mb-12">The Official Bill Donahue Archive</p>
+            
+            <p class="text-base md:text-lg leading-relaxed text-gray-300 mb-12">
+                For over 30 years, researcher Bill Donahue successfully decoded the ancient texts, proving their exact alignment with modern neuroanatomy and astrophysics. This archive contains the digitized, searchable database of that work.
+            </p>
+
+            <p class="text-sm italic text-gray-500 mb-8">If you are ready to decode the machine, the door is open.</p>
+
+            <a href="archive.html" class="enter-btn inline-block px-10 py-5 text-sm md:text-base font-black uppercase tracking-[0.2em] rounded-full">
+                Enter The Archive <i class="fa-solid fa-arrow-right ml-2"></i>
+            </a>
+        </div>
+    </section>
+
+    <script>
+        // Simple Intersection Observer to fade in elements as they scroll into view
+        document.addEventListener("DOMContentLoaded", function() {
+            const steps = document.querySelectorAll('.fade-step');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, {
+                threshold: 0.2 // Triggers when 20% of the element is visible
+            });
+
+            steps.forEach(step => observer.observe(step));
+        });
+    </script>
+</body>
+</html>
