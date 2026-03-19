@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
    
     <style>
-        /* --- UNIFIED THEME VARIABLES (Bento Glassmorphism) --- */
+        /* --- UNIFIED THEME VARIABLES --- */
         :root {
             --bg-base: #000000;
             --surface: rgba(20, 20, 22, 0.7);
@@ -24,7 +24,7 @@
             --btn-active-text: #000000;
         }
 
-        /* --- LIGHT THEME (Modern Bento Light) --- */
+        /* --- LIGHT THEME --- */
         body.light-mode {
             --bg-base: #F3F4F6;
             --surface: rgba(255, 255, 255, 0.9);
@@ -41,36 +41,23 @@
         .cinzel { font-family: 'Cinzel', serif; }
         ::placeholder { color: var(--text-muted); opacity: 0.6; }
         
-        /* BACKGROUND */
         .stars-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
         .mesh-bg { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: radial-gradient(circle at 50% 0%, rgba(59, 130, 246, 0.05) 0%, transparent 70%); z-index: -2; pointer-events: none; }
         
-        /* LAYOUT & GRIDS */
         .masonry-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; padding-bottom: 160px; }
         @media (max-width: 640px) { .masonry-grid { grid-template-columns: 1fr; padding-bottom: 180px; } .view-section { padding-top: 100px !important; } }
         
-        /* UNIFIED BENTO CARDS */
-        .cosmos-card { 
-            background: var(--surface);
-            backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
-            border: 1px solid var(--surface-border); 
-            border-radius: 24px; 
-            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease, background 0.5s ease;
-            cursor: pointer; position: relative; overflow: hidden; display: flex; flex-direction: column; min-height: 240px; 
-        }
+        .cosmos-card { background: var(--surface); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid var(--surface-border); border-radius: 24px; transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease, background 0.5s ease; cursor: pointer; position: relative; overflow: hidden; display: flex; flex-direction: column; min-height: 240px; }
         .cosmos-card:hover { border-color: var(--gold); transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0,0,0,0.15); }
 
-        /* SCALABLE DOCK */
         .dock-container { position: fixed; bottom: 20px; left: 0; width: 100%; display: flex; justify-content: center; z-index: 50; padding: 0 10px; pointer-events: none; }
         .dock { pointer-events: auto; background: var(--surface); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid var(--surface-border); padding: 8px; border-radius: 24px; display: flex; gap: 4px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); max-width: 100%; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
         .dock-btn { display: flex; align-items: center; justify-content: center; padding: 8px 10px; border-radius: 14px; font-size: 8px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); transition: all 0.2s; cursor: pointer; white-space: nowrap; flex-shrink: 0; }
         @media (min-width: 768px) { .dock { padding: 10px; gap: 8px; } .dock-btn { padding: 10px 16px; font-size: 10px; } }
         .dock-btn.active { background: var(--btn-active-bg) !important; color: var(--btn-active-text) !important; }
 
-        /* OVERLAYS */
         #search-overlay { position: fixed; inset: 0; background: var(--bg-base); z-index: 90; display: none; flex-direction: column; align-items: center; padding-top: 80px; backdrop-filter: blur(20px); transition: background-color 0.5s ease; overflow-y: auto; opacity: 0.98; }
         #search-overlay.active { display: flex; }
-        
         .deep-result-card { background: var(--surface); border: 1px solid var(--surface-border); border-radius: 16px; padding: 20px; margin-bottom: 12px; text-align: left; transition: 0.3s; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         .snippet-item { border-left: 2px solid transparent; transition: all 0.2s ease; }
         .snippet-item:hover { border-color: var(--gold); background-color: rgba(255,255,255,0.02); }
@@ -81,28 +68,25 @@
         .progress-bar { height: 4px; background: var(--surface-border); width: 100%; border-radius: 2px; overflow: hidden; margin: 20px 0; }
         .progress-fill { height: 100%; background: var(--gold); width: 0%; transition: width 0.3s ease; }
         
-        /* CHIPS & DROPDOWNS */
         .topic-chip { padding: 6px 12px; border-radius: 99px; font-size: 9px; font-weight: 700; text-transform: uppercase; cursor: pointer; border: 1px solid var(--surface-border); background: var(--surface); transition: all 0.2s; white-space: nowrap; color: var(--text-main); z-index: 20; position: relative; }
         .topic-chip.active { background: var(--text-main); color: var(--bg-base) !important; border-color: var(--text-main); }
         .mobile-dropdown { width: 100%; background-color: var(--surface); color: var(--text-main); border: 1px solid var(--gold); padding: 12px 16px; border-radius: 12px; font-weight: 700; text-transform: uppercase; outline: none; appearance: none; }
 
-        /* THE TEMPLE SPINAL CORD */
         .spine-container { position: relative; width: 60px; height: 500px; margin: 0 auto; display: flex; flex-direction: column; justify-content: space-between; align-items: center; z-index: 10; padding: 20px 0; }
         .spine-line { position: absolute; top: 0; bottom: 0; width: 4px; background: linear-gradient(to bottom, #a855f7, #3b82f6, #22c55e, #eab308, #ef4444); left: 50%; transform: translateX(-50%); z-index: 0; border-radius: 4px; opacity: 0.6; box-shadow: 0 0 15px rgba(255,255,255,0.2); }
         .chakra-node { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s ease; border: 2px solid rgba(255,255,255,0.9); z-index: 10; color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.5); font-size: 16px; }
         .chakra-node:hover { transform: scale(1.3); box-shadow: 0 0 20px currentColor; }
 
-        /* --- THE 12 GATES (BRAIN MATRIX) --- */
         .matrix-container { position: relative; width: 100%; max-width: 800px; margin: 0 auto; padding: 20px; }
         .nerve-hotspot { fill: rgba(212, 175, 55, 0.1); stroke: var(--gold); stroke-width: 2; cursor: pointer; transition: all 0.3s ease; }
         .nerve-hotspot:hover { fill: rgba(212, 175, 55, 0.4); stroke: #fff; filter: drop-shadow(0 0 10px var(--gold)); transform: scale(1.02); }
         
-        #matrix-tooltip { position: absolute; display: none; background: var(--surface); border: 1px solid var(--gold); padding: 15px; border-radius: 12px; pointer-events: none; box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 50; min-width: 220px; text-align: left; backdrop-filter: blur(10px); }
+        /* FIX 2: TOOLTIP FIXED POSITIONING */
+        #matrix-tooltip { position: fixed; display: none; background: var(--surface); border: 1px solid var(--gold); padding: 15px; border-radius: 12px; pointer-events: none; box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 1000; min-width: 220px; text-align: left; backdrop-filter: blur(10px); }
         .tt-title { color: var(--gold); font-family: 'Cinzel', serif; font-weight: bold; font-size: 1.1rem; border-bottom: 1px solid var(--surface-border); padding-bottom: 5px; margin-bottom: 8px; }
         .tt-data { margin: 4px 0; font-size: 12px; font-family: 'Inter', sans-serif; color: var(--text-main); }
         .tt-highlight { color: var(--accent-glow); font-weight: bold; font-family: monospace; letter-spacing: 0.05em; }
 
-        /* --- MEDITATION VISUALIZER ANIMATIONS --- */
         @keyframes customPulse { 0%, 100% { transform: scale(0.95); opacity: 0.5; } 50% { transform: scale(1.05); opacity: 0.8; } }
         .med-ring-anim { animation: customPulse infinite ease-in-out; }
 
@@ -112,6 +96,10 @@
 
         #app-loader { position: fixed; inset: 0; z-index: 100; background: var(--bg-base); display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.5s; pointer-events: none; }
         #app-loader.hidden { opacity: 0; }
+
+        /* Themed Avatar Image */
+        .themed-avatar { filter: grayscale(100%) contrast(1.2) opacity(0.8); transition: all 0.5s ease; }
+        .themed-avatar:hover { filter: grayscale(0%) contrast(1) opacity(1); }
     </style>
 </head>
 <body class="flex flex-col min-h-screen">
@@ -182,9 +170,12 @@
         <section id="view-home" class="view-section active px-4 text-center">
             <div class="max-w-4xl mx-auto flex flex-col items-center justify-center pt-4 md:pt-10 min-h-[60vh]">
                 
-                <div class="mb-8">
-                    <img src="bill_profile.jpg" alt="Bill Donahue" class="w-24 h-24 rounded-full border-2 object-cover mx-auto shadow-[0_0_30px_rgba(255,255,255,0.1)]" style="border-color: var(--surface-border);">
-                    <p class="mt-4 text-[10px] font-mono uppercase tracking-[0.3em]" style="color: var(--text-muted);">The Official Master Archive</p>
+                <div class="flex flex-col items-center mb-10">
+                    <div class="relative w-28 h-28 rounded-full p-1 border mb-4 shadow-[0_0_30px_rgba(255,255,255,0.05)]" style="border-color: var(--surface-border); background: var(--surface);">
+                        <img src="bill_profile.jpg" alt="Bill Donahue" class="w-full h-full rounded-full object-cover themed-avatar">
+                        <div class="absolute bottom-1 right-1 w-4 h-4 rounded-full bg-blue-500 border-2 animate-pulse" style="border-color: var(--bg-base);"></div>
+                    </div>
+                    <span class="text-[10px] font-mono uppercase tracking-[0.2em] px-4 py-1.5 rounded-full border bg-black/20" style="color: var(--text-muted); border-color: var(--surface-border);">The Official Master Archive</span>
                 </div>
 
                 <h1 class="cinzel text-5xl sm:text-6xl md:text-8xl lg:text-9xl font-black mb-8 leading-tight" style="color: var(--text-main);">HIDDEN<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-gray-400 italic">MEANINGS</span></h1>
@@ -340,7 +331,7 @@
                             <button onclick="window.app.setMeditationState(4)" id="med-btn-4" class="med-btn px-4 py-2 border rounded text-[10px] font-bold uppercase tracking-widest transition opacity-50 text-blue-500" style="border-color: rgba(59,130,246,0.5);">Silence (Delta)</button>
                         </div>
 
-                        <button onclick="window.app.searchMeditationState()" id="med-search-btn" data-query="(carnal mind|egypt|left brain|waking state|beta)" class="mt-6 w-full py-3 border rounded text-[10px] uppercase font-black tracking-widest transition flex justify-center items-center gap-2 hover:scale-105" style="background-color: rgba(212, 175, 55, 0.1); border-color: var(--gold); color: var(--gold);">
+                        <button onclick="window.app.searchMeditationState()" id="med-search-btn" data-query="(carnal mind|egypt|left brain|waking state|beta)" data-display="Frequency: 14-30 Hz (Beta)" class="mt-6 w-full py-3 border rounded text-[10px] uppercase font-black tracking-widest transition flex justify-center items-center gap-2 hover:scale-105" style="background-color: rgba(212, 175, 55, 0.1); border-color: var(--gold); color: var(--gold);">
                             <i class="fa-solid fa-magnifying-glass"></i> Search This Frequency
                         </button>
                     </div>
@@ -449,10 +440,10 @@
             },
 
             medStates: {
-                1: { t: "1. The Noise (Beta)", m: "14-30 Hz | Egypt | The Carnal Mind", d: "This is the waking state. The left hemisphere is dominating, analyzing, and stressing over the physical simulation. You are trapped in the five senses. You must shut the door.", q: "(carnal mind|egypt|left brain|waking state|beta)" },
-                2: { t: "2. The Withdrawal (Alpha)", m: "8-13 Hz | The Wilderness | Letting Go", d: "You have closed your physical eyes. The brain slows down. You are detaching from the five senses and entering the wilderness.", q: "(wilderness|alpha|closing the eyes|detach)" },
-                3: { t: "3. The Threshold (Theta)", m: "4-7 Hz | The Holy Place | The Single Eye", d: "The transition zone. The silver cord is active. The right hemisphere begins to receive the cosmic light. The internal optical network awakens.", q: "(theta|holy place|single eye|right hemisphere|pineal)" },
-                4: { t: "4. The Silence (Delta)", m: "0.1 Hz | Holy of Holies | Pure Coherence", d: "Absolute zero. The absence of thought. You have crossed the Red Sea. The heart and brain are mathematically synced with the universe.", q: "(absence of thought|holy of holies|silence|delta|meditation)" }
+                1: { t: "1. The Noise (Beta)", m: "14-30 Hz | Egypt | The Carnal Mind", d: "This is the waking state. The left hemisphere is dominating, analyzing, and stressing over the physical simulation. You are trapped in the five senses. You must shut the door.", q: "(carnal mind|egypt|left brain|waking state|beta)", disp: "Frequency: 14-30 Hz (Beta)" },
+                2: { t: "2. The Withdrawal (Alpha)", m: "8-13 Hz | The Wilderness | Letting Go", d: "You have closed your physical eyes. The brain slows down. You are detaching from the five senses and entering the wilderness.", q: "(wilderness|alpha|closing the eyes|detach)", disp: "Frequency: 8-13 Hz (Alpha)" },
+                3: { t: "3. The Threshold (Theta)", m: "4-7 Hz | The Holy Place | The Single Eye", d: "The transition zone. The silver cord is active. The right hemisphere begins to receive the cosmic light. The internal optical network awakens.", q: "(theta|holy place|single eye|right hemisphere|pineal)", disp: "Frequency: 4-7 Hz (Theta)" },
+                4: { t: "4. The Silence (Delta)", m: "0.1 Hz | Holy of Holies | Pure Coherence", d: "Absolute zero. The absence of thought. You have crossed the Red Sea. The heart and brain are mathematically synced with the universe.", q: "(absence of thought|holy of holies|silence|delta|meditation)", disp: "Frequency: 0.1-4 Hz (Delta)" }
             },
 
             setMeditationState: (step) => {
@@ -461,6 +452,7 @@
                 document.getElementById('med-desc').innerText = s.m;
                 document.getElementById('med-text').innerText = s.d;
                 document.getElementById('med-search-btn').setAttribute('data-query', s.q);
+                document.getElementById('med-search-btn').setAttribute('data-display', s.disp);
 
                 document.querySelectorAll('.med-btn').forEach((b, i) => {
                     b.style.background = (i === step - 1) ? 'rgba(150,150,150,0.1)' : 'transparent';
@@ -496,12 +488,15 @@
                 }
             },
 
+            // FIX 1: Frontend display text vs Backend query string
             searchMeditationState: () => {
-                const query = document.getElementById('med-search-btn').getAttribute('data-query');
+                const btn = document.getElementById('med-search-btn');
+                const query = btn.getAttribute('data-query');
+                const display = btn.getAttribute('data-display');
                 window.app.openSearchOverlay();
                 document.getElementById('exact-match-checkbox').checked = false;
-                document.getElementById('overlay-search-input').value = query;
-                window.app.performOverlaySearch(true);
+                document.getElementById('overlay-search-input').value = `Decoding: ${display}`;
+                window.app.performOverlaySearch(true, query);
             },
 
             getTopic: (v) => {
@@ -562,8 +557,9 @@
                 window.scrollTo(0,0);
             },
 
-            performOverlaySearch: (isDeep) => {
-                const qRaw = document.getElementById('overlay-search-input').value.trim();
+            // FIX 1: Added overrideQuery parameter to separate UI text from backend logic
+            performOverlaySearch: (isDeep, overrideQuery = null) => {
+                const qRaw = overrideQuery || document.getElementById('overlay-search-input').value.trim();
                 const grid = document.getElementById('overlay-results');
                 const box = document.getElementById('overlay-insight-box');
                 const text = document.getElementById('overlay-insight-text');
@@ -584,7 +580,7 @@
 
                 if(isDeep) {
                     box.classList.remove('hidden');
-                    text.innerHTML = `<span style="color: var(--gold);" class="uppercase text-xs font-bold tracking-widest block mb-2">Deep Transcript Scan for "${qRaw}"</span>`;
+                    text.innerHTML = `<span style="color: var(--gold);" class="uppercase text-xs font-bold tracking-widest block mb-2">Deep Transcript Scan Executed</span>`;
                     
                     let htmlOut = '';
                     let matchCount = 0;
@@ -596,7 +592,6 @@
                         if(segments && Array.isArray(segments)) {
                             let rawHits = segments.filter(s => s.text && searchRegex.test(s.text));
                             
-                            // The Deduplication Filter
                             let hits = [];
                             if (rawHits.length > 0) {
                                 rawHits.forEach(currentHit => {
@@ -662,7 +657,7 @@
                     });
 
                     if(matchCount === 0) {
-                        htmlOut = `<p style="color:var(--text-main)">No exact transcript matches found for "${qRaw}". Toggle off "Exact Word Match" to broaden your search.</p>`;
+                        htmlOut = `<p style="color:var(--text-main)">No exact transcript matches found. Toggle off "Exact Word Match" to broaden your search.</p>`;
                     } else {
                         text.innerHTML += `<span class="text-xs" style="color: var(--text-main);">Found <b>${totalSnippetHits}</b> exact snippets across <b>${matchCount}</b> videos. Click a video to expand hits.</span>`;
                     }
@@ -723,7 +718,6 @@
             
             closeVideo: () => { document.getElementById('video-frame-container').innerHTML = ''; document.getElementById('video-modal').classList.add('hidden'); },
             
-            // UNIFIED THEME TOGGLE
             toggleTheme: () => { 
                 document.body.classList.toggle('light-mode'); 
                 document.getElementById('theme-icon').className = document.body.classList.contains('light-mode') ? 'fa-solid fa-sun' : 'fa-solid fa-moon'; 
@@ -766,11 +760,11 @@
                 const tooltip = document.getElementById('matrix-tooltip');
                 
                 hotspots.forEach(hotspot => {
+                    // FIX 2: Fixed absolute coordinates to lock directly to the mouse pointer
                     hotspot.addEventListener('mousemove', (e) => {
                         tooltip.style.display = 'block';
-                        const rect = document.getElementById('view-brain').getBoundingClientRect();
-                        tooltip.style.left = (e.clientX - rect.left + 15) + 'px';
-                        tooltip.style.top = (e.clientY - rect.top + 15) + 'px';
+                        tooltip.style.left = (e.clientX + 15) + 'px';
+                        tooltip.style.top = (e.clientY + 15) + 'px';
                         
                         document.getElementById('tt-nerve').textContent = hotspot.getAttribute('data-nerve');
                         document.getElementById('tt-zodiac').textContent = hotspot.getAttribute('data-zodiac');
@@ -782,10 +776,11 @@
 
                     hotspot.addEventListener('click', () => {
                         const advancedQuery = hotspot.getAttribute('data-query');
+                        const displayTxt = hotspot.getAttribute('data-nerve');
                         window.app.openSearchOverlay();
                         document.getElementById('exact-match-checkbox').checked = false;
-                        document.getElementById('overlay-search-input').value = advancedQuery;
-                        window.app.performOverlaySearch(true);
+                        document.getElementById('overlay-search-input').value = `Decoding: ${displayTxt}`;
+                        window.app.performOverlaySearch(true, advancedQuery);
                     });
                 });
             },
@@ -793,7 +788,7 @@
             init: function() {
                 createDust();
                 window.app.initMatrixInteractions();
-                window.app.setMeditationState(1); // Initialize the visualizer
+                window.app.setMeditationState(1); 
                 window.onpopstate = (e) => { if(e.state && e.state.view) window.app.nav(e.state.view); };
 
                 const loadAllTranscripts = async () => {
