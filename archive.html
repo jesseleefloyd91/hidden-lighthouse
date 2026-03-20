@@ -68,15 +68,11 @@
         #app-loader { position: fixed; inset: 0; z-index: 100; background: var(--bg-base); display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.5s; pointer-events: none; } #app-loader.hidden { opacity: 0; }
         .themed-avatar { filter: grayscale(100%) contrast(1.2) opacity(0.8); transition: all 0.5s ease; } .themed-avatar:hover { filter: grayscale(0%) contrast(1) opacity(1); }
 
-        /* CUSTOM POP CULTURE MINI-ICONS */
         .icon-dbz { background: radial-gradient(circle at 30% 30%, #fbbf24, #d97706); border: 2px solid #b45309; box-shadow: 0 0 15px rgba(245,158,11,0.5); position: relative; }
         .icon-dbz::after { content: "★"; position: absolute; color: #dc2626; font-size: 20px; text-shadow: 0 0 2px rgba(0,0,0,0.5); }
-        
         .icon-snitch { background: radial-gradient(circle at 30% 30%, #fde047, #b45309); border: 2px solid #fef08a; box-shadow: 0 0 15px rgba(253,224,71,0.5); position: relative; overflow: visible; }
-        
         .icon-arc { background: radial-gradient(circle at 50% 50%, #fff, #22d3ee, #0891b2); border: 2px solid #67e8f9; box-shadow: 0 0 20px rgba(34,211,238,0.8); }
         .icon-arc::after { content: ""; position: absolute; width: 60%; height: 60%; border: 3px solid rgba(255,255,255,0.8); border-radius: 50%; }
-
         .icon-matrix { background: #000; border: 2px solid #22c55e; box-shadow: 0 0 15px rgba(34,197,94,0.5); }
     </style>
 </head>
@@ -128,7 +124,7 @@
     <div id="main-content" class="flex-1 w-full relative z-10">
         
         <section id="view-home" class="view-section active px-4 text-center">
-            <div class="max-w-6xl mx-auto flex flex-col items-center justify-center pt-4 md:pt-10 min-h-[60vh]">
+            <div class="max-w-[1600px] mx-auto flex flex-col items-center justify-center pt-4 md:pt-10 min-h-[60vh]">
                 <div class="flex flex-col items-center mb-10">
                     <div class="relative w-28 h-28 rounded-full p-1 border mb-4 shadow-[0_0_30px_rgba(255,255,255,0.05)]" style="border-color: var(--surface-border); background: var(--surface);">
                         <img src="bill_profile.jpg" alt="Bill Donahue" class="w-full h-full rounded-full object-cover themed-avatar">
@@ -137,8 +133,7 @@
                     <span class="text-[10px] font-mono uppercase tracking-[0.2em] px-4 py-1.5 rounded-full border bg-black/20" style="color: var(--text-muted); border-color: var(--surface-border);">The Official Master Archive</span>
                 </div>
                 <h1 class="cinzel text-5xl sm:text-6xl md:text-8xl lg:text-[8rem] font-black mb-8 leading-none tracking-tighter w-full overflow-visible" style="color: var(--text-main);">HIDDEN<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-gray-400 italic pr-2 md:pr-4">MEANINGS</span></h1>
-                
-                <div class="w-full max-w-xl mb-12 relative mx-auto">
+                <div class="w-full max-w-2xl mb-12 relative mx-auto">
                     <input type="text" id="teacher-input" placeholder="Deep Search Transcripts..." class="w-full rounded-full py-4 px-6 md:px-8 border outline-none text-base transition-all shadow-lg" style="background: var(--surface); border-color: var(--surface-border); color: var(--text-main);" onkeydown="if(event.key === 'Enter') { window.app.openSearchOverlay(); document.getElementById('overlay-search-input').value = this.value; window.app.performOverlaySearch(true); }">
                     <button onclick="window.app.openSearchOverlay()" class="absolute right-4 top-1/2 -translate-y-1/2 opacity-60 hover:opacity-100 transition-opacity p-2" style="color: var(--gold);"><i class="fa-solid fa-magnifying-glass text-lg"></i></button>
                 </div>
@@ -146,7 +141,7 @@
         </section>
 
         <section id="view-library" class="view-section px-4 md:px-6">
-            <div class="max-w-[1800px] mx-auto w-full text-center">
+            <div class="max-w-[1600px] mx-auto w-full text-center">
                 <h2 class="cinzel text-3xl md:text-4xl font-bold mb-6 uppercase tracking-widest" style="color: var(--text-main);">Upscaled Archive</h2>
                 <div class="block md:hidden mb-8 w-full max-w-sm mx-auto relative">
                     <select id="mobile-topic-dropdown" onchange="window.app.selectMobileTopic(this.value)" class="mobile-dropdown cinzel"></select>
@@ -158,12 +153,13 @@
         </section>
 
         <section id="view-brain" class="view-section px-4 md:px-6 text-center">
-            <div class="max-w-6xl mx-auto pt-4 relative">
+            <div class="max-w-[1600px] mx-auto pt-4 relative">
                 <h2 class="cinzel text-4xl md:text-6xl font-black mb-4 uppercase" style="color: var(--text-main);">The Upper Room</h2>
                 <div id="brain-quote" class="cinzel text-xs md:text-sm mb-8 italic tracking-widest px-2 md:px-6 min-h-[40px]" style="color: var(--gold);"></div>
                 
-                <div class="flex flex-col lg:flex-row items-center justify-center gap-12 mb-16 p-8 border rounded-3xl shadow-inner" style="background: var(--surface); border-color: var(--surface-border);">
-                    <div class="matrix-container w-full lg:w-1/2">
+                <div class="flex flex-col lg:flex-row items-stretch justify-center gap-8 mb-16 p-6 md:p-10 border rounded-3xl shadow-inner" style="background: var(--surface); border-color: var(--surface-border);">
+                    
+                    <div class="matrix-container w-full lg:w-1/2 flex items-center justify-center relative">
                         <div id="matrix-tooltip">
                             <div class="tt-title" id="tt-nerve"></div>
                             <div class="tt-data">ZODIAC: <span class="tt-highlight" id="tt-zodiac"></span></div>
@@ -172,7 +168,7 @@
                             <div class="tt-data">ESOTERIC: <span class="tt-highlight" id="tt-esoteric"></span></div>
                         </div>
 
-                        <svg viewBox="0 0 800 600" class="w-full h-auto drop-shadow-[0_0_20px_rgba(255,255,255,0.05)]">
+                        <svg viewBox="0 0 800 600" class="w-full h-auto drop-shadow-[0_0_20px_rgba(255,255,255,0.05)] max-w-[700px]">
                             <defs><radialGradient id="pinealGlow" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#3B82F6" stop-opacity="0.6"/><stop offset="100%" stop-color="#3B82F6" stop-opacity="0"/></radialGradient></defs>
                             <image href="brain-anatomy-bg.png" x="150" y="50" width="500" height="450" opacity="0.2" preserveAspectRatio="xMidYMid meet" />
                             <path d="M 250 150 C 250 50, 550 50, 550 150 C 600 250, 550 400, 450 450 C 400 500, 350 450, 250 350 Z" fill="none" stroke="rgba(150,150,150,0.15)" stroke-width="2" stroke-dasharray="5,5"/>
@@ -194,10 +190,10 @@
                             <circle class="nerve-hotspot" cx="340" cy="380" r="18" data-nerve="CN IX: Glossopharyngeal" data-zodiac="Sagittarius (The Archer)" data-disciple="James the Lesser" data-mythos="[Greek] Centaur / Chiron" data-esoteric="The Directed Word" data-query="(glossopharyngeal|sagittarius|james the lesser|directed word)"/>
                             <text x="300" y="384" fill="var(--text-muted)" font-size="10" font-family="monospace" text-anchor="end">CN IX</text>
 
-                            <circle class="nerve-hotspot" cx="350" cy="430" r="18" data-nerve="CN XI: Accessory" data-zodiac="Aquarius (Water Bearer)" data-disciple="Simon" data-mythos="[Greek] Atlas bearing the heavens" data-esoteric="The Burden Bearer" data-query="(accessory nerve|aquarius|simon|burden bearer)"/>
+                            <circle class="nerve-hotspot" cx="350" cy="430" r="18" data-nerve="CN XI: Accessory" data-zodiac="Aquarius (Water Bearer)" data-disciple="Simon" data-mythos="[Greek] Atlas bearing heavens" data-esoteric="The Burden Bearer" data-query="(accessory nerve|aquarius|simon|burden bearer)"/>
                             <text x="310" y="434" fill="var(--text-muted)" font-size="10" font-family="monospace" text-anchor="end">CN XI</text>
 
-                            <circle class="nerve-hotspot" cx="500" cy="180" r="18" data-nerve="CN II: Optic" data-zodiac="Taurus (The Bull)" data-disciple="Peter" data-mythos="[Egyptian] Eye of Horus / [Norse] Odin's Eye" data-esoteric="The Single Eye" data-query="(optic nerve|taurus|peter|single eye|vision)"/>
+                            <circle class="nerve-hotspot" cx="500" cy="180" r="18" data-nerve="CN II: Optic" data-zodiac="Taurus (The Bull)" data-disciple="Peter" data-mythos="[Egyptian] Eye of Horus / [Norse] Odin" data-esoteric="The Single Eye" data-query="(optic nerve|taurus|peter|single eye|vision)"/>
                             <text x="540" y="184" fill="var(--text-muted)" font-size="10" font-family="monospace" text-anchor="start">CN II</text>
 
                             <circle class="nerve-hotspot" cx="470" cy="230" r="18" data-nerve="CN IV: Trochlear" data-zodiac="Cancer (The Crab)" data-disciple="John" data-mythos="[Babylonian] Kheperi / Scarab" data-esoteric="Foundational Water" data-query="(trochlear|cancer|john|foundational water)"/>
@@ -217,23 +213,57 @@
                         </svg>
                     </div>
 
-                    <div class="max-w-md text-left w-full lg:w-1/2 flex flex-col justify-center">
-                        <h3 id="brain-console-title" class="cinzel text-2xl md:text-3xl font-bold mb-2" style="color: var(--gold);">Awaiting Input...</h3>
-                        <div class="flex flex-wrap gap-4 mb-4 pb-4 border-b" style="border-color: var(--surface-border);">
-                            <div class="flex-1 min-w-[100px]"><p class="text-[9px] uppercase tracking-widest text-gray-500 mb-1">Zodiac</p><p id="brain-console-zodiac" class="text-xs font-mono font-bold" style="color: var(--accent-glow);">--</p></div>
-                            <div class="flex-1 min-w-[100px] border-l pl-4" style="border-color: var(--surface-border);"><p class="text-[9px] uppercase tracking-widest text-gray-500 mb-1">Disciple</p><p id="brain-console-disciple" class="text-xs font-mono font-bold" style="color: var(--accent-glow);">--</p></div>
-                            <div class="flex-1 min-w-[100px] border-l pl-4" style="border-color: var(--surface-border);"><p class="text-[9px] uppercase tracking-widest text-gray-500 mb-1">Global Mythos</p><p id="brain-console-mythos" class="text-xs font-mono font-bold text-purple-400">--</p></div>
+                    <div class="w-full lg:w-1/2 flex flex-col justify-center">
+                        
+                        <div id="brain-console-default" class="w-full h-full min-h-[400px] flex flex-col items-center justify-center text-center p-8 rounded-3xl border-2 border-dashed transition-all" style="border-color: var(--surface-border); background: rgba(0,0,0,0.2);">
+                            <i class="fa-solid fa-network-wired text-6xl mb-6 opacity-20 animate-pulse" style="color: var(--accent-glow);"></i>
+                            <h3 class="cinzel text-2xl font-bold mb-2" style="color: var(--text-main);">Awaiting Neural Input</h3>
+                            <p class="text-sm max-w-xs mx-auto" style="color: var(--text-muted);">Select a cranial nerve from the interactive diagram to decrypt its cross-cultural anatomical map.</p>
                         </div>
-                        <p id="brain-console-esoteric" class="text-sm md:text-base italic leading-relaxed h-24" style="color: var(--text-main);">Click a cranial nerve on the diagram to reveal its cross-cultural esoteric mapping and physiological function.</p>
-                        <button id="brain-search-btn" onclick="window.app.searchNerveState()" data-query="" data-display="" class="mt-6 w-full py-3 border rounded text-[10px] uppercase font-black tracking-widest transition flex justify-center items-center gap-2 opacity-50 cursor-not-allowed" style="background-color: rgba(212, 175, 55, 0.1); border-color: var(--gold); color: var(--gold);" disabled><i class="fa-solid fa-magnifying-glass"></i> Search This Nerve</button>
+
+                        <div id="brain-console-active" class="hidden w-full h-full flex-col justify-between text-left">
+                            <div class="mb-6">
+                                <span class="text-[10px] font-mono uppercase tracking-widest text-blue-400 bg-blue-500/10 px-3 py-1 rounded-full border border-blue-500/20">Target Acquired</span>
+                                <h3 id="brain-console-title" class="cinzel text-3xl md:text-4xl font-bold mt-4" style="color: var(--gold);">--</h3>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-4 mb-6 flex-1">
+                                <div class="p-5 rounded-2xl border bg-black/20 flex flex-col justify-center transition-all hover:bg-black/40" style="border-color: var(--surface-border);">
+                                    <i class="fa-solid fa-star mb-3 text-2xl" style="color: var(--gold);"></i>
+                                    <span class="text-[9px] uppercase tracking-widest text-gray-500 mb-1">Zodiac</span>
+                                    <span id="brain-console-zodiac" class="text-sm font-mono font-bold" style="color: var(--text-main);">--</span>
+                                </div>
+                                <div class="p-5 rounded-2xl border bg-black/20 flex flex-col justify-center transition-all hover:bg-black/40" style="border-color: var(--surface-border);">
+                                    <i class="fa-solid fa-user-group mb-3 text-2xl text-blue-400"></i>
+                                    <span class="text-[9px] uppercase tracking-widest text-gray-500 mb-1">Disciple</span>
+                                    <span id="brain-console-disciple" class="text-sm font-mono font-bold" style="color: var(--text-main);">--</span>
+                                </div>
+                                <div class="p-5 rounded-2xl border bg-black/20 flex flex-col justify-center transition-all hover:bg-black/40 col-span-2 sm:col-span-1" style="border-color: var(--surface-border);">
+                                    <i class="fa-solid fa-bolt mb-3 text-2xl text-purple-400"></i>
+                                    <span class="text-[9px] uppercase tracking-widest text-gray-500 mb-1">Global Mythos</span>
+                                    <span id="brain-console-mythos" class="text-sm font-mono font-bold" style="color: var(--text-main);">--</span>
+                                </div>
+                                <div class="p-5 rounded-2xl border bg-black/20 flex flex-col justify-center transition-all hover:bg-black/40 col-span-2 sm:col-span-1" style="border-color: var(--surface-border);">
+                                    <i class="fa-solid fa-key mb-3 text-2xl text-emerald-400"></i>
+                                    <span class="text-[9px] uppercase tracking-widest text-gray-500 mb-1">Esoteric Key</span>
+                                    <span id="brain-console-esoteric" class="text-sm font-mono font-bold" style="color: var(--text-main);">--</span>
+                                </div>
+                            </div>
+
+                            <button id="brain-search-btn" onclick="window.app.searchNerveState()" class="w-full py-4 border rounded-xl text-[11px] uppercase font-black tracking-widest transition flex justify-center items-center gap-2 hover:scale-[1.02] shadow-[0_0_15px_rgba(212,175,55,0.15)]" style="background-color: var(--gold); border-color: var(--gold); color: #000;">
+                                <i class="fa-solid fa-magnifying-glass"></i> Search Archive For This Nerve
+                            </button>
+                        </div>
+
                     </div>
                 </div>
+
                 <div id="brain-lectures-grid" class="masonry-grid"></div>
             </div>
         </section>
 
         <section id="view-anatomy" class="view-section px-4">
-            <div class="max-w-6xl mx-auto">
+            <div class="max-w-[1600px] mx-auto">
                 <h2 class="cinzel text-4xl md:text-6xl font-black mb-10 text-center uppercase" style="color: var(--text-main);">The Temple</h2>
                 <div class="grid lg:grid-cols-12 gap-10 items-start">
                     <div class="lg:col-span-5 flex justify-center relative rounded-3xl py-8 border shadow-inner" style="background: var(--surface); border-color: var(--surface-border);">
@@ -265,7 +295,7 @@
         </section>
 
         <section id="view-echoes" class="view-section px-4 md:px-6 text-center">
-            <div class="max-w-6xl mx-auto pt-4 relative">
+            <div class="max-w-[1600px] mx-auto pt-4 relative">
                 <h2 class="cinzel text-4xl md:text-6xl font-black mb-4 uppercase" style="color: var(--text-main);">Modern Echoes</h2>
                 <div class="cinzel text-xs md:text-sm mb-12 italic tracking-widest px-2 md:px-6 min-h-[40px]" style="color: var(--gold);">The Collective Unconscious in Pop Culture</div>
                 
@@ -274,7 +304,6 @@
                 </p>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-left mb-16">
-                    
                     <div class="cosmos-card p-8 border-t-4 relative overflow-hidden" style="border-top-color: #f59e0b;">
                         <i class="fa-solid fa-dragon absolute -right-6 -bottom-6 text-[150px] opacity-5 pointer-events-none text-orange-500"></i>
                         <div class="flex items-center gap-4 mb-6">
@@ -293,7 +322,7 @@
                             <div><h3 class="cinzel text-2xl font-bold" style="color: var(--text-main);">The Pineal Gland</h3><h4 class="font-mono text-[10px] uppercase tracking-[0.2em] mt-1" style="color: var(--gold);">Harry Potter</h4></div>
                         </div>
                         <p class="text-sm leading-relaxed relative z-10" style="color: var(--text-muted);">
-                            The Golden Snitch is the Pineal Gland. It has wings (like the Caduceus staff) and is the final, hardest thing to catch. Once the "Seeker" catches it, the game immediately ends—representing transcending the physical simulation. Platform 9 ¾ represents the hidden Theta wave required to cross dimensional barriers, and Voldemort represents the unchecked Ego/Carnal Mind.
+                            The Golden Snitch is the Pineal Gland. It has wings (like the Caduceus staff) and is the final, hardest thing to catch. Once the "Seeker" catches it, the game immediately ends—representing transcending the physical simulation. Platform 9 ¾ represents the hidden Theta wave required to cross dimensional barriers.
                         </p>
                     </div>
 
@@ -323,7 +352,7 @@
         </section>
 
         <section id="view-meditation" class="view-section px-4 md:px-6 text-center">
-            <div class="max-w-6xl mx-auto">
+            <div class="max-w-[1600px] mx-auto">
                 <h2 class="cinzel text-4xl md:text-6xl font-black mb-4 uppercase" style="color: var(--text-main);">Meditation</h2>
                 <div id="meditation-quote" class="cinzel text-xs md:text-sm mb-12 italic tracking-widest px-4" style="color: var(--gold);">"The absence of thought."</div>
                 <div class="flex flex-col lg:flex-row items-center justify-center gap-12 mb-16 p-8 border rounded-3xl shadow-inner" style="background: var(--surface); border-color: var(--surface-border);">
@@ -350,7 +379,7 @@
         </section>
 
         <section id="view-resources" class="view-section px-4 md:px-6 text-center">
-            <div class="max-w-6xl mx-auto">
+            <div class="max-w-[1600px] mx-auto">
                 <h2 class="cinzel text-4xl md:text-6xl font-black mb-12 uppercase" style="color: var(--text-main);">Primary Links</h2>
                 <div class="flex justify-center mb-12">
                     <a href="https://www.youtube.com/@bdona4556" target="_blank" class="cosmos-card p-10 w-full max-w-lg flex flex-col items-center justify-center group" style="border-color: rgba(239, 68, 68, 0.5);">
@@ -517,6 +546,8 @@
             openVideo: (id, startTime = 0) => { const container = document.getElementById('video-frame-container'); let srcUrl = `https://archive.org/embed/${id}?autoplay=1`; if(startTime > 0) srcUrl += `&start=${Math.floor(startTime)}`; container.innerHTML = `<iframe src="${srcUrl}" class="w-full h-full" frameborder="0" allowfullscreen sandbox="allow-scripts allow-same-origin allow-forms allow-popups"></iframe>`; document.getElementById('video-modal').classList.remove('hidden'); },
             closeVideo: () => { document.getElementById('video-frame-container').innerHTML = ''; document.getElementById('video-modal').classList.add('hidden'); },
             
+            toggleTheme: () => { document.body.classList.toggle('light-mode'); document.getElementById('theme-icon').className = document.body.classList.contains('light-mode') ? 'fa-solid fa-sun' : 'fa-solid fa-moon'; },
+
             renderLibraryInterface: () => {
                 const container = document.getElementById('library-topics'); const drop = document.getElementById('mobile-topic-dropdown'); const topics = [...new Set(window.app.data.map(r => r.topic))].sort();
                 if(window.app.archiveVideos.some(v => window.app.getTopic(v) === "Uncatalogued") && !topics.includes("Uncatalogued")) topics.push("Uncatalogued");
@@ -539,8 +570,15 @@
                     hotspot.addEventListener('mouseleave', () => { tooltip.style.display = 'none'; });
                     hotspot.addEventListener('click', () => {
                         hotspots.forEach(h => h.classList.remove('active')); hotspot.classList.add('active');
+                        
+                        document.getElementById('brain-console-default').classList.add('hidden');
+                        document.getElementById('brain-console-active').classList.remove('hidden');
+                        document.getElementById('brain-console-active').classList.add('flex');
+
                         const dNerve = hotspot.getAttribute('data-nerve'); const dZodiac = hotspot.getAttribute('data-zodiac'); const dDisciple = hotspot.getAttribute('data-disciple'); const dMythos = hotspot.getAttribute('data-mythos'); const dEsoteric = hotspot.getAttribute('data-esoteric'); const dQuery = hotspot.getAttribute('data-query');
-                        title.innerText = dNerve; zodiac.innerText = dZodiac; disciple.innerText = dDisciple; mythos.innerText = dMythos; esoteric.innerText = `Esoteric Function: ${dEsoteric}. This biological pathway is physically required to translate this specific cosmic frequency.`;
+                        
+                        title.innerText = dNerve; zodiac.innerText = dZodiac; disciple.innerText = dDisciple; mythos.innerText = dMythos; esoteric.innerText = dEsoteric;
+                        
                         searchBtn.disabled = false; searchBtn.style.opacity = '1'; searchBtn.style.cursor = 'pointer'; searchBtn.setAttribute('data-query', dQuery); searchBtn.setAttribute('data-display', dNerve);
                     });
                 });
