@@ -1,4 +1,4 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -10,72 +10,23 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
    
     <style>
-        :root {
-            --bg-base: #000000;
-            --surface: rgba(20, 20, 22, 0.7);
-            --surface-border: rgba(255, 255, 255, 0.08);
-            --text-main: #FAFAFA;
-            --text-muted: #A1A1AA;
-            --accent-glow: #3B82F6; 
-            --gold: #D4AF37;
-        }
-
-        body.light-mode {
-            --bg-base: #F3F4F6;
-            --surface: rgba(255, 255, 255, 0.9);
-            --surface-border: rgba(0, 0, 0, 0.08);
-            --text-main: #111827;
-            --text-muted: #4B5563;
-            --accent-glow: #2563EB;
-            --gold: #B45309;
-        }
-
-        body { 
-            font-family: 'Inter', sans-serif; 
-            background-color: var(--bg-base); 
-            color: var(--text-main); 
-            overflow-x: hidden; 
-            margin: 0;
-            -webkit-font-smoothing: antialiased;
-            transition: background-color 0.5s ease, color 0.5s ease;
-        }
-        
-        h1, h2, h3, .grotesk { font-family: 'Space Grotesk', sans-serif; }
-        .cinzel { font-family: 'Cinzel', serif; }
-
+        :root { --bg-base: #000000; --surface: rgba(20, 20, 22, 0.7); --surface-border: rgba(255, 255, 255, 0.08); --text-main: #FAFAFA; --text-muted: #A1A1AA; --accent-glow: #3B82F6; --gold: #D4AF37; }
+        body.light-mode { --bg-base: #F3F4F6; --surface: rgba(255, 255, 255, 0.9); --surface-border: rgba(0, 0, 0, 0.08); --text-main: #111827; --text-muted: #4B5563; --accent-glow: #2563EB; --gold: #B45309; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-base); color: var(--text-main); overflow-x: hidden; margin: 0; -webkit-font-smoothing: antialiased; transition: background-color 0.5s ease, color 0.5s ease; }
+        h1, h2, h3, .grotesk { font-family: 'Space Grotesk', sans-serif; } .cinzel { font-family: 'Cinzel', serif; }
         #stars-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -2; pointer-events: none; }
         .mesh-bg { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: radial-gradient(circle at 50% 0%, rgba(59, 130, 246, 0.05) 0%, transparent 70%); z-index: -1; pointer-events: none; }
-
-        .bento-card {
-            background: var(--surface); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
-            border: 1px solid var(--surface-border); border-radius: 24px; padding: 32px;
-            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease, background 0.5s ease;
-        }
+        .bento-card { background: var(--surface); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid var(--surface-border); border-radius: 24px; padding: 32px; transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease, background 0.5s ease; }
         .bento-card:hover { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0,0,0,0.15); border-color: var(--gold); }
-
-        .hz-bar { width: 100%; height: 4px; background: rgba(150,150,150,0.2); border-radius: 2px; overflow: hidden; margin-top: 8px; }
-        .hz-fill { height: 100%; width: 0%; border-radius: 2px; }
-        .fill-beta { background: #EF4444; animation: loadBeta 2s forwards ease-out; }
-        .fill-alpha { background: #3B82F6; animation: loadAlpha 2s forwards ease-out 0.5s; }
-        .fill-theta { background: #8B5CF6; animation: loadTheta 2s forwards ease-out 1s; }
-        @keyframes loadBeta { to { width: 85%; } }
-        @keyframes loadAlpha { to { width: 40%; } }
-        @keyframes loadTheta { to { width: 15%; } }
-
-        .reveal { opacity: 0; transform: translateY(40px); transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
-        .reveal.active { opacity: 1; transform: translateY(0); }
-
-        .btn-primary {
-            background: var(--text-main); color: var(--bg-base); font-weight: 600; padding: 16px 32px; border-radius: 99px;
-            display: inline-flex; align-items: center; gap: 12px; transition: all 0.3s ease; border: 1px solid var(--surface-border);
-        }
+        .hz-bar { width: 100%; height: 4px; background: rgba(150,150,150,0.2); border-radius: 2px; overflow: hidden; margin-top: 8px; } .hz-fill { height: 100%; width: 0%; border-radius: 2px; }
+        .fill-beta { background: #EF4444; animation: loadBeta 2s forwards ease-out; } .fill-alpha { background: #3B82F6; animation: loadAlpha 2s forwards ease-out 0.5s; } .fill-theta { background: #8B5CF6; animation: loadTheta 2s forwards ease-out 1s; }
+        @keyframes loadBeta { to { width: 85%; } } @keyframes loadAlpha { to { width: 40%; } } @keyframes loadTheta { to { width: 15%; } }
+        .reveal { opacity: 0; transform: translateY(40px); transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1); } .reveal.active { opacity: 1; transform: translateY(0); }
+        .btn-primary { background: var(--text-main); color: var(--bg-base); font-weight: 600; padding: 16px 32px; border-radius: 99px; display: inline-flex; align-items: center; gap: 12px; transition: all 0.3s ease; border: 1px solid var(--surface-border); }
         .btn-primary:hover { transform: scale(1.05); box-shadow: 0 0 30px rgba(212, 175, 55, 0.3); }
-        
         .code-block { background: rgba(0,0,0,0.3); border: 1px solid var(--surface-border); border-radius: 12px; padding: 16px; font-family: monospace; color: #10B981; font-size: 12px; }
         body.light-mode .code-block { background: rgba(0,0,0,0.05); color: #059669; }
-
-        .themed-avatar { filter: grayscale(100%) contrast(1.2) opacity(0.8); transition: all 0.5s ease; }
-        .themed-avatar:hover { filter: grayscale(0%) contrast(1) opacity(1); }
+        .themed-avatar { filter: grayscale(100%) contrast(1.2) opacity(0.8); transition: all 0.5s ease; } .themed-avatar:hover { filter: grayscale(0%) contrast(1) opacity(1); }
     </style>
 </head>
 <body>
@@ -88,10 +39,8 @@
                 <div class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></div> System_Architecture
             </div>
             <div class="flex gap-6 items-center">
-                <div class="text-xs font-mono" style="color: var(--text-muted);">v.3.0.0</div>
-                <button onclick="toggleTheme()" class="w-8 h-8 rounded-full flex items-center justify-center border transition-all hover:scale-110" style="color: var(--text-main); border-color: var(--surface-border);">
-                    <i class="fa-solid fa-moon" id="theme-icon"></i>
-                </button>
+                <div class="text-xs font-mono" style="color: var(--text-muted);">v.3.5.0</div>
+                <button onclick="toggleTheme()" class="w-8 h-8 rounded-full flex items-center justify-center border transition-all hover:scale-110" style="color: var(--text-main); border-color: var(--surface-border);"><i class="fa-solid fa-moon" id="theme-icon"></i></button>
             </div>
         </div>
     </nav>
@@ -105,11 +54,8 @@
                 </div>
                 <span class="text-[10px] font-mono uppercase tracking-[0.2em] px-4 py-1.5 rounded-full border bg-black/20" style="color: var(--text-muted); border-color: var(--surface-border);">The Bill Donahue Master Archive</span>
             </div>
-
             <h1 class="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tighter mb-8 leading-[1.1]">
-                Your biological <br>
-                <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">infrastructure</span> <br>
-                is overloaded.
+                Your biological <br><span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">infrastructure</span> <br>is overloaded.
             </h1>
             <p class="text-lg md:text-xl max-w-2xl leading-relaxed mb-12 font-light text-center md:text-left mx-auto md:mx-0" style="color: var(--text-muted);">
                 The modern environment is mathematically engineered to keep your nervous system locked in a high-latency survival state. It is a closed-loop system designed to drain physiological energy. It’s time to rewrite the parameters.
@@ -123,99 +69,53 @@
                 <h2 class="text-sm font-mono uppercase tracking-[0.2em] text-blue-500 mb-4">01 // The Diagnostics</h2>
                 <h3 class="text-3xl md:text-5xl font-bold tracking-tight">Understanding the Hardware.</h3>
             </div>
-
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div class="bento-card md:col-span-2 reveal">
                     <h4 class="grotesk text-xl font-semibold mb-2">Cognitive Frequencies (Hz)</h4>
                     <p class="text-sm mb-8" style="color: var(--text-muted);">Current societal baseline operates exclusively in high-stress spectrums.</p>
                     <div class="space-y-6">
-                        <div>
-                            <div class="flex justify-between text-xs font-mono mb-1">
-                                <span class="text-red-500 font-bold">HIGH BETA (14-30Hz) - Analytical / Stress / Survival</span>
-                                <span style="color: var(--text-main);">85% Load</span>
-                            </div>
-                            <div class="hz-bar"><div class="hz-fill fill-beta"></div></div>
-                        </div>
-                        <div>
-                            <div class="flex justify-between text-xs font-mono mb-1">
-                                <span class="text-blue-500 font-bold">ALPHA (8-13Hz) - Flow / Coherence / Detachment</span>
-                                <span style="color: var(--text-main);">40% Load</span>
-                            </div>
-                            <div class="hz-bar"><div class="hz-fill fill-alpha"></div></div>
-                        </div>
-                        <div>
-                            <div class="flex justify-between text-xs font-mono mb-1">
-                                <span class="text-purple-500 font-bold">THETA (4-7Hz) - Neural Reprogramming / Intuition</span>
-                                <span style="color: var(--text-main);">15% Load</span>
-                            </div>
-                            <div class="hz-bar"><div class="hz-fill fill-theta"></div></div>
-                        </div>
+                        <div><div class="flex justify-between text-xs font-mono mb-1"><span class="text-red-500 font-bold">HIGH BETA (14-30Hz)</span><span style="color: var(--text-main);">85% Load</span></div><div class="hz-bar"><div class="hz-fill fill-beta"></div></div></div>
+                        <div><div class="flex justify-between text-xs font-mono mb-1"><span class="text-blue-500 font-bold">ALPHA (8-13Hz)</span><span style="color: var(--text-main);">40% Load</span></div><div class="hz-bar"><div class="hz-fill fill-alpha"></div></div></div>
+                        <div><div class="flex justify-between text-xs font-mono mb-1"><span class="text-purple-500 font-bold">THETA (4-7Hz)</span><span style="color: var(--text-main);">15% Load</span></div><div class="hz-bar"><div class="hz-fill fill-theta"></div></div></div>
                     </div>
                 </div>
 
                 <div class="bento-card reveal">
                     <i class="fa-solid fa-network-wired text-2xl text-blue-500 mb-4"></i>
                     <h4 class="grotesk text-xl font-semibold mb-2">Cranial Nerve X</h4>
-                    <p class="text-sm leading-relaxed mb-6" style="color: var(--text-muted);">
-                        The Vagus Nerve is the longest fiber-optic cable in the human body, directly connecting the brainstem to the heart and solar plexus. 
-                    </p>
-                    <div class="code-block">
-                        > status: monitoring<br>
-                        > function: autonomic override<br>
-                        > action: forces brainwave deceleration
-                    </div>
+                    <p class="text-sm leading-relaxed mb-6" style="color: var(--text-muted);">The Vagus Nerve is the longest fiber-optic cable in the human body, connecting the brainstem to the heart and solar plexus. </p>
+                    <div class="code-block">> status: monitoring<br>> function: autonomic override<br>> action: forces brainwave deceleration</div>
                 </div>
 
                 <div class="bento-card md:col-span-3 reveal flex flex-col md:flex-row gap-8 items-start">
                     <div class="flex-1">
                         <h4 class="grotesk text-2xl font-semibold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-500">The Encrypted Schematics</h4>
                         <p class="text-base leading-relaxed mb-6" style="color: var(--text-muted);">
-                            Thousands of years before modern neuroscience, ancient engineers mapped this exact biological hardware. Because they lacked the vocabulary of quantum physics, they encrypted the blueprints of the human nervous system into allegories, mythologies, and scriptures. 
-                            <br><br>
-                            These blueprints are so deeply embedded in the human collective unconscious that modern creators continue to output the exact same anatomical maps in today's pop culture.
+                            Thousands of years before modern neuroscience, geographically isolated cultures mapped this exact biological hardware. Lacking the vocabulary of quantum physics, they encrypted the blueprints into mythologies and scriptures.
                         </p>
-
                         <div class="w-full border rounded-xl p-6 mb-6" style="border-color: var(--surface-border); background: rgba(0,0,0,0.1);">
                             <ul class="space-y-3 text-sm font-medium" style="color: var(--text-main);">
-                                <li class="flex justify-between border-b pb-2 border-white/10">
-                                    <span class="text-[10px] uppercase font-mono tracking-widest text-blue-400">Biblical Encryption</span>
-                                    <span class="text-[10px] uppercase font-mono tracking-widest text-gray-400">Hardware</span>
-                                </li>
-                                <li class="flex justify-between"><span>The 12 Disciples</span><span class="text-gray-300">12 Cranial Nerves</span></li>
-                                <li class="flex justify-between"><span>The Single Eye</span><span class="text-gray-300">The Pineal Gland</span></li>
-                                
-                                <li class="flex justify-between border-b pb-2 pt-4 border-white/10">
-                                    <span class="text-[10px] uppercase font-mono tracking-widest text-purple-400">Pagan / Mythos</span>
-                                    <span></span>
-                                </li>
-                                <li class="flex justify-between"><span>Yggdrasil (World Tree)</span><span class="text-gray-300">The Spinal Cord</span></li>
-                                <li class="flex justify-between"><span>Thor's Lightning</span><span class="text-gray-300">Vagus Nerve Spark</span></li>
-
-                                <li class="flex justify-between border-b pb-2 pt-4 border-white/10">
-                                    <span class="text-[10px] uppercase font-mono tracking-widest text-green-400">Modern Pop Culture</span>
-                                    <span></span>
-                                </li>
-                                <li class="flex justify-between"><span>The 7 Dragon Balls</span><span class="text-gray-300">The 7 Chakras (Seals)</span></li>
-                                <li class="flex justify-between"><span>The Golden Snitch (HP)</span><span class="text-gray-300">The Pineal Gland</span></li>
-                                <li class="flex justify-between"><span>Arc Reactor (Marvel)</span><span class="text-gray-300">Heart Torus Field</span></li>
+                                <li class="flex justify-between border-b pb-2 border-white/10"><span class="text-[10px] uppercase font-mono tracking-widest text-blue-400">Global Encryption</span><span class="text-[10px] uppercase font-mono tracking-widest text-gray-400">Biological Hardware</span></li>
+                                <li class="flex justify-between"><span>[Biblical] The 12 Disciples</span><span class="text-gray-300">12 Cranial Nerves</span></li>
+                                <li class="flex justify-between"><span>[Norse] Yggdrasil (World Tree)</span><span class="text-gray-300">The Spinal Cord</span></li>
+                                <li class="flex justify-between"><span>[Egyptian] The Eye of Horus</span><span class="text-gray-300">The Pineal Gland</span></li>
+                                <li class="flex justify-between"><span>[Greek] Caduceus of Hermes</span><span class="text-gray-300">Vagus Nerve System</span></li>
+                                <li class="flex justify-between"><span>[Hindu] The 7 Chakras</span><span class="text-gray-300">The Endocrine Glands</span></li>
                             </ul>
                         </div>
                     </div>
                     
                     <div class="flex-1 w-full flex flex-col gap-3">
                         <h5 class="text-xs font-mono uppercase tracking-[0.2em]" style="color: var(--text-main);">Access Initial Briefings</h5>
-                        
-                        <button onclick="playClip('The Single Eye', 860)" class="text-left w-full p-4 rounded-xl border transition-all flex justify-between items-center group bg-black/5 hover:bg-black/20" style="border-color: var(--surface-border);">
+                        <button onclick="playClip('INSERT_YOUR_VIDEO_ID_HERE', 860)" class="text-left w-full p-4 rounded-xl border transition-all flex justify-between items-center group bg-black/5 hover:bg-black/20" style="border-color: var(--surface-border);">
                             <span class="text-sm font-medium" style="color: var(--text-main);">Why does ancient text map to cranial anatomy?</span>
                             <i class="fa-solid fa-play text-blue-400 opacity-50 group-hover:opacity-100 group-hover:scale-110 transition-all"></i>
                         </button>
-                        
-                        <button onclick="playClip('Cranial Nerves', 1320)" class="text-left w-full p-4 rounded-xl border transition-all flex justify-between items-center group bg-black/5 hover:bg-black/20" style="border-color: var(--surface-border);">
+                        <button onclick="playClip('INSERT_YOUR_VIDEO_ID_HERE', 1320)" class="text-left w-full p-4 rounded-xl border transition-all flex justify-between items-center group bg-black/5 hover:bg-black/20" style="border-color: var(--surface-border);">
                             <span class="text-sm font-medium" style="color: var(--text-main);">What is the physical translation of the 12 Disciples?</span>
                             <i class="fa-solid fa-play text-blue-400 opacity-50 group-hover:opacity-100 group-hover:scale-110 transition-all"></i>
                         </button>
-                        
-                        <button onclick="playClip('Secret of the Manger', 1095)" class="text-left w-full p-4 rounded-xl border transition-all flex justify-between items-center group bg-black/5 hover:bg-black/20" style="border-color: var(--surface-border);">
+                        <button onclick="playClip('INSERT_YOUR_VIDEO_ID_HERE', 1095)" class="text-left w-full p-4 rounded-xl border transition-all flex justify-between items-center group bg-black/5 hover:bg-black/20" style="border-color: var(--surface-border);">
                             <span class="text-sm font-medium" style="color: var(--text-main);">How does the Solar Plexus connect to the 'Manger'?</span>
                             <i class="fa-solid fa-play text-blue-400 opacity-50 group-hover:opacity-100 group-hover:scale-110 transition-all"></i>
                         </button>
@@ -231,97 +131,39 @@
             <p class="text-lg mb-12 font-light max-w-xl mx-auto" style="color: var(--text-muted);">
                 Decades of research have been digitized and cross-referenced into an interactive framework. View the exact alignment between astrophysics, neuroanatomy, and the ancient texts.
             </p>
-            <a href="archive.html" class="btn-primary">
-                Initialize Archive <i class="fa-solid fa-arrow-right"></i>
-            </a>
+            <a href="archive.html" class="btn-primary">Initialize Archive <i class="fa-solid fa-arrow-right"></i></a>
             <p class="mt-6 text-[10px] font-mono uppercase tracking-widest" style="color: var(--text-muted);">Secure Connection • No Tracking</p>
         </div>
     </section>
 
     <div id="clip-modal" class="fixed inset-0 z-[200] hidden flex items-center justify-center p-4 backdrop-blur-md transition-opacity" style="background: rgba(0,0,0,0.85);" onclick="if(event.target === this) closeClip()">
         <div class="relative w-full max-w-4xl aspect-video bg-black rounded-2xl overflow-hidden shadow-2xl border" style="border-color: var(--surface-border);">
-            <button onclick="closeClip()" class="absolute top-4 right-4 z-[250] w-10 h-10 bg-black/80 text-white rounded-full flex items-center justify-center border transition-all hover:bg-red-600" style="border-color: var(--surface-border);">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
+            <button onclick="closeClip()" class="absolute top-4 right-4 z-[250] w-10 h-10 bg-black/80 text-white rounded-full flex items-center justify-center border transition-all hover:bg-red-600" style="border-color: var(--surface-border);"><i class="fa-solid fa-xmark"></i></button>
             <div id="clip-container" class="w-full h-full"></div>
         </div>
     </div>
 
     <script>
-        async function playClip(searchQuery, startTimeSeconds) {
+        // Restored direct-link method. Replaces placeholder with exact catalog ID.
+        function playClip(archiveId, startTimeSeconds) {
             const container = document.getElementById('clip-container');
-            container.innerHTML = `
-                <div class="w-full h-full flex flex-col items-center justify-center bg-black">
-                    <i class="fa-solid fa-circle-notch fa-spin text-5xl mb-6" style="color: var(--gold);"></i>
-                    <p class="font-mono text-sm uppercase tracking-widest" style="color: var(--text-muted);">Decrypting Archive Data...</p>
-                </div>
-            `;
+            let srcUrl = `https://archive.org/embed/${archiveId}?autoplay=1&start=${startTimeSeconds}`;
+            container.innerHTML = `<iframe src="${srcUrl}" class="w-full h-full" frameborder="0" allowfullscreen></iframe>`;
             document.getElementById('clip-modal').classList.remove('hidden');
-            
-            try {
-                let res = await fetch(`https://archive.org/advancedsearch.php?q=${encodeURIComponent(`subject:"bill_donahue" AND title:"${searchQuery}" AND mediatype:"movies"`)}&fl[]=identifier&output=json&rows=1`);
-                let data = await res.json();
-                
-                if (data.response.docs && data.response.docs.length > 0) {
-                    let archiveId = data.response.docs[0].identifier;
-                    let srcUrl = `https://archive.org/embed/${archiveId}?autoplay=1&start=${startTimeSeconds}`;
-                    container.innerHTML = `<iframe src="${srcUrl}" class="w-full h-full" frameborder="0" allowfullscreen></iframe>`;
-                } else {
-                    container.innerHTML = `
-                        <div class="w-full h-full flex flex-col items-center justify-center bg-black">
-                            <i class="fa-solid fa-triangle-exclamation text-5xl text-red-500 mb-6"></i>
-                            <p class="font-mono text-sm uppercase tracking-widest text-red-400">Video Title "${searchQuery}" Not Found.</p>
-                        </div>
-                    `;
-                }
-            } catch (e) {
-                container.innerHTML = `<div class="w-full h-full flex items-center justify-center text-red-500 font-mono text-sm uppercase bg-black">Network Error. Cannot Connect to Master Archive.</div>`;
-            }
         }
-        function closeClip() {
-            document.getElementById('clip-container').innerHTML = '';
-            document.getElementById('clip-modal').classList.add('hidden');
-        }
+        function closeClip() { document.getElementById('clip-container').innerHTML = ''; document.getElementById('clip-modal').classList.add('hidden'); }
+        function toggleTheme() { document.body.classList.toggle('light-mode'); document.getElementById('theme-icon').className = document.body.classList.contains('light-mode') ? 'fa-solid fa-sun' : 'fa-solid fa-moon'; }
+        
         function createDust() {
-            const container = document.getElementById('stars-container');
-            const canvas = document.createElement('canvas');
-            canvas.style.position = 'fixed'; canvas.style.top = '0'; canvas.style.left = '0';
-            canvas.style.width = '100%'; canvas.style.height = '100%';
-            container.appendChild(canvas);
-            const ctx = canvas.getContext('2d');
+            const container = document.getElementById('stars-container'); const canvas = document.createElement('canvas');
+            canvas.style.position = 'fixed'; canvas.style.top = '0'; canvas.style.left = '0'; canvas.style.width = '100%'; canvas.style.height = '100%';
+            container.appendChild(canvas); const ctx = canvas.getContext('2d');
             let w = canvas.width = window.innerWidth; let h = canvas.height = window.innerHeight;
-            const colors = ['#3b82f6', '#8B5CF6', '#ffffff', '#D4AF37'];
-            const particles = [];
-            let density = window.innerWidth < 768 ? 1000 : 2500; 
-            for(let i=0; i<density; i++) {
-                particles.push({ x: Math.random()*w, y: Math.random()*h, r: Math.random()*0.8 + 0.1, dy: Math.random()*0.15 + 0.05, color: colors[Math.floor(Math.random()*colors.length)], alpha: Math.random() });
-            }
-            function animate() {
-                ctx.clearRect(0,0,w,h);
-                const isLight = document.body.classList.contains('light-mode');
-                particles.forEach(p => {
-                    p.y -= p.dy; if(p.y < 0) p.y = h;
-                    ctx.fillStyle = isLight ? `rgba(100,100,110,${p.alpha * 0.6})` : p.color; 
-                    ctx.globalAlpha = p.alpha;
-                    ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI*2); ctx.fill();
-                });
-                ctx.globalAlpha = 1.0;
-                requestAnimationFrame(animate);
-            }
-            animate();
+            const colors = ['#3b82f6', '#8B5CF6', '#ffffff', '#D4AF37']; const particles = [];
+            for(let i=0; i< (window.innerWidth<768?1000:2500); i++) particles.push({ x: Math.random()*w, y: Math.random()*h, r: Math.random()*0.8+0.1, dy: Math.random()*0.15+0.05, color: colors[Math.floor(Math.random()*colors.length)], alpha: Math.random() });
+            function animate() { ctx.clearRect(0,0,w,h); const isLight = document.body.classList.contains('light-mode'); particles.forEach(p => { p.y -= p.dy; if(p.y < 0) p.y = h; ctx.fillStyle = isLight ? `rgba(100,100,110,${p.alpha * 0.6})` : p.color; ctx.globalAlpha = p.alpha; ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI*2); ctx.fill(); }); ctx.globalAlpha = 1.0; requestAnimationFrame(animate); } animate();
         }
-        function toggleTheme() { 
-            document.body.classList.toggle('light-mode'); 
-            document.getElementById('theme-icon').className = document.body.classList.contains('light-mode') ? 'fa-solid fa-sun' : 'fa-solid fa-moon'; 
-        }
-        document.addEventListener("DOMContentLoaded", () => {
-            createDust();
-            const reveals = document.querySelectorAll(".reveal");
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add("active"); });
-            }, { threshold: 0.1 });
-            reveals.forEach(reveal => observer.observe(reveal));
-        });
+        document.addEventListener("DOMContentLoaded", () => { createDust(); const reveals = document.querySelectorAll(".reveal"); const observer = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add("active"); }); }, { threshold: 0.1 }); reveals.forEach(reveal => observer.observe(reveal)); });
     </script>
 </body>
 </html>
