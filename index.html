@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>System Architecture | The Internal Grid</title>
+    <title>Bill Donahue | Official Archive</title>
    
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&family=Cinzel:wght@600;800&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;800&family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
    
     <style>
-        /* --- UNIFIED THEME VARIABLES --- */
         :root {
             --bg-base: #000000;
             --surface: rgba(20, 20, 22, 0.7);
@@ -19,9 +19,10 @@
             --text-muted: #A1A1AA;
             --accent-glow: #3B82F6; 
             --gold: #D4AF37;
+            --btn-active-bg: #FAFAFA;
+            --btn-active-text: #000000;
         }
 
-        /* --- LIGHT THEME --- */
         body.light-mode {
             --bg-base: #F3F4F6;
             --surface: rgba(255, 255, 255, 0.9);
@@ -30,219 +31,434 @@
             --text-muted: #4B5563;
             --accent-glow: #2563EB;
             --gold: #B45309;
+            --btn-active-bg: #111827;
+            --btn-active-text: #F3F4F6;
         }
 
-        body { 
-            font-family: 'Inter', sans-serif; 
-            background-color: var(--bg-base); 
-            color: var(--text-main); 
-            overflow-x: hidden; 
-            margin: 0;
-            -webkit-font-smoothing: antialiased;
-            transition: background-color 0.5s ease, color 0.5s ease;
-        }
-        
-        h1, h2, h3, .grotesk { font-family: 'Space Grotesk', sans-serif; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-base); color: var(--text-main); transition: background-color 0.5s ease, color 0.5s ease; overflow-x: hidden; min-height: 100vh; width: 100vw; -webkit-font-smoothing: antialiased;}
         .cinzel { font-family: 'Cinzel', serif; }
-
-        #stars-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -2; pointer-events: none; }
-        .mesh-bg { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: radial-gradient(circle at 50% 0%, rgba(59, 130, 246, 0.05) 0%, transparent 70%); z-index: -1; pointer-events: none; }
-
-        .bento-card {
-            background: var(--surface); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
-            border: 1px solid var(--surface-border); border-radius: 24px; padding: 32px;
-            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease, background 0.5s ease;
-        }
-        .bento-card:hover { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0,0,0,0.15); border-color: var(--gold); }
-
-        .hz-bar { width: 100%; height: 4px; background: rgba(150,150,150,0.2); border-radius: 2px; overflow: hidden; margin-top: 8px; }
-        .hz-fill { height: 100%; width: 0%; border-radius: 2px; }
-        .fill-beta { background: #EF4444; animation: loadBeta 2s forwards ease-out; }
-        .fill-alpha { background: #3B82F6; animation: loadAlpha 2s forwards ease-out 0.5s; }
-        .fill-theta { background: #8B5CF6; animation: loadTheta 2s forwards ease-out 1s; }
-        @keyframes loadBeta { to { width: 85%; } }
-        @keyframes loadAlpha { to { width: 40%; } }
-        @keyframes loadTheta { to { width: 15%; } }
-
-        .reveal { opacity: 0; transform: translateY(40px); transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
-        .reveal.active { opacity: 1; transform: translateY(0); }
-
-        .btn-primary {
-            background: var(--text-main); color: var(--bg-base); font-weight: 600; padding: 16px 32px; border-radius: 99px;
-            display: inline-flex; align-items: center; gap: 12px; transition: all 0.3s ease; border: 1px solid var(--surface-border);
-        }
-        .btn-primary:hover { transform: scale(1.05); box-shadow: 0 0 30px rgba(212, 175, 55, 0.3); }
+        ::placeholder { color: var(--text-muted); opacity: 0.6; }
         
-        .code-block { background: rgba(0,0,0,0.3); border: 1px solid var(--surface-border); border-radius: 12px; padding: 16px; font-family: monospace; color: #10B981; font-size: 12px; }
-        body.light-mode .code-block { background: rgba(0,0,0,0.05); color: #059669; }
+        .stars-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
+        .mesh-bg { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: radial-gradient(circle at 50% 0%, rgba(59, 130, 246, 0.05) 0%, transparent 70%); z-index: -2; pointer-events: none; }
+        
+        .masonry-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; padding-bottom: 160px; }
+        @media (max-width: 640px) { .masonry-grid { grid-template-columns: 1fr; padding-bottom: 180px; } .view-section { padding-top: 100px !important; } }
+        
+        .cosmos-card { background: var(--surface); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid var(--surface-border); border-radius: 24px; transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease, background 0.5s ease; cursor: pointer; position: relative; overflow: hidden; display: flex; flex-direction: column; min-height: 240px; }
+        .cosmos-card:hover { border-color: var(--gold); transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0,0,0,0.15); }
 
-        .themed-avatar {
-            filter: grayscale(100%) contrast(1.2) opacity(0.8);
-            transition: all 0.5s ease;
-        }
-        .themed-avatar:hover {
-            filter: grayscale(0%) contrast(1) opacity(1);
-        }
+        .dock-container { position: fixed; bottom: 20px; left: 0; width: 100%; display: flex; justify-content: center; z-index: 50; padding: 0 10px; pointer-events: none; }
+        .dock { pointer-events: auto; background: var(--surface); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid var(--surface-border); padding: 8px; border-radius: 24px; display: flex; gap: 4px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); max-width: 100%; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+        .dock-btn { display: flex; align-items: center; justify-content: center; padding: 8px 10px; border-radius: 14px; font-size: 8px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); transition: all 0.2s; cursor: pointer; white-space: nowrap; flex-shrink: 0; }
+        @media (min-width: 768px) { .dock { padding: 10px; gap: 8px; } .dock-btn { padding: 10px 16px; font-size: 10px; } }
+        .dock-btn.active { background: var(--btn-active-bg) !important; color: var(--btn-active-text) !important; }
+
+        #search-overlay { position: fixed; inset: 0; background: var(--bg-base); z-index: 90; display: none; flex-direction: column; align-items: center; padding-top: 80px; backdrop-filter: blur(20px); transition: background-color 0.5s ease; overflow-y: auto; opacity: 0.98; }
+        #search-overlay.active { display: flex; }
+        .deep-result-card { background: var(--surface); border: 1px solid var(--surface-border); border-radius: 16px; padding: 20px; margin-bottom: 12px; text-align: left; transition: 0.3s; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .snippet-item { border-left: 2px solid transparent; transition: all 0.2s ease; }
+        .snippet-item:hover { border-color: var(--gold); background-color: rgba(255,255,255,0.02); }
+
+        #diagnostics-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 100; display: none; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
+        #diagnostics-overlay.active { display: flex; }
+        .diag-box { width: 90%; max-width: 600px; background: var(--surface); border: 1px solid var(--surface-border); padding: 40px; border-radius: 24px; text-align: center; box-shadow: 0 0 50px rgba(0,0,0,0.5); }
+        .progress-bar { height: 4px; background: var(--surface-border); width: 100%; border-radius: 2px; overflow: hidden; margin: 20px 0; }
+        .progress-fill { height: 100%; background: var(--gold); width: 0%; transition: width 0.3s ease; }
+        
+        .topic-chip { padding: 6px 12px; border-radius: 99px; font-size: 9px; font-weight: 700; text-transform: uppercase; cursor: pointer; border: 1px solid var(--surface-border); background: var(--surface); transition: all 0.2s; white-space: nowrap; color: var(--text-main); z-index: 20; position: relative; }
+        .topic-chip.active { background: var(--text-main); color: var(--bg-base) !important; border-color: var(--text-main); }
+        .mobile-dropdown { width: 100%; background-color: var(--surface); color: var(--text-main); border: 1px solid var(--gold); padding: 12px 16px; border-radius: 12px; font-weight: 700; text-transform: uppercase; outline: none; appearance: none; }
+
+        .spine-container { position: relative; width: 60px; height: 500px; margin: 0 auto; display: flex; flex-direction: column; justify-content: space-between; align-items: center; z-index: 10; padding: 20px 0; }
+        .spine-line { position: absolute; top: 0; bottom: 0; width: 4px; background: linear-gradient(to bottom, #a855f7, #3b82f6, #22c55e, #eab308, #ef4444); left: 50%; transform: translateX(-50%); z-index: 0; border-radius: 4px; opacity: 0.6; box-shadow: 0 0 15px rgba(255,255,255,0.2); }
+        .chakra-node { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s ease; border: 2px solid rgba(255,255,255,0.9); z-index: 10; color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.5); font-size: 16px; }
+        .chakra-node:hover { transform: scale(1.3); box-shadow: 0 0 20px currentColor; }
+
+        .matrix-container { position: relative; width: 100%; margin: 0 auto; }
+        .nerve-hotspot { fill: rgba(212, 175, 55, 0.1); stroke: var(--gold); stroke-width: 2; cursor: pointer; transition: all 0.3s ease; }
+        .nerve-hotspot:hover, .nerve-hotspot.active { fill: rgba(212, 175, 55, 0.4); stroke: #fff; filter: drop-shadow(0 0 10px var(--gold)); transform: scale(1.02); }
+
+        #matrix-tooltip { position: fixed; display: none; background: var(--surface); border: 1px solid var(--gold); padding: 15px; border-radius: 12px; pointer-events: none; box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 1000; min-width: 240px; text-align: left; backdrop-filter: blur(10px); }
+        .tt-title { color: var(--gold); font-family: 'Cinzel', serif; font-weight: bold; font-size: 1.1rem; border-bottom: 1px solid var(--surface-border); padding-bottom: 5px; margin-bottom: 8px; }
+        .tt-data { margin: 4px 0; font-size: 12px; font-family: 'Inter', sans-serif; color: var(--text-main); }
+        .tt-highlight { color: var(--accent-glow); font-weight: bold; font-family: monospace; letter-spacing: 0.05em; }
+
+        @keyframes customPulse { 0%, 100% { transform: scale(0.95); opacity: 0.5; } 50% { transform: scale(1.05); opacity: 0.8; } }
+        .med-ring-anim { animation: customPulse infinite ease-in-out; }
+
+        .view-section { display: none; padding-top: 100px; padding-bottom: 150px; width: 100%; min-height: 100vh; animation: fadeIn 0.4s ease; }
+        .view-section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        #app-loader { position: fixed; inset: 0; z-index: 100; background: var(--bg-base); display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.5s; pointer-events: none; }
+        #app-loader.hidden { opacity: 0; }
+
+        .themed-avatar { filter: grayscale(100%) contrast(1.2) opacity(0.8); transition: all 0.5s ease; }
+        .themed-avatar:hover { filter: grayscale(0%) contrast(1) opacity(1); }
     </style>
 </head>
-<body>
-    <div id="stars-container"></div>
+<body class="flex flex-col min-h-screen">
+    <div id="stars-container" class="stars-container"></div>
     <div class="mesh-bg"></div>
+    
+    <div id="app-loader" class="fixed inset-0 z-[100] bg-black flex flex-col items-center justify-center transition-opacity duration-500">
+        <div class="w-12 h-12 border-4 border-t-blue-500 border-white/10 rounded-full animate-spin mb-4"></div>
+        <p class="cinzel text-xs tracking-widest animate-pulse text-white uppercase">Syncing Official Archive...</p>
+    </div>
 
-    <nav class="fixed top-0 w-full p-6 z-40 backdrop-blur-md border-b" style="border-color: var(--surface-border); background: var(--surface);">
-        <div class="max-w-7xl mx-auto flex justify-between items-center">
-            <div class="grotesk font-bold tracking-widest text-sm uppercase flex items-center gap-3">
-                <div class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></div> System_Architecture
+    <div id="diagnostics-overlay">
+        <div class="diag-box">
+            <i class="fa-solid fa-stethoscope text-5xl mb-6" style="color: var(--gold);"></i>
+            <h3 class="cinzel text-2xl font-bold mb-2" style="color: var(--text-main);">Archive Health Scan</h3>
+            <p id="diag-status" class="text-xs font-mono uppercase tracking-widest mb-6" style="color: var(--text-muted);">Initializing Scan...</p>
+            <div class="progress-bar"><div id="diag-progress" class="progress-fill"></div></div>
+        </div>
+    </div>
+
+    <div id="search-overlay">
+        <button onclick="window.app.closeSearchOverlay()" class="absolute top-4 right-4 md:top-6 md:right-6 p-4 hover:scale-110 transition z-50" style="color: var(--text-main);"><i class="fa-solid fa-xmark text-3xl"></i></button>
+        <div class="w-full max-w-4xl px-4 md:px-6 text-center">
+            
+            <input type="text" id="overlay-search-input" placeholder="Type keyword or phrase..." class="w-full bg-transparent border-b-2 cinzel outline-none py-4 text-center text-2xl sm:text-3xl md:text-4xl" style="color: var(--text-main); border-color: var(--gold);" onkeydown="if(event.key === 'Enter') window.app.performOverlaySearch(true)">
+            
+            <div class="flex justify-center items-center mt-6">
+                <label class="text-[10px] uppercase font-bold tracking-widest cursor-pointer flex items-center gap-2 transition hover:opacity-70" style="color: var(--text-muted);">
+                    <input type="checkbox" id="exact-match-checkbox" checked class="w-4 h-4 cursor-pointer" style="accent-color: var(--gold);">
+                    Exact Word Match
+                </label>
             </div>
-            <div class="flex gap-6 items-center">
-                <div class="text-xs font-mono" style="color: var(--text-muted);">v.2.1.0</div>
-                <button onclick="toggleTheme()" class="w-8 h-8 rounded-full flex items-center justify-center border transition-all hover:scale-110" style="color: var(--text-main); border-color: var(--surface-border);">
-                    <i class="fa-solid fa-moon" id="theme-icon"></i>
+
+            <div class="flex flex-col sm:flex-row justify-center items-center gap-4 mt-6">
+                <button onclick="window.app.performOverlaySearch(false)" class="w-full sm:w-auto px-6 py-3 border rounded-full text-[10px] font-black uppercase tracking-widest transition hover:opacity-70" style="color: var(--text-main); border-color: var(--text-main);">
+                    Video Search
+                </button>
+                <button onclick="window.app.performOverlaySearch(true)" class="w-full sm:w-auto px-6 py-3 rounded-full text-[10px] font-black uppercase tracking-widest hover:scale-105 transition shadow-[0_0_15px_rgba(212,175,55,0.4)]" style="background-color: var(--gold); color: #000;">
+                    <i class="fa-solid fa-align-left mr-1"></i> Transcript Deep Search
                 </button>
             </div>
-        </div>
-    </nav>
-
-    <section class="min-h-screen flex flex-col justify-center px-6 pt-24 pb-12 text-center md:text-left">
-        <div class="max-w-5xl mx-auto w-full reveal active flex flex-col items-center md:items-start">
             
-            <div class="flex flex-col items-center md:items-start mb-10">
-                <div class="relative w-28 h-28 rounded-full p-1 border mb-4 shadow-[0_0_30px_rgba(255,255,255,0.05)]" style="border-color: var(--surface-border); background: var(--surface);">
-                    <img src="bill_profile.jpg" alt="Bill Donahue" class="w-full h-full rounded-full object-cover themed-avatar">
-                    <div class="absolute bottom-1 right-1 w-4 h-4 rounded-full bg-blue-500 border-2 animate-pulse" style="border-color: var(--bg-base);"></div>
-                </div>
-                <span class="text-[10px] font-mono uppercase tracking-[0.2em] px-4 py-1.5 rounded-full border bg-black/20" style="color: var(--text-muted); border-color: var(--surface-border);">The Bill Donahue Master Archive</span>
+            <div id="overlay-insight-box" class="hidden mt-8 p-4 md:p-6 rounded-2xl text-left border-l-4" style="background: var(--surface); border-color: var(--gold);">
+                <p id="overlay-insight-text" class="italic text-base md:text-lg leading-relaxed" style="color: var(--text-main);"></p>
             </div>
-
-            <h1 class="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tighter mb-8 leading-[1.1]">
-                Your biological <br>
-                <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">infrastructure</span> <br>
-                is overloaded.
-            </h1>
-            <p class="text-lg md:text-xl max-w-2xl leading-relaxed mb-12 font-light text-center md:text-left mx-auto md:mx-0" style="color: var(--text-muted);">
-                The modern environment is mathematically engineered to keep your nervous system locked in a high-latency survival state. It is a closed-loop system designed to drain physiological energy. It’s time to rewrite the parameters.
-            </p>
+            
+            <div id="overlay-results" class="w-full mt-8 overflow-y-auto max-h-[60vh] p-2 md:p-4 custom-scrollbar text-left flex flex-col gap-4"></div>
         </div>
-    </section>
+    </div>
 
-    <section class="py-24 px-6 relative z-10">
-        <div class="max-w-6xl mx-auto">
-            <div class="mb-16 reveal">
-                <h2 class="text-sm font-mono uppercase tracking-[0.2em] text-blue-500 mb-4">01 // The Diagnostics</h2>
-                <h3 class="text-3xl md:text-5xl font-bold tracking-tight">Understanding the Hardware.</h3>
+    <div class="fixed top-0 left-0 w-full p-4 z-40 flex justify-between items-center backdrop-blur-md border-b transition-colors duration-300" style="background: var(--surface); border-color: var(--surface-border);">
+        <div class="flex items-center gap-4 cursor-pointer" onclick="window.app.nav('home')">
+            <div class="w-10 h-10 border rounded-xl flex items-center justify-center shrink-0" style="border-color: var(--surface-border); background: rgba(0,0,0,0.2);">
+                <i class="fa-solid fa-book-journal-whills text-xl" style="color: var(--gold);"></i>
             </div>
+            <h1 class="cinzel font-bold text-xs md:text-sm tracking-[0.2em] uppercase" style="color: var(--text-main);">Hidden Meanings</h1>
+        </div>
+        <div class="flex items-center gap-4">
+            <div id="global-counter" class="hidden md:block text-[9px] font-mono uppercase tracking-tighter border px-3 py-1 rounded-full" style="color: var(--gold); border-color: var(--gold); background: rgba(212, 175, 55, 0.05);">INDEX: ...</div>
+            <button onclick="window.app.toggleTheme()" class="w-10 h-10 rounded-full flex items-center justify-center border transition-all hover:scale-110" style="color: var(--text-main); border-color: var(--surface-border);">
+                <i class="fa-solid fa-moon" id="theme-icon"></i>
+            </button>
+        </div>
+    </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="bento-card md:col-span-2 reveal">
-                    <h4 class="grotesk text-xl font-semibold mb-2">Cognitive Frequencies (Hz)</h4>
-                    <p class="text-sm mb-8" style="color: var(--text-muted);">Current societal baseline operates exclusively in high-stress spectrums.</p>
+    <div id="main-content" class="flex-1 w-full relative z-10">
+        
+        <section id="view-home" class="view-section active px-4 text-center">
+            <div class="max-w-6xl mx-auto flex flex-col items-center justify-center pt-4 md:pt-10 min-h-[60vh]">
+                
+                <div class="flex flex-col items-center mb-10">
+                    <div class="relative w-28 h-28 rounded-full p-1 border mb-4 shadow-[0_0_30px_rgba(255,255,255,0.05)]" style="border-color: var(--surface-border); background: var(--surface);">
+                        <img src="bill_profile.jpg" alt="Bill Donahue" class="w-full h-full rounded-full object-cover themed-avatar">
+                        <div class="absolute bottom-1 right-1 w-4 h-4 rounded-full bg-blue-500 border-2 animate-pulse" style="border-color: var(--bg-base);"></div>
+                    </div>
+                    <span class="text-[10px] font-mono uppercase tracking-[0.2em] px-4 py-1.5 rounded-full border bg-black/20" style="color: var(--text-muted); border-color: var(--surface-border);">The Official Master Archive</span>
+                </div>
+
+                <h1 class="cinzel text-5xl sm:text-6xl md:text-8xl lg:text-[8rem] font-black mb-8 leading-none tracking-tighter w-full overflow-visible" style="color: var(--text-main);">HIDDEN<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-gray-400 italic pr-2 md:pr-4">MEANINGS</span></h1>
+                
+                <div class="w-full max-w-xl mb-12 relative mx-auto">
+                    <input type="text" id="teacher-input" placeholder="Deep Search Transcripts..." class="w-full rounded-full py-4 px-6 md:px-8 border outline-none text-base transition-all shadow-lg" style="background: var(--surface); border-color: var(--surface-border); color: var(--text-main);" onkeydown="if(event.key === 'Enter') { window.app.openSearchOverlay(); document.getElementById('overlay-search-input').value = this.value; window.app.performOverlaySearch(true); }">
+                    <button onclick="window.app.openSearchOverlay()" class="absolute right-4 top-1/2 -translate-y-1/2 opacity-60 hover:opacity-100 transition-opacity p-2" style="color: var(--gold);"><i class="fa-solid fa-magnifying-glass text-lg"></i></button>
+                </div>
+            </div>
+        </section>
+
+        <section id="view-library" class="view-section px-4 md:px-6">
+            <div class="max-w-[1800px] mx-auto w-full text-center">
+                <h2 class="cinzel text-3xl md:text-4xl font-bold mb-6 uppercase tracking-widest" style="color: var(--text-main);">Upscaled Archive</h2>
+                
+                <div class="block md:hidden mb-8 w-full max-w-sm mx-auto relative">
+                    <select id="mobile-topic-dropdown" onchange="window.app.selectMobileTopic(this.value)" class="mobile-dropdown cinzel"></select>
+                    <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" style="color: var(--gold);"></i>
+                </div>
+                <div id="library-topics" class="hidden md:flex flex-wrap gap-2 justify-center mb-10 min-h-[40px]"></div>
+                
+                <div id="library-grid" class="masonry-grid"></div>
+            </div>
+        </section>
+
+        <section id="view-brain" class="view-section px-4 md:px-6 text-center">
+            <div class="max-w-6xl mx-auto pt-4 relative">
+                <h2 class="cinzel text-4xl md:text-6xl font-black mb-4 uppercase" style="color: var(--text-main);">The Upper Room</h2>
+                <div id="brain-quote" class="cinzel text-xs md:text-sm mb-8 italic tracking-widest px-2 md:px-6 min-h-[40px]" style="color: var(--gold);"></div>
+                
+                <div class="flex flex-col lg:flex-row items-center justify-center gap-12 mb-16 p-8 border rounded-3xl shadow-inner" style="background: var(--surface); border-color: var(--surface-border);">
                     
-                    <div class="space-y-6">
-                        <div>
-                            <div class="flex justify-between text-xs font-mono mb-1">
-                                <span class="text-red-500 font-bold">HIGH BETA (14-30Hz) - Analytical / Stress / Survival</span>
-                                <span style="color: var(--text-main);">85% Load</span>
-                            </div>
-                            <div class="hz-bar"><div class="hz-fill fill-beta"></div></div>
+                    <div class="matrix-container w-full lg:w-1/2">
+                        <div id="matrix-tooltip">
+                            <div class="tt-title" id="tt-nerve"></div>
+                            <div class="tt-data">ZODIAC: <span class="tt-highlight" id="tt-zodiac"></span></div>
+                            <div class="tt-data">DISCIPLE: <span class="tt-highlight" id="tt-disciple"></span></div>
+                            <div class="tt-data">MYTHOS: <span class="tt-highlight" id="tt-mythos"></span></div>
+                            <div class="tt-data">ESOTERIC: <span class="tt-highlight" id="tt-esoteric"></span></div>
                         </div>
-                        <div>
-                            <div class="flex justify-between text-xs font-mono mb-1">
-                                <span class="text-blue-500 font-bold">ALPHA (8-13Hz) - Flow / Coherence / Detachment</span>
-                                <span style="color: var(--text-main);">40% Load</span>
-                            </div>
-                            <div class="hz-bar"><div class="hz-fill fill-alpha"></div></div>
-                        </div>
-                        <div>
-                            <div class="flex justify-between text-xs font-mono mb-1">
-                                <span class="text-purple-500 font-bold">THETA (4-7Hz) - Neural Reprogramming / Intuition</span>
-                                <span style="color: var(--text-main);">15% Load</span>
-                            </div>
-                            <div class="hz-bar"><div class="hz-fill fill-theta"></div></div>
-                        </div>
+
+                        <svg viewBox="0 0 800 600" class="w-full h-auto drop-shadow-[0_0_20px_rgba(255,255,255,0.05)]">
+                            <defs>
+                                <radialGradient id="pinealGlow" cx="50%" cy="50%" r="50%">
+                                    <stop offset="0%" stop-color="#3B82F6" stop-opacity="0.6"/>
+                                    <stop offset="100%" stop-color="#3B82F6" stop-opacity="0"/>
+                                </radialGradient>
+                            </defs>
+                            
+                            <image href="brain-anatomy-bg.png" x="150" y="50" width="500" height="450" opacity="0.2" preserveAspectRatio="xMidYMid meet" />
+                            <path d="M 250 150 C 250 50, 550 50, 550 150 C 600 250, 550 400, 450 450 C 400 500, 350 450, 250 350 Z" fill="none" stroke="rgba(150,150,150,0.15)" stroke-width="2" stroke-dasharray="5,5"/>
+                            
+                            <circle cx="400" cy="250" r="40" fill="url(#pinealGlow)" class="animate-pulse"/>
+                            <circle cx="400" cy="250" r="15" fill="#3B82F6"/>
+                            <text x="400" y="210" fill="var(--text-main)" font-size="10" font-family="monospace" font-weight="bold" text-anchor="middle" letter-spacing="2">PINEAL</text>
+                            
+                            <circle class="nerve-hotspot" cx="300" cy="180" r="18" data-nerve="CN I: Olfactory" data-zodiac="Aries (The Ram)" data-disciple="Andrew" data-mythos="Odin's Breath (Önd)" data-esoteric="Breath of Life" data-query="(olfactory|aries|andrew|breath of life)"/>
+                            <text x="260" y="184" fill="var(--text-muted)" font-size="10" font-family="monospace" text-anchor="end">CN I</text>
+
+                            <circle class="nerve-hotspot" cx="330" cy="230" r="18" data-nerve="CN III: Oculomotor" data-zodiac="Gemini (The Twins)" data-disciple="James" data-mythos="Hugin & Munin" data-esoteric="Twins of Perception" data-query="(oculomotor|gemini|james|twins of perception)"/>
+                            <text x="290" y="234" fill="var(--text-muted)" font-size="10" font-family="monospace" text-anchor="end">CN III</text>
+
+                            <circle class="nerve-hotspot" cx="310" cy="280" r="18" data-nerve="CN V: Trigeminal" data-zodiac="Leo (The Lion)" data-disciple="Philip" data-mythos="Fenrir's Jaw" data-esoteric="Lion of Judah / Jawbone" data-query="(trigeminal|leo|philip|lion of judah|jawbone)"/>
+                            <text x="270" y="284" fill="var(--text-muted)" font-size="10" font-family="monospace" text-anchor="end">CN V</text>
+
+                            <circle class="nerve-hotspot" cx="330" cy="330" r="18" data-nerve="CN VII: Facial" data-zodiac="Libra (The Scales)" data-disciple="Thomas" data-mythos="Scales of Forseti" data-esoteric="The Balance" data-query="(facial nerve|libra|thomas|the balance)"/>
+                            <text x="290" y="334" fill="var(--text-muted)" font-size="10" font-family="monospace" text-anchor="end">CN VII</text>
+
+                            <circle class="nerve-hotspot" cx="340" cy="380" r="18" data-nerve="CN IX: Glossopharyngeal" data-zodiac="Sagittarius (The Archer)" data-disciple="James the Lesser" data-mythos="Skaldic Mead of Poetry" data-esoteric="The Directed Word" data-query="(glossopharyngeal|sagittarius|james the lesser|directed word)"/>
+                            <text x="300" y="384" fill="var(--text-muted)" font-size="10" font-family="monospace" text-anchor="end">CN IX</text>
+
+                            <circle class="nerve-hotspot" cx="350" cy="430" r="18" data-nerve="CN XI: Accessory" data-zodiac="Aquarius (Water Bearer)" data-disciple="Simon" data-mythos="Ymir's Shoulders / Atlas" data-esoteric="The Burden Bearer" data-query="(accessory nerve|aquarius|simon|burden bearer)"/>
+                            <text x="310" y="434" fill="var(--text-muted)" font-size="10" font-family="monospace" text-anchor="end">CN XI</text>
+
+                            <circle class="nerve-hotspot" cx="500" cy="180" r="18" data-nerve="CN II: Optic" data-zodiac="Taurus (The Bull)" data-disciple="Peter" data-mythos="Odin's Sacrificed Eye" data-esoteric="The Single Eye" data-query="(optic nerve|taurus|peter|single eye|vision)"/>
+                            <text x="540" y="184" fill="var(--text-muted)" font-size="10" font-family="monospace" text-anchor="start">CN II</text>
+
+                            <circle class="nerve-hotspot" cx="470" cy="230" r="18" data-nerve="CN IV: Trochlear" data-zodiac="Cancer (The Crab)" data-disciple="John" data-mythos="Well of Urd / Water" data-esoteric="Foundational Water" data-query="(trochlear|cancer|john|foundational water)"/>
+                            <text x="510" y="234" fill="var(--text-muted)" font-size="10" font-family="monospace" text-anchor="start">CN IV</text>
+
+                            <circle class="nerve-hotspot" cx="490" cy="280" r="18" data-nerve="CN VI: Abducens" data-zodiac="Virgo (The Virgin)" data-disciple="Bartholomew" data-mythos="Sif's Golden Hair" data-esoteric="Pure Sight / House of Bread" data-query="(abducens|virgo|bartholomew|house of bread)"/>
+                            <text x="530" y="284" fill="var(--text-muted)" font-size="10" font-family="monospace" text-anchor="start">CN VI</text>
+
+                            <circle class="nerve-hotspot" cx="470" cy="330" r="18" data-nerve="CN VIII: Vestibulocochlear" data-zodiac="Scorpio (The Scorpion)" data-disciple="Matthew" data-mythos="Heimdall's Ear" data-esoteric="Hidden Frequency" data-query="(vestibulocochlear|scorpio|matthew|hidden frequency)"/>
+                            <text x="510" y="334" fill="var(--text-muted)" font-size="10" font-family="monospace" text-anchor="start">CN VIII</text>
+
+                            <circle class="nerve-hotspot" cx="460" cy="380" r="18" data-nerve="CN X: Vagus" data-zodiac="Capricorn (The Goat)" data-disciple="Thaddeus" data-mythos="Thor's Lightning (Mjolnir)" data-esoteric="The Silver Cord" data-query="(vagus|pneumogastric|capricorn|thaddeus|silver cord)"/>
+                            <text x="500" y="384" fill="var(--text-muted)" font-size="10" font-family="monospace" text-anchor="start">CN X</text>
+
+                            <circle class="nerve-hotspot" cx="450" cy="430" r="18" data-nerve="CN XII: Hypoglossal" data-zodiac="Pisces (The Fishes)" data-disciple="Judas" data-mythos="Loki's Silver Tongue" data-esoteric="The Lower Speech" data-query="(hypoglossal|pisces|judas|lower speech|betrayer)"/>
+                            <text x="490" y="434" fill="var(--text-muted)" font-size="10" font-family="monospace" text-anchor="start">CN XII</text>
+                        </svg>
                     </div>
+
+                    <div class="max-w-md text-left w-full lg:w-1/2 flex flex-col justify-center">
+                        <h3 id="brain-console-title" class="cinzel text-2xl md:text-3xl font-bold mb-2" style="color: var(--gold);">Awaiting Input...</h3>
+                        
+                        <div class="flex flex-wrap gap-4 mb-4 pb-4 border-b" style="border-color: var(--surface-border);">
+                            <div class="flex-1 min-w-[100px]">
+                                <p class="text-[9px] uppercase tracking-widest text-gray-500 mb-1">Zodiac</p>
+                                <p id="brain-console-zodiac" class="text-xs font-mono font-bold" style="color: var(--accent-glow);">--</p>
+                            </div>
+                            <div class="flex-1 min-w-[100px] border-l pl-4" style="border-color: var(--surface-border);">
+                                <p class="text-[9px] uppercase tracking-widest text-gray-500 mb-1">Disciple</p>
+                                <p id="brain-console-disciple" class="text-xs font-mono font-bold" style="color: var(--accent-glow);">--</p>
+                            </div>
+                            <div class="flex-1 min-w-[100px] border-l pl-4" style="border-color: var(--surface-border);">
+                                <p class="text-[9px] uppercase tracking-widest text-gray-500 mb-1">Pagan Mythos</p>
+                                <p id="brain-console-mythos" class="text-xs font-mono font-bold text-purple-400">--</p>
+                            </div>
+                        </div>
+
+                        <p id="brain-console-esoteric" class="text-sm md:text-base italic leading-relaxed h-24" style="color: var(--text-main);">Click a cranial nerve on the diagram to reveal its cross-cultural esoteric mapping and physiological function.</p>
+
+                        <button id="brain-search-btn" onclick="window.app.searchNerveState()" data-query="" data-display="" class="mt-6 w-full py-3 border rounded text-[10px] uppercase font-black tracking-widest transition flex justify-center items-center gap-2 opacity-50 cursor-not-allowed" style="background-color: rgba(212, 175, 55, 0.1); border-color: var(--gold); color: var(--gold);" disabled>
+                            <i class="fa-solid fa-magnifying-glass"></i> Search This Nerve
+                        </button>
+                    </div>
+
                 </div>
 
-                <div class="bento-card reveal">
-                    <i class="fa-solid fa-network-wired text-2xl text-blue-500 mb-4"></i>
-                    <h4 class="grotesk text-xl font-semibold mb-2">Cranial Nerve X</h4>
-                    <p class="text-sm leading-relaxed mb-6" style="color: var(--text-muted);">
-                        The Vagus Nerve is the longest fiber-optic cable in the human body, directly connecting the brainstem to the heart and solar plexus. 
-                    </p>
-                    <div class="code-block">
-                        > status: monitoring<br>
-                        > function: autonomic override<br>
-                        > action: forces brainwave deceleration
-                    </div>
-                </div>
+                <div id="brain-lectures-grid" class="masonry-grid"></div>
+            </div>
+        </section>
 
-                <div class="bento-card md:col-span-3 reveal flex flex-col md:flex-row gap-8 items-start">
-                    <div class="flex-1">
-                        <h4 class="grotesk text-2xl font-semibold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-500">The Encrypted Schematics</h4>
-                        <p class="text-base leading-relaxed mb-6" style="color: var(--text-muted);">
-                            Thousands of years before modern neuroscience, ancient engineers mapped this exact biological hardware. Because they lacked the vocabulary of quantum physics, they encrypted the blueprints of the human nervous system into allegories, mythologies, and scriptures. 
-                            <br><br>
-                            The stories of 12 disciples or the crossing of a sea are not historical events. They are strict, anatomically accurate manuals for upgrading the human operating system.
-                        </p>
+        <section id="view-anatomy" class="view-section px-4">
+            <div class="max-w-6xl mx-auto">
+                <h2 class="cinzel text-4xl md:text-6xl font-black mb-10 text-center uppercase" style="color: var(--text-main);">The Temple</h2>
+                
+                <div class="grid lg:grid-cols-12 gap-10 items-start">
+                    <div class="lg:col-span-5 flex justify-center relative rounded-3xl py-8 border shadow-inner" style="background: var(--surface); border-color: var(--surface-border);">
+                        <div class="spine-container">
+                            <div class="spine-line"></div>
+                            <div class="chakra-node" style="background-color: #a855f7; box-shadow: 0 0 20px #a855f7;" onclick="window.app.showAnatomy('crown')"><i class="fa-solid fa-crown"></i></div>
+                            <div class="chakra-node" style="background-color: #4f46e5; box-shadow: 0 0 20px #4f46e5;" onclick="window.app.showAnatomy('brow')"><i class="fa-solid fa-eye"></i></div>
+                            <div class="chakra-node" style="background-color: #3b82f6; box-shadow: 0 0 20px #3b82f6;" onclick="window.app.showAnatomy('throat')"><i class="fa-solid fa-comment-dots"></i></div>
+                            <div class="chakra-node" style="background-color: #22c55e; box-shadow: 0 0 20px #22c55e;" onclick="window.app.showAnatomy('heart')"><i class="fa-solid fa-heart"></i></div>
+                            <div class="chakra-node" style="background-color: #eab308; box-shadow: 0 0 20px #eab308;" onclick="window.app.showAnatomy('solar')"><i class="fa-solid fa-fire"></i></div>
+                            <div class="chakra-node" style="background-color: #f97316; box-shadow: 0 0 20px #f97316;" onclick="window.app.showAnatomy('sacral')"><i class="fa-solid fa-water"></i></div>
+                            <div class="chakra-node" style="background-color: #ef4444; box-shadow: 0 0 20px #ef4444;" onclick="window.app.showAnatomy('root')"><i class="fa-solid fa-mountain"></i></div>
+                        </div>
                     </div>
-                    
-                    <div class="flex-1 w-full flex flex-col gap-3">
-                        <h5 class="text-xs font-mono uppercase tracking-[0.2em]" style="color: var(--text-main);">Access Initial Briefings</h5>
-                        
-                        <button onclick="playClip('Bill_Donahue_The_Single_Eye', 860)" class="text-left w-full p-4 rounded-xl border transition-all flex justify-between items-center group bg-black/5 hover:bg-black/20" style="border-color: var(--surface-border);">
-                            <span class="text-sm font-medium" style="color: var(--text-main);">Why does ancient text map to cranial anatomy?</span>
-                            <i class="fa-solid fa-play text-blue-400 opacity-50 group-hover:opacity-100 group-hover:scale-110 transition-all"></i>
-                        </button>
-                        
-                        <button onclick="playClip('Bill_Donahue_12_Cranial_Nerves', 1320)" class="text-left w-full p-4 rounded-xl border transition-all flex justify-between items-center group bg-black/5 hover:bg-black/20" style="border-color: var(--surface-border);">
-                            <span class="text-sm font-medium" style="color: var(--text-main);">What is the physical translation of the 12 Disciples?</span>
-                            <i class="fa-solid fa-play text-blue-400 opacity-50 group-hover:opacity-100 group-hover:scale-110 transition-all"></i>
-                        </button>
-                        
-                        <button onclick="playClip('Bill_Donahue_Secret_Of_The_Manger', 1095)" class="text-left w-full p-4 rounded-xl border transition-all flex justify-between items-center group bg-black/5 hover:bg-black/20" style="border-color: var(--surface-border);">
-                            <span class="text-sm font-medium" style="color: var(--text-main);">How does the Solar Plexus connect to the 'Manger'?</span>
-                            <i class="fa-solid fa-play text-blue-400 opacity-50 group-hover:opacity-100 group-hover:scale-110 transition-all"></i>
-                        </button>
+                    <div class="lg:col-span-7">
+                        <div id="anatomy-info" class="p-8 md:p-12 border rounded-3xl text-left min-h-[300px] transition-all shadow-2xl relative overflow-hidden" style="background: var(--surface); border-color: var(--surface-border);">
+                            <div class="absolute -top-10 -right-10 text-9xl opacity-5 pointer-events-none" style="color: var(--text-main);"><i id="ana-bg-icon" class="fa-solid fa-dharmachakra"></i></div>
+                            <h3 class="cinzel text-3xl md:text-5xl mb-2 font-bold" style="color: var(--gold);" id="ana-title">The Seven Seals</h3>
+                            <p class="font-mono text-xs md:text-sm uppercase tracking-[0.3em] opacity-60 mb-8" style="color: var(--text-main);" id="ana-meta">Jacob's Ladder // Yggdrasil (The World Tree)</p>
+                            <div class="space-y-6">
+                                <p class="leading-relaxed italic text-lg md:text-xl" style="color: var(--text-main);" id="ana-desc">
+                                    The human spine is the true Jacob's Ladder and the physical World Tree. Click the specific nerve plexuses on the diagram to reveal their esoteric decoding.
+                                </p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <section class="py-32 px-6 text-center relative z-10">
-        <div class="max-w-3xl mx-auto reveal">
-            <h2 class="text-4xl md:text-6xl font-bold tracking-tighter mb-6">Access the Database.</h2>
-            <p class="text-lg mb-12 font-light max-w-xl mx-auto" style="color: var(--text-muted);">
-                Decades of research have been digitized and cross-referenced into an interactive framework. View the exact alignment between astrophysics, neuroanatomy, and the ancient texts.
-            </p>
-            <a href="archive.html" class="btn-primary">
-                Initialize Archive <i class="fa-solid fa-arrow-right"></i>
-            </a>
-            <p class="mt-6 text-[10px] font-mono uppercase tracking-widest" style="color: var(--text-muted);">Secure Connection • No Tracking</p>
-        </div>
-    </section>
+        <section id="view-echoes" class="view-section px-4 md:px-6 text-center">
+            <div class="max-w-6xl mx-auto pt-4 relative">
+                <h2 class="cinzel text-4xl md:text-6xl font-black mb-4 uppercase" style="color: var(--text-main);">Modern Echoes</h2>
+                <div class="cinzel text-xs md:text-sm mb-12 italic tracking-widest px-2 md:px-6 min-h-[40px]" style="color: var(--gold);">The Collective Unconscious in Pop Culture</div>
+                
+                <p class="text-lg md:text-xl leading-relaxed text-center max-w-4xl mx-auto mb-12 font-light" style="color: var(--text-muted);">
+                    The architects of modern fiction do not invent magic systems from scratch. They are operating human biological spacesuits, and their imaginations naturally project the exact same anatomical maps. The ancient journey of the 12 nerves and the 7 seals is actively encrypted in the games and stories of today.
+                </p>
 
-    <div id="clip-modal" class="fixed inset-0 z-[200] hidden flex items-center justify-center p-4 backdrop-blur-md transition-opacity" style="background: rgba(0,0,0,0.85);" onclick="if(event.target === this) closeClip()">
-        <div class="relative w-full max-w-4xl aspect-video bg-black rounded-2xl overflow-hidden shadow-2xl border" style="border-color: var(--surface-border);">
-            <button onclick="closeClip()" class="absolute top-4 right-4 z-[250] w-10 h-10 bg-black/80 text-white rounded-full flex items-center justify-center border transition-all hover:bg-red-600" style="border-color: var(--surface-border);">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-left mb-16">
+                    
+                    <div class="cosmos-card p-8 border-t-4" style="border-top-color: #f59e0b;">
+                        <div class="flex items-center gap-4 mb-6">
+                            <div class="w-12 h-12 rounded-full flex items-center justify-center bg-orange-500/20 text-orange-500 border border-orange-500/30 text-xl"><i class="fa-solid fa-dragon"></i></div>
+                            <h3 class="cinzel text-2xl font-bold" style="color: var(--text-main);">The Kundalini</h3>
+                        </div>
+                        <h4 class="font-mono text-[10px] uppercase tracking-[0.2em] mb-2 text-orange-400">Dragon Ball Z</h4>
+                        <p class="text-sm leading-relaxed" style="color: var(--text-muted);">The 7 Dragon Balls represent the 7 Chakras (the endocrine glands). Gathering them summons Shenron (the Dragon/Serpent), representing the Kundalini serpent-fire rising up the spine to grant enlightenment. The "Super Saiyan" golden aura is the electromagnetic Torus field overflowing with high-frequency light.</p>
+                    </div>
+
+                    <div class="cosmos-card p-8 border-t-4" style="border-top-color: var(--gold);">
+                        <div class="flex items-center gap-4 mb-6">
+                            <div class="w-12 h-12 rounded-full flex items-center justify-center text-xl" style="background: rgba(212,175,55,0.2); color: var(--gold); border: 1px solid rgba(212,175,55,0.3);"><i class="fa-solid fa-feather"></i></div>
+                            <h3 class="cinzel text-2xl font-bold" style="color: var(--text-main);">The Pineal Gland</h3>
+                        </div>
+                        <h4 class="font-mono text-[10px] uppercase tracking-[0.2em] mb-2" style="color: var(--gold);">Harry Potter</h4>
+                        <p class="text-sm leading-relaxed" style="color: var(--text-muted);">The Golden Snitch is the Pineal Gland. It has wings (like the Caduceus staff) and is the final, hardest thing to catch. Once the "Seeker" catches it, the game immediately ends—representing transcending the physical simulation. Platform 9 ¾ represents the hidden Theta frequency required to cross dimensional barriers.</p>
+                    </div>
+
+                    <div class="cosmos-card p-8 border-t-4" style="border-top-color: #ef4444;">
+                        <div class="flex items-center gap-4 mb-6">
+                            <div class="w-12 h-12 rounded-full flex items-center justify-center bg-red-500/20 text-red-500 border border-red-500/30 text-xl"><i class="fa-solid fa-bolt"></i></div>
+                            <h3 class="cinzel text-2xl font-bold" style="color: var(--text-main);">The Hardware</h3>
+                        </div>
+                        <h4 class="font-mono text-[10px] uppercase tracking-[0.2em] mb-2 text-red-400">Marvel Universe</h4>
+                        <p class="text-sm leading-relaxed" style="color: var(--text-muted);">Iron Man's Arc Reactor is the literal Heart Torus Field powering the suit. Doctor Strange's "Eye of Agamotto" represents the activation of the single Third Eye to view the quantum field. Thor's Hammer (Mjolnir) acts as the Vagus Nerve, sending an electrical spark to the brain.</p>
+                    </div>
+
+                    <div class="cosmos-card p-8 border-t-4" style="border-top-color: #3b82f6;">
+                        <div class="flex items-center gap-4 mb-6">
+                            <div class="w-12 h-12 rounded-full flex items-center justify-center bg-blue-500/20 text-blue-500 border border-blue-500/30 text-xl"><i class="fa-solid fa-gamepad"></i></div>
+                            <h3 class="cinzel text-2xl font-bold" style="color: var(--text-main);">The Spinal Fluid</h3>
+                        </div>
+                        <h4 class="font-mono text-[10px] uppercase tracking-[0.2em] mb-2 text-blue-400">Fantasy RPGs (Final Fantasy, etc.)</h4>
+                        <p class="text-sm leading-relaxed" style="color: var(--text-muted);">The core mechanic of almost every fantasy game revolves around a "World Tree", a "Lifestream", or "Mana", which represents the bioelectric spinal fluid. The hero's journey of collecting elemental crystals (Earth, Water, Fire, Air) maps exactly to activating the lower animal chakras to reach the Crown.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="view-meditation" class="view-section px-4 md:px-6 text-center">
+            <div class="max-w-6xl mx-auto">
+                <h2 class="cinzel text-4xl md:text-6xl font-black mb-4 uppercase" style="color: var(--text-main);">Meditation</h2>
+                <div id="meditation-quote" class="cinzel text-xs md:text-sm mb-12 italic tracking-widest px-4" style="color: var(--gold);">"The absence of thought."</div>
+                
+                <div class="flex flex-col lg:flex-row items-center justify-center gap-12 mb-16 p-8 border rounded-3xl shadow-inner" style="background: var(--surface); border-color: var(--surface-border);">
+                    
+                    <div class="relative w-64 h-64 flex items-center justify-center flex-shrink-0">
+                        <div id="med-ring-3" class="absolute inset-0 rounded-full border border-blue-500/20 med-ring-anim transition-all duration-1000" style="animation-duration: 2s;"></div>
+                        <div id="med-ring-2" class="absolute inset-4 rounded-full border-2 border-t-transparent border-gray-500/40 animate-spin transition-all duration-1000" style="animation-duration: 1s;"></div>
+                        <div id="med-ring-1" class="absolute inset-12 rounded-full backdrop-blur-md transition-all duration-1000 flex items-center justify-center shadow-[0_0_15px_rgba(239,68,68,0.4)]" style="background: rgba(239,68,68,0.2);">
+                            <i id="med-icon" class="fa-solid fa-bolt text-4xl text-red-500/50 transition-all duration-1000"></i>
+                        </div>
+                    </div>
+
+                    <div class="max-w-md text-left w-full lg:w-1/2">
+                        <h3 id="med-title" class="cinzel text-2xl md:text-3xl font-bold mb-1" style="color: var(--gold);">1. The Noise (Beta)</h3>
+                        <p id="med-desc" class="text-[10px] md:text-xs font-mono uppercase tracking-widest mb-4" style="color: var(--text-muted);">14-30 Hz | Egypt | The Carnal Mind</p>
+                        <p id="med-text" class="text-sm md:text-base italic leading-relaxed h-24" style="color: var(--text-main);">This is the waking state. The left hemisphere is dominating, analyzing, and stressing over the physical simulation. You are trapped in the five senses. You must shut the door.</p>
+                        
+                        <div class="flex flex-wrap gap-2 mt-4">
+                            <button onclick="window.app.setMeditationState(1)" id="med-btn-1" class="med-btn px-4 py-2 border rounded text-[10px] font-bold uppercase tracking-widest transition" style="border-color: var(--text-main); color: var(--text-main); background: rgba(150,150,150,0.1);">Beta</button>
+                            <button onclick="window.app.setMeditationState(2)" id="med-btn-2" class="med-btn px-4 py-2 border rounded text-[10px] font-bold uppercase tracking-widest transition opacity-50" style="border-color: var(--surface-border); color: var(--text-main);">Alpha</button>
+                            <button onclick="window.app.setMeditationState(3)" id="med-btn-3" class="med-btn px-4 py-2 border rounded text-[10px] font-bold uppercase tracking-widest transition opacity-50" style="border-color: var(--surface-border); color: var(--text-main);">Theta</button>
+                            <button onclick="window.app.setMeditationState(4)" id="med-btn-4" class="med-btn px-4 py-2 border rounded text-[10px] font-bold uppercase tracking-widest transition opacity-50 text-blue-500" style="border-color: rgba(59,130,246,0.5);">Silence (Delta)</button>
+                        </div>
+
+                        <button onclick="window.app.searchMeditationState()" id="med-search-btn" data-query="(carnal mind|egypt|left brain|waking state|beta)" data-display="Frequency: 14-30 Hz (Beta)" class="mt-6 w-full py-3 border rounded text-[10px] uppercase font-black tracking-widest transition flex justify-center items-center gap-2 hover:scale-105" style="background-color: rgba(212, 175, 55, 0.1); border-color: var(--gold); color: var(--gold);">
+                            <i class="fa-solid fa-magnifying-glass"></i> Search This Frequency
+                        </button>
+                    </div>
+                </div>
+
+                <div id="meditation-lectures-grid" class="masonry-grid"></div>
+            </div>
+        </section>
+
+        <section id="view-resources" class="view-section px-4 md:px-6 text-center">
+            <div class="max-w-6xl mx-auto">
+                <h2 class="cinzel text-4xl md:text-6xl font-black mb-12 uppercase" style="color: var(--text-main);">Primary Links</h2>
+                <div class="flex justify-center mb-12">
+                    <a href="https://www.youtube.com/@bdona4556" target="_blank" class="cosmos-card p-10 w-full max-w-lg flex flex-col items-center justify-center group" style="border-color: rgba(239, 68, 68, 0.5);">
+                        <i class="fa-brands fa-youtube text-6xl text-red-600 mb-4 group-hover:scale-110 transition-transform drop-shadow-[0_0_15px_rgba(239,68,68,0.5)]"></i>
+                        <h3 class="cinzel text-2xl font-bold" style="color: var(--text-main);">Official YouTube</h3>
+                        <p class="text-[10px] uppercase font-bold tracking-widest mt-2" style="color: var(--text-muted);">The Master Archive</p>
+                    </a>
+                </div>
+                <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
+                    <a href="https://www.hiddenmeanings.com" target="_blank" class="cosmos-card p-8 text-center justify-center"><h3 class="cinzel text-gold text-xl mb-2 font-bold">HiddenMeanings.com</h3><p class="text-xs uppercase tracking-widest" style="color: var(--text-muted);">Transcripts & Books</p></a>
+                    <a href="https://www.facebook.com/groups/356472414984195" target="_blank" class="cosmos-card p-8 text-center justify-center"><h3 class="cinzel text-gold text-xl mb-2 font-bold">Facebook Group</h3><p class="text-xs uppercase tracking-widest" style="color: var(--text-muted);">Community & Discussion</p></a>
+                    <a href="https://thehiddenlighthouse.blogspot.com" target="_blank" class="cosmos-card p-8 text-center justify-center"><h3 class="cinzel text-gold text-xl mb-2 font-bold">Lighthouse Blog</h3><p class="text-xs uppercase tracking-widest" style="color: var(--text-muted);">Archives & Essays</p></a>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <div class="dock-container">
+        <div class="dock">
+            <button class="dock-btn active" id="nav-home" onclick="window.app.nav('home')"><i class="fa-solid fa-house md:hidden mb-1 text-lg"></i><span class="hidden md:inline">Home</span></button>
+            <button class="dock-btn" id="nav-library" onclick="window.app.nav('library')"><i class="fa-solid fa-book md:hidden mb-1 text-lg"></i><span class="hidden md:inline">Library</span></button>
+            <button class="dock-btn" id="nav-brain" onclick="window.app.nav('brain')"><i class="fa-solid fa-brain md:hidden mb-1 text-lg"></i><span class="hidden md:inline">Brain</span></button>
+            <button class="dock-btn" style="color: var(--gold);" onclick="window.app.openSearchOverlay()"><i class="fa-solid fa-magnifying-glass text-xl"></i></button>
+            <button class="dock-btn" id="nav-anatomy" onclick="window.app.nav('anatomy')"><i class="fa-solid fa-person md:hidden mb-1 text-lg"></i><span class="hidden md:inline">Temple</span></button>
+            <button class="dock-btn" id="nav-echoes" onclick="window.app.nav('echoes')"><i class="fa-solid fa-bolt md:hidden mb-1 text-lg"></i><span class="hidden md:inline">Echoes</span></button>
+            <button class="dock-btn" id="nav-meditation" onclick="window.app.nav('meditation')"><i class="fa-solid fa-om md:hidden mb-1 text-lg"></i><span class="hidden md:inline">Silence</span></button>
+            <button class="dock-btn text-red-500" onclick="window.app.scanForBrokenLinks()"><i class="fa-solid fa-stethoscope md:text-lg"></i></button>
+        </div>
+    </div>
+
+    <div id="video-modal" class="fixed inset-0 z-[200] hidden flex items-center justify-center p-0 md:p-4" style="background: rgba(0,0,0,0.95);" onclick="if(event.target === this) window.app.closeVideo()">
+        <div class="relative w-full max-w-5xl aspect-video bg-black rounded-none md:rounded-2xl overflow-hidden shadow-2xl mt-[-10vh] md:mt-0 border border-white/10">
+            <button onclick="window.app.closeVideo()" class="absolute top-2 right-2 md:top-4 md:right-4 z-[250] w-10 h-10 bg-black/80 text-white rounded-full hover:bg-red-600 flex items-center justify-center border border-white/20 transition-all">
                 <i class="fa-solid fa-xmark"></i>
             </button>
-            <div id="clip-container" class="w-full h-full"></div>
+            <div id="video-frame-container" class="w-full h-full relative z-[200]"></div>
         </div>
     </div>
 
     <script>
-        function playClip(archiveId, startTimeSeconds) {
-            const container = document.getElementById('clip-container');
-            let srcUrl = `https://archive.org/embed/${archiveId}?autoplay=1&start=${startTimeSeconds}`;
-            container.innerHTML = `<iframe src="${srcUrl}" class="w-full h-full" frameborder="0" allowfullscreen></iframe>`;
-            document.getElementById('clip-modal').classList.remove('hidden');
-        }
-
-        function closeClip() {
-            document.getElementById('clip-container').innerHTML = '';
-            document.getElementById('clip-modal').classList.add('hidden');
-        }
-
         function createDust() {
             const container = document.getElementById('stars-container');
             const canvas = document.createElement('canvas');
@@ -279,23 +495,476 @@
             animate();
         }
 
-        function toggleTheme() { 
-            document.body.classList.toggle('light-mode'); 
-            document.getElementById('theme-icon').className = document.body.classList.contains('light-mode') ? 'fa-solid fa-sun' : 'fa-solid fa-moon'; 
-        }
+        window.app = {
+            data: [], archiveVideos: [], selectedTopics: new Set(), validYtIds: new Set(), transcripts: [],
+            quotes: [
+                "Everything in the Bible is Anatomy.",
+                "Turn off the thoughts and let the light enter the single eye.",
+                "The Christ is not a man, it is an electrical charge.",
+                "Golgotha is the place of the skull.",
+                "Meditation is the absence of thought."
+            ],
+            
+            anaMap: {
+                root: {t: "Root (Muladhara) | 400Hz", m: "The Earth Element", d: "Base of spine. Represents biblical Egypt. This is the center of physical survival, material bondage, and the foundation where the Serpent Fire rests.", i: "fa-mountain"},
+                sacral: {t: "Sacral (Svadhisthana) | 480Hz", m: "The Water Element", d: "The reproductive center. Represents biblical Sodom. The seat of raw emotions, desires, and the physical fire that must be raised upward.", i: "fa-water"},
+                solar: {t: "Solar Plexus (Manipura) | 520Hz", m: "The Fire Element", d: "The Manger where the Christos is born. The center of personal power and the fiery furnace where the ego begins its transformation into spirit.", i: "fa-fire"},
+                heart: {t: "Heart (Anahata) | 600Hz", m: "The Air Element", d: "Jerusalem—the City of Peace. The bridge crossing over from the animal lower nature into the higher spiritual mind. A place of perfect balance.", i: "fa-heart"},
+                throat: {t: "Throat (Vishuddha) | 670Hz", m: "The Ether Element", d: "The center of expression and truth. The biological crossing of the Red Sea, where the silent truth of the upper room translates into the spoken Word.", i: "fa-comment-dots"},
+                brow: {t: "Brow (Ajna) | 750Hz", m: "The Light Element", d: "The Pineal Gland. Peniel, where Jacob saw God face to face. The Single Eye that sees beyond the illusion of duality and opens to universal light.", i: "fa-eye"},
+                crown: {t: "Crown (Sahasrara) | 789Hz+", m: "Cosmic Consciousness", d: "ZION. The Thousand-Petaled Lotus. The ultimate destination of the spinal fluid, resulting in full realization and direct connection to Universal consciousness.", i: "fa-crown"}
+            },
 
-        document.addEventListener("DOMContentLoaded", () => {
-            createDust();
-            const reveals = document.querySelectorAll(".reveal");
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add("active");
-                    }
+            medStates: {
+                1: { t: "1. The Noise (Beta)", m: "14-30 Hz | Egypt | The Carnal Mind", d: "This is the waking state. The left hemisphere is dominating, analyzing, and stressing over the physical simulation. You are trapped in the five senses. You must shut the door.", q: "(carnal mind|egypt|left brain|waking state|beta)", disp: "Frequency: 14-30 Hz (Beta)" },
+                2: { t: "2. The Withdrawal (Alpha)", m: "8-13 Hz | The Wilderness | Letting Go", d: "You have closed your physical eyes. The brain slows down. You are detaching from the five senses and entering the wilderness.", q: "(wilderness|alpha|closing the eyes|detach)", disp: "Frequency: 8-13 Hz (Alpha)" },
+                3: { t: "3. The Threshold (Theta)", m: "4-7 Hz | The Holy Place | The Single Eye", d: "The transition zone. The silver cord is active. The right hemisphere begins to receive the cosmic light. The internal optical network awakens.", q: "(theta|holy place|single eye|right hemisphere|pineal)", disp: "Frequency: 4-7 Hz (Theta)" },
+                4: { t: "4. The Silence (Delta)", m: "0.1 Hz | Holy of Holies | Pure Coherence", d: "Absolute zero. The absence of thought. You have crossed the Red Sea. The heart and brain are mathematically synced with the universe.", q: "(absence of thought|holy of holies|silence|delta|meditation)", disp: "Frequency: 0.1-4 Hz (Delta)" }
+            },
+
+            setMeditationState: (step) => {
+                const s = window.app.medStates[step];
+                document.getElementById('med-title').innerText = s.t;
+                document.getElementById('med-desc').innerText = s.m;
+                document.getElementById('med-text').innerText = s.d;
+                document.getElementById('med-search-btn').setAttribute('data-query', s.q);
+                document.getElementById('med-search-btn').setAttribute('data-display', s.disp);
+
+                document.querySelectorAll('.med-btn').forEach((b, i) => {
+                    b.style.background = (i === step - 1) ? 'rgba(150,150,150,0.1)' : 'transparent';
+                    b.style.borderColor = (i === step - 1) ? 'var(--text-main)' : 'var(--surface-border)';
+                    b.style.opacity = (i === step - 1) ? '1' : '0.5';
                 });
-            }, { threshold: 0.1 });
-            reveals.forEach(reveal => observer.observe(reveal));
-        });
+
+                const r1 = document.getElementById('med-ring-1');
+                const r2 = document.getElementById('med-ring-2');
+                const r3 = document.getElementById('med-ring-3');
+                const icon = document.getElementById('med-icon');
+
+                if(step === 1) {
+                    r1.className = "absolute inset-12 rounded-full backdrop-blur-md transition-all duration-1000 flex items-center justify-center shadow-[0_0_15px_rgba(239,68,68,0.4)]";
+                    r1.style.background = "rgba(239,68,68,0.2)";
+                    r2.style.animationDuration = "1s"; r3.style.animationDuration = "2s";
+                    icon.className = "fa-solid fa-bolt text-4xl text-red-500/50 transition-all duration-1000";
+                } else if (step === 2) {
+                    r1.className = "absolute inset-10 rounded-full backdrop-blur-md transition-all duration-1000 flex items-center justify-center shadow-[0_0_20px_rgba(59,130,246,0.4)]";
+                    r1.style.background = "rgba(59,130,246,0.2)";
+                    r2.style.animationDuration = "3s"; r3.style.animationDuration = "5s";
+                    icon.className = "fa-solid fa-water text-4xl text-blue-400/50 transition-all duration-1000";
+                } else if (step === 3) {
+                    r1.className = "absolute inset-8 rounded-full backdrop-blur-md transition-all duration-1000 flex items-center justify-center shadow-[0_0_30px_rgba(168,85,247,0.4)]";
+                    r1.style.background = "rgba(168,85,247,0.2)";
+                    r2.style.animationDuration = "6s"; r3.style.animationDuration = "10s";
+                    icon.className = "fa-solid fa-eye text-5xl text-purple-400/70 transition-all duration-1000";
+                } else if (step === 4) {
+                    r1.className = "absolute inset-4 rounded-full backdrop-blur-lg transition-all duration-1000 flex items-center justify-center shadow-[0_0_60px_rgba(255,255,255,0.4)]";
+                    r1.style.background = "rgba(255,255,255,0.1)";
+                    r2.style.animationDuration = "10s"; r3.style.animationDuration = "20s";
+                    icon.className = "fa-solid fa-om text-6xl text-white transition-all duration-1000 drop-shadow-[0_0_10px_#fff]";
+                }
+            },
+
+            searchMeditationState: () => {
+                const btn = document.getElementById('med-search-btn');
+                const query = btn.getAttribute('data-query');
+                const display = btn.getAttribute('data-display');
+                window.app.openSearchOverlay();
+                document.getElementById('exact-match-checkbox').checked = false;
+                document.getElementById('overlay-search-input').value = `Decoding: ${display}`;
+                window.app.performOverlaySearch(true, query);
+            },
+
+            searchNerveState: () => {
+                const btn = document.getElementById('brain-search-btn');
+                const query = btn.getAttribute('data-query');
+                const display = btn.getAttribute('data-display');
+                if(!query) return;
+                window.app.openSearchOverlay();
+                document.getElementById('exact-match-checkbox').checked = false;
+                document.getElementById('overlay-search-input').value = `Decoding: ${display}`;
+                window.app.performOverlaySearch(true, query);
+            },
+
+            getTopic: (v) => {
+                if(!window.app.data.length) return "General";
+                let ytId = v['external-identifier']?.match(/urn:youtube:([a-zA-Z0-9_-]{11})/)?.[1];
+                if(ytId) { const m = window.app.data.find(r => r.url && r.url.includes(ytId)); if(m) return m.topic; }
+                return "Uncatalogued";
+            },
+
+            getTranscriptSegments: function(v) {
+                if(!this.transcripts || this.transcripts.length === 0) return null;
+                let ytId = v['external-identifier']?.match(/urn:youtube:([a-zA-Z0-9_-]{11})/)?.[1];
+                if(!ytId) return null;
+                let match = this.transcripts.find(item => item.id === ytId);
+                return match ? match.segments : null;
+            },
+
+            renderCard: (v) => {
+                const topic = window.app.getTopic(v);
+                let btn = v['external-identifier']?.includes('urn:youtube:') ? `<button onclick="event.stopPropagation(); window.open('https://youtube.com/watch?v=${v['external-identifier'].match(/urn:youtube:([a-zA-Z0-9_-]{11})/)[1]}', '_blank')" class="text-[8px] font-bold border px-2 py-1 rounded relative z-20 pointer-events-auto hover:bg-gray-800 hover:text-white transition-colors uppercase tracking-widest" style="color:var(--gold); border-color:var(--gold);">YouTube</button>` : '';
+                return `
+                <div class="cosmos-card group" onclick="window.app.openVideo('${v.identifier}')">
+                    <img src="https://archive.org/services/img/${v.identifier}" class="aspect-video object-cover opacity-80 group-hover:opacity-100 transition-opacity" loading="lazy" />
+                    <div class="p-4 flex flex-col flex-1">
+                        <h3 class="text-xs md:text-[13px] font-bold line-clamp-2 mb-4 leading-snug" style="color: var(--text-main);">${v.title}</h3>
+                        <div class="mt-auto flex justify-between items-center">
+                            <button onclick="event.stopPropagation(); window.app.clickCardTopic('${topic}')" class="text-[8px] font-black uppercase px-2 py-1 rounded border relative z-20 pointer-events-auto hover:scale-105 transition-transform tracking-widest" style="color: var(--accent-glow); border-color: var(--surface-border); background: var(--bg-base);">${topic}</button>
+                            ${btn}
+                        </div>
+                    </div>
+                </div>`;
+            },
+
+            clickCardTopic: (t) => {
+                if (t === 'Uncatalogued') return;
+                window.app.selectedTopics.clear();
+                window.app.selectedTopics.add(t);
+                window.app.nav('library');
+                const drop = document.getElementById('mobile-topic-dropdown');
+                if(drop) drop.value = t;
+            },
+            
+            selectMobileTopic: (t) => {
+                window.app.selectedTopics.clear();
+                if(t) window.app.selectedTopics.add(t);
+                window.app.renderLibraryInterface();
+            },
+
+            nav: (id) => {
+                history.pushState({view: id}, "", "#"+id);
+                document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
+                document.querySelectorAll('.dock-btn').forEach(b => b.classList.remove('active'));
+                document.getElementById('view-' + id).classList.add('active');
+                const btn = document.getElementById('nav-' + id);
+                if(btn) btn.classList.add('active');
+                
+                if(id==='library') window.app.renderLibraryInterface();
+                window.scrollTo(0,0);
+            },
+
+            performOverlaySearch: (isDeep, overrideQuery = null) => {
+                const qRaw = overrideQuery || document.getElementById('overlay-search-input').value.trim();
+                const grid = document.getElementById('overlay-results');
+                const box = document.getElementById('overlay-insight-box');
+                const text = document.getElementById('overlay-insight-text');
+                if(!qRaw) return;
+
+                const isExact = document.getElementById('exact-match-checkbox').checked;
+                const escapeRegExp = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                
+                let searchRegex;
+                if(isExact) {
+                    const qEscaped = escapeRegExp(qRaw);
+                    searchRegex = new RegExp(`\\b${qEscaped}\\b`, 'i');
+                } else {
+                    searchRegex = new RegExp(qRaw, 'i');
+                }
+                
+                const highlightRegex = new RegExp(`(${searchRegex.source})`, 'gi');
+
+                if(isDeep) {
+                    box.classList.remove('hidden');
+                    text.innerHTML = `<span style="color: var(--gold);" class="uppercase text-xs font-bold tracking-widest block mb-2">Deep Transcript Scan Executed</span>`;
+                    
+                    let htmlOut = '';
+                    let matchCount = 0;
+                    let totalSnippetHits = 0;
+
+                    window.app.archiveVideos.forEach(v => {
+                        let segments = window.app.getTranscriptSegments(v);
+                        
+                        if(segments && Array.isArray(segments)) {
+                            let rawHits = segments.filter(s => s.text && searchRegex.test(s.text));
+                            
+                            let hits = [];
+                            if (rawHits.length > 0) {
+                                rawHits.forEach(currentHit => {
+                                    let isSubset = false;
+                                    for (let i = 0; i < hits.length; i++) {
+                                        let existingHit = hits[i];
+                                        let timeDiff = Math.abs((currentHit.start || 0) - (existingHit.start || 0));
+                                        
+                                        if (timeDiff <= 4) {
+                                            if (existingHit.text.includes(currentHit.text)) {
+                                                isSubset = true;
+                                                break;
+                                            } else if (currentHit.text.includes(existingHit.text)) {
+                                                hits[i] = currentHit;
+                                                isSubset = true;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    if (!isSubset) hits.push(currentHit);
+                                });
+                            }
+                            
+                            if (hits.length > 0) {
+                                matchCount++;
+                                totalSnippetHits += hits.length;
+                                
+                                htmlOut += `
+                                <div class="deep-result-card">
+                                    <div class="flex justify-between items-center cursor-pointer group" onclick="this.nextElementSibling.classList.toggle('hidden')">
+                                        <span class="text-sm font-bold group-hover:opacity-70 transition-opacity" style="color:var(--text-main)">${v.title}</span>
+                                        <span class="font-mono text-sm md:text-base px-3 py-1 rounded border whitespace-nowrap ml-4 flex-shrink-0" style="color: var(--text-main); background: var(--bg-base); border-color: var(--surface-border);">${hits.length} <span class="text-[10px] uppercase hidden md:inline">Hits</span><i class="fa-solid fa-chevron-down ml-2 text-[10px]"></i></span>
+                                    </div>
+                                    <div class="hidden mt-4 space-y-3 pt-4 border-t" style="border-color: var(--surface-border);">
+                                `;
+
+                                hits.forEach(hit => {
+                                    let snippet = hit.text.replace(highlightRegex, '<span style="color: #000; background: var(--gold); padding: 0 4px; border-radius: 4px; font-weight: 900;">$1</span>');
+                                    let timeS = Math.floor(hit.start || 0);
+                                    let mins = Math.floor(timeS / 60);
+                                    let secs = (timeS % 60).toString().padStart(2, '0');
+                                    
+                                    htmlOut += `
+                                        <div class="p-3 rounded cursor-pointer transition flex flex-col gap-2 snippet-item" onclick="window.app.openVideo('${v.identifier}', ${timeS})">
+                                            <span class="text-[10px] font-mono border px-2 py-0.5 rounded self-start" style="color: var(--gold); border-color: rgba(212, 175, 55, 0.4); background: rgba(212, 175, 55, 0.05);">@ ${mins}:${secs}</span>
+                                            <p class="italic text-xs md:text-sm leading-relaxed" style="color:var(--text-muted)">"...${snippet}..."</p>
+                                        </div>`;
+                                });
+
+                                htmlOut += `</div></div>`;
+                            }
+                        } 
+                        else if (searchRegex.test(v.title)) {
+                            matchCount++;
+                            htmlOut += `
+                            <div class="deep-result-card cursor-pointer" onclick="window.app.openVideo('${v.identifier}')">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm font-bold" style="color:var(--text-main)">${v.title}</span>
+                                    <span class="text-[9px] uppercase tracking-widest border px-2 py-1 rounded ml-4 flex-shrink-0" style="color: var(--text-muted); border-color: var(--surface-border);">Title Match</span>
+                                </div>
+                            </div>`;
+                        }
+                    });
+
+                    if(matchCount === 0) {
+                        htmlOut = `<p style="color:var(--text-main)">No exact transcript matches found. Toggle off "Exact Word Match" to broaden your search.</p>`;
+                    } else {
+                        text.innerHTML += `<span class="text-xs" style="color: var(--text-main);">Found <b>${totalSnippetHits}</b> exact snippets across <b>${matchCount}</b> videos. Click a video to expand hits.</span>`;
+                    }
+                    
+                    grid.style.display = 'flex';
+                    grid.style.flexDirection = 'column';
+                    grid.style.gap = '10px';
+                    grid.innerHTML = htmlOut;
+
+                } else {
+                    box.classList.add('hidden');
+                    grid.style.display = 'grid'; 
+                    const filtered = window.app.archiveVideos.filter(v => searchRegex.test(v.title));
+                    grid.innerHTML = filtered.map(v => window.app.renderCard(v)).join('');
+                }
+            },
+
+            showAnatomy: (k) => {
+                const d = window.app.anaMap[k];
+                document.getElementById('ana-title').innerText = d.t;
+                document.getElementById('ana-meta').innerText = d.m;
+                document.getElementById('ana-desc').innerText = d.d;
+                document.getElementById('ana-bg-icon').className = `fa-solid ${d.i}`;
+            },
+
+            scanForBrokenLinks: () => {
+                const overlay = document.getElementById('diagnostics-overlay');
+                overlay.classList.add('active');
+                document.getElementById('diag-status').innerText = "Analyzing Archive Metadata...";
+                document.getElementById('diag-progress').style.width = "40%";
+
+                setTimeout(() => {
+                    const missing = window.app.archiveVideos.filter(v => !v['external-identifier']?.includes('urn:youtube:'));
+                    const uncat = window.app.archiveVideos.filter(v => window.app.getTopic(v) === "Uncatalogued");
+                    document.getElementById('diag-progress').style.width = "100%";
+                    document.getElementById('diag-status').innerText = `Scan Complete. Checked ${window.app.archiveVideos.length} files.`;
+
+                    setTimeout(() => {
+                        const html = `<html><head><title>Archive Health Report</title><style>body{font-family:monospace;background:#111;color:#fff;padding:40px;}table{width:100%;border-collapse:collapse;margin-top:20px;}th,td{border-bottom:1px solid #333;padding:10px;text-align:left;}h2{color:gold;margin-top:40px;border-bottom:1px solid #333;padding-bottom:10px;}</style></head><body><h1>Archive Health Check</h1><p>Total Records Scanned: ${window.app.archiveVideos.length}</p><h2>Missing YouTube Bridge (${missing.length})</h2><table><tr><th>Title</th><th>Identifier</th></tr>${missing.map(m=>`<tr><td>${m.title}</td><td>${m.identifier}</td></tr>`).join('')}</table><h2>Uncatalogued (Missing CSV Match) (${uncat.length})</h2><table><tr><th>Title</th><th>Identifier</th></tr>${uncat.map(u=>`<tr><td>${u.title}</td><td>${u.identifier}</td></tr>`).join('')}</table></body></html>`;
+                        const blob = new Blob([html], {type:'text/html'}); 
+                        window.open(URL.createObjectURL(blob), '_blank');
+                        overlay.classList.remove('active');
+                        document.getElementById('diag-progress').style.width = "0%";
+                    }, 800);
+                }, 800);
+            },
+
+            openSearchOverlay: () => { document.getElementById('search-overlay').classList.add('active'); document.getElementById('overlay-search-input').focus(); },
+            closeSearchOverlay: () => { document.getElementById('search-overlay').classList.remove('active'); },
+            
+            openVideo: (id, startTime = 0) => { 
+                const container = document.getElementById('video-frame-container');
+                let srcUrl = `https://archive.org/embed/${id}?autoplay=1`;
+                if(startTime > 0) srcUrl += `&start=${Math.floor(startTime)}`;
+                container.innerHTML = `<iframe src="${srcUrl}" class="w-full h-full" frameborder="0" allowfullscreen sandbox="allow-scripts allow-same-origin allow-forms allow-popups"></iframe>`; 
+                document.getElementById('video-modal').classList.remove('hidden'); 
+            },
+            
+            closeVideo: () => { document.getElementById('video-frame-container').innerHTML = ''; document.getElementById('video-modal').classList.add('hidden'); },
+            
+            toggleTheme: () => { 
+                document.body.classList.toggle('light-mode'); 
+                document.getElementById('theme-icon').className = document.body.classList.contains('light-mode') ? 'fa-solid fa-sun' : 'fa-solid fa-moon'; 
+            },
+
+            renderLibraryInterface: () => {
+                const container = document.getElementById('library-topics');
+                const drop = document.getElementById('mobile-topic-dropdown');
+                const topics = [...new Set(window.app.data.map(r => r.topic))].sort();
+                
+                if(window.app.archiveVideos.some(v => window.app.getTopic(v) === "Uncatalogued") && !topics.includes("Uncatalogued")) {
+                    topics.push("Uncatalogued");
+                }
+                
+                container.innerHTML = topics.map(t => {
+                    const count = window.app.archiveVideos.filter(v => window.app.getTopic(v) === t).length;
+                    const isActive = window.app.selectedTopics.has(t) ? 'active' : '';
+                    return `<div class="topic-chip ${isActive}" onclick="window.app.toggleTopic('${t}')">${t} <span class="chip-count opacity-50">(${count})</span></div>`;
+                }).join('');
+                
+                let dropOptions = `<option value="">ALL TOPICS</option>`;
+                topics.forEach(t => {
+                    const selected = window.app.selectedTopics.has(t) ? 'selected' : '';
+                    dropOptions += `<option value="${t}" ${selected}>${t}</option>`;
+                });
+                drop.innerHTML = dropOptions;
+                
+                const filtered = window.app.selectedTopics.size > 0 ? window.app.archiveVideos.filter(v => window.app.selectedTopics.has(window.app.getTopic(v))) : window.app.archiveVideos;
+                document.getElementById('library-grid').innerHTML = filtered.map(v => window.app.renderCard(v)).join('');
+            },
+
+            toggleTopic: (t) => {
+                if(window.app.selectedTopics.has(t)) window.app.selectedTopics.delete(t);
+                else window.app.selectedTopics.add(t);
+                window.app.renderLibraryInterface();
+            },
+
+            initMatrixInteractions: () => {
+                const hotspots = document.querySelectorAll('.nerve-hotspot');
+                const tooltip = document.getElementById('matrix-tooltip');
+                
+                const title = document.getElementById('brain-console-title');
+                const zodiac = document.getElementById('brain-console-zodiac');
+                const disciple = document.getElementById('brain-console-disciple');
+                const mythos = document.getElementById('brain-console-mythos');
+                const esoteric = document.getElementById('brain-console-esoteric');
+                const searchBtn = document.getElementById('brain-search-btn');
+
+                hotspots.forEach(hotspot => {
+                    hotspot.addEventListener('mousemove', (e) => {
+                        tooltip.style.display = 'block';
+                        tooltip.style.left = (e.clientX + 15) + 'px';
+                        tooltip.style.top = (e.clientY + 15) + 'px';
+                        
+                        document.getElementById('tt-nerve').textContent = hotspot.getAttribute('data-nerve');
+                        document.getElementById('tt-zodiac').textContent = hotspot.getAttribute('data-zodiac');
+                        document.getElementById('tt-disciple').textContent = hotspot.getAttribute('data-disciple');
+                        document.getElementById('tt-mythos').textContent = hotspot.getAttribute('data-mythos');
+                        document.getElementById('tt-esoteric').textContent = hotspot.getAttribute('data-esoteric');
+                    });
+
+                    hotspot.addEventListener('mouseleave', () => { tooltip.style.display = 'none'; });
+
+                    hotspot.addEventListener('click', () => {
+                        hotspots.forEach(h => h.classList.remove('active'));
+                        hotspot.classList.add('active');
+
+                        const dNerve = hotspot.getAttribute('data-nerve');
+                        const dZodiac = hotspot.getAttribute('data-zodiac');
+                        const dDisciple = hotspot.getAttribute('data-disciple');
+                        const dMythos = hotspot.getAttribute('data-mythos');
+                        const dEsoteric = hotspot.getAttribute('data-esoteric');
+                        const dQuery = hotspot.getAttribute('data-query');
+
+                        title.innerText = dNerve;
+                        zodiac.innerText = dZodiac;
+                        disciple.innerText = dDisciple;
+                        mythos.innerText = dMythos;
+                        esoteric.innerText = `Esoteric Function: ${dEsoteric}. This biological pathway is physically required to translate this specific cosmic frequency.`;
+                        
+                        searchBtn.disabled = false;
+                        searchBtn.style.opacity = '1';
+                        searchBtn.style.cursor = 'pointer';
+                        searchBtn.setAttribute('data-query', dQuery);
+                        searchBtn.setAttribute('data-display', dNerve);
+                    });
+                });
+            },
+
+            init: function() {
+                createDust();
+                window.app.initMatrixInteractions();
+                window.app.setMeditationState(1); 
+                window.onpopstate = (e) => { if(e.state && e.state.view) window.app.nav(e.state.view); };
+
+                const loadAllTranscripts = async () => {
+                    let allTranscripts = [];
+                    let fileIndex = 1;
+                    let keepFetching = true;
+                    
+                    while (keepFetching) {
+                        try {
+                            const response = await fetch(`transcripts_${fileIndex}.json`);
+                            if (response.ok) {
+                                const data = await response.json();
+                                allTranscripts = allTranscripts.concat(data);
+                                fileIndex++;
+                            } else {
+                                keepFetching = false; 
+                            }
+                        } catch (error) {
+                            keepFetching = false;
+                        }
+                    }
+                    window.app.transcripts = allTranscripts;
+                };
+
+                loadAllTranscripts();
+
+                Papa.parse('catalog.csv', { download: true, header: true, complete: (res) => {
+                    if (res.data && res.data.length > 0) {
+                        const keys = Object.keys(res.data[0]);
+                        const topK = keys.find(k => k.toLowerCase().includes('topic'));
+                        const urlK = keys.find(k => k.toLowerCase().includes('url'));
+                        window.app.data = res.data.map(r => ({ topic: r[topK] || "General", url: r[urlK] || "" }));
+                        
+                        window.app.validYtIds = new Set();
+                        window.app.data.forEach(r => {
+                            if (r.url) {
+                                let match = r.url.match(/(?:v=|\/)([0-9A-Za-z_-]{11})/);
+                                if (match) window.app.validYtIds.add(match[1]);
+                            }
+                        });
+                        
+                        fetch(`https://archive.org/advancedsearch.php?q=${encodeURIComponent('subject:"bill_donahue" AND mediatype:"movies"')}&fl[]=identifier,title,external-identifier&output=json&rows=1000`)
+                        .then(r => r.json()).then(d => {
+                            
+                            window.app.archiveVideos = d.response.docs.filter(v => {
+                                let ytIdMatch = v['external-identifier']?.match(/urn:youtube:([a-zA-Z0-9_-]{11})/);
+                                if (ytIdMatch && window.app.validYtIds.has(ytIdMatch[1])) return true;
+                                
+                                let titleLower = (v.title || "").toLowerCase();
+                                let isTvArchiveBot = titleLower.includes("piers morgan") || titleLower.includes("cnn") || titleLower.includes("fox news") || titleLower.includes("bbc") || titleLower.match(/\d{1,2}:\d{2}[ap]m/);
+                                
+                                if (isTvArchiveBot) return false;
+                                return true;
+                            });
+
+                            document.getElementById('global-counter').innerText = `INDEX: ${window.app.archiveVideos.length}`;
+                            
+                            document.getElementById('brain-lectures-grid').innerHTML = window.app.archiveVideos.filter(v => v.title.toLowerCase().match(/brain|skull|anatomy/)).slice(0,8).map(v => window.app.renderCard(v)).join('');
+                            document.getElementById('meditation-lectures-grid').innerHTML = window.app.archiveVideos.filter(v => v.title.toLowerCase().match(/meditation|silence/)).slice(0,8).map(v => window.app.renderCard(v)).join('');
+                            
+                            document.getElementById('app-loader').classList.add('hidden');
+                            if(location.hash) window.app.nav(location.hash.substring(1));
+                            else window.app.nav('home');
+                        });
+                    }
+                }});
+            }
+        };
+        window.onload = () => window.app.init();
     </script>
 </body>
 </html>
