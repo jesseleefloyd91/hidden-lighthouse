@@ -68,17 +68,17 @@
         #app-loader { position: fixed; inset: 0; z-index: 100; background: var(--bg-base); display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.5s; pointer-events: none; } #app-loader.hidden { opacity: 0; }
         .themed-avatar { filter: grayscale(100%) contrast(1.2) opacity(0.8); transition: all 0.5s ease; } .themed-avatar:hover { filter: grayscale(0%) contrast(1) opacity(1); }
 
-        /* CUSTOM POP CULTURE MINI-ICONS */
-        .icon-dbz { background: radial-gradient(circle at 30% 30%, #fbbf24, #d97706); border: 2px solid #b45309; box-shadow: 0 0 15px rgba(245,158,11,0.5); position: relative; }
-        .icon-dbz::after { content: "★"; position: absolute; color: #dc2626; font-size: 20px; text-shadow: 0 0 2px rgba(0,0,0,0.5); }
+        /* CUSTOM POP CULTURE / MACRO MINI-ICONS */
+        .icon-dbz { background: radial-gradient(circle at 30% 30%, #fbbf24, #d97706); border: 2px solid #b45309; box-shadow: 0 0 15px rgba(245,158,11,0.5); position: relative; } .icon-dbz::after { content: "★"; position: absolute; color: #dc2626; font-size: 20px; text-shadow: 0 0 2px rgba(0,0,0,0.5); }
         .icon-snitch { background: radial-gradient(circle at 30% 30%, #fde047, #b45309); border: 2px solid #fef08a; box-shadow: 0 0 15px rgba(253,224,71,0.5); position: relative; overflow: visible; }
-        .icon-arc { background: radial-gradient(circle at 50% 50%, #fff, #22d3ee, #0891b2); border: 2px solid #67e8f9; box-shadow: 0 0 20px rgba(34,211,238,0.8); }
-        .icon-arc::after { content: ""; position: absolute; width: 60%; height: 60%; border: 3px solid rgba(255,255,255,0.8); border-radius: 50%; }
+        .icon-arc { background: radial-gradient(circle at 50% 50%, #fff, #22d3ee, #0891b2); border: 2px solid #67e8f9; box-shadow: 0 0 20px rgba(34,211,238,0.8); } .icon-arc::after { content: ""; position: absolute; width: 60%; height: 60%; border: 3px solid rgba(255,255,255,0.8); border-radius: 50%; }
         .icon-matrix { background: #000; border: 2px solid #22c55e; box-shadow: 0 0 15px rgba(34,197,94,0.5); }
         .icon-avatar { background: radial-gradient(circle at 50% 50%, #bae6fd, #0ea5e9); border: 2px solid #cffafe; box-shadow: 0 0 15px rgba(14,165,233,0.6); }
         .icon-starwars { background: radial-gradient(circle at 50% 50%, #000, #1e3a8a); border: 2px solid #60a5fa; box-shadow: 0 0 20px rgba(59,130,246,0.8); }
         .icon-zelda { background: radial-gradient(circle at 50% 50%, #fef08a, #eab308); border: 2px solid #fef9c3; box-shadow: 0 0 15px rgba(234,179,8,0.6); clip-path: polygon(50% 0%, 0% 100%, 100% 100%); border-radius: 0; }
         .icon-sword { background: linear-gradient(135deg, #e5e7eb, #9ca3af); border: 2px solid #f3f4f6; box-shadow: 0 0 15px rgba(156,163,175,0.5); }
+        .icon-gobekli { background: linear-gradient(135deg, #d6d3d1, #9ca3af); border: 2px solid #e5e7eb; box-shadow: 0 0 15px rgba(156,163,175,0.4); }
+        .icon-apollo { background: radial-gradient(circle at 50% 50%, #e2e8f0, #475569); border: 2px solid #cbd5e1; box-shadow: 0 0 20px rgba(148,163,184,0.7); }
     </style>
 </head>
 <body class="flex flex-col min-h-screen">
@@ -299,15 +299,37 @@
 
         <section id="view-echoes" class="view-section px-4 md:px-6 text-center">
             <div class="max-w-[1600px] mx-auto pt-4 relative">
-                <h2 class="cinzel text-4xl md:text-6xl font-black mb-4 uppercase" style="color: var(--text-main);">Modern Echoes</h2>
-                <div class="cinzel text-xs md:text-sm mb-12 italic tracking-widest px-2 md:px-6 min-h-[40px]" style="color: var(--gold);">The Collective Unconscious in Pop Culture</div>
+                <h2 class="cinzel text-4xl md:text-6xl font-black mb-4 uppercase" style="color: var(--text-main);">Echoes of the Matrix</h2>
+                <div class="cinzel text-xs md:text-sm mb-12 italic tracking-widest px-2 md:px-6 min-h-[40px]" style="color: var(--gold);">The Collective Unconscious in Space, Time, and Culture</div>
                 
                 <p class="text-lg md:text-xl leading-relaxed text-center max-w-4xl mx-auto mb-16 font-light" style="color: var(--text-muted);">
-                    The architects of modern fiction do not invent magic systems from scratch. Because they are operating human biological spacesuits, their imaginations naturally project the exact same anatomical maps. The ancient journey of the 12 nerves and the 7 seals is actively encrypted in the media of today.
+                    Because all humans are operating the exact same biological spacesuit, the collective unconscious naturally projects the exact same anatomical map into the physical world. This blueprint is not just in ancient scripture—it is buried in the Earth, fired into space, and actively encrypted in the media of today.
                 </p>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 text-left mb-16">
                     
+                    <div class="cosmos-card p-6 border-t-4 relative overflow-hidden lg:col-span-2" style="border-top-color: #a8a29e;">
+                        <i class="fa-solid fa-mountain-sun absolute -right-6 -bottom-6 text-[150px] opacity-5 pointer-events-none text-stone-400"></i>
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="w-10 h-10 rounded-full flex items-center justify-center icon-gobekli shrink-0"><i class="fa-solid fa-monument text-stone-700 text-sm"></i></div>
+                            <div><h3 class="cinzel text-lg font-bold leading-tight" style="color: var(--text-main);">The Ancient Hardware</h3><h4 class="font-mono text-[9px] uppercase tracking-[0.2em] text-stone-400 mt-1">Göbekli Tepe</h4></div>
+                        </div>
+                        <p class="text-xs leading-relaxed relative z-10" style="color: var(--text-muted);">
+                            The 12,000-year-old T-pillars are the literal physical architecture of the human spine and the faceless ego. The "serpentine water channels" moving between the pillars act as the physical manifestation of the cerebrospinal fluid flowing up the spine. They buried the site deliberately—a time capsule of the biological operating system before the collective consciousness fell into the Beta-wave simulation.
+                        </p>
+                    </div>
+
+                    <div class="cosmos-card p-6 border-t-4 relative overflow-hidden lg:col-span-2" style="border-top-color: #94a3b8;">
+                        <i class="fa-solid fa-rocket absolute -right-6 -bottom-6 text-[150px] opacity-5 pointer-events-none text-slate-400"></i>
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="w-10 h-10 rounded-full flex items-center justify-center icon-apollo shrink-0"><i class="fa-solid fa-moon text-slate-800 text-sm drop-shadow-[0_0_2px_rgba(255,255,255,0.8)]"></i></div>
+                            <div><h3 class="cinzel text-lg font-bold leading-tight" style="color: var(--text-main);">The Apollo Ritual</h3><h4 class="font-mono text-[9px] uppercase tracking-[0.2em] text-slate-400 mt-1">NASA / The Moon</h4></div>
+                        </div>
+                        <p class="text-xs leading-relaxed relative z-10" style="color: var(--text-muted);">
+                            The Space Race was a macro-scale ritual of the human nervous system. NASA used <strong>Saturn</strong> (Chronos/Lead/The Root Chakra) to burn enough energy to launch the <strong>Sun</strong> (Apollo/The Pineal Gland) to make physical contact with the <strong>Moon</strong> (The Pituitary). They were acting out the exact biological mechanism of Heart-Brain coherence on a cosmic scale, proving that outer space is just a hologram of inner space.
+                        </p>
+                    </div>
+
                     <div class="cosmos-card p-6 border-t-4 relative overflow-hidden" style="border-top-color: #f59e0b;">
                         <div class="flex items-center gap-4 mb-4">
                             <div class="w-10 h-10 rounded-full flex items-center justify-center icon-dbz shrink-0"><i class="fa-solid fa-star text-red-600 text-sm drop-shadow-[0_0_2px_rgba(255,255,255,0.8)]"></i></div>
