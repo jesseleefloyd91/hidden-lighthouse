@@ -46,9 +46,9 @@
         .mobile-dropdown { width: 100%; background-color: var(--surface); color: var(--text-main); border: 1px solid var(--gold); padding: 12px 16px; border-radius: 12px; font-weight: 700; text-transform: uppercase; outline: none; appearance: none; }
 
         .spine-container { position: relative; width: 60px; height: 500px; margin: 0 auto; display: flex; flex-direction: column; justify-content: space-between; align-items: center; z-index: 10; padding: 20px 0; }
-        .spine-line { position: absolute; top: 0; bottom: 0; width: 4px; background: linear-gradient(to bottom, #a855f7, #3b82f6, #22c55e, #eab308, #ef4444); left: 50%; transform: translateX(-50%); z-index: 0; border-radius: 4px; opacity: 0.6; box-shadow: 0 0 15px rgba(255,255,255,0.2); }
+        .spine-line { position: absolute; top: 0; bottom: 0; width: 4px; background: linear-gradient(to bottom, #a855f7, #4f46e5, #3b82f6, #22c55e, #eab308, #f97316, #ef4444); left: 50%; transform: translateX(-50%); z-index: 0; border-radius: 4px; opacity: 0.6; box-shadow: 0 0 15px rgba(255,255,255,0.2); }
         .chakra-node { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s ease; border: 2px solid rgba(255,255,255,0.9); z-index: 10; color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.5); font-size: 16px; }
-        .chakra-node:hover { transform: scale(1.3); box-shadow: 0 0 20px currentColor; }
+        .chakra-node:hover, .chakra-node.active { transform: scale(1.3); box-shadow: 0 0 20px currentColor; }
 
         .matrix-container { position: relative; width: 100%; margin: 0 auto; }
         .nerve-hotspot { fill: rgba(212, 175, 55, 0.1); stroke: var(--gold); stroke-width: 2; cursor: pointer; transition: all 0.3s ease; }
@@ -79,6 +79,13 @@
         .icon-sword { background: linear-gradient(135deg, #e5e7eb, #9ca3af); border: 2px solid #f3f4f6; box-shadow: 0 0 15px rgba(156,163,175,0.5); }
         .icon-gobekli { background: linear-gradient(135deg, #d6d3d1, #9ca3af); border: 2px solid #e5e7eb; box-shadow: 0 0 15px rgba(156,163,175,0.4); }
         .icon-apollo { background: radial-gradient(circle at 50% 50%, #e2e8f0, #475569); border: 2px solid #cbd5e1; box-shadow: 0 0 20px rgba(148,163,184,0.7); }
+        .icon-zeus { background: radial-gradient(circle at 50% 50%, #fde047, #ca8a04); border: 2px solid #fef08a; box-shadow: 0 0 20px rgba(234,179,8,0.8); }
+        .icon-wizard { background: radial-gradient(circle at 50% 50%, #a855f7, #6b21a8); border: 2px solid #d8b4fe; box-shadow: 0 0 20px rgba(168,85,247,0.8); }
+        .icon-elf { background: radial-gradient(circle at 50% 50%, #86efac, #15803d); border: 2px solid #bbf7d0; box-shadow: 0 0 20px rgba(34,197,94,0.6); }
+        .icon-yeti { background: radial-gradient(circle at 50% 50%, #d6d3d1, #57534e); border: 2px solid #e5e7eb; box-shadow: 0 0 15px rgba(120,113,108,0.5); }
+        .icon-alien { background: radial-gradient(circle at 50% 50%, #000, #064e3b); border: 2px solid #4ade80; box-shadow: 0 0 20px rgba(74,222,128,0.8); }
+        .icon-aum { background: radial-gradient(circle at 50% 50%, #d8b4fe, #7e22ce); border: 2px solid #e9d5ff; box-shadow: 0 0 15px rgba(168,85,247,0.5); }
+        .icon-red { background: radial-gradient(circle at 50% 50%, #fca5a5, #b91c1c); border: 2px solid #fecaca; box-shadow: 0 0 15px rgba(239,68,68,0.5); }
     </style>
 </head>
 <body class="flex flex-col min-h-screen">
@@ -268,7 +275,8 @@
         <section id="view-anatomy" class="view-section px-4">
             <div class="max-w-[1600px] mx-auto">
                 <h2 class="cinzel text-4xl md:text-6xl font-black mb-10 text-center uppercase" style="color: var(--text-main);">The Temple</h2>
-                <div class="grid lg:grid-cols-12 gap-10 items-start">
+                <div class="grid lg:grid-cols-12 gap-10 items-stretch">
+                    
                     <div class="lg:col-span-5 flex justify-center relative rounded-3xl py-8 border shadow-inner" style="background: var(--surface); border-color: var(--surface-border);">
                         <div class="spine-container">
                             <div class="spine-line"></div>
@@ -281,18 +289,46 @@
                             <div class="chakra-node" style="background-color: #ef4444; box-shadow: 0 0 20px #ef4444;" onclick="window.app.showAnatomy('root')"><i class="fa-solid fa-mountain"></i></div>
                         </div>
                     </div>
-                    <div class="lg:col-span-7">
-                        <div id="anatomy-info" class="p-8 md:p-12 border rounded-3xl text-left min-h-[300px] transition-all shadow-2xl relative overflow-hidden" style="background: var(--surface); border-color: var(--surface-border);">
-                            <div class="absolute -top-10 -right-10 text-9xl opacity-5 pointer-events-none" style="color: var(--text-main);"><i id="ana-bg-icon" class="fa-solid fa-dharmachakra"></i></div>
-                            <h3 class="cinzel text-3xl md:text-5xl mb-2 font-bold" style="color: var(--gold);" id="ana-title">The Seven Seals</h3>
-                            <p class="font-mono text-xs md:text-sm uppercase tracking-[0.3em] opacity-60 mb-8" style="color: var(--text-main);" id="ana-meta">Jacob's Ladder // Yggdrasil (The World Tree)</p>
-                            <div class="space-y-6">
-                                <p class="leading-relaxed italic text-lg md:text-xl" style="color: var(--text-main);" id="ana-desc">
-                                    The human spine is the true Jacob's Ladder, the Djed Pillar of Egypt, and the Norse World Tree. Click the specific nerve plexuses on the diagram to reveal their esoteric decoding.
-                                </p>
+
+                    <div class="lg:col-span-7 w-full flex flex-col justify-center">
+                        
+                        <div id="temple-console-default" class="w-full h-full min-h-[400px] flex flex-col items-center justify-center text-center p-8 rounded-3xl border-2 border-dashed transition-all" style="border-color: var(--surface-border); background: rgba(0,0,0,0.2);">
+                            <i class="fa-solid fa-om text-6xl mb-6 opacity-20 animate-pulse" style="color: var(--gold);"></i>
+                            <h3 class="cinzel text-2xl font-bold mb-2" style="color: var(--text-main);">Awaiting Alignment</h3>
+                            <p class="text-sm max-w-xs mx-auto" style="color: var(--text-muted);">Select a seal on the spinal column to decrypt the electromagnetic spectrum and planetary hardware.</p>
+                        </div>
+
+                        <div id="temple-console-active" class="hidden w-full h-full flex-col justify-between text-left p-8 border rounded-3xl shadow-2xl relative overflow-hidden" style="background: var(--surface); border-color: var(--surface-border);">
+                            <div class="absolute -top-10 -right-10 text-9xl opacity-5 pointer-events-none transition-colors duration-500" id="ana-bg-icon-container"><i id="ana-bg-icon" class="fa-solid fa-dharmachakra"></i></div>
+
+                            <div class="mb-6 relative z-10">
+                                <span class="text-[10px] font-mono uppercase tracking-widest bg-white/5 px-3 py-1 rounded-full border border-white/10" id="ana-hz" style="color: var(--gold);">-- Hz</span>
+                                <h3 id="ana-title" class="cinzel text-3xl md:text-5xl font-bold mt-4" style="color: var(--text-main);">--</h3>
+                                <p class="font-mono text-[10px] uppercase tracking-[0.3em] opacity-60 mt-2" style="color: var(--text-main);" id="ana-element">--</p>
                             </div>
+
+                            <div class="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-6 flex-1 relative z-10">
+                                <div class="p-4 rounded-2xl border bg-black/20 flex flex-col justify-center" style="border-color: var(--surface-border);">
+                                    <i class="fa-solid fa-wave-square mb-2 text-xl" style="color: var(--text-muted);"></i>
+                                    <span class="text-[9px] uppercase tracking-widest text-gray-500 mb-1">Spectrum</span>
+                                    <span id="ana-color" class="text-sm font-mono font-bold">--</span>
+                                </div>
+                                <div class="p-4 rounded-2xl border bg-black/20 flex flex-col justify-center" style="border-color: var(--surface-border);">
+                                    <i class="fa-solid fa-meteor mb-2 text-xl" style="color: var(--text-muted);"></i>
+                                    <span class="text-[9px] uppercase tracking-widest text-gray-500 mb-1">Astrophysics</span>
+                                    <span id="ana-planet" class="text-sm font-mono font-bold" style="color: var(--text-main);">--</span>
+                                </div>
+                                <div class="p-4 rounded-2xl border bg-black/20 flex flex-col justify-center col-span-2 lg:col-span-1" style="border-color: var(--surface-border);">
+                                    <i class="fa-solid fa-cubes-stacked mb-2 text-xl" style="color: var(--text-muted);"></i>
+                                    <span class="text-[9px] uppercase tracking-widest text-gray-500 mb-1">Alchemy</span>
+                                    <span id="ana-metal" class="text-sm font-mono font-bold" style="color: var(--text-main);">--</span>
+                                </div>
+                            </div>
+
+                            <p id="ana-desc" class="text-sm md:text-base italic leading-relaxed h-32 relative z-10" style="color: var(--text-main);">--</p>
                         </div>
                     </div>
+
                 </div>
             </div>
         </section>
@@ -303,34 +339,112 @@
                 <div class="cinzel text-xs md:text-sm mb-12 italic tracking-widest px-2 md:px-6 min-h-[40px]" style="color: var(--gold);">The Collective Unconscious in Space, Time, and Culture</div>
                 
                 <p class="text-lg md:text-xl leading-relaxed text-center max-w-4xl mx-auto mb-16 font-light" style="color: var(--text-muted);">
-                    Because all humans are operating the exact same biological spacesuit, the collective unconscious naturally projects the exact same anatomical map into the physical world. This blueprint is not just in ancient scripture—it is buried in the Earth, fired into space, and actively encrypted in the media of today.
+                    Because all humans are operating the exact same biological spacesuit, the collective unconscious naturally projects the exact same anatomical map into the physical world. This blueprint is not just in ancient scripture—it is buried in the Earth, fired into space, and actively encrypted in the mythologies and media of today.
                 </p>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 text-left mb-16">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 text-left mb-16">
                     
-                    <div class="cosmos-card p-6 border-t-4 relative overflow-hidden lg:col-span-2" style="border-top-color: #a8a29e;">
+                    <div class="cosmos-card p-6 border-t-4 relative overflow-hidden xl:col-span-2" style="border-top-color: #a8a29e;">
                         <i class="fa-solid fa-mountain-sun absolute -right-6 -bottom-6 text-[150px] opacity-5 pointer-events-none text-stone-400"></i>
                         <div class="flex items-center gap-4 mb-4">
                             <div class="w-10 h-10 rounded-full flex items-center justify-center icon-gobekli shrink-0"><i class="fa-solid fa-monument text-stone-700 text-sm"></i></div>
                             <div><h3 class="cinzel text-lg font-bold leading-tight" style="color: var(--text-main);">The Ancient Hardware</h3><h4 class="font-mono text-[9px] uppercase tracking-[0.2em] text-stone-400 mt-1">Göbekli Tepe</h4></div>
                         </div>
                         <p class="text-xs leading-relaxed relative z-10" style="color: var(--text-muted);">
-                            The 12,000-year-old T-pillars are the literal physical architecture of the human spine and the faceless ego. The "serpentine water channels" moving between the pillars act as the physical manifestation of the cerebrospinal fluid flowing up the spine. They buried the site deliberately—a time capsule of the biological operating system before the collective consciousness fell into the Beta-wave simulation.
+                            The 12,000-year-old T-pillars are the physical architecture of the human spine and the faceless ego. The "serpentine water channels" act as the manifestation of the cerebrospinal fluid flowing up the spine. They buried the site deliberately—a time capsule of the biological operating system before the collective consciousness fell into the Beta-wave simulation.
                         </p>
                     </div>
 
-                    <div class="cosmos-card p-6 border-t-4 relative overflow-hidden lg:col-span-2" style="border-top-color: #94a3b8;">
+                    <div class="cosmos-card p-6 border-t-4 relative overflow-hidden xl:col-span-2" style="border-top-color: #94a3b8;">
                         <i class="fa-solid fa-rocket absolute -right-6 -bottom-6 text-[150px] opacity-5 pointer-events-none text-slate-400"></i>
                         <div class="flex items-center gap-4 mb-4">
                             <div class="w-10 h-10 rounded-full flex items-center justify-center icon-apollo shrink-0"><i class="fa-solid fa-moon text-slate-800 text-sm drop-shadow-[0_0_2px_rgba(255,255,255,0.8)]"></i></div>
                             <div><h3 class="cinzel text-lg font-bold leading-tight" style="color: var(--text-main);">The Apollo Ritual</h3><h4 class="font-mono text-[9px] uppercase tracking-[0.2em] text-slate-400 mt-1">NASA / The Moon</h4></div>
                         </div>
                         <p class="text-xs leading-relaxed relative z-10" style="color: var(--text-muted);">
-                            The Space Race was a macro-scale ritual of the human nervous system. NASA used <strong>Saturn</strong> (Chronos/Lead/The Root Chakra) to burn enough energy to launch the <strong>Sun</strong> (Apollo/The Pineal Gland) to make physical contact with the <strong>Moon</strong> (The Pituitary). They were acting out the exact biological mechanism of Heart-Brain coherence on a cosmic scale, proving that outer space is just a hologram of inner space.
+                            The Space Race was a macro-scale ritual of the human nervous system. NASA used <strong>Saturn</strong> (Chronos/Lead/The Root Chakra) to burn energy to launch the <strong>Sun</strong> (Apollo/The Pineal Gland) to make physical contact with the <strong>Moon</strong> (The Pituitary). They acted out Heart-Brain coherence on a cosmic scale, proving outer space is a hologram of inner space.
+                        </p>
+                    </div>
+
+                    <div class="cosmos-card p-6 border-t-4 relative overflow-hidden" style="border-top-color: #d8b4fe;">
+                        <i class="fa-solid fa-wave-square absolute -right-6 -bottom-6 text-[150px] opacity-5 pointer-events-none text-purple-400"></i>
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="w-10 h-10 rounded-full flex items-center justify-center icon-aum shrink-0"><i class="fa-solid fa-microphone text-purple-900 text-sm"></i></div>
+                            <div><h3 class="cinzel text-lg font-bold leading-tight" style="color: var(--text-main);">The Primordial Sound</h3><h4 class="font-mono text-[9px] uppercase tracking-[0.2em] text-purple-400 mt-1">Acoustic Biology</h4></div>
+                        </div>
+                        <p class="text-xs leading-relaxed relative z-10" style="color: var(--text-muted);">
+                            The human vocal tract is built to form the sound "Ah-Mmm" (AUM) completely effortlessly. It was the very first sound early humans made. It is the acoustic vibration that travels up the Vagus Nerve to strike the Pituitary, ringing the biological moon to synchronize the brainwaves.
+                        </p>
+                    </div>
+
+                    <div class="cosmos-card p-6 border-t-4 relative overflow-hidden" style="border-top-color: #fca5a5;">
+                        <i class="fa-solid fa-palette absolute -right-6 -bottom-6 text-[150px] opacity-5 pointer-events-none text-red-400"></i>
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="w-10 h-10 rounded-full flex items-center justify-center icon-red shrink-0"><i class="fa-solid fa-eye text-red-900 text-sm"></i></div>
+                            <div><h3 class="cinzel text-lg font-bold leading-tight" style="color: var(--text-main);">The First Color</h3><h4 class="font-mono text-[9px] uppercase tracking-[0.2em] text-red-400 mt-1">Evolutionary Optics</h4></div>
+                        </div>
+                        <p class="text-xs leading-relaxed relative z-10" style="color: var(--text-muted);">
+                            The first color ever named by humanity, and the first used in 100,000-year-old cave art, was RED. Red is the lowest frequency of visible light and maps to the Root Chakra (survival/blood/earth). Humanity literally evolved from the bottom of the spine upwards.
+                        </p>
+                    </div>
+
+                    <div class="cosmos-card p-6 border-t-4 relative overflow-hidden" style="border-top-color: #facc15;">
+                        <i class="fa-solid fa-cloud-bolt absolute -right-6 -bottom-6 text-[150px] opacity-5 pointer-events-none text-yellow-400"></i>
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="w-10 h-10 rounded-full flex items-center justify-center icon-zeus shrink-0"><i class="fa-solid fa-bolt text-yellow-900 text-sm"></i></div>
+                            <div><h3 class="cinzel text-lg font-bold leading-tight" style="color: var(--text-main);">The Ascension</h3><h4 class="font-mono text-[9px] uppercase tracking-[0.2em] text-yellow-400 mt-1">Greek Mythology</h4></div>
+                        </div>
+                        <p class="text-xs leading-relaxed relative z-10" style="color: var(--text-muted);">
+                            Cronus (Saturn/Time) is the Root Chakra—the physical reality that consumes its children. Zeus (Jupiter) overthrows the physical world and rules from Olympus (The Cranial Vault). He wields the Lightning Bolt, which is the electrical spark of the Vagus Nerve illuminating the Pineal Gland.
+                        </p>
+                    </div>
+
+                    <div class="cosmos-card p-6 border-t-4 relative overflow-hidden" style="border-top-color: #a855f7;">
+                        <i class="fa-solid fa-wand-magic-sparkles absolute -right-6 -bottom-6 text-[150px] opacity-5 pointer-events-none text-purple-400"></i>
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="w-10 h-10 rounded-full flex items-center justify-center icon-wizard shrink-0"><i class="fa-solid fa-star text-white text-sm"></i></div>
+                            <div><h3 class="cinzel text-lg font-bold leading-tight" style="color: var(--text-main);">The Advisor</h3><h4 class="font-mono text-[9px] uppercase tracking-[0.2em] text-purple-400 mt-1">Arthurian Legend</h4></div>
+                        </div>
+                        <p class="text-xs leading-relaxed relative z-10" style="color: var(--text-muted);">
+                            Merlin (The Wizard) advises King Arthur. Arthur represents the physical Ego ruling the body, but the Wizard is the <strong>Pineal Gland</strong>. He doesn't swing the sword; he directs the energy and provides the cosmic intuition that keeps the physical Kingdom from falling.
+                        </p>
+                    </div>
+
+                    <div class="cosmos-card p-6 border-t-4 relative overflow-hidden" style="border-top-color: #22c55e;">
+                        <i class="fa-brands fa-d-and-d absolute -right-6 -bottom-6 text-[150px] opacity-5 pointer-events-none text-green-400"></i>
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="w-10 h-10 rounded-full flex items-center justify-center icon-elf shrink-0"><i class="fa-brands fa-envira text-green-900 text-sm"></i></div>
+                            <div><h3 class="cinzel text-lg font-bold leading-tight" style="color: var(--text-main);">The Frequencies</h3><h4 class="font-mono text-[9px] uppercase tracking-[0.2em] text-green-400 mt-1">Fantasy Races</h4></div>
+                        </div>
+                        <p class="text-xs leading-relaxed relative z-10" style="color: var(--text-muted);">
+                            <strong>Dwarfs</strong> are the lower Chakras (the Gut), extracting energy from the earth. <strong>Elves</strong> are the high-frequency Alpha/Theta waves, intuitive and immortal. <strong>Orcs</strong> are the Amygdala (the Reptilian Brain), driven entirely by fear, rage, and base survival.
+                        </p>
+                    </div>
+
+                    <div class="cosmos-card p-6 border-t-4 relative overflow-hidden" style="border-top-color: #4ade80;">
+                        <i class="fa-solid fa-flying-saucer absolute -right-6 -bottom-6 text-[150px] opacity-5 pointer-events-none text-emerald-400"></i>
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="w-10 h-10 rounded-full flex items-center justify-center icon-alien shrink-0"><i class="fa-solid fa-user-astronaut text-white text-sm"></i></div>
+                            <div><h3 class="cinzel text-lg font-bold leading-tight" style="color: var(--text-main);">The Visitors</h3><h4 class="font-mono text-[9px] uppercase tracking-[0.2em] text-emerald-400 mt-1">Modern UFOlogy</h4></div>
+                        </div>
+                        <p class="text-xs leading-relaxed relative z-10" style="color: var(--text-muted);">
+                            If outer space is a projection of inner space, the "sky" is the higher dimensions of consciousness. "Aliens" are sudden downloads, intuitions, and high-frequency messages from your own higher self (the quantum field), trying to communicate with your localized, physical ego.
+                        </p>
+                    </div>
+
+                    <div class="cosmos-card p-6 border-t-4 relative overflow-hidden" style="border-top-color: #78716c;">
+                        <i class="fa-solid fa-paw absolute -right-6 -bottom-6 text-[150px] opacity-5 pointer-events-none text-stone-400"></i>
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="w-10 h-10 rounded-full flex items-center justify-center icon-yeti shrink-0"><i class="fa-solid fa-shoe-prints text-stone-900 text-sm"></i></div>
+                            <div><h3 class="cinzel text-lg font-bold leading-tight" style="color: var(--text-main);">The Primate</h3><h4 class="font-mono text-[9px] uppercase tracking-[0.2em] text-stone-400 mt-1">Yeti / Bigfoot / Esau</h4></div>
+                        </div>
+                        <p class="text-xs leading-relaxed relative z-10" style="color: var(--text-muted);">
+                            The Wild Man represents the untamed, unrefined physical body before it is illuminated by spiritual consciousness. He is the raw, animalistic primate spacesuit. The "civilized" man always has to wrestle with or tame the "wild man" in the woods.
                         </p>
                     </div>
 
                     <div class="cosmos-card p-6 border-t-4 relative overflow-hidden" style="border-top-color: #f59e0b;">
+                        <i class="fa-solid fa-dragon absolute -right-6 -bottom-6 text-[150px] opacity-5 pointer-events-none text-orange-500"></i>
                         <div class="flex items-center gap-4 mb-4">
                             <div class="w-10 h-10 rounded-full flex items-center justify-center icon-dbz shrink-0"><i class="fa-solid fa-star text-red-600 text-sm drop-shadow-[0_0_2px_rgba(255,255,255,0.8)]"></i></div>
                             <div><h3 class="cinzel text-lg font-bold leading-tight" style="color: var(--text-main);">The Kundalini</h3><h4 class="font-mono text-[9px] uppercase tracking-[0.2em] text-orange-400 mt-1">Dragon Ball</h4></div>
@@ -341,6 +455,7 @@
                     </div>
 
                     <div class="cosmos-card p-6 border-t-4 relative overflow-hidden" style="border-top-color: var(--gold);">
+                        <i class="fa-solid fa-hat-wizard absolute -right-6 -bottom-6 text-[150px] opacity-5 pointer-events-none" style="color: var(--gold);"></i>
                         <div class="flex items-center gap-4 mb-4">
                             <div class="w-10 h-10 rounded-full flex items-center justify-center icon-snitch shrink-0"><i class="fa-solid fa-seedling text-white opacity-80 text-lg -rotate-45 relative top-1"></i></div>
                             <div><h3 class="cinzel text-lg font-bold leading-tight" style="color: var(--text-main);">The Pineal</h3><h4 class="font-mono text-[9px] uppercase tracking-[0.2em] mt-1" style="color: var(--gold);">Harry Potter</h4></div>
@@ -351,6 +466,7 @@
                     </div>
 
                     <div class="cosmos-card p-6 border-t-4 relative overflow-hidden" style="border-top-color: #06b6d4;">
+                        <i class="fa-brands fa-galactic-republic absolute -right-6 -bottom-6 text-[150px] opacity-5 pointer-events-none text-cyan-400"></i>
                         <div class="flex items-center gap-4 mb-4">
                             <div class="w-10 h-10 rounded-full flex items-center justify-center icon-arc shrink-0"><div class="w-3 h-3 bg-white rounded-full shadow-[0_0_10px_#fff]"></div></div>
                             <div><h3 class="cinzel text-lg font-bold leading-tight" style="color: var(--text-main);">The Torus Field</h3><h4 class="font-mono text-[9px] uppercase tracking-[0.2em] text-cyan-400 mt-1">Marvel</h4></div>
@@ -361,6 +477,7 @@
                     </div>
 
                     <div class="cosmos-card p-6 border-t-4 relative overflow-hidden" style="border-top-color: #22c55e;">
+                        <i class="fa-solid fa-microchip absolute -right-6 -bottom-6 text-[150px] opacity-5 pointer-events-none text-green-500"></i>
                         <div class="flex items-center gap-4 mb-4">
                             <div class="w-10 h-10 rounded-full flex items-center justify-center icon-matrix shrink-0"><i class="fa-solid fa-code text-green-500 text-sm font-bold drop-shadow-[0_0_5px_#22c55e]"></i></div>
                             <div><h3 class="cinzel text-lg font-bold leading-tight" style="color: var(--text-main);">The Beta State</h3><h4 class="font-mono text-[9px] uppercase tracking-[0.2em] text-green-400 mt-1">The Matrix</h4></div>
@@ -371,6 +488,7 @@
                     </div>
 
                     <div class="cosmos-card p-6 border-t-4 relative overflow-hidden" style="border-top-color: #38bdf8;">
+                        <i class="fa-solid fa-wind absolute -right-6 -bottom-6 text-[150px] opacity-5 pointer-events-none text-sky-400"></i>
                         <div class="flex items-center gap-4 mb-4">
                             <div class="w-10 h-10 rounded-full flex items-center justify-center icon-avatar shrink-0"><i class="fa-solid fa-wind text-white text-lg"></i></div>
                             <div><h3 class="cinzel text-lg font-bold leading-tight" style="color: var(--text-main);">The 7 Seals</h3><h4 class="font-mono text-[9px] uppercase tracking-[0.2em] text-sky-400 mt-1">Avatar: Airbender</h4></div>
@@ -381,6 +499,7 @@
                     </div>
 
                     <div class="cosmos-card p-6 border-t-4 relative overflow-hidden" style="border-top-color: #3b82f6;">
+                        <i class="fa-brands fa-galactic-republic absolute -right-6 -bottom-6 text-[150px] opacity-5 pointer-events-none text-blue-400"></i>
                         <div class="flex items-center gap-4 mb-4">
                             <div class="w-10 h-10 rounded-full flex items-center justify-center icon-starwars shrink-0"><i class="fa-brands fa-galactic-republic text-blue-200 text-lg drop-shadow-[0_0_5px_#fff]"></i></div>
                             <div><h3 class="cinzel text-lg font-bold leading-tight" style="color: var(--text-main);">The Prana</h3><h4 class="font-mono text-[9px] uppercase tracking-[0.2em] text-blue-400 mt-1">Star Wars</h4></div>
@@ -391,22 +510,13 @@
                     </div>
 
                     <div class="cosmos-card p-6 border-t-4 relative overflow-hidden" style="border-top-color: #eab308;">
+                        <i class="fa-solid fa-play absolute -right-6 -bottom-6 text-[150px] opacity-5 pointer-events-none text-yellow-400"></i>
                         <div class="flex items-center gap-4 mb-4">
                             <div class="w-10 h-10 rounded-full flex items-center justify-center icon-zelda shrink-0"></div>
                             <div><h3 class="cinzel text-lg font-bold leading-tight" style="color: var(--text-main);">The Triad</h3><h4 class="font-mono text-[9px] uppercase tracking-[0.2em] text-yellow-400 mt-1">Legend of Zelda</h4></div>
                         </div>
                         <p class="text-xs leading-relaxed relative z-10" style="color: var(--text-muted);">
-                            The Triforce (Power, Wisdom, Courage) perfectly maps to the biological triad of the Pineal, Pituitary, and Thalamus glands. The Master Sword, locked in a stone pedestal, represents the spinal cord anchored in the sacrum bone, waiting to be drawn upward.
-                        </p>
-                    </div>
-
-                    <div class="cosmos-card p-6 border-t-4 relative overflow-hidden" style="border-top-color: #9ca3af;">
-                        <div class="flex items-center gap-4 mb-4">
-                            <div class="w-10 h-10 rounded-full flex items-center justify-center icon-sword shrink-0"><i class="fa-solid fa-khanda text-gray-700 text-lg"></i></div>
-                            <div><h3 class="cinzel text-lg font-bold leading-tight" style="color: var(--text-main);">The Sacrum</h3><h4 class="font-mono text-[9px] uppercase tracking-[0.2em] text-gray-400 mt-1">Arthurian Legend</h4></div>
-                        </div>
-                        <p class="text-xs leading-relaxed relative z-10" style="color: var(--text-muted);">
-                            The "Sword in the Stone" is an ancient anatomical cipher. The stone is the Sacrum bone at the base of the spine, where the animal nature is calcified. Pulling the sword (spine) free represents raising the internal energy to become King (reaching the Crown chakra).
+                            The Triforce perfectly maps to the biological triad of the Pineal, Pituitary, and Thalamus glands. The Master Sword, locked in a stone pedestal, represents the spinal cord anchored in the sacrum bone, waiting to be drawn upward.
                         </p>
                     </div>
 
@@ -424,15 +534,17 @@
                         <div id="med-ring-2" class="absolute inset-4 rounded-full border-2 border-t-transparent border-gray-500/40 animate-spin transition-all duration-1000" style="animation-duration: 1s;"></div>
                         <div id="med-ring-1" class="absolute inset-12 rounded-full backdrop-blur-md transition-all duration-1000 flex items-center justify-center shadow-[0_0_15px_rgba(239,68,68,0.4)]" style="background: rgba(239,68,68,0.2);"><i id="med-icon" class="fa-solid fa-bolt text-4xl text-red-500/50 transition-all duration-1000"></i></div>
                     </div>
-                    <div class="max-w-md text-left w-full lg:w-1/2">
+                    <div class="max-w-xl text-left w-full lg:w-1/2">
                         <h3 id="med-title" class="cinzel text-2xl md:text-3xl font-bold mb-1" style="color: var(--gold);">1. The Noise (Beta)</h3>
                         <p id="med-desc" class="text-[10px] md:text-xs font-mono uppercase tracking-widest mb-4" style="color: var(--text-muted);">14-30 Hz | Egypt | The Carnal Mind</p>
-                        <p id="med-text" class="text-sm md:text-base italic leading-relaxed h-24" style="color: var(--text-main);">This is the waking state. The left hemisphere is dominating, analyzing, and stressing over the physical simulation. You are trapped in the five senses. You must shut the door.</p>
+                        <p id="med-text" class="text-sm md:text-base italic leading-relaxed h-32" style="color: var(--text-main);">This is the waking state. The left hemisphere is dominating, analyzing, and stressing over the physical simulation. You are trapped in the five senses. You must shut the door.</p>
                         <div class="flex flex-wrap gap-2 mt-4">
                             <button onclick="window.app.setMeditationState(1)" id="med-btn-1" class="med-btn px-4 py-2 border rounded text-[10px] font-bold uppercase tracking-widest transition" style="border-color: var(--text-main); color: var(--text-main); background: rgba(150,150,150,0.1);">Beta</button>
                             <button onclick="window.app.setMeditationState(2)" id="med-btn-2" class="med-btn px-4 py-2 border rounded text-[10px] font-bold uppercase tracking-widest transition opacity-50" style="border-color: var(--surface-border); color: var(--text-main);">Alpha</button>
                             <button onclick="window.app.setMeditationState(3)" id="med-btn-3" class="med-btn px-4 py-2 border rounded text-[10px] font-bold uppercase tracking-widest transition opacity-50" style="border-color: var(--surface-border); color: var(--text-main);">Theta</button>
-                            <button onclick="window.app.setMeditationState(4)" id="med-btn-4" class="med-btn px-4 py-2 border rounded text-[10px] font-bold uppercase tracking-widest transition opacity-50 text-blue-500" style="border-color: rgba(59,130,246,0.5);">Silence (Delta)</button>
+                            <button onclick="window.app.setMeditationState(4)" id="med-btn-4" class="med-btn px-4 py-2 border rounded text-[10px] font-bold uppercase tracking-widest transition opacity-50 text-blue-500" style="border-color: rgba(59,130,246,0.5);">Delta</button>
+                            
+                            <button onclick="window.app.setMeditationState(5)" id="med-btn-5" class="med-btn px-4 py-2 border rounded text-[10px] font-bold uppercase tracking-widest transition opacity-50 text-gray-500" style="border-color: rgba(100,100,100,0.5);"><i class="fa-solid fa-infinity mr-1"></i> The Void</button>
                         </div>
                         <button onclick="window.app.searchMeditationState()" id="med-search-btn" data-query="(carnal mind|egypt|left brain|waking state|beta)" data-display="Frequency: 14-30 Hz (Beta)" class="mt-6 w-full py-3 border rounded text-[10px] uppercase font-black tracking-widest transition flex justify-center items-center gap-2 hover:scale-105" style="background-color: rgba(212, 175, 55, 0.1); border-color: var(--gold); color: var(--gold);"><i class="fa-solid fa-magnifying-glass"></i> Search This Frequency</button>
                     </div>
@@ -493,20 +605,22 @@
             data: [], archiveVideos: [], selectedTopics: new Set(), validYtIds: new Set(), transcripts: [],
             
             anaMap: {
-                root: {t: "Root (Muladhara) | 400Hz", m: "The Earth Element", d: "Base of spine. Represents biblical Egypt. This is the center of physical survival, material bondage, and the foundation where the Serpent Fire rests.", i: "fa-mountain"},
-                sacral: {t: "Sacral (Svadhisthana) | 480Hz", m: "The Water Element", d: "The reproductive center. Represents biblical Sodom. The seat of raw emotions, desires, and the physical fire that must be raised upward.", i: "fa-water"},
-                solar: {t: "Solar Plexus (Manipura) | 520Hz", m: "The Fire Element", d: "The Manger where the Christos is born. The center of personal power and the fiery furnace where the ego begins its transformation into spirit.", i: "fa-fire"},
-                heart: {t: "Heart (Anahata) | 600Hz", m: "The Air Element", d: "Jerusalem—the City of Peace. The bridge crossing over from the animal lower nature into the higher spiritual mind. A place of perfect balance.", i: "fa-heart"},
-                throat: {t: "Throat (Vishuddha) | 670Hz", m: "The Ether Element", d: "The center of expression and truth. The biological crossing of the Red Sea, where the silent truth of the upper room translates into the spoken Word.", i: "fa-comment-dots"},
-                brow: {t: "Brow (Ajna) | 750Hz", m: "The Light Element", d: "The Pineal Gland. Peniel, where Jacob saw God face to face. The Single Eye that sees beyond the illusion of duality and opens to universal light.", i: "fa-eye"},
-                crown: {t: "Crown (Sahasrara) | 789Hz+", m: "Cosmic Consciousness", d: "ZION. The Thousand-Petaled Lotus. The ultimate destination of the spinal fluid, resulting in full realization and direct connection to Universal consciousness.", i: "fa-crown"}
+                root: {t: "The Root (Muladhara)", hz: "400 Hz", color: "Red", planet: "Saturn", metal: "Lead", m: "The Earth Element", d: "Base of the spine. Represents biblical Egypt. This is the center of physical survival, material bondage, Time (Chronos), and the heavy gravitational foundation where the Serpent Fire rests.", i: "fa-mountain", hex: "#ef4444"},
+                sacral: {t: "The Sacral (Svadhisthana)", hz: "480 Hz", color: "Orange", planet: "Jupiter", metal: "Tin", m: "The Water Element", d: "The reproductive center. Represents biblical Sodom. The seat of raw emotions, desires, and the physical creation of life that must be raised upward.", i: "fa-water", hex: "#f97316"},
+                solar: {t: "The Solar Plexus (Manipura)", hz: "520 Hz", color: "Yellow", planet: "Mars", metal: "Iron", m: "The Fire Element", d: "The Manger where the Christos is born. The center of personal power and the fiery furnace where the physical ego burns food into electrical energy.", i: "fa-fire", hex: "#eab308"},
+                heart: {t: "The Heart (Anahata)", hz: "600 Hz", color: "Green", planet: "Venus", metal: "Copper", m: "The Air Element", d: "Jerusalem—the City of Peace. The exact center of the visible light spectrum. The great bridge crossing over from the animal lower nature into the higher spiritual mind.", i: "fa-heart", hex: "#22c55e"},
+                throat: {t: "The Throat (Vishuddha)", hz: "670 Hz", color: "Blue", planet: "Mercury", metal: "Quicksilver", m: "The Ether Element", d: "The center of expression and truth. The biological crossing of the Red Sea, where the silent electrical impulses of the brain translate into acoustic soundwaves (speech).", i: "fa-comment-dots", hex: "#3b82f6"},
+                brow: {t: "The Brow (Ajna)", hz: "750 Hz", color: "Indigo", planet: "The Moon", metal: "Silver", m: "The Light Element", d: "The Pituitary Gland. Peniel, where Jacob saw God face to face. The magnetic receiver and reflector of light. The Single Eye that sees beyond the illusion of duality.", i: "fa-eye", hex: "#4f46e5"},
+                crown: {t: "The Crown (Sahasrara)", hz: "789 Hz+", color: "Violet / White", planet: "The Sun", metal: "Gold", m: "Cosmic Consciousness", d: "ZION. The Pineal Gland. The source of all light. When the biological battery is fully charged, the prism is unified back into pure White Light, achieving absolute cosmic coherence.", i: "fa-crown", hex: "#a855f7"}
             },
 
+            // ADDED STATE 5: THE VOID
             medStates: {
                 1: { t: "1. The Noise (Beta)", m: "14-30 Hz | Egypt | The Carnal Mind", d: "This is the waking state. The left hemisphere is dominating, analyzing, and stressing over the physical simulation. You are trapped in the five senses. You must shut the door.", q: "(carnal mind|egypt|left brain|waking state|beta)", disp: "Frequency: 14-30 Hz (Beta)" },
                 2: { t: "2. The Withdrawal (Alpha)", m: "8-13 Hz | The Wilderness | Letting Go", d: "You have closed your physical eyes. The brain slows down. You are detaching from the five senses and entering the wilderness.", q: "(wilderness|alpha|closing the eyes|detach)", disp: "Frequency: 8-13 Hz (Alpha)" },
                 3: { t: "3. The Threshold (Theta)", m: "4-7 Hz | The Holy Place | The Single Eye", d: "The transition zone. The silver cord is active. The right hemisphere begins to receive the cosmic light. The internal optical network awakens.", q: "(theta|holy place|single eye|right hemisphere|pineal)", disp: "Frequency: 4-7 Hz (Theta)" },
-                4: { t: "4. The Silence (Delta)", m: "0.1 Hz | Holy of Holies | Pure Coherence", d: "Absolute zero. The absence of thought. You have crossed the Red Sea. The heart and brain are mathematically synced with the universe.", q: "(absence of thought|holy of holies|silence|delta|meditation)", disp: "Frequency: 0.1-4 Hz (Delta)" }
+                4: { t: "4. The Silence (Delta)", m: "0.1 Hz | Holy of Holies | Pure Coherence", d: "Absolute zero. The absence of thought. You have crossed the Red Sea. The heart and brain are mathematically synced with the universe.", q: "(absence of thought|holy of holies|silence|delta|meditation)", disp: "Frequency: 0.1-4 Hz (Delta)" },
+                5: { t: "5. The Void (Black Sun)", m: "0 Hz | The Event Horizon | Pure Potential", d: "You have stepped behind the physical light of the Sun. This is the cosmic Ouroboros, the primordial dark where physics and theology become the same thing. You are no longer observing the simulation; you are resting in its unmanifested source code.", q: "(void|black sun|sol niger|abyss|darkness)", disp: "The Void (Black Sun)" }
             },
 
             setMeditationState: (step) => {
@@ -519,10 +633,25 @@
                 });
 
                 const r1 = document.getElementById('med-ring-1'); const r2 = document.getElementById('med-ring-2'); const r3 = document.getElementById('med-ring-3'); const icon = document.getElementById('med-icon');
+                
+                // RESET BORDERS JUST IN CASE
+                r2.style.borderColor = "rgba(107,114,128,0.4)";
+                r3.style.borderColor = "rgba(59,130,246,0.2)";
+
                 if(step === 1) { r1.className = "absolute inset-12 rounded-full backdrop-blur-md transition-all duration-1000 flex items-center justify-center shadow-[0_0_15px_rgba(239,68,68,0.4)]"; r1.style.background = "rgba(239,68,68,0.2)"; r2.style.animationDuration = "1s"; r3.style.animationDuration = "2s"; icon.className = "fa-solid fa-bolt text-4xl text-red-500/50 transition-all duration-1000"; } 
                 else if (step === 2) { r1.className = "absolute inset-10 rounded-full backdrop-blur-md transition-all duration-1000 flex items-center justify-center shadow-[0_0_20px_rgba(59,130,246,0.4)]"; r1.style.background = "rgba(59,130,246,0.2)"; r2.style.animationDuration = "3s"; r3.style.animationDuration = "5s"; icon.className = "fa-solid fa-water text-4xl text-blue-400/50 transition-all duration-1000"; } 
                 else if (step === 3) { r1.className = "absolute inset-8 rounded-full backdrop-blur-md transition-all duration-1000 flex items-center justify-center shadow-[0_0_30px_rgba(168,85,247,0.4)]"; r1.style.background = "rgba(168,85,247,0.2)"; r2.style.animationDuration = "6s"; r3.style.animationDuration = "10s"; icon.className = "fa-solid fa-eye text-5xl text-purple-400/70 transition-all duration-1000"; } 
                 else if (step === 4) { r1.className = "absolute inset-4 rounded-full backdrop-blur-lg transition-all duration-1000 flex items-center justify-center shadow-[0_0_60px_rgba(255,255,255,0.4)]"; r1.style.background = "rgba(255,255,255,0.1)"; r2.style.animationDuration = "10s"; r3.style.animationDuration = "20s"; icon.className = "fa-solid fa-om text-6xl text-white transition-all duration-1000 drop-shadow-[0_0_10px_#fff]"; }
+                // VOID VISUALIZER
+                else if (step === 5) { 
+                    r1.className = "absolute inset-2 rounded-full backdrop-blur-2xl transition-all duration-1000 flex items-center justify-center shadow-[0_0_100px_rgba(0,0,0,0.9)]"; 
+                    r1.style.background = "#050505"; 
+                    r2.style.animationDuration = "30s"; 
+                    r2.style.borderColor = "rgba(255,255,255,0.05)";
+                    r3.style.animationDuration = "40s"; 
+                    r3.style.borderColor = "rgba(255,255,255,0.02)";
+                    icon.className = "fa-solid fa-infinity text-6xl text-gray-800 transition-all duration-1000"; 
+                }
             },
 
             searchMeditationState: () => { const btn = document.getElementById('med-search-btn'); window.app.openSearchOverlay(); document.getElementById('exact-match-checkbox').checked = false; document.getElementById('overlay-search-input').value = `Decoding: ${btn.getAttribute('data-display')}`; window.app.performOverlaySearch(true, btn.getAttribute('data-query')); },
@@ -590,7 +719,24 @@
             },
 
             showAnatomy: (k) => {
-                const d = window.app.anaMap[k]; document.getElementById('ana-title').innerText = d.t; document.getElementById('ana-meta').innerText = d.m; document.getElementById('ana-desc').innerText = d.d; document.getElementById('ana-bg-icon').className = `fa-solid ${d.i}`;
+                document.getElementById('temple-console-default').classList.add('hidden');
+                document.getElementById('temple-console-active').classList.remove('hidden');
+                document.getElementById('temple-console-active').classList.add('flex');
+
+                const d = window.app.anaMap[k]; 
+                document.getElementById('ana-title').innerText = d.t; 
+                document.getElementById('ana-hz').innerText = d.hz; 
+                document.getElementById('ana-hz').style.color = d.hex; 
+                document.getElementById('ana-element').innerText = d.m; 
+                document.getElementById('ana-desc').innerText = d.d; 
+                
+                document.getElementById('ana-color').innerText = d.color; 
+                document.getElementById('ana-color').style.color = d.hex; 
+                document.getElementById('ana-planet').innerText = d.planet; 
+                document.getElementById('ana-metal').innerText = d.metal; 
+                
+                document.getElementById('ana-bg-icon').className = `fa-solid ${d.i}`;
+                document.getElementById('ana-bg-icon-container').style.color = d.hex;
             },
 
             scanForBrokenLinks: () => {
