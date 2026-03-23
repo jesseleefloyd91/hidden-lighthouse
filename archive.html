@@ -68,10 +68,7 @@
         #app-loader { position: fixed; inset: 0; z-index: 100; background: var(--bg-base); display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.5s; pointer-events: none; } #app-loader.hidden { opacity: 0; }
         .themed-avatar { filter: grayscale(100%) contrast(1.2) opacity(0.8); transition: all 0.5s ease; } .themed-avatar:hover { filter: grayscale(0%) contrast(1) opacity(1); }
 
-        /* CUSTOM POP CULTURE / MACRO MINI-ICONS FOR STORE */
-        .store-icon-bg { background: linear-gradient(145deg, #f8fafc, #e2e8f0); display: flex; align-items: center; justify-content: center; }
-        body.light-mode .store-icon-bg { background: linear-gradient(145deg, #ffffff, #f1f5f9); }
-        
+        /* CUSTOM POP CULTURE / MACRO MINI-ICONS */
         .icon-dbz { background: radial-gradient(circle at 30% 30%, #fbbf24, #d97706); border: 2px solid #b45309; box-shadow: 0 0 15px rgba(245,158,11,0.5); position: relative; } .icon-dbz::after { content: "★"; position: absolute; color: #dc2626; font-size: 20px; text-shadow: 0 0 2px rgba(0,0,0,0.5); }
         .icon-snitch { background: radial-gradient(circle at 30% 30%, #fde047, #b45309); border: 2px solid #fef08a; box-shadow: 0 0 15px rgba(253,224,71,0.5); position: relative; overflow: visible; }
         .icon-arc { background: radial-gradient(circle at 50% 50%, #fff, #22d3ee, #0891b2); border: 2px solid #67e8f9; box-shadow: 0 0 20px rgba(34,211,238,0.8); } .icon-arc::after { content: ""; position: absolute; width: 60%; height: 60%; border: 3px solid rgba(255,255,255,0.8); border-radius: 50%; }
@@ -90,11 +87,17 @@
         .icon-aum { background: radial-gradient(circle at 50% 50%, #d8b4fe, #7e22ce); border: 2px solid #e9d5ff; box-shadow: 0 0 15px rgba(168,85,247,0.5); }
         .icon-red { background: radial-gradient(circle at 50% 50%, #fca5a5, #b91c1c); border: 2px solid #fecaca; box-shadow: 0 0 15px rgba(239,68,68,0.5); }
 
-        .store-card { background: var(--surface); border: 1px solid var(--surface-border); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; transition: all 0.3s ease; }
-        .store-card:hover { transform: translateY(-2px); box-shadow: 0 15px 30px rgba(0,0,0,0.2); border-color: var(--gold); }
-        .store-btn { background: linear-gradient(to bottom, #fcd34d, #f59e0b); color: #000; font-weight: 700; text-transform: uppercase; font-size: 10px; letter-spacing: 0.05em; padding: 10px; border-radius: 99px; text-align: center; cursor: pointer; transition: all 0.2s; border: 1px solid #d97706; }
-        .store-btn:hover { background: linear-gradient(to bottom, #fde047, #fbbf24); transform: scale(1.02); }
-        .store-btn.added { background: #22c55e; border-color: #16a34a; color: white; pointer-events: none; }
+        /* RPG TALENT TREE STYLES */
+        .rpg-bg { background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px); background-size: 40px 40px; background-position: center center; }
+        body.light-mode .rpg-bg { background-image: linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px); }
+        
+        .talent-node { width: 64px; height: 64px; border-radius: 12px; border: 2px solid #4B5563; background: #1F2937; display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative; z-index: 10; transition: all 0.2s; box-shadow: inset 0 0 10px rgba(0,0,0,0.8); }
+        .talent-node:hover, .talent-node.active { border-color: var(--gold); transform: scale(1.1); box-shadow: 0 0 20px rgba(212,175,55,0.4), inset 0 0 10px rgba(0,0,0,0.8); }
+        .talent-node.locked { filter: grayscale(100%) opacity(0.5); border-color: #374151; }
+        
+        .talent-line-v { position: absolute; width: 4px; background: #4B5563; z-index: 1; }
+        .talent-line-h { position: absolute; height: 4px; background: #4B5563; z-index: 1; }
+        .talent-points-badge { position: absolute; bottom: -8px; right: -8px; background: #000; border: 1px solid var(--gold); color: var(--gold); font-size: 10px; font-weight: bold; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; border-radius: 50%; z-index: 20; }
     </style>
 </head>
 <body class="flex flex-col min-h-screen">
@@ -178,76 +181,42 @@
             <div class="max-w-[1600px] mx-auto pt-4 relative">
                 <h2 class="cinzel text-4xl md:text-6xl font-black mb-4 uppercase" style="color: var(--text-main);">The Upper Room</h2>
                 <div id="brain-quote" class="cinzel text-xs md:text-sm mb-8 italic tracking-widest px-2 md:px-6 min-h-[40px]" style="color: var(--gold);"></div>
-                
                 <div class="flex flex-col lg:flex-row items-stretch justify-center gap-8 mb-16 p-6 md:p-10 border rounded-3xl shadow-inner" style="background: var(--surface); border-color: var(--surface-border);">
                     <div class="matrix-container w-full lg:w-1/2 flex items-center justify-center relative">
-                        <div id="matrix-tooltip">
-                            <div class="tt-title" id="tt-nerve"></div>
-                            <div class="tt-data">ZODIAC: <span class="tt-highlight" id="tt-zodiac"></span></div>
-                            <div class="tt-data">DISCIPLE: <span class="tt-highlight" id="tt-disciple"></span></div>
-                            <div class="tt-data">MYTHOS: <span class="tt-highlight" id="tt-mythos"></span></div>
-                            <div class="tt-data">ESOTERIC: <span class="tt-highlight" id="tt-esoteric"></span></div>
-                        </div>
-
+                        <div id="matrix-tooltip"><div class="tt-title" id="tt-nerve"></div><div class="tt-data">ZODIAC: <span class="tt-highlight" id="tt-zodiac"></span></div><div class="tt-data">DISCIPLE: <span class="tt-highlight" id="tt-disciple"></span></div><div class="tt-data">MYTHOS: <span class="tt-highlight" id="tt-mythos"></span></div><div class="tt-data">ESOTERIC: <span class="tt-highlight" id="tt-esoteric"></span></div></div>
                         <svg viewBox="0 0 800 600" class="w-full h-auto drop-shadow-[0_0_20px_rgba(255,255,255,0.05)] max-w-[700px]">
                             <defs><radialGradient id="pinealGlow" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#3B82F6" stop-opacity="0.6"/><stop offset="100%" stop-color="#3B82F6" stop-opacity="0"/></radialGradient></defs>
                             <image href="brain-anatomy-bg.png" x="150" y="50" width="500" height="450" opacity="0.2" preserveAspectRatio="xMidYMid meet" />
                             <path d="M 250 150 C 250 50, 550 50, 550 150 C 600 250, 550 400, 450 450 C 400 500, 350 450, 250 350 Z" fill="none" stroke="rgba(150,150,150,0.15)" stroke-width="2" stroke-dasharray="5,5"/>
-                            <circle cx="400" cy="250" r="40" fill="url(#pinealGlow)" class="animate-pulse"/><circle cx="400" cy="250" r="15" fill="#3B82F6"/>
-                            <text x="400" y="210" fill="var(--text-main)" font-size="10" font-family="monospace" font-weight="bold" text-anchor="middle" letter-spacing="2">PINEAL</text>
-                            
-                            <circle class="nerve-hotspot" cx="300" cy="180" r="18" data-nerve="CN I: Olfactory" data-zodiac="Aries (The Ram)" data-disciple="Andrew" data-mythos="[Hindu] Prana / [Greek] Pneuma" data-esoteric="Breath of Life" data-query="(olfactory|aries|andrew|breath of life)"/>
-                            <text x="260" y="184" fill="var(--text-muted)" font-size="10" font-family="monospace" text-anchor="end">CN I</text>
-                            <circle class="nerve-hotspot" cx="330" cy="230" r="18" data-nerve="CN III: Oculomotor" data-zodiac="Gemini (The Twins)" data-disciple="James" data-mythos="[Norse] Hugin & Munin" data-esoteric="Twins of Perception" data-query="(oculomotor|gemini|james|twins of perception)"/>
-                            <text x="290" y="234" fill="var(--text-muted)" font-size="10" font-family="monospace" text-anchor="end">CN III</text>
-                            <circle class="nerve-hotspot" cx="310" cy="280" r="18" data-nerve="CN V: Trigeminal" data-zodiac="Leo (The Lion)" data-disciple="Philip" data-mythos="[Egyptian] Sphinx / Lion Gate" data-esoteric="Lion of Judah / Jawbone" data-query="(trigeminal|leo|philip|lion of judah|jawbone)"/>
-                            <text x="270" y="284" fill="var(--text-muted)" font-size="10" font-family="monospace" text-anchor="end">CN V</text>
-                            <circle class="nerve-hotspot" cx="330" cy="330" r="18" data-nerve="CN VII: Facial" data-zodiac="Libra (The Scales)" data-disciple="Thomas" data-mythos="[Egyptian] Ma'at (The Scales)" data-esoteric="The Balance" data-query="(facial nerve|libra|thomas|the balance)"/>
-                            <text x="290" y="334" fill="var(--text-muted)" font-size="10" font-family="monospace" text-anchor="end">CN VII</text>
-                            <circle class="nerve-hotspot" cx="340" cy="380" r="18" data-nerve="CN IX: Glossopharyngeal" data-zodiac="Sagittarius (The Archer)" data-disciple="James the Lesser" data-mythos="[Greek] Centaur / Chiron" data-esoteric="The Directed Word" data-query="(glossopharyngeal|sagittarius|james the lesser|directed word)"/>
-                            <text x="300" y="384" fill="var(--text-muted)" font-size="10" font-family="monospace" text-anchor="end">CN IX</text>
-                            <circle class="nerve-hotspot" cx="350" cy="430" r="18" data-nerve="CN XI: Accessory" data-zodiac="Aquarius (Water Bearer)" data-disciple="Simon" data-mythos="[Greek] Atlas bearing heavens" data-esoteric="The Burden Bearer" data-query="(accessory nerve|aquarius|simon|burden bearer)"/>
-                            <text x="310" y="434" fill="var(--text-muted)" font-size="10" font-family="monospace" text-anchor="end">CN XI</text>
-                            <circle class="nerve-hotspot" cx="500" cy="180" r="18" data-nerve="CN II: Optic" data-zodiac="Taurus (The Bull)" data-disciple="Peter" data-mythos="[Egyptian] Eye of Horus / [Norse] Odin" data-esoteric="The Single Eye" data-query="(optic nerve|taurus|peter|single eye|vision)"/>
-                            <text x="540" y="184" fill="var(--text-muted)" font-size="10" font-family="monospace" text-anchor="start">CN II</text>
-                            <circle class="nerve-hotspot" cx="470" cy="230" r="18" data-nerve="CN IV: Trochlear" data-zodiac="Cancer (The Crab)" data-disciple="John" data-mythos="[Babylonian] Kheperi / Scarab" data-esoteric="Foundational Water" data-query="(trochlear|cancer|john|foundational water)"/>
-                            <text x="510" y="234" fill="var(--text-muted)" font-size="10" font-family="monospace" text-anchor="start">CN IV</text>
-                            <circle class="nerve-hotspot" cx="490" cy="280" r="18" data-nerve="CN VI: Abducens" data-zodiac="Virgo (The Virgin)" data-disciple="Bartholomew" data-mythos="[Greek] Demeter / Wheat (Bread)" data-esoteric="House of Bread" data-query="(abducens|virgo|bartholomew|house of bread)"/>
-                            <text x="530" y="284" fill="var(--text-muted)" font-size="10" font-family="monospace" text-anchor="start">CN VI</text>
-                            <circle class="nerve-hotspot" cx="470" cy="330" r="18" data-nerve="CN VIII: Vestibulocochlear" data-zodiac="Scorpio (The Scorpion)" data-disciple="Matthew" data-mythos="[Norse] Heimdall's Ear" data-esoteric="Hidden Frequency" data-query="(vestibulocochlear|scorpio|matthew|hidden frequency)"/>
-                            <text x="510" y="334" fill="var(--text-muted)" font-size="10" font-family="monospace" text-anchor="start">CN VIII</text>
-                            <circle class="nerve-hotspot" cx="460" cy="380" r="18" data-nerve="CN X: Vagus" data-zodiac="Capricorn (The Goat)" data-disciple="Thaddeus" data-mythos="[Greek] Caduceus / [Norse] Mjolnir" data-esoteric="The Silver Cord" data-query="(vagus|pneumogastric|capricorn|thaddeus|silver cord)"/>
-                            <text x="500" y="384" fill="var(--text-muted)" font-size="10" font-family="monospace" text-anchor="start">CN X</text>
-                            <circle class="nerve-hotspot" cx="450" cy="430" r="18" data-nerve="CN XII: Hypoglossal" data-zodiac="Pisces (The Fishes)" data-disciple="Judas" data-mythos="[Babylonian] Oannes / The Betrayer" data-esoteric="The Lower Speech" data-query="(hypoglossal|pisces|judas|lower speech|betrayer)"/>
-                            <text x="490" y="434" fill="var(--text-muted)" font-size="10" font-family="monospace" text-anchor="start">CN XII</text>
+                            <circle cx="400" cy="250" r="40" fill="url(#pinealGlow)" class="animate-pulse"/><circle cx="400" cy="250" r="15" fill="#3B82F6"/><text x="400" y="210" fill="var(--text-main)" font-size="10" font-family="monospace" font-weight="bold" text-anchor="middle" letter-spacing="2">PINEAL</text>
+                            <circle class="nerve-hotspot" cx="300" cy="180" r="18" data-nerve="CN I: Olfactory" data-zodiac="Aries (The Ram)" data-disciple="Andrew" data-mythos="[Hindu] Prana / [Greek] Pneuma" data-esoteric="Breath of Life" data-query="(olfactory|aries|andrew|breath of life)"/><text x="260" y="184" fill="var(--text-muted)" font-size="10" font-family="monospace" text-anchor="end">CN I</text>
+                            <circle class="nerve-hotspot" cx="330" cy="230" r="18" data-nerve="CN III: Oculomotor" data-zodiac="Gemini (The Twins)" data-disciple="James" data-mythos="[Norse] Hugin & Munin" data-esoteric="Twins of Perception" data-query="(oculomotor|gemini|james|twins of perception)"/><text x="290" y="234" fill="var(--text-muted)" font-size="10" font-family="monospace" text-anchor="end">CN III</text>
+                            <circle class="nerve-hotspot" cx="310" cy="280" r="18" data-nerve="CN V: Trigeminal" data-zodiac="Leo (The Lion)" data-disciple="Philip" data-mythos="[Egyptian] Sphinx / Lion Gate" data-esoteric="Lion of Judah / Jawbone" data-query="(trigeminal|leo|philip|lion of judah|jawbone)"/><text x="270" y="284" fill="var(--text-muted)" font-size="10" font-family="monospace" text-anchor="end">CN V</text>
+                            <circle class="nerve-hotspot" cx="330" cy="330" r="18" data-nerve="CN VII: Facial" data-zodiac="Libra (The Scales)" data-disciple="Thomas" data-mythos="[Egyptian] Ma'at (The Scales)" data-esoteric="The Balance" data-query="(facial nerve|libra|thomas|the balance)"/><text x="290" y="334" fill="var(--text-muted)" font-size="10" font-family="monospace" text-anchor="end">CN VII</text>
+                            <circle class="nerve-hotspot" cx="340" cy="380" r="18" data-nerve="CN IX: Glossopharyngeal" data-zodiac="Sagittarius (The Archer)" data-disciple="James the Lesser" data-mythos="[Greek] Centaur / Chiron" data-esoteric="The Directed Word" data-query="(glossopharyngeal|sagittarius|james the lesser|directed word)"/><text x="300" y="384" fill="var(--text-muted)" font-size="10" font-family="monospace" text-anchor="end">CN IX</text>
+                            <circle class="nerve-hotspot" cx="350" cy="430" r="18" data-nerve="CN XI: Accessory" data-zodiac="Aquarius (Water Bearer)" data-disciple="Simon" data-mythos="[Greek] Atlas bearing heavens" data-esoteric="The Burden Bearer" data-query="(accessory nerve|aquarius|simon|burden bearer)"/><text x="310" y="434" fill="var(--text-muted)" font-size="10" font-family="monospace" text-anchor="end">CN XI</text>
+                            <circle class="nerve-hotspot" cx="500" cy="180" r="18" data-nerve="CN II: Optic" data-zodiac="Taurus (The Bull)" data-disciple="Peter" data-mythos="[Egyptian] Eye of Horus / [Norse] Odin" data-esoteric="The Single Eye" data-query="(optic nerve|taurus|peter|single eye|vision)"/><text x="540" y="184" fill="var(--text-muted)" font-size="10" font-family="monospace" text-anchor="start">CN II</text>
+                            <circle class="nerve-hotspot" cx="470" cy="230" r="18" data-nerve="CN IV: Trochlear" data-zodiac="Cancer (The Crab)" data-disciple="John" data-mythos="[Babylonian] Kheperi / Scarab" data-esoteric="Foundational Water" data-query="(trochlear|cancer|john|foundational water)"/><text x="510" y="234" fill="var(--text-muted)" font-size="10" font-family="monospace" text-anchor="start">CN IV</text>
+                            <circle class="nerve-hotspot" cx="490" cy="280" r="18" data-nerve="CN VI: Abducens" data-zodiac="Virgo (The Virgin)" data-disciple="Bartholomew" data-mythos="[Greek] Demeter / Wheat (Bread)" data-esoteric="House of Bread" data-query="(abducens|virgo|bartholomew|house of bread)"/><text x="530" y="284" fill="var(--text-muted)" font-size="10" font-family="monospace" text-anchor="start">CN VI</text>
+                            <circle class="nerve-hotspot" cx="470" cy="330" r="18" data-nerve="CN VIII: Vestibulocochlear" data-zodiac="Scorpio (The Scorpion)" data-disciple="Matthew" data-mythos="[Norse] Heimdall's Ear" data-esoteric="Hidden Frequency" data-query="(vestibulocochlear|scorpio|matthew|hidden frequency)"/><text x="510" y="334" fill="var(--text-muted)" font-size="10" font-family="monospace" text-anchor="start">CN VIII</text>
+                            <circle class="nerve-hotspot" cx="460" cy="380" r="18" data-nerve="CN X: Vagus" data-zodiac="Capricorn (The Goat)" data-disciple="Thaddeus" data-mythos="[Greek] Caduceus / [Norse] Mjolnir" data-esoteric="The Silver Cord" data-query="(vagus|pneumogastric|capricorn|thaddeus|silver cord)"/><text x="500" y="384" fill="var(--text-muted)" font-size="10" font-family="monospace" text-anchor="start">CN X</text>
+                            <circle class="nerve-hotspot" cx="450" cy="430" r="18" data-nerve="CN XII: Hypoglossal" data-zodiac="Pisces (The Fishes)" data-disciple="Judas" data-mythos="[Babylonian] Oannes / The Betrayer" data-esoteric="The Lower Speech" data-query="(hypoglossal|pisces|judas|lower speech|betrayer)"/><text x="490" y="434" fill="var(--text-muted)" font-size="10" font-family="monospace" text-anchor="start">CN XII</text>
                         </svg>
                     </div>
-
                     <div class="w-full lg:w-1/2 flex flex-col justify-center">
-                        <div id="brain-console-default" class="w-full h-full min-h-[400px] flex flex-col items-center justify-center text-center p-8 rounded-3xl border-2 border-dashed transition-all" style="border-color: var(--surface-border); background: rgba(0,0,0,0.2);">
-                            <i class="fa-solid fa-network-wired text-6xl mb-6 opacity-20 animate-pulse" style="color: var(--accent-glow);"></i>
-                            <h3 class="cinzel text-2xl font-bold mb-2" style="color: var(--text-main);">Awaiting Neural Input</h3>
-                            <p class="text-sm max-w-xs mx-auto" style="color: var(--text-muted);">Select a cranial nerve from the interactive diagram to decrypt its cross-cultural anatomical map.</p>
-                        </div>
-
+                        <div id="brain-console-default" class="w-full h-full min-h-[400px] flex flex-col items-center justify-center text-center p-8 rounded-3xl border-2 border-dashed transition-all" style="border-color: var(--surface-border); background: rgba(0,0,0,0.2);"><i class="fa-solid fa-network-wired text-6xl mb-6 opacity-20 animate-pulse" style="color: var(--accent-glow);"></i><h3 class="cinzel text-2xl font-bold mb-2" style="color: var(--text-main);">Awaiting Neural Input</h3><p class="text-sm max-w-xs mx-auto" style="color: var(--text-muted);">Select a cranial nerve from the interactive diagram to decrypt its cross-cultural anatomical map.</p></div>
                         <div id="brain-console-active" class="hidden w-full h-full flex-col justify-between text-left">
-                            <div class="mb-6">
-                                <span class="text-[10px] font-mono uppercase tracking-widest text-blue-400 bg-blue-500/10 px-3 py-1 rounded-full border border-blue-500/20">Target Acquired</span>
-                                <h3 id="brain-console-title" class="cinzel text-3xl md:text-4xl font-bold mt-4" style="color: var(--gold);">--</h3>
-                            </div>
+                            <div class="mb-6"><span class="text-[10px] font-mono uppercase tracking-widest text-blue-400 bg-blue-500/10 px-3 py-1 rounded-full border border-blue-500/20">Target Acquired</span><h3 id="brain-console-title" class="cinzel text-3xl md:text-4xl font-bold mt-4" style="color: var(--gold);">--</h3></div>
                             <div class="grid grid-cols-2 gap-4 mb-6 flex-1">
                                 <div class="p-5 rounded-2xl border bg-black/20 flex flex-col justify-center" style="border-color: var(--surface-border);"><i class="fa-solid fa-star mb-3 text-2xl" style="color: var(--gold);"></i><span class="text-[9px] uppercase tracking-widest text-gray-500 mb-1">Zodiac</span><span id="brain-console-zodiac" class="text-sm font-mono font-bold" style="color: var(--text-main);">--</span></div>
                                 <div class="p-5 rounded-2xl border bg-black/20 flex flex-col justify-center" style="border-color: var(--surface-border);"><i class="fa-solid fa-user-group mb-3 text-2xl text-blue-400"></i><span class="text-[9px] uppercase tracking-widest text-gray-500 mb-1">Disciple</span><span id="brain-console-disciple" class="text-sm font-mono font-bold" style="color: var(--text-main);">--</span></div>
                                 <div class="p-5 rounded-2xl border bg-black/20 flex flex-col justify-center col-span-2 sm:col-span-1" style="border-color: var(--surface-border);"><i class="fa-solid fa-bolt mb-3 text-2xl text-purple-400"></i><span class="text-[9px] uppercase tracking-widest text-gray-500 mb-1">Global Mythos</span><span id="brain-console-mythos" class="text-sm font-mono font-bold" style="color: var(--text-main);">--</span></div>
                                 <div class="p-5 rounded-2xl border bg-black/20 flex flex-col justify-center col-span-2 sm:col-span-1" style="border-color: var(--surface-border);"><i class="fa-solid fa-key mb-3 text-2xl text-emerald-400"></i><span class="text-[9px] uppercase tracking-widest text-gray-500 mb-1">Esoteric Key</span><span id="brain-console-esoteric" class="text-sm font-mono font-bold" style="color: var(--text-main);">--</span></div>
                             </div>
-                            <button id="brain-search-btn" onclick="window.app.searchNerveState()" class="w-full py-4 border rounded-xl text-[11px] uppercase font-black tracking-widest transition flex justify-center items-center gap-2 hover:scale-[1.02] shadow-[0_0_15px_rgba(212,175,55,0.15)]" style="background-color: var(--gold); border-color: var(--gold); color: #000;">
-                                <i class="fa-solid fa-magnifying-glass"></i> Search Archive For This Nerve
-                            </button>
+                            <button id="brain-search-btn" onclick="window.app.searchNerveState()" class="w-full py-4 border rounded-xl text-[11px] uppercase font-black tracking-widest transition flex justify-center items-center gap-2 hover:scale-[1.02] shadow-[0_0_15px_rgba(212,175,55,0.15)]" style="background-color: var(--gold); border-color: var(--gold); color: #000;"><i class="fa-solid fa-magnifying-glass"></i> Search Archive For This Nerve</button>
                         </div>
                     </div>
                 </div>
-                <div id="brain-lectures-grid" class="masonry-grid"></div>
             </div>
         </section>
 
@@ -255,7 +224,6 @@
             <div class="max-w-[1600px] mx-auto">
                 <h2 class="cinzel text-4xl md:text-6xl font-black mb-10 text-center uppercase" style="color: var(--text-main);">The Temple</h2>
                 <div class="grid lg:grid-cols-12 gap-10 items-stretch">
-                    
                     <div class="lg:col-span-5 flex justify-center relative rounded-3xl py-8 border shadow-inner" style="background: var(--surface); border-color: var(--surface-border);">
                         <div class="spine-container">
                             <div class="spine-line"></div>
@@ -268,20 +236,11 @@
                             <div class="chakra-node" style="background-color: #ef4444; box-shadow: 0 0 20px #ef4444;" onclick="window.app.showAnatomy('root')"><i class="fa-solid fa-mountain"></i></div>
                         </div>
                     </div>
-
                     <div class="lg:col-span-7 w-full flex flex-col justify-center">
-                        <div id="temple-console-default" class="w-full h-full min-h-[400px] flex flex-col items-center justify-center text-center p-8 rounded-3xl border-2 border-dashed transition-all" style="border-color: var(--surface-border); background: rgba(0,0,0,0.2);">
-                            <i class="fa-solid fa-om text-6xl mb-6 opacity-20 animate-pulse" style="color: var(--gold);"></i>
-                            <h3 class="cinzel text-2xl font-bold mb-2" style="color: var(--text-main);">Awaiting Alignment</h3>
-                            <p class="text-sm max-w-xs mx-auto" style="color: var(--text-muted);">Select a seal on the spinal column to decrypt the electromagnetic spectrum and planetary hardware.</p>
-                        </div>
+                        <div id="temple-console-default" class="w-full h-full min-h-[400px] flex flex-col items-center justify-center text-center p-8 rounded-3xl border-2 border-dashed transition-all" style="border-color: var(--surface-border); background: rgba(0,0,0,0.2);"><i class="fa-solid fa-om text-6xl mb-6 opacity-20 animate-pulse" style="color: var(--gold);"></i><h3 class="cinzel text-2xl font-bold mb-2" style="color: var(--text-main);">Awaiting Alignment</h3><p class="text-sm max-w-xs mx-auto" style="color: var(--text-muted);">Select a seal on the spinal column to decrypt the electromagnetic spectrum and planetary hardware.</p></div>
                         <div id="temple-console-active" class="hidden w-full h-full flex-col justify-between text-left p-8 border rounded-3xl shadow-2xl relative overflow-hidden" style="background: var(--surface); border-color: var(--surface-border);">
                             <div class="absolute -top-10 -right-10 text-9xl opacity-5 pointer-events-none transition-colors duration-500" id="ana-bg-icon-container"><i id="ana-bg-icon" class="fa-solid fa-dharmachakra"></i></div>
-                            <div class="mb-6 relative z-10">
-                                <span class="text-[10px] font-mono uppercase tracking-widest bg-white/5 px-3 py-1 rounded-full border border-white/10" id="ana-hz" style="color: var(--gold);">-- Hz</span>
-                                <h3 id="ana-title" class="cinzel text-3xl md:text-5xl font-bold mt-4" style="color: var(--text-main);">--</h3>
-                                <p class="font-mono text-[10px] uppercase tracking-[0.3em] opacity-60 mt-2" style="color: var(--text-main);" id="ana-element">--</p>
-                            </div>
+                            <div class="mb-6 relative z-10"><span class="text-[10px] font-mono uppercase tracking-widest bg-white/5 px-3 py-1 rounded-full border border-white/10" id="ana-hz" style="color: var(--gold);">-- Hz</span><h3 id="ana-title" class="cinzel text-3xl md:text-5xl font-bold mt-4" style="color: var(--text-main);">--</h3><p class="font-mono text-[10px] uppercase tracking-[0.3em] opacity-60 mt-2" style="color: var(--text-main);" id="ana-element">--</p></div>
                             <div class="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-6 flex-1 relative z-10">
                                 <div class="p-4 rounded-2xl border bg-black/20 flex flex-col justify-center" style="border-color: var(--surface-border);"><i class="fa-solid fa-wave-square mb-2 text-xl" style="color: var(--text-muted);"></i><span class="text-[9px] uppercase tracking-widest text-gray-500 mb-1">Spectrum</span><span id="ana-color" class="text-sm font-mono font-bold">--</span></div>
                                 <div class="p-4 rounded-2xl border bg-black/20 flex flex-col justify-center" style="border-color: var(--surface-border);"><i class="fa-solid fa-meteor mb-2 text-xl" style="color: var(--text-muted);"></i><span class="text-[9px] uppercase tracking-widest text-gray-500 mb-1">Astrophysics</span><span id="ana-planet" class="text-sm font-mono font-bold" style="color: var(--text-main);">--</span></div>
@@ -294,215 +253,247 @@
             </div>
         </section>
 
-        <section id="view-echoes" class="view-section pt-[100px] pb-32">
-            
-            <div class="w-full bg-gradient-to-r from-gray-900 to-black border-b border-white/10 mb-8 py-8 px-6">
-                <div class="max-w-[1600px] mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
-                    <div class="text-left w-full">
-                        <div class="flex items-center gap-3 mb-2">
-                            <i class="fa-brands fa-aws text-3xl" style="color: var(--gold);"></i>
-                            <h2 class="font-bold text-2xl tracking-tight" style="color: var(--text-main);">EchoStore</h2>
-                        </div>
-                        <p class="text-sm font-light" style="color: var(--text-muted);">Shop the Collective Unconscious. Free, instant downloads directly to the human nervous system.</p>
-                    </div>
-                    <div class="w-full md:w-auto flex-shrink-0">
-                        <div class="bg-white/10 border border-white/20 rounded-full px-4 py-2 flex items-center gap-3 w-full md:w-96">
-                            <i class="fa-solid fa-magnifying-glass text-gray-400"></i>
-                            <input type="text" placeholder="Search the Simulation..." class="bg-transparent border-none outline-none text-sm w-full text-white placeholder-gray-500" disabled>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="max-w-[1600px] mx-auto px-4 md:px-6 flex flex-col lg:flex-row gap-8 items-start">
+        <section id="view-echoes" class="view-section px-4 md:px-6">
+            <div class="max-w-[1600px] mx-auto pt-4 relative">
                 
-                <div class="w-full lg:w-64 flex-shrink-0 hidden lg:block text-sm" style="color: var(--text-main);">
-                    <h3 class="font-bold mb-4">Department</h3>
-                    <ul class="space-y-2 mb-8" style="color: var(--text-muted);">
-                        <li class="font-bold text-blue-400">Any Department</li>
-                        <li class="hover:text-white cursor-pointer ml-2">Pop Culture Mythology</li>
-                        <li class="hover:text-white cursor-pointer ml-2">Ancient Hardware</li>
-                        <li class="hover:text-white cursor-pointer ml-2">Astrophysics</li>
-                        <li class="hover:text-white cursor-pointer ml-2">Biological Frequencies</li>
-                    </ul>
-
-                    <h3 class="font-bold mb-4">Customer Reviews</h3>
-                    <ul class="space-y-2 mb-8 cursor-pointer">
-                        <li class="flex items-center gap-1 hover:text-gold"><i class="fa-solid fa-star text-yellow-500"></i><i class="fa-solid fa-star text-yellow-500"></i><i class="fa-solid fa-star text-yellow-500"></i><i class="fa-solid fa-star text-yellow-500"></i><i class="fa-regular fa-star text-yellow-500"></i> & Up</li>
-                        <li class="flex items-center gap-1 hover:text-gold"><i class="fa-solid fa-star text-yellow-500"></i><i class="fa-solid fa-star text-yellow-500"></i><i class="fa-solid fa-star text-yellow-500"></i><i class="fa-regular fa-star text-yellow-500"></i><i class="fa-regular fa-star text-yellow-500"></i> & Up</li>
-                    </ul>
-
-                    <h3 class="font-bold mb-4">Delivery Options</h3>
-                    <div class="space-y-2 mb-8" style="color: var(--text-muted);">
-                        <label class="flex items-center gap-2 cursor-pointer hover:text-white"><input type="checkbox" checked class="accent-blue-500"> Instant Epiphany</label>
-                        <label class="flex items-center gap-2 cursor-pointer hover:text-white"><input type="checkbox" class="accent-blue-500"> Deep Meditation (3-5 Days)</label>
-                    </div>
-
-                    <h3 class="font-bold mb-4">Price</h3>
-                    <ul class="space-y-2" style="color: var(--text-muted);">
-                        <li class="hover:text-white cursor-pointer font-bold text-white">0.00 Hz (Free)</li>
-                        <li class="hover:text-white cursor-pointer line-through">Karmic Debt</li>
-                    </ul>
-                </div>
-
-                <div class="flex-1 w-full text-left">
-                    <p class="text-xs mb-4" style="color: var(--text-muted);">1-16 of over 100,000 results for <span class="text-orange-400 font-bold">"The Truth"</span></p>
+                <div class="flex flex-col items-center mb-12">
+                    <h2 class="cinzel text-4xl md:text-6xl font-black mb-6 uppercase text-center" style="color: var(--text-main);">Echoes of the Matrix</h2>
                     
-                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
-
-                        <div class="store-card">
-                            <div class="w-full aspect-square store-icon-bg rounded-lg mb-4 relative overflow-hidden group">
-                                <div class="absolute top-0 left-0 bg-gray-800 text-white text-[9px] font-bold px-2 py-1 rounded-br-lg z-10 uppercase tracking-widest">Base Model</div>
-                                <div class="w-20 h-20 rounded-full icon-gobekli flex items-center justify-center shrink-0 shadow-xl group-hover:scale-110 transition-transform duration-500"><i class="fa-solid fa-monument text-stone-700 text-2xl"></i></div>
-                            </div>
-                            <h3 class="text-sm font-bold text-blue-400 line-clamp-2 leading-snug">Göbekli Tepe (The Ancient Hardware)</h3>
-                            <p class="text-[10px] text-gray-400 mt-1">by The Ancients</p>
-                            <div class="flex items-center gap-1 mt-1 text-yellow-500 text-[10px]">
-                                <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i><span class="text-blue-400 ml-1 hover:underline cursor-pointer">12,000 ratings</span>
-                            </div>
-                            <div class="mt-2 flex items-baseline gap-1"><span class="text-lg font-bold text-white">Free</span><span class="text-[10px] font-bold text-blue-500 italic ml-1">vPrime</span></div>
-                            <p class="text-[10px] text-gray-400 mt-2 line-clamp-3">The 12,000-year-old T-pillars are the physical architecture of the human spine and the faceless ego. A buried time capsule of the biological operating system.</p>
-                            <div class="mt-auto pt-4"><button class="w-full store-btn" onclick="this.innerText='Downloaded ✓'; this.classList.add('added');">Download to Mind</button></div>
-                        </div>
-
-                        <div class="store-card">
-                            <div class="w-full aspect-square store-icon-bg rounded-lg mb-4 relative overflow-hidden group">
-                                <div class="absolute top-0 left-0 bg-orange-600 text-white text-[9px] font-bold px-2 py-1 rounded-br-lg z-10 uppercase tracking-widest">Matrix Choice</div>
-                                <div class="w-20 h-20 rounded-full icon-apollo flex items-center justify-center shrink-0 shadow-xl group-hover:scale-110 transition-transform duration-500"><i class="fa-solid fa-moon text-slate-800 text-2xl"></i></div>
-                            </div>
-                            <h3 class="text-sm font-bold text-blue-400 line-clamp-2 leading-snug">The Apollo Ritual (Space Race Edition)</h3>
-                            <p class="text-[10px] text-gray-400 mt-1">by NASA</p>
-                            <div class="flex items-center gap-1 mt-1 text-yellow-500 text-[10px]"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-regular fa-star"></i><span class="text-blue-400 ml-1 hover:underline cursor-pointer">1,969 ratings</span></div>
-                            <div class="mt-2 flex items-baseline gap-1"><span class="text-lg font-bold text-white">Free</span><span class="text-[10px] font-bold text-blue-500 italic ml-1">vPrime</span></div>
-                            <p class="text-[10px] text-gray-400 mt-2 line-clamp-3">A macro-scale ritual. Using Saturn (Root Chakra) to launch the Sun (Pineal) to touch the Moon (Pituitary). Proving outer space is a hologram of inner space.</p>
-                            <div class="mt-auto pt-4"><button class="w-full store-btn" onclick="this.innerText='Downloaded ✓'; this.classList.add('added');">Download to Mind</button></div>
-                        </div>
-
-                        <div class="store-card">
-                            <div class="w-full aspect-square store-icon-bg rounded-lg mb-4 relative overflow-hidden group">
-                                <div class="w-20 h-20 rounded-full icon-zeus flex items-center justify-center shrink-0 shadow-xl group-hover:scale-110 transition-transform duration-500"><i class="fa-solid fa-bolt text-yellow-900 text-2xl"></i></div>
-                            </div>
-                            <h3 class="text-sm font-bold text-blue-400 line-clamp-2 leading-snug">The Ascension (Lightning Series)</h3>
-                            <p class="text-[10px] text-gray-400 mt-1">by Greek Mythology</p>
-                            <div class="flex items-center gap-1 mt-1 text-yellow-500 text-[10px]"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><span class="text-blue-400 ml-1 hover:underline cursor-pointer">3,102 ratings</span></div>
-                            <div class="mt-2 flex items-baseline gap-1"><span class="text-lg font-bold text-white">Free</span><span class="text-[10px] font-bold text-blue-500 italic ml-1">vPrime</span></div>
-                            <p class="text-[10px] text-gray-400 mt-2 line-clamp-3">Zeus (Jupiter) overthrows Cronus (Saturn/Time) to rule from Olympus (The Cranial Vault). He wields the Lightning Bolt—the electrical spark of the Vagus Nerve.</p>
-                            <div class="mt-auto pt-4"><button class="w-full store-btn" onclick="this.innerText='Downloaded ✓'; this.classList.add('added');">Download to Mind</button></div>
-                        </div>
-
-                        <div class="store-card">
-                            <div class="w-full aspect-square store-icon-bg rounded-lg mb-4 relative overflow-hidden group">
-                                <div class="w-20 h-20 rounded-full icon-wizard flex items-center justify-center shrink-0 shadow-xl group-hover:scale-110 transition-transform duration-500"><i class="fa-solid fa-star text-white text-2xl"></i></div>
-                            </div>
-                            <h3 class="text-sm font-bold text-blue-400 line-clamp-2 leading-snug">The Advisor (Merlin Pack)</h3>
-                            <p class="text-[10px] text-gray-400 mt-1">by Arthurian Legend</p>
-                            <div class="flex items-center gap-1 mt-1 text-yellow-500 text-[10px]"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i><span class="text-blue-400 ml-1 hover:underline cursor-pointer">8,401 ratings</span></div>
-                            <div class="mt-2 flex items-baseline gap-1"><span class="text-lg font-bold text-white">Free</span><span class="text-[10px] font-bold text-blue-500 italic ml-1">vPrime</span></div>
-                            <p class="text-[10px] text-gray-400 mt-2 line-clamp-3">Merlin advises King Arthur. Arthur is the physical Ego; the Wizard is the Pineal Gland. He doesn't swing the sword; he directs the cosmic intuition.</p>
-                            <div class="mt-auto pt-4"><button class="w-full store-btn" onclick="this.innerText='Downloaded ✓'; this.classList.add('added');">Download to Mind</button></div>
-                        </div>
-
-                        <div class="store-card">
-                            <div class="w-full aspect-square store-icon-bg rounded-lg mb-4 relative overflow-hidden group">
-                                <div class="absolute top-0 left-0 bg-gray-800 text-white text-[9px] font-bold px-2 py-1 rounded-br-lg z-10 uppercase tracking-widest">Bundle</div>
-                                <div class="w-20 h-20 rounded-full icon-elf flex items-center justify-center shrink-0 shadow-xl group-hover:scale-110 transition-transform duration-500"><i class="fa-brands fa-envira text-green-900 text-2xl"></i></div>
-                            </div>
-                            <h3 class="text-sm font-bold text-blue-400 line-clamp-2 leading-snug">The Frequencies (Elf/Dwarf Combo)</h3>
-                            <p class="text-[10px] text-gray-400 mt-1">by Fantasy Literature</p>
-                            <div class="flex items-center gap-1 mt-1 text-yellow-500 text-[10px]"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-regular fa-star"></i><span class="text-blue-400 ml-1 hover:underline cursor-pointer">45k ratings</span></div>
-                            <div class="mt-2 flex items-baseline gap-1"><span class="text-lg font-bold text-white">Free</span><span class="text-[10px] font-bold text-blue-500 italic ml-1">vPrime</span></div>
-                            <p class="text-[10px] text-gray-400 mt-2 line-clamp-3">Dwarfs are the lower Chakras (the Gut). Elves are the high-frequency Alpha/Theta waves. Orcs are the Amygdala, driven entirely by fear and survival.</p>
-                            <div class="mt-auto pt-4"><button class="w-full store-btn" onclick="this.innerText='Downloaded ✓'; this.classList.add('added');">Download to Mind</button></div>
-                        </div>
-
-                        <div class="store-card">
-                            <div class="w-full aspect-square store-icon-bg rounded-lg mb-4 relative overflow-hidden group">
-                                <div class="w-20 h-20 rounded-full icon-alien flex items-center justify-center shrink-0 shadow-xl group-hover:scale-110 transition-transform duration-500"><i class="fa-solid fa-user-astronaut text-white text-2xl"></i></div>
-                            </div>
-                            <h3 class="text-sm font-bold text-blue-400 line-clamp-2 leading-snug">The Visitors (Cosmic Download)</h3>
-                            <p class="text-[10px] text-gray-400 mt-1">by Modern UFOlogy</p>
-                            <div class="flex items-center gap-1 mt-1 text-yellow-500 text-[10px]"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i><i class="fa-regular fa-star"></i><span class="text-blue-400 ml-1 hover:underline cursor-pointer">1,947 ratings</span></div>
-                            <div class="mt-2 flex items-baseline gap-1"><span class="text-lg font-bold text-white">Free</span></div>
-                            <p class="text-[10px] text-gray-400 mt-2 line-clamp-3">"Aliens" descending from the "sky" are sudden intuitive downloads from your own higher self (the quantum field), communicating with your localized ego.</p>
-                            <div class="mt-auto pt-4"><button class="w-full store-btn" onclick="this.innerText='Downloaded ✓'; this.classList.add('added');">Download to Mind</button></div>
-                        </div>
-
-                        <div class="store-card">
-                            <div class="w-full aspect-square store-icon-bg rounded-lg mb-4 relative overflow-hidden group">
-                                <div class="absolute top-0 left-0 bg-orange-600 text-white text-[9px] font-bold px-2 py-1 rounded-br-lg z-10 uppercase tracking-widest">Matrix Choice</div>
-                                <div class="w-20 h-20 rounded-full icon-dbz flex items-center justify-center shrink-0 shadow-xl group-hover:scale-110 transition-transform duration-500"></div>
-                            </div>
-                            <h3 class="text-sm font-bold text-blue-400 line-clamp-2 leading-snug">The Kundalini (Super Edition)</h3>
-                            <p class="text-[10px] text-gray-400 mt-1">by Dragon Ball Universe</p>
-                            <div class="flex items-center gap-1 mt-1 text-yellow-500 text-[10px]"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><span class="text-blue-400 ml-1 hover:underline cursor-pointer">9,001 ratings</span></div>
-                            <div class="mt-2 flex items-baseline gap-1"><span class="text-lg font-bold text-white">Free</span><span class="text-[10px] font-bold text-blue-500 italic ml-1">vPrime</span></div>
-                            <p class="text-[10px] text-gray-400 mt-2 line-clamp-3">The 7 Dragon Balls represent the 7 Chakras. Gathering them summons Shenron (the serpent-fire rising up the spine). Super Saiyan is the Torus field.</p>
-                            <div class="mt-auto pt-4"><button class="w-full store-btn" onclick="this.innerText='Downloaded ✓'; this.classList.add('added');">Download to Mind</button></div>
-                        </div>
-
-                        <div class="store-card">
-                            <div class="w-full aspect-square store-icon-bg rounded-lg mb-4 relative overflow-hidden group">
-                                <div class="w-20 h-20 rounded-full icon-snitch flex items-center justify-center shrink-0 shadow-xl group-hover:scale-110 transition-transform duration-500"><i class="fa-solid fa-seedling text-white opacity-80 text-3xl -rotate-45 relative top-1"></i></div>
-                            </div>
-                            <h3 class="text-sm font-bold text-blue-400 line-clamp-2 leading-snug">The Pineal (Golden Snitch Collectible)</h3>
-                            <p class="text-[10px] text-gray-400 mt-1">by Wizarding World</p>
-                            <div class="flex items-center gap-1 mt-1 text-yellow-500 text-[10px]"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i><span class="text-blue-400 ml-1 hover:underline cursor-pointer">7,777 ratings</span></div>
-                            <div class="mt-2 flex items-baseline gap-1"><span class="text-lg font-bold text-white">Free</span></div>
-                            <p class="text-[10px] text-gray-400 mt-2 line-clamp-3">The Golden Snitch is the Pineal Gland. Once caught, the game of the physical simulation immediately ends. Platform 9 ¾ is the hidden Theta wave.</p>
-                            <div class="mt-auto pt-4"><button class="w-full store-btn" onclick="this.innerText='Downloaded ✓'; this.classList.add('added');">Download to Mind</button></div>
-                        </div>
-
-                        <div class="store-card">
-                            <div class="w-full aspect-square store-icon-bg rounded-lg mb-4 relative overflow-hidden group">
-                                <div class="w-20 h-20 rounded-full icon-arc flex items-center justify-center shrink-0 shadow-xl group-hover:scale-110 transition-transform duration-500"><div class="w-5 h-5 bg-white rounded-full shadow-[0_0_15px_#fff]"></div></div>
-                            </div>
-                            <h3 class="text-sm font-bold text-blue-400 line-clamp-2 leading-snug">The Torus Field (Arc Reactor Prop)</h3>
-                            <p class="text-[10px] text-gray-400 mt-1">by Marvel</p>
-                            <div class="flex items-center gap-1 mt-1 text-yellow-500 text-[10px]"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-regular fa-star"></i><span class="text-blue-400 ml-1 hover:underline cursor-pointer">3,000 ratings</span></div>
-                            <div class="mt-2 flex items-baseline gap-1"><span class="text-lg font-bold text-white">Free</span><span class="text-[10px] font-bold text-blue-500 italic ml-1">vPrime</span></div>
-                            <p class="text-[10px] text-gray-400 mt-2 line-clamp-3">Iron Man's Arc Reactor is the Heart Torus Field. Dr. Strange's Eye of Agamotto is the Third Eye. Thor's Hammer is the electrical Vagus Nerve spark.</p>
-                            <div class="mt-auto pt-4"><button class="w-full store-btn" onclick="this.innerText='Downloaded ✓'; this.classList.add('added');">Download to Mind</button></div>
-                        </div>
-
-                        <div class="store-card">
-                            <div class="w-full aspect-square store-icon-bg rounded-lg mb-4 relative overflow-hidden group">
-                                <div class="absolute top-0 left-0 bg-gray-800 text-white text-[9px] font-bold px-2 py-1 rounded-br-lg z-10 uppercase tracking-widest">Essential</div>
-                                <div class="w-20 h-20 rounded-full icon-matrix flex items-center justify-center shrink-0 shadow-xl group-hover:scale-110 transition-transform duration-500"><i class="fa-solid fa-code text-green-500 text-2xl font-bold drop-shadow-[0_0_5px_#22c55e]"></i></div>
-                            </div>
-                            <h3 class="text-sm font-bold text-blue-400 line-clamp-2 leading-snug">The Beta State (Red Pill Bundle)</h3>
-                            <p class="text-[10px] text-gray-400 mt-1">by Sci-Fi</p>
-                            <div class="flex items-center gap-1 mt-1 text-yellow-500 text-[10px]"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><span class="text-blue-400 ml-1 hover:underline cursor-pointer">101,010 ratings</span></div>
-                            <div class="mt-2 flex items-baseline gap-1"><span class="text-lg font-bold text-white">Free</span><span class="text-[10px] font-bold text-blue-500 italic ml-1">vPrime</span></div>
-                            <p class="text-[10px] text-gray-400 mt-2 line-clamp-3">The "Matrix" is the Beta-wave frequency—the carnal mind and the five senses. The "Red Pill" unplugs the Vagus Nerve from the illusion into Theta waves.</p>
-                            <div class="mt-auto pt-4"><button class="w-full store-btn" onclick="this.innerText='Downloaded ✓'; this.classList.add('added');">Download to Mind</button></div>
-                        </div>
-
-                        <div class="store-card">
-                            <div class="w-full aspect-square store-icon-bg rounded-lg mb-4 relative overflow-hidden group">
-                                <div class="w-20 h-20 rounded-full icon-aum flex items-center justify-center shrink-0 shadow-xl group-hover:scale-110 transition-transform duration-500"><i class="fa-solid fa-microphone text-purple-900 text-2xl"></i></div>
-                            </div>
-                            <h3 class="text-sm font-bold text-blue-400 line-clamp-2 leading-snug">The Primordial Sound (Acoustic Vinyl)</h3>
-                            <p class="text-[10px] text-gray-400 mt-1">by Biological Acoustics</p>
-                            <div class="flex items-center gap-1 mt-1 text-yellow-500 text-[10px]"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i><span class="text-blue-400 ml-1 hover:underline cursor-pointer">432 ratings</span></div>
-                            <div class="mt-2 flex items-baseline gap-1"><span class="text-lg font-bold text-white">Free</span></div>
-                            <p class="text-[10px] text-gray-400 mt-2 line-clamp-3">The human vocal tract is built to form "Ah-Mmm" (AUM) effortlessly. It was the first sound humans made—an acoustic vibration striking the Vagus nerve.</p>
-                            <div class="mt-auto pt-4"><button class="w-full store-btn" onclick="this.innerText='Downloaded ✓'; this.classList.add('added');">Download to Mind</button></div>
-                        </div>
-
-                        <div class="store-card">
-                            <div class="w-full aspect-square store-icon-bg rounded-lg mb-4 relative overflow-hidden group">
-                                <div class="w-20 h-20 rounded-full icon-red flex items-center justify-center shrink-0 shadow-xl group-hover:scale-110 transition-transform duration-500"><i class="fa-solid fa-eye text-red-900 text-2xl"></i></div>
-                            </div>
-                            <h3 class="text-sm font-bold text-blue-400 line-clamp-2 leading-snug">The First Color (Ochre Palette)</h3>
-                            <p class="text-[10px] text-gray-400 mt-1">by Evolutionary Optics</p>
-                            <div class="flex items-center gap-1 mt-1 text-yellow-500 text-[10px]"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-regular fa-star"></i><span class="text-blue-400 ml-1 hover:underline cursor-pointer">100k ratings</span></div>
-                            <div class="mt-2 flex items-baseline gap-1"><span class="text-lg font-bold text-white">Free</span><span class="text-[10px] font-bold text-blue-500 italic ml-1">vPrime</span></div>
-                            <p class="text-[10px] text-gray-400 mt-2 line-clamp-3">The first color named by humanity and used in 100,000-year-old cave art. Red is the lowest frequency of light and maps directly to the survival Root Chakra.</p>
-                            <div class="mt-auto pt-4"><button class="w-full store-btn" onclick="this.innerText='Downloaded ✓'; this.classList.add('added');">Download to Mind</button></div>
-                        </div>
-
+                    <div class="flex p-1 border rounded-full backdrop-blur-md z-20 shadow-xl" style="background: var(--surface); border-color: var(--surface-border);">
+                        <button id="btn-view-student" onclick="window.app.toggleEchoesView('student')" class="px-6 py-2 rounded-full text-xs font-bold uppercase tracking-widest transition-all bg-blue-600 text-white shadow-lg flex items-center gap-2">
+                            <i class="fa-solid fa-khanda"></i> Initiate Path
+                        </button>
+                        <button id="btn-view-master" onclick="window.app.toggleEchoesView('master')" class="px-6 py-2 rounded-full text-xs font-bold uppercase tracking-widest transition-all hover:bg-white/10 text-gray-400 flex items-center gap-2">
+                            <i class="fa-solid fa-book-open"></i> Master Vault
+                        </button>
                     </div>
                 </div>
+
+                <div id="echoes-student-view" class="w-full flex flex-col lg:flex-row gap-8 min-h-[600px]">
+                    
+                    <div class="w-full lg:w-2/3 border rounded-3xl p-8 relative overflow-hidden rpg-bg shadow-inner flex flex-col" style="border-color: var(--surface-border); background-color: #111827;">
+                        
+                        <div class="flex justify-between items-center mb-8 border-b pb-4" style="border-color: #374151;">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 rounded-full border-2 border-blue-500 bg-black flex items-center justify-center"><i class="fa-solid fa-user-astronaut text-blue-400"></i></div>
+                                <div>
+                                    <h3 class="font-bold text-white uppercase tracking-widest text-sm">Class: Human Spacesuit</h3>
+                                    <p class="text-xs text-blue-400 font-mono">Level: Seeker</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-xs uppercase text-gray-400 tracking-widest font-bold">Available TP</p>
+                                <p class="text-2xl font-mono text-yellow-500 font-black">1</p>
+                            </div>
+                        </div>
+
+                        <div class="flex-1 relative flex items-center justify-center py-10">
+                            
+                            <div class="talent-line-v" style="height: 100px; top: 15%; left: 50%;"></div>
+                            <div class="talent-line-v" style="height: 100px; top: 40%; left: 50%;"></div>
+                            <div class="talent-line-v" style="height: 100px; top: 65%; left: 50%;"></div>
+
+                            <div class="talent-line-h" style="width: 250px; top: 40%; left: 50%; transform: translateX(-50%);"></div>
+                            <div class="talent-line-h" style="width: 350px; top: 65%; left: 50%; transform: translateX(-50%);"></div>
+
+                            <div class="talent-line-v" style="height: 100px; top: 40%; left: calc(50% - 125px);"></div>
+                            <div class="talent-line-v" style="height: 100px; top: 40%; left: calc(50% + 125px);"></div>
+                            
+                            <div class="talent-line-v" style="height: 100px; top: 65%; left: calc(50% - 175px);"></div>
+                            <div class="talent-line-v" style="height: 100px; top: 65%; left: calc(50% + 175px);"></div>
+
+                            <div class="absolute top-[15%] left-[50%] -translate-x-1/2 -translate-y-1/2">
+                                <div class="talent-node active" onclick="window.app.showRPGNode('red')">
+                                    <i class="fa-solid fa-eye text-red-500 text-2xl drop-shadow-[0_0_5px_#ef4444]"></i>
+                                    <div class="talent-points-badge bg-yellow-500 text-black">1/1</div>
+                                </div>
+                            </div>
+
+                            <div class="absolute top-[40%] left-[50%] -translate-x-1/2 -translate-y-1/2">
+                                <div class="talent-node" onclick="window.app.showRPGNode('gobekli')">
+                                    <i class="fa-solid fa-monument text-stone-400 text-2xl"></i>
+                                    <div class="talent-points-badge">0/1</div>
+                                </div>
+                            </div>
+                            <div class="absolute top-[40%] left-[calc(50%-125px)] -translate-x-1/2 -translate-y-1/2">
+                                <div class="talent-node" onclick="window.app.showRPGNode('sword')">
+                                    <i class="fa-solid fa-khanda text-gray-400 text-2xl"></i>
+                                    <div class="talent-points-badge">0/1</div>
+                                </div>
+                            </div>
+                            <div class="absolute top-[40%] left-[calc(50%+125px)] -translate-x-1/2 -translate-y-1/2">
+                                <div class="talent-node" onclick="window.app.showRPGNode('matrix')">
+                                    <i class="fa-solid fa-code text-green-500 text-2xl"></i>
+                                    <div class="talent-points-badge">0/1</div>
+                                </div>
+                            </div>
+
+                            <div class="absolute top-[65%] left-[50%] -translate-x-1/2 -translate-y-1/2">
+                                <div class="talent-node locked" onclick="window.app.showRPGNode('dbz')">
+                                    <i class="fa-solid fa-dragon text-orange-500 text-2xl"></i>
+                                </div>
+                            </div>
+                            <div class="absolute top-[65%] left-[calc(50%-175px)] -translate-x-1/2 -translate-y-1/2">
+                                <div class="talent-node locked" onclick="window.app.showRPGNode('starwars')">
+                                    <i class="fa-brands fa-galactic-republic text-blue-400 text-2xl"></i>
+                                </div>
+                            </div>
+                            <div class="absolute top-[65%] left-[calc(50%+175px)] -translate-x-1/2 -translate-y-1/2">
+                                <div class="talent-node locked" onclick="window.app.showRPGNode('avatar')">
+                                    <i class="fa-solid fa-wind text-sky-400 text-2xl"></i>
+                                </div>
+                            </div>
+
+                            <div class="absolute top-[90%] left-[50%] -translate-x-1/2 -translate-y-1/2">
+                                <div class="talent-node locked" onclick="window.app.showRPGNode('snitch')">
+                                    <i class="fa-solid fa-seedling text-yellow-400 text-2xl -rotate-45"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="w-full lg:w-1/3 border rounded-3xl p-6 bg-black/80 flex flex-col" style="border-color: var(--surface-border);">
+                        
+                        <div id="rpg-tooltip-idle" class="flex flex-col items-center justify-center h-full opacity-50 text-center">
+                            <i class="fa-solid fa-hand-pointer text-4xl mb-4"></i>
+                            <p class="font-mono uppercase text-xs tracking-widest">Select a Talent Node</p>
+                        </div>
+
+                        <div id="rpg-tooltip-active" class="hidden h-full flex-col">
+                            <div class="flex items-start justify-between mb-4">
+                                <div class="flex items-center gap-3">
+                                    <div id="rpg-tt-icon-container" class="w-12 h-12 rounded bg-gray-800 border border-gray-600 flex items-center justify-center text-2xl shadow-inner">
+                                        <i id="rpg-tt-icon" class="fa-solid fa-eye text-red-500"></i>
+                                    </div>
+                                    <div>
+                                        <h3 id="rpg-tt-title" class="font-bold text-lg text-white">The First Color</h3>
+                                        <p id="rpg-tt-tier" class="text-xs text-yellow-500 font-mono">Tier 1 Passive</p>
+                                    </div>
+                                </div>
+                                <span class="text-xs text-gray-500 font-mono">Cost: 1 TP</span>
+                            </div>
+
+                            <p id="rpg-tt-req" class="text-xs text-red-400 font-bold uppercase tracking-widest mb-4 pb-2 border-b border-white/10 hidden">Requires: Level 5</p>
+
+                            <p id="rpg-tt-desc" class="text-sm text-gray-300 leading-relaxed mb-6 flex-1">
+                                The first color named by humanity and used in 100,000-year-old cave art. Red is the lowest frequency of light and maps directly to the survival Root Chakra. Humanity literally evolved from the bottom of the spine upwards.
+                            </p>
+
+                            <div class="mt-auto">
+                                <button id="rpg-tt-learn" class="w-full py-3 bg-yellow-600 hover:bg-yellow-500 text-black font-black uppercase text-xs tracking-widest rounded-lg transition-colors">
+                                    Learn Talent
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="echoes-master-view" class="hidden">
+                    <p class="text-lg md:text-xl leading-relaxed text-center max-w-4xl mx-auto mb-16 font-light" style="color: var(--text-muted);">
+                        Because all humans are operating the exact same biological spacesuit, the collective unconscious naturally projects the exact same anatomical map into the physical world. This blueprint is not just in ancient scripture—it is buried in the Earth, fired into space, and actively encrypted in the mythologies and media of today.
+                    </p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 text-left mb-16">
+                        <div class="cosmos-card p-6 border-t-4 relative overflow-hidden xl:col-span-2" style="border-top-color: #a8a29e;">
+                            <i class="fa-solid fa-mountain-sun absolute -right-6 -bottom-6 text-[150px] opacity-5 pointer-events-none text-stone-400"></i>
+                            <div class="flex items-center gap-4 mb-4">
+                                <div class="w-10 h-10 rounded-full flex items-center justify-center icon-gobekli shrink-0"><i class="fa-solid fa-monument text-stone-700 text-sm"></i></div>
+                                <div><h3 class="cinzel text-lg font-bold leading-tight" style="color: var(--text-main);">The Ancient Hardware</h3><h4 class="font-mono text-[9px] uppercase tracking-[0.2em] text-stone-400 mt-1">Göbekli Tepe</h4></div>
+                            </div>
+                            <p class="text-xs leading-relaxed relative z-10" style="color: var(--text-muted);">The 12,000-year-old T-pillars are the physical architecture of the human spine and the faceless ego. The "serpentine water channels" act as the manifestation of the cerebrospinal fluid flowing up the spine.</p>
+                        </div>
+
+                        <div class="cosmos-card p-6 border-t-4 relative overflow-hidden xl:col-span-2" style="border-top-color: #94a3b8;">
+                            <i class="fa-solid fa-rocket absolute -right-6 -bottom-6 text-[150px] opacity-5 pointer-events-none text-slate-400"></i>
+                            <div class="flex items-center gap-4 mb-4">
+                                <div class="w-10 h-10 rounded-full flex items-center justify-center icon-apollo shrink-0"><i class="fa-solid fa-moon text-slate-800 text-sm drop-shadow-[0_0_2px_rgba(255,255,255,0.8)]"></i></div>
+                                <div><h3 class="cinzel text-lg font-bold leading-tight" style="color: var(--text-main);">The Apollo Ritual</h3><h4 class="font-mono text-[9px] uppercase tracking-[0.2em] text-slate-400 mt-1">NASA / The Moon</h4></div>
+                            </div>
+                            <p class="text-xs leading-relaxed relative z-10" style="color: var(--text-muted);">The Space Race was a macro-scale ritual of the human nervous system. NASA used <strong>Saturn</strong> (Chronos/The Root) to launch the <strong>Sun</strong> (Apollo/Pineal) to contact the <strong>Moon</strong> (Pituitary).</p>
+                        </div>
+
+                        <div class="cosmos-card p-6 border-t-4 relative overflow-hidden" style="border-top-color: #d8b4fe;">
+                            <div class="flex items-center gap-4 mb-4">
+                                <div class="w-10 h-10 rounded-full flex items-center justify-center icon-aum shrink-0"><i class="fa-solid fa-microphone text-purple-900 text-sm"></i></div>
+                                <div><h3 class="cinzel text-lg font-bold leading-tight" style="color: var(--text-main);">The Primordial Sound</h3><h4 class="font-mono text-[9px] uppercase tracking-[0.2em] text-purple-400 mt-1">Acoustics</h4></div>
+                            </div>
+                            <p class="text-xs leading-relaxed relative z-10" style="color: var(--text-muted);">The human vocal tract naturally forms "Ah-Mmm" (AUM). The first sound humans made—an acoustic vibration striking the Vagus nerve to ring the biological moon.</p>
+                        </div>
+
+                        <div class="cosmos-card p-6 border-t-4 relative overflow-hidden" style="border-top-color: #fca5a5;">
+                            <div class="flex items-center gap-4 mb-4">
+                                <div class="w-10 h-10 rounded-full flex items-center justify-center icon-red shrink-0"><i class="fa-solid fa-eye text-red-900 text-sm"></i></div>
+                                <div><h3 class="cinzel text-lg font-bold leading-tight" style="color: var(--text-main);">The First Color</h3><h4 class="font-mono text-[9px] uppercase tracking-[0.2em] text-red-400 mt-1">Optics</h4></div>
+                            </div>
+                            <p class="text-xs leading-relaxed relative z-10" style="color: var(--text-muted);">The first color named by humanity and used in cave art was RED. Red maps directly to the survival Root Chakra. Humanity evolved from the bottom of the spine upwards.</p>
+                        </div>
+
+                        <div class="cosmos-card p-6 border-t-4 relative overflow-hidden" style="border-top-color: #facc15;">
+                            <div class="flex items-center gap-4 mb-4">
+                                <div class="w-10 h-10 rounded-full flex items-center justify-center icon-zeus shrink-0"><i class="fa-solid fa-bolt text-yellow-900 text-sm"></i></div>
+                                <div><h3 class="cinzel text-lg font-bold leading-tight" style="color: var(--text-main);">The Ascension</h3><h4 class="font-mono text-[9px] uppercase tracking-[0.2em] text-yellow-400 mt-1">Greek Mythos</h4></div>
+                            </div>
+                            <p class="text-xs leading-relaxed relative z-10" style="color: var(--text-muted);">Zeus (Jupiter) overthrows Cronus (Saturn/Time) to rule from Olympus (The Cranial Vault). He wields the Lightning Bolt, which is the electrical spark of the Vagus Nerve.</p>
+                        </div>
+
+                        <div class="cosmos-card p-6 border-t-4 relative overflow-hidden" style="border-top-color: #a855f7;">
+                            <div class="flex items-center gap-4 mb-4">
+                                <div class="w-10 h-10 rounded-full flex items-center justify-center icon-wizard shrink-0"><i class="fa-solid fa-star text-white text-sm"></i></div>
+                                <div><h3 class="cinzel text-lg font-bold leading-tight" style="color: var(--text-main);">The Advisor</h3><h4 class="font-mono text-[9px] uppercase tracking-[0.2em] text-purple-400 mt-1">Arthurian</h4></div>
+                            </div>
+                            <p class="text-xs leading-relaxed relative z-10" style="color: var(--text-muted);">Merlin advises King Arthur. Arthur represents the physical Ego; the Wizard is the Pineal Gland. He directs the energy and provides the cosmic intuition.</p>
+                        </div>
+
+                        <div class="cosmos-card p-6 border-t-4 relative overflow-hidden" style="border-top-color: #22c55e;">
+                            <div class="flex items-center gap-4 mb-4">
+                                <div class="w-10 h-10 rounded-full flex items-center justify-center icon-elf shrink-0"><i class="fa-brands fa-envira text-green-900 text-sm"></i></div>
+                                <div><h3 class="cinzel text-lg font-bold leading-tight" style="color: var(--text-main);">The Frequencies</h3><h4 class="font-mono text-[9px] uppercase tracking-[0.2em] text-green-400 mt-1">Fantasy Races</h4></div>
+                            </div>
+                            <p class="text-xs leading-relaxed relative z-10" style="color: var(--text-muted);"><strong>Dwarfs</strong> are the lower Chakras (the Gut). <strong>Elves</strong> are high-frequency Alpha/Theta waves. <strong>Orcs</strong> are the Amygdala, driven by fear.</p>
+                        </div>
+
+                        <div class="cosmos-card p-6 border-t-4 relative overflow-hidden" style="border-top-color: #4ade80;">
+                            <div class="flex items-center gap-4 mb-4">
+                                <div class="w-10 h-10 rounded-full flex items-center justify-center icon-alien shrink-0"><i class="fa-solid fa-user-astronaut text-white text-sm"></i></div>
+                                <div><h3 class="cinzel text-lg font-bold leading-tight" style="color: var(--text-main);">The Visitors</h3><h4 class="font-mono text-[9px] uppercase tracking-[0.2em] text-emerald-400 mt-1">UFOlogy</h4></div>
+                            </div>
+                            <p class="text-xs leading-relaxed relative z-10" style="color: var(--text-muted);">If outer space is a projection of inner space, "Aliens" are sudden downloads and intuitions from your own higher self trying to communicate with your ego.</p>
+                        </div>
+
+                        <div class="cosmos-card p-6 border-t-4 relative overflow-hidden" style="border-top-color: #78716c;">
+                            <div class="flex items-center gap-4 mb-4">
+                                <div class="w-10 h-10 rounded-full flex items-center justify-center icon-yeti shrink-0"><i class="fa-solid fa-shoe-prints text-stone-900 text-sm"></i></div>
+                                <div><h3 class="cinzel text-lg font-bold leading-tight" style="color: var(--text-main);">The Primate</h3><h4 class="font-mono text-[9px] uppercase tracking-[0.2em] text-stone-400 mt-1">Yeti / Esau</h4></div>
+                            </div>
+                            <p class="text-xs leading-relaxed relative z-10" style="color: var(--text-muted);">The Wild Man represents the unrefined physical body before it is illuminated by spiritual consciousness. The "civilized" man must tame the "wild man" in the woods.</p>
+                        </div>
+
+                        <div class="cosmos-card p-6 border-t-4 relative overflow-hidden" style="border-top-color: #f59e0b;">
+                            <div class="flex items-center gap-4 mb-4">
+                                <div class="w-10 h-10 rounded-full flex items-center justify-center icon-dbz shrink-0"><i class="fa-solid fa-star text-red-600 text-sm drop-shadow-[0_0_2px_rgba(255,255,255,0.8)]"></i></div>
+                                <div><h3 class="cinzel text-lg font-bold leading-tight" style="color: var(--text-main);">The Kundalini</h3><h4 class="font-mono text-[9px] uppercase tracking-[0.2em] text-orange-400 mt-1">Dragon Ball</h4></div>
+                            </div>
+                            <p class="text-xs leading-relaxed relative z-10" style="color: var(--text-muted);">The 7 Dragon Balls represent the 7 Chakras. Gathering them summons the Dragon (serpent-fire). Super Saiyan is the Torus field overflowing with light.</p>
+                        </div>
+
+                        <div class="cosmos-card p-6 border-t-4 relative overflow-hidden" style="border-top-color: var(--gold);">
+                            <div class="flex items-center gap-4 mb-4">
+                                <div class="w-10 h-10 rounded-full flex items-center justify-center icon-snitch shrink-0"><i class="fa-solid fa-seedling text-white opacity-80 text-lg -rotate-45 relative top-1"></i></div>
+                                <div><h3 class="cinzel text-lg font-bold leading-tight" style="color: var(--text-main);">The Pineal</h3><h4 class="font-mono text-[9px] uppercase tracking-[0.2em] mt-1" style="color: var(--gold);">Harry Potter</h4></div>
+                            </div>
+                            <p class="text-xs leading-relaxed relative z-10" style="color: var(--text-muted);">The Golden Snitch is the Pineal Gland. Once caught, the game of the physical simulation immediately ends. Platform 9 ¾ is the hidden Theta wave.</p>
+                        </div>
+
+                        <div class="cosmos-card p-6 border-t-4 relative overflow-hidden" style="border-top-color: #22c55e;">
+                            <div class="flex items-center gap-4 mb-4">
+                                <div class="w-10 h-10 rounded-full flex items-center justify-center icon-matrix shrink-0"><i class="fa-solid fa-code text-green-500 text-sm font-bold drop-shadow-[0_0_5px_#22c55e]"></i></div>
+                                <div><h3 class="cinzel text-lg font-bold leading-tight" style="color: var(--text-main);">The Beta State</h3><h4 class="font-mono text-[9px] uppercase tracking-[0.2em] text-green-400 mt-1">The Matrix</h4></div>
+                            </div>
+                            <p class="text-xs leading-relaxed relative z-10" style="color: var(--text-muted);">The "Matrix" is the literal Beta-wave frequency. The "Red Pill" represents the biological shift into Alpha/Theta waves, unplugging the Vagus Nerve from the illusion.</p>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </section>
 
@@ -560,7 +551,7 @@
             <button class="dock-btn" id="nav-brain" onclick="window.app.nav('brain')"><i class="fa-solid fa-brain md:hidden mb-1 text-lg"></i><span class="hidden md:inline">Brain</span></button>
             <button class="dock-btn" style="color: var(--gold);" onclick="window.app.openSearchOverlay()"><i class="fa-solid fa-magnifying-glass text-xl"></i></button>
             <button class="dock-btn" id="nav-anatomy" onclick="window.app.nav('anatomy')"><i class="fa-solid fa-person md:hidden mb-1 text-lg"></i><span class="hidden md:inline">Temple</span></button>
-            <button class="dock-btn" id="nav-echoes" onclick="window.app.nav('echoes')"><i class="fa-solid fa-bolt md:hidden mb-1 text-lg"></i><span class="hidden md:inline">EchoStore</span></button>
+            <button class="dock-btn" id="nav-echoes" onclick="window.app.nav('echoes')"><i class="fa-solid fa-bolt md:hidden mb-1 text-lg"></i><span class="hidden md:inline">Echoes</span></button>
             <button class="dock-btn" id="nav-meditation" onclick="window.app.nav('meditation')"><i class="fa-solid fa-om md:hidden mb-1 text-lg"></i><span class="hidden md:inline">Silence</span></button>
             <button class="dock-btn text-red-500" onclick="window.app.scanForBrokenLinks()"><i class="fa-solid fa-stethoscope md:text-lg"></i></button>
         </div>
@@ -601,6 +592,56 @@
                 3: { t: "3. The Threshold (Theta)", m: "4-7 Hz | The Holy Place | The Single Eye", d: "The transition zone. The silver cord is active. The right hemisphere begins to receive the cosmic light. The internal optical network awakens.", q: "(theta|holy place|single eye|right hemisphere|pineal)", disp: "Frequency: 4-7 Hz (Theta)" },
                 4: { t: "4. The Silence (Delta)", m: "0.1 Hz | Holy of Holies | Pure Coherence", d: "Absolute zero. The absence of thought. You have crossed the Red Sea. The heart and brain are mathematically synced with the universe.", q: "(absence of thought|holy of holies|silence|delta|meditation)", disp: "Frequency: 0.1-4 Hz (Delta)" },
                 5: { t: "5. The Void (Black Sun)", m: "0 Hz | The Event Horizon | Pure Potential", d: "You have stepped behind the physical light of the Sun. This is the cosmic Ouroboros, the primordial dark where physics and theology become the same thing. You are no longer observing the simulation; you are resting in its unmanifested source code.", q: "(void|black sun|sol niger|abyss|darkness)", disp: "The Void (Black Sun)" }
+            },
+
+            rpgNodes: {
+                red: { title: "The First Color", tier: "Tier 1 Passive", cost: 1, req: "Level 1", icon: "fa-eye", color: "text-red-500", desc: "The first color named by humanity and used in 100,000-year-old cave art. Red is the lowest frequency of light and maps directly to the survival Root Chakra. Humanity literally evolved from the bottom of the spine upwards." },
+                gobekli: { title: "Ancient Hardware", tier: "Tier 2 Knowledge", cost: 1, req: "Level 5", icon: "fa-monument", color: "text-stone-400", desc: "Unlocks understanding of the 12,000-year-old T-pillars. These are the physical architecture of the human spine and the faceless ego. A buried time capsule of the biological operating system before the collective consciousness fell into the Beta-wave simulation." },
+                sword: { title: "The Sacrum Pull", tier: "Tier 2 Action", cost: 1, req: "Level 5", icon: "fa-khanda", color: "text-gray-400", desc: "Arthurian Legend decryption: The 'Sword in the Stone' is an anatomical cipher. The stone is the Sacrum bone at the base of the spine. Pulling the sword free represents raising the internal energy to become King (reaching the Crown chakra)." },
+                matrix: { title: "The Beta State", tier: "Tier 2 Awareness", cost: 1, req: "Level 5", icon: "fa-code", color: "text-green-500", desc: "Sci-Fi decryption: The 'Matrix' is the literal Beta-wave frequency—the carnal mind and the five senses that trick consciousness into believing the physical world is real. The 'Red Pill' unplugs the Vagus Nerve from the illusion." },
+                dbz: { title: "The Kundalini", tier: "Tier 3 Awakening", cost: 1, req: "Level 10", icon: "fa-dragon", color: "text-orange-500", desc: "Dragon Ball decryption: The 7 Dragon Balls represent the 7 Chakras. Gathering them summons Shenron (the Dragon), representing the Kundalini serpent-fire rising up the spine. The 'Super Saiyan' golden aura is the electromagnetic Torus field." },
+                starwars: { title: "The Prana", tier: "Tier 3 Mastery", cost: 1, req: "Level 10", icon: "fa-galactic-republic", color: "text-blue-400", desc: "Star Wars decryption: 'The Force' is the all-penetrating Torus field (Prana). Accessed not through physical strength, but through forced heart-coherence and deep meditation (Theta waves). The lightsaber is the ignited, illuminated spine." },
+                avatar: { title: "The 7 Seals", tier: "Tier 3 Flow", cost: 1, req: "Level 10", icon: "fa-wind", color: "text-sky-400", desc: "Avatar decryption: To enter the 'Avatar State' (Cosmic Consciousness), you must physically unblock the pools of water (the 7 Chakras) running up the spine, letting go of earthly attachment to finally open the crown chakra." },
+                snitch: { title: "The Pineal Catch", tier: "Tier 4 Ascension", cost: 1, req: "Level 15", icon: "fa-seedling", color: "text-yellow-400", desc: "Harry Potter decryption: The Golden Snitch is the Pineal Gland. It has wings (like the Caduceus staff). Once the 'Seeker' catches it, the game of the physical simulation immediately ends. Platform 9 ¾ is the hidden Theta wave." }
+            },
+
+            toggleEchoesView: (view) => {
+                if(view === 'student') {
+                    document.getElementById('echoes-master-view').classList.add('hidden');
+                    document.getElementById('echoes-student-view').classList.remove('hidden');
+                    document.getElementById('echoes-student-view').classList.add('flex');
+                    document.getElementById('btn-view-student').classList.add('bg-blue-600', 'text-white', 'shadow-lg');
+                    document.getElementById('btn-view-student').classList.remove('hover:bg-white/10', 'text-gray-400');
+                    document.getElementById('btn-view-master').classList.remove('bg-blue-600', 'text-white', 'shadow-lg');
+                    document.getElementById('btn-view-master').classList.add('hover:bg-white/10', 'text-gray-400');
+                } else {
+                    document.getElementById('echoes-student-view').classList.add('hidden');
+                    document.getElementById('echoes-student-view').classList.remove('flex');
+                    document.getElementById('echoes-master-view').classList.remove('hidden');
+                    document.getElementById('btn-view-master').classList.add('bg-blue-600', 'text-white', 'shadow-lg');
+                    document.getElementById('btn-view-master').classList.remove('hover:bg-white/10', 'text-gray-400');
+                    document.getElementById('btn-view-student').classList.remove('bg-blue-600', 'text-white', 'shadow-lg');
+                    document.getElementById('btn-view-student').classList.add('hover:bg-white/10', 'text-gray-400');
+                }
+            },
+
+            showRPGNode: (id) => {
+                document.getElementById('rpg-tooltip-idle').classList.add('hidden');
+                document.getElementById('rpg-tooltip-active').classList.remove('hidden');
+                document.getElementById('rpg-tooltip-active').classList.add('flex');
+                
+                const d = window.app.rpgNodes[id];
+                document.getElementById('rpg-tt-title').innerText = d.title;
+                document.getElementById('rpg-tt-tier').innerText = d.tier;
+                document.getElementById('rpg-tt-req').innerText = `Requires: ${d.req}`;
+                document.getElementById('rpg-tt-req').classList.remove('hidden');
+                document.getElementById('rpg-tt-desc').innerText = d.desc;
+                
+                document.getElementById('rpg-tt-icon').className = `fa-solid ${d.icon} ${d.color}`;
+                
+                // Visual click feedback on the node grid
+                document.querySelectorAll('.talent-node').forEach(n => n.style.borderColor = '#4B5563');
+                event.currentTarget.style.borderColor = 'var(--gold)';
             },
 
             setMeditationState: (step) => {
@@ -747,6 +788,10 @@
 
             init: function() {
                 createDust(); window.app.initMatrixInteractions(); window.app.setMeditationState(1); window.onpopstate = (e) => { if(e.state && e.state.view) window.app.nav(e.state.view); };
+                
+                // Set Default Echoes View
+                window.app.toggleEchoesView('student');
+                
                 const loadAllTranscripts = async () => { let allTranscripts = []; let fileIndex = 1; let keepFetching = true; while (keepFetching) { try { const response = await fetch(`transcripts_${fileIndex}.json`); if (response.ok) { const data = await response.json(); allTranscripts = allTranscripts.concat(data); fileIndex++; } else { keepFetching = false; } } catch (error) { keepFetching = false; } } window.app.transcripts = allTranscripts; };
                 loadAllTranscripts();
 
