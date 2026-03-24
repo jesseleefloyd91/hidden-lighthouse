@@ -66,10 +66,7 @@
         #app-loader { position: fixed; inset: 0; z-index: 100; background: var(--bg-base); display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.5s; pointer-events: none; } #app-loader.hidden { opacity: 0; display: none; }
         .themed-avatar { filter: grayscale(100%) contrast(1.2) opacity(0.8); transition: all 0.5s ease; } .themed-avatar:hover { filter: grayscale(0%) contrast(1) opacity(1); }
 
-        /* CUSTOM POP CULTURE / MACRO MINI-ICONS FOR STORE */
-        .store-icon-bg { background: linear-gradient(145deg, #f8fafc, #e2e8f0); display: flex; align-items: center; justify-content: center; }
-        body.light-mode .store-icon-bg { background: linear-gradient(145deg, #ffffff, #f1f5f9); }
-        
+        /* CUSTOM POP CULTURE / MACRO MINI-ICONS FOR MASTER VAULT CARDS */
         .icon-dbz { background: radial-gradient(circle at 30% 30%, #fbbf24, #d97706); border: 2px solid #b45309; box-shadow: 0 0 15px rgba(245,158,11,0.5); position: relative; } .icon-dbz::after { content: "★"; position: absolute; color: #dc2626; font-size: 20px; text-shadow: 0 0 2px rgba(0,0,0,0.5); }
         .icon-snitch { background: radial-gradient(circle at 30% 30%, #fde047, #b45309); border: 2px solid #fef08a; box-shadow: 0 0 15px rgba(253,224,71,0.5); position: relative; overflow: visible; }
         .icon-arc { background: radial-gradient(circle at 50% 50%, #fff, #22d3ee, #0891b2); border: 2px solid #67e8f9; box-shadow: 0 0 20px rgba(34,211,238,0.8); } .icon-arc::after { content: ""; position: absolute; width: 60%; height: 60%; border: 3px solid rgba(255,255,255,0.8); border-radius: 50%; }
@@ -92,31 +89,46 @@
         .icon-fall { background: radial-gradient(circle at 50% 50%, #991b1b, #450a0a); border: 2px solid #ef4444; box-shadow: 0 0 15px rgba(220,38,38,0.6); }
         .icon-fractal { background: radial-gradient(circle at 50% 50%, #2dd4bf, #0f766e); border: 2px solid #5eead4; box-shadow: 0 0 15px rgba(20,184,166,0.6); }
 
-        /* ACTIVE RPG SKILL TREE STYLES */
-        .rpg-bg { background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px); background-size: 40px 40px; background-position: center center; }
-        body.light-mode .rpg-bg { background-image: linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px); }
+        /* FANTASY RPG TALENT TREE STYLES (WoW/Diablo aesthetic) */
+        .rpg-bg {
+            background: radial-gradient(circle at 50% 50%, #2a2118 0%, #0d0a08 100%);
+            border: 2px solid #5c4a3d;
+            box-shadow: inset 0 0 60px rgba(0,0,0,0.9), 0 10px 30px rgba(0,0,0,0.5);
+            position: relative;
+        }
+        /* Subtle noise texture for parchment/stone feel */
+        .rpg-bg::before { content: ""; position: absolute; inset: 0; background-image: url('data:image/svg+xml;utf8,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noise"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noise)" opacity="0.05"/%3E%3C/svg%3E'); pointer-events: none; z-index: 0; }
         
-        .talent-node { width: 64px; height: 64px; border-radius: 12px; border: 2px solid #4B5563; background: #1F2937; display: flex; align-items: center; justify-content: center; cursor: pointer; position: absolute; z-index: 10; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); transform: translate(-50%, -50%); }
-        .talent-node:hover { transform: translate(-50%, -50%) scale(1.1); box-shadow: 0 0 15px rgba(255,255,255,0.1); }
+        .talent-node {
+            width: 60px; height: 60px; border-radius: 50%;
+            border: 3px solid #3e3222; background: #14100c;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; position: absolute; z-index: 10;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform: translate(-50%, -50%);
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.9), 0 5px 10px rgba(0,0,0,0.5);
+        }
+        .talent-node i { filter: drop-shadow(0 2px 2px rgba(0,0,0,0.8)); }
+        .talent-node:hover { transform: translate(-50%, -50%) scale(1.15); box-shadow: inset 0 0 10px rgba(0,0,0,0.8), 0 0 20px rgba(212,175,55,0.3); border-color: #8c7355; z-index: 25; }
         
-        /* Node States */
-        .talent-node.locked { filter: grayscale(100%) opacity(0.4); border-color: #374151; cursor: not-allowed; }
-        .talent-node.available { border-color: #3b82f6; box-shadow: 0 0 15px rgba(59,130,246,0.4); animation: pulseAvailable 2s infinite; }
-        .talent-node.learned { border-color: var(--gold); box-shadow: 0 0 20px rgba(212,175,55,0.6), inset 0 0 10px rgba(0,0,0,0.8); }
-        .talent-node.selected { box-shadow: 0 0 0 4px white; z-index: 20; }
-        .talent-node.selected:hover { transform: translate(-50%, -50%) scale(1.15); }
+        .talent-node.locked { filter: grayscale(100%) brightness(0.4); cursor: not-allowed; }
+        .talent-node.available { border-color: #a3823c; animation: pulseFantasy 2s infinite; }
+        .talent-node.learned { border-color: #ffd700; box-shadow: 0 0 20px rgba(255,215,0,0.5), inset 0 0 15px rgba(255,215,0,0.2); }
+        .talent-node.selected { box-shadow: 0 0 0 4px rgba(255,255,255,0.8), 0 0 20px rgba(255,215,0,0.8); z-index: 20; border-color: #fff; }
+        .talent-node.selected:hover { transform: translate(-50%, -50%) scale(1.2); }
 
-        @keyframes pulseAvailable { 0%, 100% { box-shadow: 0 0 10px rgba(59,130,246,0.3); } 50% { box-shadow: 0 0 25px rgba(59,130,246,0.7); } }
+        @keyframes pulseFantasy { 0%, 100% { box-shadow: 0 0 5px rgba(212,175,55,0.2); border-color: #7a6331; } 50% { box-shadow: 0 0 20px rgba(212,175,55,0.6); border-color: #c9a44e; } }
 
-        .talent-line-v { position: absolute; width: 4px; background: #374151; z-index: 1; transition: background 0.5s ease; }
-        .talent-line-h { position: absolute; height: 4px; background: #374151; z-index: 1; transition: background 0.5s ease; transform: translateX(-50%); }
-        .talent-line-active { background: var(--gold); box-shadow: 0 0 8px var(--gold); z-index: 2; }
+        .talent-line-v { position: absolute; width: 4px; background: #2a2118; z-index: 1; transition: background 0.5s ease, box-shadow 0.5s ease; border-left: 1px solid #000; border-right: 1px solid #000; }
+        .talent-line-h { position: absolute; height: 4px; background: #2a2118; z-index: 1; transition: background 0.5s ease, box-shadow 0.5s ease; transform: translateX(-50%); border-top: 1px solid #000; border-bottom: 1px solid #000; }
+        .talent-line-active { background: #d4af37; box-shadow: 0 0 10px #d4af37; border-color: #fff8dc; z-index: 2; }
 
-        .store-card { background: var(--surface); border: 1px solid var(--surface-border); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; transition: all 0.3s ease; }
-        .store-card:hover { transform: translateY(-2px); box-shadow: 0 15px 30px rgba(0,0,0,0.2); border-color: var(--gold); }
-        .store-btn { background: linear-gradient(to bottom, #fcd34d, #f59e0b); color: #000; font-weight: 700; text-transform: uppercase; font-size: 10px; letter-spacing: 0.05em; padding: 10px; border-radius: 99px; text-align: center; cursor: pointer; transition: all 0.2s; border: 1px solid #d97706; }
-        .store-btn:hover { background: linear-gradient(to bottom, #fde047, #fbbf24); transform: scale(1.02); }
-        .store-btn.added { background: #22c55e; border-color: #16a34a; color: white; pointer-events: none; }
+        /* Fantasy Tooltip UI */
+        .fantasy-tooltip { background: linear-gradient(135deg, #1c1611 0%, #0d0a08 100%); border: 2px solid #5c4a3d; box-shadow: inset 0 0 30px rgba(0,0,0,0.8), 0 10px 30px rgba(0,0,0,0.5); }
+        .fantasy-button { background: linear-gradient(to bottom, #8c1c1c, #4a0e0e); border: 1px solid #ff4d4d; color: #ffcccc; text-shadow: 0 2px 2px #000; box-shadow: 0 4px 6px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.2); }
+        .fantasy-button:hover:not(:disabled) { background: linear-gradient(to bottom, #a82222, #5c1111); color: #fff; }
+        .fantasy-button:disabled { background: #2a2118; border-color: #4a3b2c; color: #5c4a3d; cursor: not-allowed; text-shadow: none; box-shadow: none; }
+        .fantasy-button.learned-btn { background: linear-gradient(to bottom, #d4af37, #8c7355); border-color: #fff8dc; color: #1a1510; text-shadow: 0 1px 0 rgba(255,255,255,0.5); font-weight: 900; }
     </style>
 </head>
 <body class="flex flex-col min-h-screen">
@@ -177,21 +189,21 @@
 
                 <div id="echoes-student-view" class="w-full flex flex-col lg:flex-row gap-8 min-h-[650px]">
                     
-                    <div class="w-full lg:w-2/3 border rounded-3xl p-8 relative overflow-hidden rpg-bg shadow-inner flex flex-col" style="border-color: var(--surface-border); background-color: #111827;">
+                    <div class="w-full lg:w-2/3 rounded-3xl p-8 relative overflow-hidden rpg-bg flex flex-col">
                         
-                        <div class="flex justify-between items-center mb-8 border-b pb-4 relative z-20" style="border-color: #374151;">
+                        <div class="flex justify-between items-center mb-8 border-b pb-4 relative z-20" style="border-color: rgba(212,175,55,0.2);">
                             <div class="flex items-center gap-4">
-                                <div class="w-12 h-12 rounded-full border-2 border-blue-500 bg-black flex items-center justify-center"><i class="fa-solid fa-user-astronaut text-blue-400"></i></div>
+                                <div class="w-12 h-12 rounded-full border-2 border-yellow-600 bg-black flex items-center justify-center shadow-lg"><i class="fa-solid fa-hat-wizard text-yellow-500"></i></div>
                                 <div>
-                                    <h3 class="font-bold text-white uppercase tracking-widest text-sm">Class: Human Spacesuit</h3>
-                                    <p class="text-xs text-blue-400 font-mono" id="rpg-level-text">Level: Seeker</p>
+                                    <h3 class="font-bold text-white uppercase tracking-widest text-sm" style="text-shadow: 0 2px 4px #000;">Class: Spacesuit</h3>
+                                    <p class="text-xs font-mono font-bold" id="rpg-level-text" style="color: #d4af37;">Level: Seeker</p>
                                 </div>
                             </div>
                             <div class="flex items-center gap-6">
-                                <button onclick="window.app.resetTree()" class="text-[10px] uppercase font-bold text-gray-400 hover:text-white transition"><i class="fa-solid fa-rotate-left"></i> Reset</button>
+                                <button onclick="window.app.resetTree()" class="text-[10px] uppercase font-bold text-gray-400 hover:text-yellow-500 transition drop-shadow-md"><i class="fa-solid fa-rotate-left"></i> Reset</button>
                                 <div class="text-right">
-                                    <p class="text-xs uppercase text-gray-400 tracking-widest font-bold">Available TP</p>
-                                    <p class="text-2xl font-mono text-yellow-500 font-black" id="rpg-tp-count">5</p>
+                                    <p class="text-xs uppercase tracking-widest font-bold" style="color: #8c7355;">Available TP</p>
+                                    <p class="text-2xl font-mono text-yellow-500 font-black drop-shadow-[0_0_5px_#d4af37]" id="rpg-tp-count">5</p>
                                 </div>
                             </div>
                         </div>
@@ -221,7 +233,7 @@
                             <div id="line-snitch-top" class="talent-line-v" style="height: 100px; top: 75%; left: 50%;"></div>
 
                             <div class="absolute top-[15%] left-[calc(50%-135px)]">
-                                <div id="node-red" class="talent-node available" onclick="window.app.showRPGNode('red')"><i class="fa-solid fa-eye text-red-500 text-2xl drop-shadow-[0_0_5px_#ef4444]"></i></div>
+                                <div id="node-red" class="talent-node available" onclick="window.app.showRPGNode('red')"><i class="fa-solid fa-eye text-red-500 text-2xl"></i></div>
                             </div>
                             <div class="absolute top-[15%] left-[calc(50%+135px)]">
                                 <div id="node-aum" class="talent-node available" onclick="window.app.showRPGNode('aum')"><i class="fa-solid fa-microphone text-purple-400 text-2xl"></i></div>
@@ -261,23 +273,23 @@
                             </div>
 
                             <div class="absolute top-[95%] left-[50%]">
-                                <div id="node-snitch" class="talent-node locked border-yellow-500 shadow-[0_0_15px_rgba(234,179,8,0.5)]" onclick="window.app.showRPGNode('snitch')"><i class="fa-solid fa-seedling text-yellow-400 text-3xl -rotate-45"></i></div>
+                                <div id="node-snitch" class="talent-node locked" onclick="window.app.showRPGNode('snitch')"><i class="fa-solid fa-seedling text-yellow-400 text-3xl"></i></div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="w-full lg:w-1/3 border rounded-3xl p-6 bg-black/80 flex flex-col relative" style="border-color: var(--surface-border);">
-                        <div id="rpg-tooltip-idle" class="flex flex-col items-center justify-center h-full opacity-50 text-center"><i class="fa-solid fa-hand-pointer text-4xl mb-4"></i><p class="font-mono uppercase text-xs tracking-widest">Select a Talent Node</p></div>
+                    <div class="w-full lg:w-1/3 rounded-3xl p-6 flex flex-col relative fantasy-tooltip">
+                        <div id="rpg-tooltip-idle" class="flex flex-col items-center justify-center h-full opacity-50 text-center" style="color: #c9a44e;"><i class="fa-solid fa-book-journal-whills text-5xl mb-4 drop-shadow-[0_0_10px_#c9a44e]"></i><p class="cinzel uppercase text-sm tracking-widest font-bold">Consult the Grimoire</p></div>
                         <div id="rpg-tooltip-active" class="hidden h-full flex-col">
-                            <div class="flex items-start justify-between mb-4 border-b border-white/10 pb-4">
+                            <div class="flex items-start justify-between mb-4 border-b pb-4" style="border-color: rgba(212,175,55,0.2);">
                                 <div class="flex items-center gap-4">
-                                    <div id="rpg-tt-icon-container" class="w-14 h-14 rounded-xl bg-gray-800 border border-gray-600 flex items-center justify-center text-3xl shadow-inner shrink-0"><i id="rpg-tt-icon" class="fa-solid fa-eye text-red-500"></i></div>
-                                    <div><h3 id="rpg-tt-title" class="font-bold text-xl text-white leading-tight">The First Color</h3><p id="rpg-tt-origin" class="text-[10px] text-blue-400 font-mono uppercase tracking-widest mt-1">[Evolutionary Optics]</p></div>
+                                    <div id="rpg-tt-icon-container" class="w-14 h-14 rounded-full bg-black border-2 border-yellow-700 flex items-center justify-center text-3xl shadow-inner shrink-0"><i id="rpg-tt-icon" class="fa-solid fa-eye text-red-500 drop-shadow-md"></i></div>
+                                    <div><h3 id="rpg-tt-title" class="cinzel font-bold text-xl text-white leading-tight drop-shadow-md">The First Color</h3><p id="rpg-tt-origin" class="text-[10px] font-mono uppercase tracking-widest mt-1" style="color: #a3823c;">[Evolutionary Optics]</p></div>
                                 </div>
                             </div>
-                            <div class="flex justify-between items-center mb-6"><p id="rpg-tt-tier" class="text-xs text-yellow-500 font-bold uppercase tracking-widest">Tier 1 Passive</p><span id="rpg-tt-cost" class="text-xs text-gray-400 font-mono">Cost: 1 TP</span></div>
-                            <p id="rpg-tt-desc" class="text-sm text-gray-300 leading-relaxed mb-6 flex-1">The first color named by humanity and used in 100,000-year-old cave art. Red is the lowest frequency of light and maps directly to the survival Root Chakra. Humanity literally evolved from the bottom of the spine upwards.</p>
-                            <div class="mt-auto"><button id="rpg-tt-btn" class="w-full py-4 font-black uppercase text-xs tracking-widest rounded-xl transition-all shadow-lg border">Learn Talent</button></div>
+                            <div class="flex justify-between items-center mb-6"><p id="rpg-tt-tier" class="text-xs font-bold uppercase tracking-widest" style="color: #d4af37;">Tier 1 Passive</p><span id="rpg-tt-cost" class="text-xs font-mono" style="color: #8c7355;">Cost: 1 TP</span></div>
+                            <p id="rpg-tt-desc" class="text-sm leading-relaxed mb-6 flex-1" style="color: #dcd0c0; text-shadow: 0 1px 2px #000;">The first color named by humanity and used in 100,000-year-old cave art. Red is the lowest frequency of light and maps directly to the survival Root Chakra. Humanity literally evolved from the bottom of the spine upwards.</p>
+                            <div class="mt-auto"><button id="rpg-tt-btn" class="w-full py-4 font-black uppercase text-xs tracking-widest rounded-xl transition-all shadow-lg fantasy-button">Learn Talent</button></div>
                         </div>
                     </div>
                 </div>
@@ -286,21 +298,9 @@
                     <p class="text-lg md:text-xl leading-relaxed text-center max-w-4xl mx-auto mb-16 font-light" style="color: var(--text-muted);">
                         The collective unconscious naturally projects the exact same anatomical map into the physical world. This blueprint is not just in ancient scripture—it is buried in the Earth, fired into space, and actively encrypted in the technology and mythologies of today.
                     </p>
-
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 text-left mb-16">
-                        
-                        <div class="cosmos-card p-6 border-t-4 relative overflow-hidden xl:col-span-2" style="border-top-color: #ef4444;">
-                            <i class="fa-solid fa-arrow-down-up-across-line absolute -right-6 -bottom-6 text-[150px] opacity-5 pointer-events-none text-red-500"></i>
-                            <div class="flex items-center gap-4 mb-4"><div class="w-10 h-10 rounded-full flex items-center justify-center icon-fall shrink-0"><i class="fa-solid fa-arrow-down text-white text-sm"></i></div><div><h3 class="cinzel text-lg font-bold leading-tight" style="color: var(--text-main);">The Great Inversion</h3><h4 class="font-mono text-[9px] uppercase tracking-[0.2em] text-red-400 mt-1">The Fall of Man</h4></div></div>
-                            <p class="text-xs leading-relaxed relative z-10" style="color: var(--text-muted);">The moment humanity fell from the Crown to the Root. The Agricultural Revolution (10,000 BC) traded internal quantum flow for external, physical survival (property, hoarding, and Time). The internal wave collapsed into the external particle.</p>
-                        </div>
-
-                        <div class="cosmos-card p-6 border-t-4 relative overflow-hidden xl:col-span-2" style="border-top-color: #2dd4bf;">
-                            <i class="fa-solid fa-cubes absolute -right-6 -bottom-6 text-[150px] opacity-5 pointer-events-none text-teal-400"></i>
-                            <div class="flex items-center gap-4 mb-4"><div class="w-10 h-10 rounded-full flex items-center justify-center icon-fractal shrink-0"><i class="fa-solid fa-cubes text-white text-sm"></i></div><div><h3 class="cinzel text-lg font-bold leading-tight" style="color: var(--text-main);">The 64 Fractal</h3><h4 class="font-mono text-[9px] uppercase tracking-[0.2em] text-teal-400 mt-1">Sacred Geometry</h4></div></div>
-                            <p class="text-xs leading-relaxed relative z-10" style="color: var(--text-muted);">The ultimate compression algorithm. The 64 hexagrams of the I Ching, the 64 codons of human DNA, the 64 squares of the chessboard, and 64-bit computing. The Base-2 math of the entire universe.</p>
-                        </div>
-
+                        <div class="cosmos-card p-6 border-t-4 relative overflow-hidden xl:col-span-2" style="border-top-color: #ef4444;"><i class="fa-solid fa-arrow-down-up-across-line absolute -right-6 -bottom-6 text-[150px] opacity-5 pointer-events-none text-red-500"></i><div class="flex items-center gap-4 mb-4"><div class="w-10 h-10 rounded-full flex items-center justify-center icon-fall shrink-0"><i class="fa-solid fa-arrow-down text-white text-sm"></i></div><div><h3 class="cinzel text-lg font-bold leading-tight" style="color: var(--text-main);">The Great Inversion</h3><h4 class="font-mono text-[9px] uppercase tracking-[0.2em] text-red-400 mt-1">The Fall of Man</h4></div></div><p class="text-xs leading-relaxed relative z-10" style="color: var(--text-muted);">The moment humanity fell from the Crown to the Root. The Agricultural Revolution (10,000 BC) traded internal quantum flow for external, physical survival (property, hoarding, and Time). The internal wave collapsed into the external particle.</p></div>
+                        <div class="cosmos-card p-6 border-t-4 relative overflow-hidden xl:col-span-2" style="border-top-color: #2dd4bf;"><i class="fa-solid fa-cubes absolute -right-6 -bottom-6 text-[150px] opacity-5 pointer-events-none text-teal-400"></i><div class="flex items-center gap-4 mb-4"><div class="w-10 h-10 rounded-full flex items-center justify-center icon-fractal shrink-0"><i class="fa-solid fa-cubes text-white text-sm"></i></div><div><h3 class="cinzel text-lg font-bold leading-tight" style="color: var(--text-main);">The 64 Fractal</h3><h4 class="font-mono text-[9px] uppercase tracking-[0.2em] text-teal-400 mt-1">Sacred Geometry</h4></div></div><p class="text-xs leading-relaxed relative z-10" style="color: var(--text-muted);">The ultimate compression algorithm. The 64 hexagrams of the I Ching, the 64 codons of human DNA, the 64 squares of the chessboard, and 64-bit computing. The Base-2 math of the entire universe.</p></div>
                         <div class="cosmos-card p-6 border-t-4 relative overflow-hidden xl:col-span-2" style="border-top-color: #a8a29e;"><i class="fa-solid fa-mountain-sun absolute -right-6 -bottom-6 text-[150px] opacity-5 pointer-events-none text-stone-400"></i><div class="flex items-center gap-4 mb-4"><div class="w-10 h-10 rounded-full flex items-center justify-center icon-gobekli shrink-0"><i class="fa-solid fa-monument text-stone-700 text-sm"></i></div><div><h3 class="cinzel text-lg font-bold leading-tight" style="color: var(--text-main);">The Ancient Hardware</h3><h4 class="font-mono text-[9px] uppercase tracking-[0.2em] text-stone-400 mt-1">Göbekli Tepe</h4></div></div><p class="text-xs leading-relaxed relative z-10" style="color: var(--text-muted);">The 12,000-year-old T-pillars are the physical architecture of the human spine and the faceless ego. The "serpentine water channels" act as the manifestation of the cerebrospinal fluid flowing up the spine.</p></div>
                         <div class="cosmos-card p-6 border-t-4 relative overflow-hidden xl:col-span-2" style="border-top-color: #94a3b8;"><i class="fa-solid fa-rocket absolute -right-6 -bottom-6 text-[150px] opacity-5 pointer-events-none text-slate-400"></i><div class="flex items-center gap-4 mb-4"><div class="w-10 h-10 rounded-full flex items-center justify-center icon-apollo shrink-0"><i class="fa-solid fa-moon text-slate-800 text-sm drop-shadow-[0_0_2px_rgba(255,255,255,0.8)]"></i></div><div><h3 class="cinzel text-lg font-bold leading-tight" style="color: var(--text-main);">The Apollo Ritual</h3><h4 class="font-mono text-[9px] uppercase tracking-[0.2em] text-slate-400 mt-1">NASA / The Moon</h4></div></div><p class="text-xs leading-relaxed relative z-10" style="color: var(--text-muted);">The Space Race was a macro-scale ritual of the human nervous system. NASA used <strong>Saturn</strong> (Chronos/The Root) to launch the <strong>Sun</strong> (Apollo/Pineal) to contact the <strong>Moon</strong> (Pituitary).</p></div>
                         <div class="cosmos-card p-6 border-t-4 relative overflow-hidden" style="border-top-color: #cbd5e1;"><div class="flex items-center gap-4 mb-4"><div class="w-10 h-10 rounded-full flex items-center justify-center icon-cpu shrink-0"><i class="fa-solid fa-memory text-white text-sm"></i></div><div><h3 class="cinzel text-lg font-bold leading-tight" style="color: var(--text-main);">Anatomy of the Machine</h3><h4 class="font-mono text-[9px] uppercase tracking-[0.2em] text-slate-400 mt-1">Motherboard</h4></div></div><p class="text-xs leading-relaxed relative z-10" style="color: var(--text-muted);">The Quartz crystal is the heartbeat. The CPU is the Left Brain (linear Beta-waves). The GPU is the Right Brain (parallel, holistic simulation).</p></div>
@@ -317,13 +317,11 @@
                         <div class="cosmos-card p-6 border-t-4 relative overflow-hidden" style="border-top-color: #22c55e;"><div class="flex items-center gap-4 mb-4"><div class="w-10 h-10 rounded-full flex items-center justify-center icon-matrix shrink-0"><i class="fa-solid fa-code text-green-500 text-sm font-bold drop-shadow-[0_0_5px_#22c55e]"></i></div><div><h3 class="cinzel text-lg font-bold leading-tight" style="color: var(--text-main);">The Beta State</h3><h4 class="font-mono text-[9px] uppercase tracking-[0.2em] text-green-400 mt-1">The Matrix</h4></div></div><p class="text-xs leading-relaxed relative z-10" style="color: var(--text-muted);">The "Matrix" is the literal Beta-wave frequency. The "Red Pill" represents the biological shift into Alpha/Theta waves, unplugging the Vagus Nerve from the illusion.</p></div>
                     </div>
                 </div>
-
             </div>
         </section>
 
         <section id="view-meditation" class="view-section px-4 md:px-6 text-center"><div class="max-w-[1600px] mx-auto"><h2 class="cinzel text-4xl md:text-6xl font-black mb-4 uppercase" style="color: var(--text-main);">Meditation</h2><div id="meditation-quote" class="cinzel text-xs md:text-sm mb-12 italic tracking-widest px-4" style="color: var(--gold);">"The absence of thought."</div><div class="flex flex-col lg:flex-row items-center justify-center gap-12 mb-16 p-8 border rounded-3xl shadow-inner" style="background: var(--surface); border-color: var(--surface-border);"><div class="relative w-64 h-64 flex items-center justify-center flex-shrink-0"><div id="med-ring-3" class="absolute inset-0 rounded-full border border-blue-500/20 med-ring-anim transition-all duration-1000" style="animation-duration: 2s;"></div><div id="med-ring-2" class="absolute inset-4 rounded-full border-2 border-t-transparent border-gray-500/40 animate-spin transition-all duration-1000" style="animation-duration: 1s;"></div><div id="med-ring-1" class="absolute inset-12 rounded-full backdrop-blur-md transition-all duration-1000 flex items-center justify-center shadow-[0_0_15px_rgba(239,68,68,0.4)]" style="background: rgba(239,68,68,0.2);"><i id="med-icon" class="fa-solid fa-bolt text-4xl text-red-500/50 transition-all duration-1000"></i></div></div><div class="max-w-xl text-left w-full lg:w-1/2"><h3 id="med-title" class="cinzel text-2xl md:text-3xl font-bold mb-1" style="color: var(--gold);">1. The Noise (Beta)</h3><p id="med-desc" class="text-[10px] md:text-xs font-mono uppercase tracking-widest mb-4" style="color: var(--text-muted);">14-30 Hz | Egypt | The Carnal Mind</p><p id="med-text" class="text-sm md:text-base italic leading-relaxed h-32" style="color: var(--text-main);">This is the waking state. The left hemisphere is dominating, analyzing, and stressing over the physical simulation. You are trapped in the five senses. You must shut the door.</p><div class="flex flex-wrap gap-2 mt-4"><button onclick="window.app.setMeditationState(1)" id="med-btn-1" class="med-btn px-4 py-2 border rounded text-[10px] font-bold uppercase tracking-widest transition" style="border-color: var(--text-main); color: var(--text-main); background: rgba(150,150,150,0.1);">Beta</button><button onclick="window.app.setMeditationState(2)" id="med-btn-2" class="med-btn px-4 py-2 border rounded text-[10px] font-bold uppercase tracking-widest transition opacity-50" style="border-color: var(--surface-border); color: var(--text-main);">Alpha</button><button onclick="window.app.setMeditationState(3)" id="med-btn-3" class="med-btn px-4 py-2 border rounded text-[10px] font-bold uppercase tracking-widest transition opacity-50" style="border-color: var(--surface-border); color: var(--text-main);">Theta</button><button onclick="window.app.setMeditationState(4)" id="med-btn-4" class="med-btn px-4 py-2 border rounded text-[10px] font-bold uppercase tracking-widest transition opacity-50 text-blue-500" style="border-color: rgba(59,130,246,0.5);">Delta</button><button onclick="window.app.setMeditationState(5)" id="med-btn-5" class="med-btn px-4 py-2 border rounded text-[10px] font-bold uppercase tracking-widest transition opacity-50 text-gray-500" style="border-color: rgba(100,100,100,0.5);"><i class="fa-solid fa-infinity mr-1"></i> The Void</button></div><button onclick="window.app.searchMeditationState()" id="med-search-btn" data-query="(carnal mind|egypt|left brain|waking state|beta)" data-display="Frequency: 14-30 Hz (Beta)" class="mt-6 w-full py-3 border rounded text-[10px] uppercase font-black tracking-widest transition flex justify-center items-center gap-2 hover:scale-105" style="background-color: rgba(212, 175, 55, 0.1); border-color: var(--gold); color: var(--gold);"><i class="fa-solid fa-magnifying-glass"></i> Search This Frequency</button></div></div><div id="meditation-lectures-grid" class="masonry-grid"></div></div></section>
         <section id="view-resources" class="view-section px-4 md:px-6 text-center"><div class="max-w-[1600px] mx-auto"><h2 class="cinzel text-4xl md:text-6xl font-black mb-12 uppercase" style="color: var(--text-main);">Primary Links</h2><div class="flex justify-center mb-12"><a href="https://www.youtube.com/@bdona4556" target="_blank" class="cosmos-card p-10 w-full max-w-lg flex flex-col items-center justify-center group" style="border-color: rgba(239, 68, 68, 0.5);"><i class="fa-brands fa-youtube text-6xl text-red-600 mb-4 group-hover:scale-110 transition-transform drop-shadow-[0_0_15px_rgba(239,68,68,0.5)]"></i><h3 class="cinzel text-2xl font-bold" style="color: var(--text-main);">Official YouTube</h3><p class="text-[10px] uppercase font-bold tracking-widest mt-2" style="color: var(--text-muted);">The Master Archive</p></a></div><div class="grid sm:grid-cols-2 md:grid-cols-3 gap-6"><a href="https://www.hiddenmeanings.com" target="_blank" class="cosmos-card p-8 text-center justify-center"><h3 class="cinzel text-gold text-xl mb-2 font-bold">HiddenMeanings.com</h3><p class="text-xs uppercase tracking-widest" style="color: var(--text-muted);">Transcripts & Books</p></a><a href="https://www.facebook.com/groups/356472414984195" target="_blank" class="cosmos-card p-8 text-center justify-center"><h3 class="cinzel text-gold text-xl mb-2 font-bold">Facebook Group</h3><p class="text-xs uppercase tracking-widest" style="color: var(--text-muted);">Community & Discussion</p></a><a href="https://thehiddenlighthouse.blogspot.com" target="_blank" class="cosmos-card p-8 text-center justify-center"><h3 class="cinzel text-gold text-xl mb-2 font-bold">Lighthouse Blog</h3><p class="text-xs uppercase tracking-widest" style="color: var(--text-muted);">Archives & Essays</p></a></div></div></section>
-
     </div>
 
     <div class="dock-container">
@@ -414,7 +412,6 @@
                         
                         // Color the lines gold if learned
                         n.parents.forEach(p => {
-                            let lineId = `line-${p}-${key}`;
                             // Custom line mapping since the physical layout lines are unique
                             if (p === 'red' && key === 'gobekli') document.getElementById('line-red-gobekli').classList.add('talent-line-active');
                             if (p === 'red' && key === 'fall') document.getElementById('line-red-fall').classList.add('talent-line-active');
@@ -493,20 +490,20 @@
 
                 if (state.status === 'locked') {
                     btn.innerText = "Requires Previous Node";
-                    btn.className = "w-full py-4 font-black uppercase text-xs tracking-widest rounded-xl transition-all border border-gray-600 bg-gray-800 text-gray-500 cursor-not-allowed";
+                    btn.className = "w-full py-4 font-black uppercase text-xs tracking-widest rounded-xl transition-all fantasy-button";
                     btn.disabled = true;
                 } else if (state.status === 'learned') {
                     btn.innerText = "Talent Learned ✓";
-                    btn.className = "w-full py-4 font-black uppercase text-xs tracking-widest rounded-xl transition-all border border-green-500 bg-green-600 text-white cursor-default shadow-[0_0_15px_rgba(34,197,94,0.4)]";
+                    btn.className = "w-full py-4 font-black uppercase text-xs tracking-widest rounded-xl transition-all fantasy-button learned-btn";
                     btn.disabled = true;
                 } else if (state.status === 'available') {
                     if (window.app.rpgState.tp > 0) {
                         btn.innerText = "Learn Talent (Cost: 1 TP)";
-                        btn.className = "w-full py-4 font-black uppercase text-xs tracking-widest rounded-xl transition-all border border-blue-400 bg-blue-600 hover:bg-blue-500 text-white cursor-pointer shadow-lg";
+                        btn.className = "w-full py-4 font-black uppercase text-xs tracking-widest rounded-xl transition-all fantasy-button";
                         btn.disabled = false;
                     } else {
                         btn.innerText = "Not Enough TP";
-                        btn.className = "w-full py-4 font-black uppercase text-xs tracking-widest rounded-xl transition-all border border-gray-600 bg-gray-800 text-gray-500 cursor-not-allowed";
+                        btn.className = "w-full py-4 font-black uppercase text-xs tracking-widest rounded-xl transition-all fantasy-button";
                         btn.disabled = true;
                     }
                 }
