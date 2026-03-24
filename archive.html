@@ -90,27 +90,12 @@
         .icon-fractal { background: radial-gradient(circle at 50% 50%, #2dd4bf, #0f766e); border: 2px solid #5eead4; box-shadow: 0 0 15px rgba(20,184,166,0.6); }
 
         /* FANTASY RPG TALENT TREE STYLES (WoW/Diablo aesthetic) */
-        .rpg-bg {
-            background: radial-gradient(circle at 50% 50%, #2a2118 0%, #0d0a08 100%);
-            border: 2px solid #5c4a3d;
-            box-shadow: inset 0 0 60px rgba(0,0,0,0.9), 0 10px 30px rgba(0,0,0,0.5);
-            position: relative;
-        }
-        /* Subtle noise texture for parchment/stone feel */
+        .rpg-bg { background: radial-gradient(circle at 50% 50%, #2a2118 0%, #0d0a08 100%); border: 2px solid #5c4a3d; box-shadow: inset 0 0 60px rgba(0,0,0,0.9), 0 10px 30px rgba(0,0,0,0.5); position: relative; }
         .rpg-bg::before { content: ""; position: absolute; inset: 0; background-image: url('data:image/svg+xml;utf8,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noise"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noise)" opacity="0.05"/%3E%3C/svg%3E'); pointer-events: none; z-index: 0; }
         
-        .talent-node {
-            width: 60px; height: 60px; border-radius: 50%;
-            border: 3px solid #3e3222; background: #14100c;
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer; position: absolute; z-index: 10;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            transform: translate(-50%, -50%);
-            box-shadow: inset 0 0 15px rgba(0,0,0,0.9), 0 5px 10px rgba(0,0,0,0.5);
-        }
+        .talent-node { width: 60px; height: 60px; border-radius: 50%; border: 3px solid #3e3222; background: #14100c; display: flex; align-items: center; justify-content: center; cursor: pointer; position: absolute; z-index: 10; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); transform: translate(-50%, -50%); box-shadow: inset 0 0 15px rgba(0,0,0,0.9), 0 5px 10px rgba(0,0,0,0.5); }
         .talent-node i { filter: drop-shadow(0 2px 2px rgba(0,0,0,0.8)); }
         .talent-node:hover { transform: translate(-50%, -50%) scale(1.15); box-shadow: inset 0 0 10px rgba(0,0,0,0.8), 0 0 20px rgba(212,175,55,0.3); border-color: #8c7355; z-index: 25; }
-        
         .talent-node.locked { filter: grayscale(100%) brightness(0.4); cursor: not-allowed; }
         .talent-node.available { border-color: #a3823c; animation: pulseFantasy 2s infinite; }
         .talent-node.learned { border-color: #ffd700; box-shadow: 0 0 20px rgba(255,215,0,0.5), inset 0 0 15px rgba(255,215,0,0.2); }
@@ -129,6 +114,14 @@
         .fantasy-button:hover:not(:disabled) { background: linear-gradient(to bottom, #a82222, #5c1111); color: #fff; }
         .fantasy-button:disabled { background: #2a2118; border-color: #4a3b2c; color: #5c4a3d; cursor: not-allowed; text-shadow: none; box-shadow: none; }
         .fantasy-button.learned-btn { background: linear-gradient(to bottom, #d4af37, #8c7355); border-color: #fff8dc; color: #1a1510; text-shadow: 0 1px 0 rgba(255,255,255,0.5); font-weight: 900; }
+
+        /* 3D FLIP CARDS FOR MASTER VAULT */
+        .flip-card { background-color: transparent; width: 100%; perspective: 1000px; min-height: 260px; display: block; }
+        .flip-card-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); transform-style: preserve-3d; cursor: pointer; }
+        .flip-card:hover .flip-card-inner { transform: rotateY(180deg); }
+        .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; border-radius: 24px; padding: 24px; display: flex; flex-direction: column; border: 1px solid var(--surface-border); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .flip-card-front { background: var(--surface); backdrop-filter: blur(24px); align-items: center; justify-content: center; }
+        .flip-card-back { background: radial-gradient(circle at 50% 50%, #1f2937, #000); transform: rotateY(180deg); justify-content: center; align-items: center; border-color: var(--gold); box-shadow: 0 0 40px rgba(212,175,55,0.2), inset 0 0 20px rgba(0,0,0,0.8); }
     </style>
 </head>
 <body class="flex flex-col min-h-screen">
@@ -165,16 +158,14 @@
         </section>
 
         <section id="view-library" class="view-section px-4 md:px-6"><div class="max-w-[1600px] mx-auto w-full text-center"><h2 class="cinzel text-3xl md:text-4xl font-bold mb-6 uppercase tracking-widest" style="color: var(--text-main);">Upscaled Archive</h2><div class="block md:hidden mb-8 w-full max-w-sm mx-auto relative"><select id="mobile-topic-dropdown" onchange="window.app.selectMobileTopic(this.value)" class="mobile-dropdown cinzel"></select><i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none" style="color: var(--gold);"></i></div><div id="library-topics" class="hidden md:flex flex-wrap gap-2 justify-center mb-10 min-h-[40px]"></div><div id="library-grid" class="masonry-grid"></div></div></section>
-        
         <section id="view-brain" class="view-section px-4 md:px-6 text-center"><div class="max-w-[1600px] mx-auto pt-4 relative"><h2 class="cinzel text-4xl md:text-6xl font-black mb-4 uppercase" style="color: var(--text-main);">The Upper Room</h2><div id="brain-quote" class="cinzel text-xs md:text-sm mb-8 italic tracking-widest px-2 md:px-6 min-h-[40px]" style="color: var(--gold);"></div><div class="flex flex-col lg:flex-row items-stretch justify-center gap-8 mb-16 p-6 md:p-10 border rounded-3xl shadow-inner" style="background: var(--surface); border-color: var(--surface-border);"><div class="matrix-container w-full lg:w-1/2 flex items-center justify-center relative"><div id="matrix-tooltip"><div class="tt-title" id="tt-nerve"></div><div class="tt-data">ZODIAC: <span class="tt-highlight" id="tt-zodiac"></span></div><div class="tt-data">DISCIPLE: <span class="tt-highlight" id="tt-disciple"></span></div><div class="tt-data">MYTHOS: <span class="tt-highlight" id="tt-mythos"></span></div><div class="tt-data">ESOTERIC: <span class="tt-highlight" id="tt-esoteric"></span></div></div><svg viewBox="0 0 800 600" class="w-full h-auto drop-shadow-[0_0_20px_rgba(255,255,255,0.05)] max-w-[700px]"><defs><radialGradient id="pinealGlow" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#3B82F6" stop-opacity="0.6"/><stop offset="100%" stop-color="#3B82F6" stop-opacity="0"/></radialGradient></defs><image href="brain-anatomy-bg.png" x="150" y="50" width="500" height="450" opacity="0.2" preserveAspectRatio="xMidYMid meet" /><path d="M 250 150 C 250 50, 550 50, 550 150 C 600 250, 550 400, 450 450 C 400 500, 350 450, 250 350 Z" fill="none" stroke="rgba(150,150,150,0.15)" stroke-width="2" stroke-dasharray="5,5"/><circle cx="400" cy="250" r="40" fill="url(#pinealGlow)" class="animate-pulse"/><circle cx="400" cy="250" r="15" fill="#3B82F6"/><text x="400" y="210" fill="var(--text-main)" font-size="10" font-family="monospace" font-weight="bold" text-anchor="middle" letter-spacing="2">PINEAL</text><circle class="nerve-hotspot" cx="300" cy="180" r="18" data-nerve="CN I: Olfactory" data-zodiac="Aries (The Ram)" data-disciple="Andrew" data-mythos="[Hindu] Prana / [Greek] Pneuma" data-esoteric="Breath of Life" data-query="(olfactory|aries|andrew|breath of life)"/><text x="260" y="184" fill="var(--text-muted)" font-size="10" font-family="monospace" text-anchor="end">CN I</text><circle class="nerve-hotspot" cx="330" cy="230" r="18" data-nerve="CN III: Oculomotor" data-zodiac="Gemini (The Twins)" data-disciple="James" data-mythos="[Norse] Hugin & Munin" data-esoteric="Twins of Perception" data-query="(oculomotor|gemini|james|twins of perception)"/><text x="290" y="234" fill="var(--text-muted)" font-size="10" font-family="monospace" text-anchor="end">CN III</text><circle class="nerve-hotspot" cx="310" cy="280" r="18" data-nerve="CN V: Trigeminal" data-zodiac="Leo (The Lion)" data-disciple="Philip" data-mythos="[Egyptian] Sphinx / Lion Gate" data-esoteric="Lion of Judah / Jawbone" data-query="(trigeminal|leo|philip|lion of judah|jawbone)"/><text x="270" y="284" fill="var(--text-muted)" font-size="10" font-family="monospace" text-anchor="end">CN V</text><circle class="nerve-hotspot" cx="330" cy="330" r="18" data-nerve="CN VII: Facial" data-zodiac="Libra (The Scales)" data-disciple="Thomas" data-mythos="[Egyptian] Ma'at (The Scales)" data-esoteric="The Balance" data-query="(facial nerve|libra|thomas|the balance)"/><text x="290" y="334" fill="var(--text-muted)" font-size="10" font-family="monospace" text-anchor="end">CN VII</text><circle class="nerve-hotspot" cx="340" cy="380" r="18" data-nerve="CN IX: Glossopharyngeal" data-zodiac="Sagittarius (The Archer)" data-disciple="James the Lesser" data-mythos="[Greek] Centaur / Chiron" data-esoteric="The Directed Word" data-query="(glossopharyngeal|sagittarius|james the lesser|directed word)"/><text x="300" y="384" fill="var(--text-muted)" font-size="10" font-family="monospace" text-anchor="end">CN IX</text><circle class="nerve-hotspot" cx="350" cy="430" r="18" data-nerve="CN XI: Accessory" data-zodiac="Aquarius (Water Bearer)" data-disciple="Simon" data-mythos="[Greek] Atlas bearing heavens" data-esoteric="The Burden Bearer" data-query="(accessory nerve|aquarius|simon|burden bearer)"/><text x="310" y="434" fill="var(--text-muted)" font-size="10" font-family="monospace" text-anchor="end">CN XI</text><circle class="nerve-hotspot" cx="500" cy="180" r="18" data-nerve="CN II: Optic" data-zodiac="Taurus (The Bull)" data-disciple="Peter" data-mythos="[Egyptian] Eye of Horus / [Norse] Odin" data-esoteric="The Single Eye" data-query="(optic nerve|taurus|peter|single eye|vision)"/><text x="540" y="184" fill="var(--text-muted)" font-size="10" font-family="monospace" text-anchor="start">CN II</text><circle class="nerve-hotspot" cx="470" cy="230" r="18" data-nerve="CN IV: Trochlear" data-zodiac="Cancer (The Crab)" data-disciple="John" data-mythos="[Babylonian] Kheperi / Scarab" data-esoteric="Foundational Water" data-query="(trochlear|cancer|john|foundational water)"/><text x="510" y="234" fill="var(--text-muted)" font-size="10" font-family="monospace" text-anchor="start">CN IV</text><circle class="nerve-hotspot" cx="490" cy="280" r="18" data-nerve="CN VI: Abducens" data-zodiac="Virgo (The Virgin)" data-disciple="Bartholomew" data-mythos="[Greek] Demeter / Wheat (Bread)" data-esoteric="House of Bread" data-query="(abducens|virgo|bartholomew|house of bread)"/><text x="530" y="284" fill="var(--text-muted)" font-size="10" font-family="monospace" text-anchor="start">CN VI</text><circle class="nerve-hotspot" cx="470" cy="330" r="18" data-nerve="CN VIII: Vestibulocochlear" data-zodiac="Scorpio (The Scorpion)" data-disciple="Matthew" data-mythos="[Norse] Heimdall's Ear" data-esoteric="Hidden Frequency" data-query="(vestibulocochlear|scorpio|matthew|hidden frequency)"/><text x="510" y="334" fill="var(--text-muted)" font-size="10" font-family="monospace" text-anchor="start">CN VIII</text><circle class="nerve-hotspot" cx="460" cy="380" r="18" data-nerve="CN X: Vagus" data-zodiac="Capricorn (The Goat)" data-disciple="Thaddeus" data-mythos="[Greek] Caduceus / [Norse] Mjolnir" data-esoteric="The Silver Cord" data-query="(vagus|pneumogastric|capricorn|thaddeus|silver cord)"/><text x="500" y="384" fill="var(--text-muted)" font-size="10" font-family="monospace" text-anchor="start">CN X</text><circle class="nerve-hotspot" cx="450" cy="430" r="18" data-nerve="CN XII: Hypoglossal" data-zodiac="Pisces (The Fishes)" data-disciple="Judas" data-mythos="[Babylonian] Oannes / The Betrayer" data-esoteric="The Lower Speech" data-query="(hypoglossal|pisces|judas|lower speech|betrayer)"/><text x="490" y="434" fill="var(--text-muted)" font-size="10" font-family="monospace" text-anchor="start">CN XII</text></svg></div><div class="w-full lg:w-1/2 flex flex-col justify-center"><div id="brain-console-default" class="w-full h-full min-h-[400px] flex flex-col items-center justify-center text-center p-8 rounded-3xl border-2 border-dashed transition-all" style="border-color: var(--surface-border); background: rgba(0,0,0,0.2);"><i class="fa-solid fa-network-wired text-6xl mb-6 opacity-20 animate-pulse" style="color: var(--accent-glow);"></i><h3 class="cinzel text-2xl font-bold mb-2" style="color: var(--text-main);">Awaiting Neural Input</h3><p class="text-sm max-w-xs mx-auto" style="color: var(--text-muted);">Select a cranial nerve from the diagram to decrypt.</p></div><div id="brain-console-active" class="hidden w-full h-full flex-col justify-between text-left"><div class="mb-6"><span class="text-[10px] font-mono uppercase tracking-widest text-blue-400 bg-blue-500/10 px-3 py-1 rounded-full border border-blue-500/20">Target Acquired</span><h3 id="brain-console-title" class="cinzel text-3xl md:text-4xl font-bold mt-4" style="color: var(--gold);">--</h3></div><div class="grid grid-cols-2 gap-4 mb-6 flex-1"><div class="p-5 rounded-2xl border bg-black/20 flex flex-col justify-center" style="border-color: var(--surface-border);"><i class="fa-solid fa-star mb-3 text-2xl" style="color: var(--gold);"></i><span class="text-[9px] uppercase tracking-widest text-gray-500 mb-1">Zodiac</span><span id="brain-console-zodiac" class="text-sm font-mono font-bold" style="color: var(--text-main);">--</span></div><div class="p-5 rounded-2xl border bg-black/20 flex flex-col justify-center" style="border-color: var(--surface-border);"><i class="fa-solid fa-user-group mb-3 text-2xl text-blue-400"></i><span class="text-[9px] uppercase tracking-widest text-gray-500 mb-1">Disciple</span><span id="brain-console-disciple" class="text-sm font-mono font-bold" style="color: var(--text-main);">--</span></div><div class="p-5 rounded-2xl border bg-black/20 flex flex-col justify-center col-span-2 sm:col-span-1" style="border-color: var(--surface-border);"><i class="fa-solid fa-bolt mb-3 text-2xl text-purple-400"></i><span class="text-[9px] uppercase tracking-widest text-gray-500 mb-1">Global Mythos</span><span id="brain-console-mythos" class="text-sm font-mono font-bold" style="color: var(--text-main);">--</span></div><div class="p-5 rounded-2xl border bg-black/20 flex flex-col justify-center col-span-2 sm:col-span-1" style="border-color: var(--surface-border);"><i class="fa-solid fa-key mb-3 text-2xl text-emerald-400"></i><span class="text-[9px] uppercase tracking-widest text-gray-500 mb-1">Esoteric Key</span><span id="brain-console-esoteric" class="text-sm font-mono font-bold" style="color: var(--text-main);">--</span></div></div><button id="brain-search-btn" onclick="window.app.searchNerveState()" class="w-full py-4 border rounded-xl text-[11px] uppercase font-black tracking-widest transition flex justify-center items-center gap-2 hover:scale-[1.02] shadow-[0_0_15px_rgba(212,175,55,0.15)]" style="background-color: var(--gold); border-color: var(--gold); color: #000;"><i class="fa-solid fa-magnifying-glass"></i> Search Archive For This Nerve</button></div></div></div><div id="brain-lectures-grid" class="masonry-grid"></div></div></section>
-        
         <section id="view-anatomy" class="view-section px-4"><div class="max-w-[1600px] mx-auto"><h2 class="cinzel text-4xl md:text-6xl font-black mb-10 text-center uppercase" style="color: var(--text-main);">The Temple</h2><div class="grid lg:grid-cols-12 gap-10 items-stretch"><div class="lg:col-span-5 flex justify-center relative rounded-3xl py-8 border shadow-inner" style="background: var(--surface); border-color: var(--surface-border);"><div class="spine-container"><div class="spine-line"></div><div class="chakra-node" style="background-color: #a855f7; box-shadow: 0 0 20px #a855f7;" onclick="window.app.showAnatomy('crown')"><i class="fa-solid fa-crown"></i></div><div class="chakra-node" style="background-color: #4f46e5; box-shadow: 0 0 20px #4f46e5;" onclick="window.app.showAnatomy('brow')"><i class="fa-solid fa-eye"></i></div><div class="chakra-node" style="background-color: #3b82f6; box-shadow: 0 0 20px #3b82f6;" onclick="window.app.showAnatomy('throat')"><i class="fa-solid fa-comment-dots"></i></div><div class="chakra-node" style="background-color: #22c55e; box-shadow: 0 0 20px #22c55e;" onclick="window.app.showAnatomy('heart')"><i class="fa-solid fa-heart"></i></div><div class="chakra-node" style="background-color: #eab308; box-shadow: 0 0 20px #eab308;" onclick="window.app.showAnatomy('solar')"><i class="fa-solid fa-fire"></i></div><div class="chakra-node" style="background-color: #f97316; box-shadow: 0 0 20px #f97316;" onclick="window.app.showAnatomy('sacral')"><i class="fa-solid fa-water"></i></div><div class="chakra-node" style="background-color: #ef4444; box-shadow: 0 0 20px #ef4444;" onclick="window.app.showAnatomy('root')"><i class="fa-solid fa-mountain"></i></div></div></div><div class="lg:col-span-7 w-full flex flex-col justify-center"><div id="temple-console-default" class="w-full h-full min-h-[400px] flex flex-col items-center justify-center text-center p-8 rounded-3xl border-2 border-dashed transition-all" style="border-color: var(--surface-border); background: rgba(0,0,0,0.2);"><i class="fa-solid fa-om text-6xl mb-6 opacity-20 animate-pulse" style="color: var(--gold);"></i><h3 class="cinzel text-2xl font-bold mb-2" style="color: var(--text-main);">Awaiting Alignment</h3><p class="text-sm max-w-xs mx-auto" style="color: var(--text-muted);">Select a seal on the spinal column to decrypt.</p></div><div id="temple-console-active" class="hidden w-full h-full flex-col justify-between text-left p-8 border rounded-3xl shadow-2xl relative overflow-hidden" style="background: var(--surface); border-color: var(--surface-border);"><div class="absolute -top-10 -right-10 text-9xl opacity-5 pointer-events-none transition-colors duration-500" id="ana-bg-icon-container"><i id="ana-bg-icon" class="fa-solid fa-dharmachakra"></i></div><div class="mb-6 relative z-10"><span class="text-[10px] font-mono uppercase tracking-widest bg-white/5 px-3 py-1 rounded-full border border-white/10" id="ana-hz" style="color: var(--gold);">-- Hz</span><h3 id="ana-title" class="cinzel text-3xl md:text-5xl font-bold mt-4" style="color: var(--text-main);">--</h3><p class="font-mono text-[10px] uppercase tracking-[0.3em] opacity-60 mt-2" style="color: var(--text-main);" id="ana-element">--</p></div><div class="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-6 flex-1 relative z-10"><div class="p-4 rounded-2xl border bg-black/20 flex flex-col justify-center" style="border-color: var(--surface-border);"><i class="fa-solid fa-wave-square mb-2 text-xl" style="color: var(--text-muted);"></i><span class="text-[9px] uppercase tracking-widest text-gray-500 mb-1">Spectrum</span><span id="ana-color" class="text-sm font-mono font-bold">--</span></div><div class="p-4 rounded-2xl border bg-black/20 flex flex-col justify-center" style="border-color: var(--surface-border);"><i class="fa-solid fa-meteor mb-2 text-xl" style="color: var(--text-muted);"></i><span class="text-[9px] uppercase tracking-widest text-gray-500 mb-1">Astrophysics</span><span id="ana-planet" class="text-sm font-mono font-bold" style="color: var(--text-main);">--</span></div><div class="p-4 rounded-2xl border bg-black/20 flex flex-col justify-center col-span-2 lg:col-span-1" style="border-color: var(--surface-border);"><i class="fa-solid fa-cubes-stacked mb-2 text-xl" style="color: var(--text-muted);"></i><span class="text-[9px] uppercase tracking-widest text-gray-500 mb-1">Alchemy</span><span id="ana-metal" class="text-sm font-mono font-bold" style="color: var(--text-main);">--</span></div></div><p id="ana-desc" class="text-sm md:text-base italic leading-relaxed h-32 relative z-10" style="color: var(--text-main);">--</p></div></div></div></div></section>
 
         <section id="view-echoes" class="view-section px-4 md:px-6">
             <div class="max-w-[1600px] mx-auto pt-4 relative">
                 
                 <div class="flex flex-col items-center mb-12">
-                    <h2 class="cinzel text-4xl md:text-6xl font-black mb-6 uppercase text-center" style="color: var(--text-main);">Echoes of the Matrix</h2>
+                    <h2 class="cinzel text-4xl md:text-6xl font-black mb-6 uppercase text-center" style="color: var(--text-main);">Echoes</h2>
                     <div class="cinzel text-xs md:text-sm mb-6 italic tracking-widest px-2 md:px-6 text-center" style="color: var(--gold);">The Collective Unconscious in Space, Time, and Culture</div>
                     
                     <div class="flex p-1 border rounded-full backdrop-blur-md z-20 shadow-xl" style="background: var(--surface); border-color: var(--surface-border);">
@@ -203,7 +194,7 @@
                                 <button onclick="window.app.resetTree()" class="text-[10px] uppercase font-bold text-gray-400 hover:text-yellow-500 transition drop-shadow-md"><i class="fa-solid fa-rotate-left"></i> Reset</button>
                                 <div class="text-right">
                                     <p class="text-xs uppercase tracking-widest font-bold" style="color: #8c7355;">Available TP</p>
-                                    <p class="text-2xl font-mono text-yellow-500 font-black drop-shadow-[0_0_5px_#d4af37]" id="rpg-tp-count">5</p>
+                                    <p class="text-2xl font-mono text-yellow-500 font-black drop-shadow-[0_0_5px_#d4af37]" id="rpg-tp-count">10</p>
                                 </div>
                             </div>
                         </div>
@@ -296,27 +287,206 @@
 
                 <div id="echoes-master-view" class="hidden">
                     <p class="text-lg md:text-xl leading-relaxed text-center max-w-4xl mx-auto mb-16 font-light" style="color: var(--text-muted);">
-                        The collective unconscious naturally projects the exact same anatomical map into the physical world. This blueprint is not just in ancient scripture—it is buried in the Earth, fired into space, and actively encrypted in the technology and mythologies of today.
+                        Hover to decrypt the physical simulation. This blueprint is not just in ancient scripture—it is actively encrypted in the technology and mythologies of today.
                     </p>
+                    
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 text-left mb-16">
-                        <div class="cosmos-card p-6 border-t-4 relative overflow-hidden xl:col-span-2" style="border-top-color: #ef4444;"><i class="fa-solid fa-arrow-down-up-across-line absolute -right-6 -bottom-6 text-[150px] opacity-5 pointer-events-none text-red-500"></i><div class="flex items-center gap-4 mb-4"><div class="w-10 h-10 rounded-full flex items-center justify-center icon-fall shrink-0"><i class="fa-solid fa-arrow-down text-white text-sm"></i></div><div><h3 class="cinzel text-lg font-bold leading-tight" style="color: var(--text-main);">The Great Inversion</h3><h4 class="font-mono text-[9px] uppercase tracking-[0.2em] text-red-400 mt-1">The Fall of Man</h4></div></div><p class="text-xs leading-relaxed relative z-10" style="color: var(--text-muted);">The moment humanity fell from the Crown to the Root. The Agricultural Revolution (10,000 BC) traded internal quantum flow for external, physical survival (property, hoarding, and Time). The internal wave collapsed into the external particle.</p></div>
-                        <div class="cosmos-card p-6 border-t-4 relative overflow-hidden xl:col-span-2" style="border-top-color: #2dd4bf;"><i class="fa-solid fa-cubes absolute -right-6 -bottom-6 text-[150px] opacity-5 pointer-events-none text-teal-400"></i><div class="flex items-center gap-4 mb-4"><div class="w-10 h-10 rounded-full flex items-center justify-center icon-fractal shrink-0"><i class="fa-solid fa-cubes text-white text-sm"></i></div><div><h3 class="cinzel text-lg font-bold leading-tight" style="color: var(--text-main);">The 64 Fractal</h3><h4 class="font-mono text-[9px] uppercase tracking-[0.2em] text-teal-400 mt-1">Sacred Geometry</h4></div></div><p class="text-xs leading-relaxed relative z-10" style="color: var(--text-muted);">The ultimate compression algorithm. The 64 hexagrams of the I Ching, the 64 codons of human DNA, the 64 squares of the chessboard, and 64-bit computing. The Base-2 math of the entire universe.</p></div>
-                        <div class="cosmos-card p-6 border-t-4 relative overflow-hidden xl:col-span-2" style="border-top-color: #a8a29e;"><i class="fa-solid fa-mountain-sun absolute -right-6 -bottom-6 text-[150px] opacity-5 pointer-events-none text-stone-400"></i><div class="flex items-center gap-4 mb-4"><div class="w-10 h-10 rounded-full flex items-center justify-center icon-gobekli shrink-0"><i class="fa-solid fa-monument text-stone-700 text-sm"></i></div><div><h3 class="cinzel text-lg font-bold leading-tight" style="color: var(--text-main);">The Ancient Hardware</h3><h4 class="font-mono text-[9px] uppercase tracking-[0.2em] text-stone-400 mt-1">Göbekli Tepe</h4></div></div><p class="text-xs leading-relaxed relative z-10" style="color: var(--text-muted);">The 12,000-year-old T-pillars are the physical architecture of the human spine and the faceless ego. The "serpentine water channels" act as the manifestation of the cerebrospinal fluid flowing up the spine.</p></div>
-                        <div class="cosmos-card p-6 border-t-4 relative overflow-hidden xl:col-span-2" style="border-top-color: #94a3b8;"><i class="fa-solid fa-rocket absolute -right-6 -bottom-6 text-[150px] opacity-5 pointer-events-none text-slate-400"></i><div class="flex items-center gap-4 mb-4"><div class="w-10 h-10 rounded-full flex items-center justify-center icon-apollo shrink-0"><i class="fa-solid fa-moon text-slate-800 text-sm drop-shadow-[0_0_2px_rgba(255,255,255,0.8)]"></i></div><div><h3 class="cinzel text-lg font-bold leading-tight" style="color: var(--text-main);">The Apollo Ritual</h3><h4 class="font-mono text-[9px] uppercase tracking-[0.2em] text-slate-400 mt-1">NASA / The Moon</h4></div></div><p class="text-xs leading-relaxed relative z-10" style="color: var(--text-muted);">The Space Race was a macro-scale ritual of the human nervous system. NASA used <strong>Saturn</strong> (Chronos/The Root) to launch the <strong>Sun</strong> (Apollo/Pineal) to contact the <strong>Moon</strong> (Pituitary).</p></div>
-                        <div class="cosmos-card p-6 border-t-4 relative overflow-hidden" style="border-top-color: #cbd5e1;"><div class="flex items-center gap-4 mb-4"><div class="w-10 h-10 rounded-full flex items-center justify-center icon-cpu shrink-0"><i class="fa-solid fa-memory text-white text-sm"></i></div><div><h3 class="cinzel text-lg font-bold leading-tight" style="color: var(--text-main);">Anatomy of the Machine</h3><h4 class="font-mono text-[9px] uppercase tracking-[0.2em] text-slate-400 mt-1">Motherboard</h4></div></div><p class="text-xs leading-relaxed relative z-10" style="color: var(--text-muted);">The Quartz crystal is the heartbeat. The CPU is the Left Brain (linear Beta-waves). The GPU is the Right Brain (parallel, holistic simulation).</p></div>
-                        <div class="cosmos-card p-6 border-t-4 relative overflow-hidden" style="border-top-color: #f59e0b;"><div class="flex items-center gap-4 mb-4"><div class="w-10 h-10 rounded-full flex items-center justify-center icon-crypto shrink-0"><i class="fa-brands fa-bitcoin text-white text-lg"></i></div><div><h3 class="cinzel text-lg font-bold leading-tight" style="color: var(--text-main);">Digital Alchemy</h3><h4 class="font-mono text-[9px] uppercase tracking-[0.2em] text-yellow-500 mt-1">Blockchain</h4></div></div><p class="text-xs leading-relaxed relative z-10" style="color: var(--text-muted);">Fiat is Archon control. Crypto is decentralized Gnosticism. The blockchain is the Akashic Records. Mining is literal alchemy: converting physical electricity into immutable truth.</p></div>
-                        <div class="cosmos-card p-6 border-t-4 relative overflow-hidden" style="border-top-color: #d8b4fe;"><div class="flex items-center gap-4 mb-4"><div class="w-10 h-10 rounded-full flex items-center justify-center icon-aum shrink-0"><i class="fa-solid fa-microphone text-purple-900 text-sm"></i></div><div><h3 class="cinzel text-lg font-bold leading-tight" style="color: var(--text-main);">The Primordial Sound</h3><h4 class="font-mono text-[9px] uppercase tracking-[0.2em] text-purple-400 mt-1">Acoustics</h4></div></div><p class="text-xs leading-relaxed relative z-10" style="color: var(--text-muted);">The human vocal tract naturally forms "Ah-Mmm" (AUM). The first sound humans made—an acoustic vibration striking the Vagus nerve to ring the biological moon.</p></div>
-                        <div class="cosmos-card p-6 border-t-4 relative overflow-hidden" style="border-top-color: #fca5a5;"><div class="flex items-center gap-4 mb-4"><div class="w-10 h-10 rounded-full flex items-center justify-center icon-red shrink-0"><i class="fa-solid fa-eye text-red-900 text-sm"></i></div><div><h3 class="cinzel text-lg font-bold leading-tight" style="color: var(--text-main);">The First Color</h3><h4 class="font-mono text-[9px] uppercase tracking-[0.2em] text-red-400 mt-1">Optics</h4></div></div><p class="text-xs leading-relaxed relative z-10" style="color: var(--text-muted);">The first color named by humanity and used in cave art was RED. Red maps directly to the survival Root Chakra. Humanity evolved from the bottom of the spine upwards.</p></div>
-                        <div class="cosmos-card p-6 border-t-4 relative overflow-hidden" style="border-top-color: #facc15;"><div class="flex items-center gap-4 mb-4"><div class="w-10 h-10 rounded-full flex items-center justify-center icon-zeus shrink-0"><i class="fa-solid fa-bolt text-yellow-900 text-sm"></i></div><div><h3 class="cinzel text-lg font-bold leading-tight" style="color: var(--text-main);">The Ascension</h3><h4 class="font-mono text-[9px] uppercase tracking-[0.2em] text-yellow-400 mt-1">Greek Mythos</h4></div></div><p class="text-xs leading-relaxed relative z-10" style="color: var(--text-muted);">Zeus (Jupiter) overthrows Cronus (Saturn/Time) to rule from Olympus (The Cranial Vault). He wields the Lightning Bolt, which is the electrical spark of the Vagus Nerve.</p></div>
-                        <div class="cosmos-card p-6 border-t-4 relative overflow-hidden" style="border-top-color: #a855f7;"><div class="flex items-center gap-4 mb-4"><div class="w-10 h-10 rounded-full flex items-center justify-center icon-wizard shrink-0"><i class="fa-solid fa-star text-white text-sm"></i></div><div><h3 class="cinzel text-lg font-bold leading-tight" style="color: var(--text-main);">The Advisor</h3><h4 class="font-mono text-[9px] uppercase tracking-[0.2em] text-purple-400 mt-1">Arthurian</h4></div></div><p class="text-xs leading-relaxed relative z-10" style="color: var(--text-muted);">Merlin advises King Arthur. Arthur represents the physical Ego; the Wizard is the Pineal Gland. He directs the energy and provides the cosmic intuition.</p></div>
-                        <div class="cosmos-card p-6 border-t-4 relative overflow-hidden" style="border-top-color: #22c55e;"><div class="flex items-center gap-4 mb-4"><div class="w-10 h-10 rounded-full flex items-center justify-center icon-elf shrink-0"><i class="fa-brands fa-envira text-green-900 text-sm"></i></div><div><h3 class="cinzel text-lg font-bold leading-tight" style="color: var(--text-main);">The Frequencies</h3><h4 class="font-mono text-[9px] uppercase tracking-[0.2em] text-green-400 mt-1">Fantasy Races</h4></div></div><p class="text-xs leading-relaxed relative z-10" style="color: var(--text-muted);"><strong>Dwarfs</strong> are the lower Chakras (the Gut). <strong>Elves</strong> are high-frequency Alpha/Theta waves. <strong>Orcs</strong> are the Amygdala, driven by fear.</p></div>
-                        <div class="cosmos-card p-6 border-t-4 relative overflow-hidden" style="border-top-color: #4ade80;"><div class="flex items-center gap-4 mb-4"><div class="w-10 h-10 rounded-full flex items-center justify-center icon-alien shrink-0"><i class="fa-solid fa-user-astronaut text-white text-sm"></i></div><div><h3 class="cinzel text-lg font-bold leading-tight" style="color: var(--text-main);">The Visitors</h3><h4 class="font-mono text-[9px] uppercase tracking-[0.2em] text-emerald-400 mt-1">UFOlogy</h4></div></div><p class="text-xs leading-relaxed relative z-10" style="color: var(--text-muted);">If outer space is a projection of inner space, "Aliens" are sudden downloads and intuitions from your own higher self trying to communicate with your ego.</p></div>
-                        <div class="cosmos-card p-6 border-t-4 relative overflow-hidden" style="border-top-color: #9ca3af;"><div class="flex items-center gap-4 mb-4"><div class="w-10 h-10 rounded-full flex items-center justify-center icon-sword shrink-0"><i class="fa-solid fa-khanda text-gray-700 text-sm"></i></div><div><h3 class="cinzel text-lg font-bold leading-tight" style="color: var(--text-main);">The Sacrum</h3><h4 class="font-mono text-[9px] uppercase tracking-[0.2em] text-gray-400 mt-1">Arthurian</h4></div></div><p class="text-xs leading-relaxed relative z-10" style="color: var(--text-muted);">The "Sword in the Stone" is an ancient anatomical cipher. The stone is the Sacrum bone. Pulling the sword (spine) free represents raising the internal energy.</p></div>
-                        <div class="cosmos-card p-6 border-t-4 relative overflow-hidden" style="border-top-color: #f59e0b;"><div class="flex items-center gap-4 mb-4"><div class="w-10 h-10 rounded-full flex items-center justify-center icon-dbz shrink-0"><i class="fa-solid fa-star text-red-600 text-sm drop-shadow-[0_0_2px_rgba(255,255,255,0.8)]"></i></div><div><h3 class="cinzel text-lg font-bold leading-tight" style="color: var(--text-main);">The Kundalini</h3><h4 class="font-mono text-[9px] uppercase tracking-[0.2em] text-orange-400 mt-1">Dragon Ball</h4></div></div><p class="text-xs leading-relaxed relative z-10" style="color: var(--text-muted);">The 7 Dragon Balls represent the 7 Chakras. Gathering them summons the Dragon (serpent-fire). Super Saiyan is the Torus field overflowing with light.</p></div>
-                        <div class="cosmos-card p-6 border-t-4 relative overflow-hidden" style="border-top-color: var(--gold);"><div class="flex items-center gap-4 mb-4"><div class="w-10 h-10 rounded-full flex items-center justify-center icon-snitch shrink-0"><i class="fa-solid fa-seedling text-white opacity-80 text-lg -rotate-45 relative top-1"></i></div><div><h3 class="cinzel text-lg font-bold leading-tight" style="color: var(--text-main);">The Pineal</h3><h4 class="font-mono text-[9px] uppercase tracking-[0.2em] mt-1" style="color: var(--gold);">Harry Potter</h4></div></div><p class="text-xs leading-relaxed relative z-10" style="color: var(--text-muted);">The Golden Snitch is the Pineal Gland. Once caught, the game of the physical simulation immediately ends. Platform 9 ¾ is the hidden Theta wave.</p></div>
-                        <div class="cosmos-card p-6 border-t-4 relative overflow-hidden" style="border-top-color: #22c55e;"><div class="flex items-center gap-4 mb-4"><div class="w-10 h-10 rounded-full flex items-center justify-center icon-matrix shrink-0"><i class="fa-solid fa-code text-green-500 text-sm font-bold drop-shadow-[0_0_5px_#22c55e]"></i></div><div><h3 class="cinzel text-lg font-bold leading-tight" style="color: var(--text-main);">The Beta State</h3><h4 class="font-mono text-[9px] uppercase tracking-[0.2em] text-green-400 mt-1">The Matrix</h4></div></div><p class="text-xs leading-relaxed relative z-10" style="color: var(--text-muted);">The "Matrix" is the literal Beta-wave frequency. The "Red Pill" represents the biological shift into Alpha/Theta waves, unplugging the Vagus Nerve from the illusion.</p></div>
+                        
+                        <div class="flip-card xl:col-span-2">
+                            <div class="flip-card-inner">
+                                <div class="flip-card-front" style="border-top-color: #ef4444;">
+                                    <i class="fa-solid fa-arrow-down-up-across-line absolute -right-6 -bottom-6 text-[150px] opacity-5 pointer-events-none text-red-500"></i>
+                                    <div class="w-16 h-16 rounded-full flex items-center justify-center bg-red-900/30 border border-red-500/50 mb-4 shadow-[0_0_15px_rgba(239,68,68,0.4)]"><i class="fa-solid fa-arrow-down text-red-500 text-2xl"></i></div>
+                                    <h3 class="cinzel text-2xl font-bold" style="color: var(--text-main);">The Great Inversion</h3>
+                                    <h4 class="font-mono text-xs uppercase tracking-[0.2em] text-red-400 mt-2">The Fall of Man</h4>
+                                    <p class="text-xs mt-auto italic text-gray-500"><i class="fa-solid fa-rotate mr-1"></i> Hover to Decrypt</p>
+                                </div>
+                                <div class="flip-card-back">
+                                    <p class="text-sm leading-relaxed text-gray-300">The moment humanity fell from the Crown to the Root. The Agricultural Revolution (10,000 BC) traded internal quantum flow for external, physical survival (property, hoarding, and Time). The internal wave collapsed into the external particle.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flip-card xl:col-span-2">
+                            <div class="flip-card-inner">
+                                <div class="flip-card-front" style="border-top-color: #2dd4bf;">
+                                    <i class="fa-solid fa-cubes absolute -right-6 -bottom-6 text-[150px] opacity-5 pointer-events-none text-teal-400"></i>
+                                    <div class="w-16 h-16 rounded-full flex items-center justify-center bg-teal-900/30 border border-teal-500/50 mb-4 shadow-[0_0_15px_rgba(45,212,191,0.4)]"><i class="fa-solid fa-cubes text-teal-400 text-2xl"></i></div>
+                                    <h3 class="cinzel text-2xl font-bold" style="color: var(--text-main);">The 64 Fractal</h3>
+                                    <h4 class="font-mono text-xs uppercase tracking-[0.2em] text-teal-400 mt-2">Sacred Geometry</h4>
+                                    <p class="text-xs mt-auto italic text-gray-500"><i class="fa-solid fa-rotate mr-1"></i> Hover to Decrypt</p>
+                                </div>
+                                <div class="flip-card-back">
+                                    <p class="text-sm leading-relaxed text-gray-300">The ultimate compression algorithm. The 64 hexagrams of the I Ching, the 64 codons of human DNA, the 64 squares of the chessboard, and 64-bit computing. The Base-2 math of the entire universe.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flip-card xl:col-span-2">
+                            <div class="flip-card-inner">
+                                <div class="flip-card-front" style="border-top-color: #a8a29e;">
+                                    <i class="fa-solid fa-mountain-sun absolute -right-6 -bottom-6 text-[150px] opacity-5 pointer-events-none text-stone-400"></i>
+                                    <div class="w-16 h-16 rounded-full flex items-center justify-center bg-stone-800/30 border border-stone-500/50 mb-4 shadow-[0_0_15px_rgba(168,162,158,0.4)]"><i class="fa-solid fa-monument text-stone-400 text-2xl"></i></div>
+                                    <h3 class="cinzel text-2xl font-bold" style="color: var(--text-main);">Ancient Hardware</h3>
+                                    <h4 class="font-mono text-xs uppercase tracking-[0.2em] text-stone-400 mt-2">Göbekli Tepe</h4>
+                                    <p class="text-xs mt-auto italic text-gray-500"><i class="fa-solid fa-rotate mr-1"></i> Hover to Decrypt</p>
+                                </div>
+                                <div class="flip-card-back">
+                                    <p class="text-sm leading-relaxed text-gray-300">The 12,000-year-old T-pillars are the physical architecture of the human spine and the faceless ego. The "serpentine water channels" act as the manifestation of the cerebrospinal fluid flowing up the spine.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flip-card xl:col-span-2">
+                            <div class="flip-card-inner">
+                                <div class="flip-card-front" style="border-top-color: #94a3b8;">
+                                    <i class="fa-solid fa-rocket absolute -right-6 -bottom-6 text-[150px] opacity-5 pointer-events-none text-slate-400"></i>
+                                    <div class="w-16 h-16 rounded-full flex items-center justify-center bg-slate-800/30 border border-slate-500/50 mb-4 shadow-[0_0_15px_rgba(148,163,184,0.4)]"><i class="fa-solid fa-moon text-slate-300 text-2xl"></i></div>
+                                    <h3 class="cinzel text-2xl font-bold" style="color: var(--text-main);">The Apollo Ritual</h3>
+                                    <h4 class="font-mono text-xs uppercase tracking-[0.2em] text-slate-400 mt-2">NASA / The Moon</h4>
+                                    <p class="text-xs mt-auto italic text-gray-500"><i class="fa-solid fa-rotate mr-1"></i> Hover to Decrypt</p>
+                                </div>
+                                <div class="flip-card-back">
+                                    <p class="text-sm leading-relaxed text-gray-300">The Space Race was a macro-scale ritual of the human nervous system. NASA used <strong>Saturn</strong> (Chronos/The Root) to launch the <strong>Sun</strong> (Pineal) to contact the <strong>Moon</strong> (Pituitary).</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flip-card">
+                            <div class="flip-card-inner">
+                                <div class="flip-card-front" style="border-top-color: #f59e0b;">
+                                    <div class="w-16 h-16 rounded-full flex items-center justify-center bg-yellow-900/30 border border-yellow-500/50 mb-4 shadow-[0_0_15px_rgba(245,158,11,0.4)]"><i class="fa-brands fa-bitcoin text-yellow-500 text-2xl"></i></div>
+                                    <h3 class="cinzel text-xl font-bold" style="color: var(--text-main);">Digital Alchemy</h3>
+                                    <h4 class="font-mono text-[10px] uppercase tracking-[0.2em] text-yellow-500 mt-2">Blockchain</h4>
+                                    <p class="text-xs mt-auto italic text-gray-500"><i class="fa-solid fa-rotate mr-1"></i> Hover to Decrypt</p>
+                                </div>
+                                <div class="flip-card-back"><p class="text-xs leading-relaxed text-gray-300 p-2">Fiat is Archon control. Crypto is decentralized Gnosticism. The blockchain is the Akashic Records. Mining is literal alchemy: converting physical electricity into immutable truth.</p></div>
+                            </div>
+                        </div>
+
+                        <div class="flip-card">
+                            <div class="flip-card-inner">
+                                <div class="flip-card-front" style="border-top-color: #cbd5e1;">
+                                    <div class="w-16 h-16 rounded-full flex items-center justify-center bg-slate-800/30 border border-slate-400/50 mb-4 shadow-[0_0_15px_rgba(203,213,225,0.4)]"><i class="fa-solid fa-microchip text-slate-300 text-2xl"></i></div>
+                                    <h3 class="cinzel text-xl font-bold" style="color: var(--text-main);">Machine Anatomy</h3>
+                                    <h4 class="font-mono text-[10px] uppercase tracking-[0.2em] text-slate-400 mt-2">Motherboard</h4>
+                                    <p class="text-xs mt-auto italic text-gray-500"><i class="fa-solid fa-rotate mr-1"></i> Hover to Decrypt</p>
+                                </div>
+                                <div class="flip-card-back"><p class="text-xs leading-relaxed text-gray-300 p-2">The Quartz crystal is the heartbeat. The CPU is the Left Brain (linear Beta-waves). The GPU is the Right Brain (parallel, holistic simulation).</p></div>
+                            </div>
+                        </div>
+
+                        <div class="flip-card">
+                            <div class="flip-card-inner">
+                                <div class="flip-card-front" style="border-top-color: #d8b4fe;">
+                                    <div class="w-16 h-16 rounded-full flex items-center justify-center bg-purple-900/30 border border-purple-400/50 mb-4 shadow-[0_0_15px_rgba(216,180,254,0.4)]"><i class="fa-solid fa-microphone text-purple-400 text-2xl"></i></div>
+                                    <h3 class="cinzel text-xl font-bold" style="color: var(--text-main);">Primordial Sound</h3>
+                                    <h4 class="font-mono text-[10px] uppercase tracking-[0.2em] text-purple-400 mt-2">Acoustics</h4>
+                                    <p class="text-xs mt-auto italic text-gray-500"><i class="fa-solid fa-rotate mr-1"></i> Hover to Decrypt</p>
+                                </div>
+                                <div class="flip-card-back"><p class="text-xs leading-relaxed text-gray-300 p-2">The human vocal tract naturally forms "Ah-Mmm" (AUM). The first sound humans made—an acoustic vibration striking the Vagus nerve to ring the biological moon.</p></div>
+                            </div>
+                        </div>
+
+                        <div class="flip-card">
+                            <div class="flip-card-inner">
+                                <div class="flip-card-front" style="border-top-color: #fca5a5;">
+                                    <div class="w-16 h-16 rounded-full flex items-center justify-center bg-red-900/30 border border-red-400/50 mb-4 shadow-[0_0_15px_rgba(252,165,165,0.4)]"><i class="fa-solid fa-eye text-red-400 text-2xl"></i></div>
+                                    <h3 class="cinzel text-xl font-bold" style="color: var(--text-main);">The First Color</h3>
+                                    <h4 class="font-mono text-[10px] uppercase tracking-[0.2em] text-red-400 mt-2">Optics</h4>
+                                    <p class="text-xs mt-auto italic text-gray-500"><i class="fa-solid fa-rotate mr-1"></i> Hover to Decrypt</p>
+                                </div>
+                                <div class="flip-card-back"><p class="text-xs leading-relaxed text-gray-300 p-2">The first color named by humanity and used in cave art was RED. Red maps directly to the survival Root Chakra. Humanity evolved from the bottom of the spine upwards.</p></div>
+                            </div>
+                        </div>
+
+                        <div class="flip-card">
+                            <div class="flip-card-inner">
+                                <div class="flip-card-front" style="border-top-color: #facc15;">
+                                    <div class="w-16 h-16 rounded-full flex items-center justify-center bg-yellow-900/30 border border-yellow-400/50 mb-4 shadow-[0_0_15px_rgba(250,204,21,0.4)]"><i class="fa-solid fa-bolt text-yellow-400 text-2xl"></i></div>
+                                    <h3 class="cinzel text-xl font-bold" style="color: var(--text-main);">The Ascension</h3>
+                                    <h4 class="font-mono text-[10px] uppercase tracking-[0.2em] text-yellow-400 mt-2">Greek Mythos</h4>
+                                    <p class="text-xs mt-auto italic text-gray-500"><i class="fa-solid fa-rotate mr-1"></i> Hover to Decrypt</p>
+                                </div>
+                                <div class="flip-card-back"><p class="text-xs leading-relaxed text-gray-300 p-2">Zeus (Jupiter) overthrows Cronus (Saturn/Time) to rule from Olympus (The Cranial Vault). He wields the Lightning Bolt, which is the electrical spark of the Vagus Nerve.</p></div>
+                            </div>
+                        </div>
+
+                        <div class="flip-card">
+                            <div class="flip-card-inner">
+                                <div class="flip-card-front" style="border-top-color: #a855f7;">
+                                    <div class="w-16 h-16 rounded-full flex items-center justify-center bg-purple-900/30 border border-purple-500/50 mb-4 shadow-[0_0_15px_rgba(168,85,247,0.4)]"><i class="fa-solid fa-star text-purple-400 text-2xl"></i></div>
+                                    <h3 class="cinzel text-xl font-bold" style="color: var(--text-main);">The Advisor</h3>
+                                    <h4 class="font-mono text-[10px] uppercase tracking-[0.2em] text-purple-400 mt-2">Arthurian</h4>
+                                    <p class="text-xs mt-auto italic text-gray-500"><i class="fa-solid fa-rotate mr-1"></i> Hover to Decrypt</p>
+                                </div>
+                                <div class="flip-card-back"><p class="text-xs leading-relaxed text-gray-300 p-2">Merlin advises King Arthur. Arthur represents the physical Ego; the Wizard is the Pineal Gland. He directs the energy and provides the cosmic intuition.</p></div>
+                            </div>
+                        </div>
+
+                        <div class="flip-card">
+                            <div class="flip-card-inner">
+                                <div class="flip-card-front" style="border-top-color: #22c55e;">
+                                    <div class="w-16 h-16 rounded-full flex items-center justify-center bg-green-900/30 border border-green-500/50 mb-4 shadow-[0_0_15px_rgba(34,197,94,0.4)]"><i class="fa-brands fa-envira text-green-400 text-2xl"></i></div>
+                                    <h3 class="cinzel text-xl font-bold" style="color: var(--text-main);">The Frequencies</h3>
+                                    <h4 class="font-mono text-[10px] uppercase tracking-[0.2em] text-green-400 mt-2">Fantasy Races</h4>
+                                    <p class="text-xs mt-auto italic text-gray-500"><i class="fa-solid fa-rotate mr-1"></i> Hover to Decrypt</p>
+                                </div>
+                                <div class="flip-card-back"><p class="text-xs leading-relaxed text-gray-300 p-2"><strong>Dwarfs</strong> are the lower Chakras (the Gut). <strong>Elves</strong> are high-frequency Alpha/Theta waves. <strong>Orcs</strong> are the Amygdala, driven by fear.</p></div>
+                            </div>
+                        </div>
+
+                        <div class="flip-card">
+                            <div class="flip-card-inner">
+                                <div class="flip-card-front" style="border-top-color: #9ca3af;">
+                                    <div class="w-16 h-16 rounded-full flex items-center justify-center bg-gray-800/30 border border-gray-400/50 mb-4 shadow-[0_0_15px_rgba(156,163,175,0.4)]"><i class="fa-solid fa-khanda text-gray-400 text-2xl"></i></div>
+                                    <h3 class="cinzel text-xl font-bold" style="color: var(--text-main);">The Sacrum</h3>
+                                    <h4 class="font-mono text-[10px] uppercase tracking-[0.2em] text-gray-400 mt-2">Arthurian</h4>
+                                    <p class="text-xs mt-auto italic text-gray-500"><i class="fa-solid fa-rotate mr-1"></i> Hover to Decrypt</p>
+                                </div>
+                                <div class="flip-card-back"><p class="text-xs leading-relaxed text-gray-300 p-2">The "Sword in the Stone" is an ancient anatomical cipher. The stone is the Sacrum bone. Pulling the sword (spine) free represents raising the internal energy.</p></div>
+                            </div>
+                        </div>
+
+                        <div class="flip-card">
+                            <div class="flip-card-inner">
+                                <div class="flip-card-front" style="border-top-color: #f59e0b;">
+                                    <div class="w-16 h-16 rounded-full flex items-center justify-center bg-orange-900/30 border border-orange-500/50 mb-4 shadow-[0_0_15px_rgba(245,158,11,0.4)]"><i class="fa-solid fa-dragon text-orange-500 text-2xl"></i></div>
+                                    <h3 class="cinzel text-xl font-bold" style="color: var(--text-main);">The Kundalini</h3>
+                                    <h4 class="font-mono text-[10px] uppercase tracking-[0.2em] text-orange-400 mt-2">Dragon Ball</h4>
+                                    <p class="text-xs mt-auto italic text-gray-500"><i class="fa-solid fa-rotate mr-1"></i> Hover to Decrypt</p>
+                                </div>
+                                <div class="flip-card-back"><p class="text-xs leading-relaxed text-gray-300 p-2">The 7 Dragon Balls represent the 7 Chakras. Gathering them summons the Dragon (serpent-fire). Super Saiyan is the Torus field overflowing with light.</p></div>
+                            </div>
+                        </div>
+
+                        <div class="flip-card">
+                            <div class="flip-card-inner">
+                                <div class="flip-card-front" style="border-top-color: var(--gold);">
+                                    <div class="w-16 h-16 rounded-full flex items-center justify-center bg-yellow-900/30 border border-yellow-500/50 mb-4 shadow-[0_0_15px_rgba(212,175,55,0.4)]"><i class="fa-solid fa-seedling text-yellow-500 text-2xl -rotate-45 relative top-1"></i></div>
+                                    <h3 class="cinzel text-xl font-bold" style="color: var(--text-main);">The Pineal</h3>
+                                    <h4 class="font-mono text-[10px] uppercase tracking-[0.2em] mt-2" style="color: var(--gold);">Harry Potter</h4>
+                                    <p class="text-xs mt-auto italic text-gray-500"><i class="fa-solid fa-rotate mr-1"></i> Hover to Decrypt</p>
+                                </div>
+                                <div class="flip-card-back"><p class="text-xs leading-relaxed text-gray-300 p-2">The Golden Snitch is the Pineal Gland. Once caught, the game of the physical simulation immediately ends. Platform 9 ¾ is the hidden Theta wave.</p></div>
+                            </div>
+                        </div>
+
+                        <div class="flip-card">
+                            <div class="flip-card-inner">
+                                <div class="flip-card-front" style="border-top-color: #22c55e;">
+                                    <div class="w-16 h-16 rounded-full flex items-center justify-center bg-green-900/30 border border-green-500/50 mb-4 shadow-[0_0_15px_rgba(34,197,94,0.4)]"><i class="fa-solid fa-code text-green-400 text-2xl"></i></div>
+                                    <h3 class="cinzel text-xl font-bold" style="color: var(--text-main);">The Beta State</h3>
+                                    <h4 class="font-mono text-[10px] uppercase tracking-[0.2em] text-green-400 mt-2">The Matrix</h4>
+                                    <p class="text-xs mt-auto italic text-gray-500"><i class="fa-solid fa-rotate mr-1"></i> Hover to Decrypt</p>
+                                </div>
+                                <div class="flip-card-back"><p class="text-xs leading-relaxed text-gray-300 p-2">The "Matrix" is the literal Beta-wave frequency. The "Red Pill" represents the biological shift into Alpha/Theta waves, unplugging the Vagus Nerve from the illusion.</p></div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
+
             </div>
         </section>
 
@@ -355,9 +525,9 @@
         window.app = {
             data: [], archiveVideos: [], selectedTopics: new Set(), validYtIds: new Set(), transcripts: [],
             
-            // RPG SKILL TREE STATE LOGIC
+            // RPG SKILL TREE STATE LOGIC (10 TP NOW)
             rpgState: {
-                tp: 5,
+                tp: 10,
                 nodes: {
                     red: { id: 'red', parents: [], status: 'available' },
                     aum: { id: 'aum', parents: [], status: 'available' },
@@ -456,7 +626,7 @@
             },
 
             resetTree: function() {
-                this.rpgState.tp = 5;
+                this.rpgState.tp = 10;
                 for (let key in this.rpgState.nodes) {
                     this.rpgState.nodes[key].status = (key === 'red' || key === 'aum') ? 'available' : 'locked';
                 }
@@ -668,8 +838,11 @@
             init: function() {
                 createDust(); window.app.initMatrixInteractions(); window.app.setMeditationState(1); window.onpopstate = (e) => { if(e.state && e.state.view) window.app.nav(e.state.view); };
                 
-                window.app.updateRPGTree(); window.app.toggleEchoesView('student');
+                // Ensure RPG Tree is initialized
+                window.app.updateRPGTree();
+                window.app.toggleEchoesView('student');
 
+                // Bulletproof Loading Fail-safe
                 setTimeout(() => { const loader = document.getElementById('app-loader'); if(loader) { loader.style.opacity = '0'; setTimeout(()=>loader.style.display = 'none', 500); } }, 4000);
 
                 const loadAllTranscripts = async () => { let allTranscripts = []; let fileIndex = 1; let keepFetching = true; while (keepFetching) { try { const response = await fetch(`transcripts_${fileIndex}.json`); if (response.ok) { const data = await response.json(); allTranscripts = allTranscripts.concat(data); fileIndex++; } else { keepFetching = false; } } catch (error) { keepFetching = false; } } window.app.transcripts = allTranscripts; };
